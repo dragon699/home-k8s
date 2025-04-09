@@ -12,7 +12,7 @@ spec:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  path: kubernetes/resources/prod/00 - base
+  path: kubernetes/resources/00 - base
   prune: true
   wait: true
   timeout: 35m
@@ -31,7 +31,7 @@ spec:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  path: kubernetes/resources/prod/01 - dependencies
+  path: kubernetes/resources/01 - dependencies
   prune: true
   wait: true
   timeout: 35m
@@ -52,7 +52,7 @@ spec:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  path: kubernetes/resources/prod/02 - post-dependencies
+  path: kubernetes/resources/02 - post-dependencies
   prune: true
   wait: true
   timeout: 35m
@@ -74,7 +74,7 @@ spec:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  path: kubernetes/resources/prod/03 - event-tracking
+  path: kubernetes/resources/03 - immich
   prune: true
   wait: true
   timeout: 35m
