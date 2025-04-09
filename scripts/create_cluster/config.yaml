@@ -1,7 +1,7 @@
 ###### k0s cluster configuration ######
 
 ## k8s cluster name;
-cluster_name: procredit-event-tracking-prod
+cluster_name: home-k8s
 
 
 ## k8s version;
@@ -16,7 +16,7 @@ cluster_is_default: true
 ## Uncomment this and set your proxy URL, if you'd like to use a proxy for
 ## containerd to download images, inside the k8s nodes;
 ## This will be passed to HTTP_POXY and HTTPS_PROXY environment vars;
-proxy_address: http://webgateway.procreditbank.bg:9090
+# proxy_address: http://webgateway.procreditbank.bg:9090
 
 
 ## k8s nodes SSH definitions;
@@ -56,46 +56,11 @@ proxy_address: http://webgateway.procreditbank.bg:9090
 ##   keyPath: /home/user/.ssh/key2
 ##   role: worker
 cluster_nodes:
-- address: 172.16.205.1
+- address: 172.29.41.124
   user: root
   port: 22
-  keyPath: /root/.ssh/martin
-  role: controller
-- address: 172.16.205.2
-  user: root
-  port: 22
-  keyPath: /root/.ssh/martin
-  role: controller
-- address: 172.16.205.3
-  user: root
-  port: 22
-  keyPath: /root/.ssh/martin
-  role: controller
-- address: 172.16.205.4
-  user: root
-  port: 22
-  keyPath: /root/.ssh/martin
-  role: worker
-- address: 172.16.205.5
-  user: root
-  port: 22
-  keyPath: /root/.ssh/martin
-  role: worker
-- address: 172.16.205.6
-  user: root
-  port: 22
-  keyPath: /root/.ssh/martin
-  role: worker
-- address: 172.16.205.7
-  user: root
-  port: 22
-  keyPath: /root/.ssh/martin
-  role: worker
-- address: 172.16.205.8
-  user: root
-  port: 22
-  keyPath: /root/.ssh/martin
-  role: worker
+  keyPath: /root/.ssh/id_rsa
+  role: controller+worker
 
 ######
 
@@ -104,7 +69,7 @@ cluster_nodes:
 ###### FluxCD configuration ######
 
 ## Will deploy FluxCD to the cluster, if true;
-install_fluxcd: true
+install_fluxcd: false
 
 ## Will deploy FluxCD's image automation controller to the cluster, if true;
 install_fluxcd_image_automation: false
@@ -113,7 +78,7 @@ install_fluxcd_image_automation: false
 repository_ssh_url: ssh://git@bitbucket.procreditbank.bg:7999/msy/monitoring-system.git
 
 ## Path to private key file to provide FluxCD with access to the repository;
-repository_ssh_private_key_path: /root/.ssh/martin
+repository_ssh_private_key_path: /root/.ssh/id_rsa
 
 ## Branch to track;
 repository_branch: prod
