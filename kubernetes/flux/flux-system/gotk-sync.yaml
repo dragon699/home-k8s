@@ -8,10 +8,10 @@ metadata:
 spec:
   interval: 1m0s
   ref:
-    branch: prod
+    branch: main
   secretRef:
     name: flux-system
-  url: ssh://git@bitbucket.procreditbank.bg:7999/msy/monitoring-system.git
+  url: ssh://git@github.com/dragon699/home-k8s
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
