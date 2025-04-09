@@ -2,10 +2,10 @@
 apiVersion: source.toolkit.fluxcd.io/v1beta2
 kind: HelmRepository
 metadata:
-  name: bitnami
+  name: cetic
   namespace: immich
   labels:
     env: home
 spec:
   interval: 12h
-  url: https://charts.bitnami.com/bitnami
+  url: https://cetic.github.io/helm-charts

@@ -19,8 +19,11 @@ spec:
       version: 0.9.2
       interval: 5m0s
   values:
-    postgresql:
-      enabled: true
+    env:
+      DB_HOSTNAME: postgresql.immich.svc
+      DB_USERNAME: immich
+      DB_PASSWORD: immich
+      DB_DATABASE_NAME: immich
     immich:
       persistence:
         library:
