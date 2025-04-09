@@ -19,6 +19,8 @@ spec:
       version: 0.2.5
       interval: 5m0s
   values:
+    image:
+      tag: "14"
     postgresql:
       username: immich
       password: immich
