@@ -32,6 +32,11 @@ spec:
           trash:
             enabled: true
             days: 14
+    redis:
+      enabled: true
+      architecture: standalone
+      auth:
+        enabled: false
     server:
       enabled: true
       ingress:
