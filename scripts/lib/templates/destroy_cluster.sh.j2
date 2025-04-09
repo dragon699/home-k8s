@@ -1,0 +1,18 @@
+#!/bin/bash
+
+
+function destroy_cluster() {
+    export SSH_KNOWN_HOSTS="/dev/null"
+
+    k0sctl reset --force --config "{{ K0SCTL_CONFIG_PATH }}"
+    if ! [[ $? == 0 ]]; then
+        echo "Failed!"
+        exit 1
+    fi
+
+    for dir in "{{ K0SCTL_CLUSTER_DIR }}" "{{ HOME }}/.kube"; do
+        rm -Rf "${dir}"
+    done
+}
+
+destroy_cluster

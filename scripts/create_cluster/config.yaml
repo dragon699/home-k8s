@@ -1,0 +1,124 @@
+###### k0s cluster configuration ######
+
+## k8s cluster name;
+cluster_name: procredit-event-tracking-prod
+
+
+## k8s version;
+## Visit https://github.com/k0sproject/k0s/releases for version compatibility;
+cluster_version: 1.30.2
+
+
+## If true, will make the cluster the default one when interacting with kubectl;
+cluster_is_default: true
+
+
+## Uncomment this and set your proxy URL, if you'd like to use a proxy for
+## containerd to download images, inside the k8s nodes;
+## This will be passed to HTTP_POXY and HTTPS_PROXY environment vars;
+proxy_address: http://webgateway.procreditbank.bg:9090
+
+
+## k8s nodes SSH definitions;
+## root user is recommended to ensure dependency issues are avoided;
+##
+## You can add as many nodes for the cluster as you want;
+## Schema: cluster_nodes<list<map>> -> address<str>, user<str>, port<int>, keyPath<str>, role<str>;
+##
+## cluster_nodes:
+##   # IP address of the node;
+## - address:
+##
+##   # SSH user to connect with;
+##   user:
+##
+##   # SSH port to connect with;
+##   port:
+##
+##   # SSH private key path to connect with;
+##   # Note: The public key that belongs to the private one must be added to user's;
+##   # authorized_keys file on the remote node;
+##   keyPath:
+##
+##   # k8s node role (controller, worker or controller+worker);
+##   role:
+##
+## Example:
+## cluster_nodes:
+## - address: 10.0.0.2
+##   user: root
+##   port: 22
+##   keyPath: /home/user/.ssh/key2
+##   role: controller
+## - address: 10.0.0.3
+##   user: root
+##   port: 22
+##   keyPath: /home/user/.ssh/key2
+##   role: worker
+cluster_nodes:
+- address: 172.16.205.1
+  user: root
+  port: 22
+  keyPath: /root/.ssh/martin
+  role: controller
+- address: 172.16.205.2
+  user: root
+  port: 22
+  keyPath: /root/.ssh/martin
+  role: controller
+- address: 172.16.205.3
+  user: root
+  port: 22
+  keyPath: /root/.ssh/martin
+  role: controller
+- address: 172.16.205.4
+  user: root
+  port: 22
+  keyPath: /root/.ssh/martin
+  role: worker
+- address: 172.16.205.5
+  user: root
+  port: 22
+  keyPath: /root/.ssh/martin
+  role: worker
+- address: 172.16.205.6
+  user: root
+  port: 22
+  keyPath: /root/.ssh/martin
+  role: worker
+- address: 172.16.205.7
+  user: root
+  port: 22
+  keyPath: /root/.ssh/martin
+  role: worker
+- address: 172.16.205.8
+  user: root
+  port: 22
+  keyPath: /root/.ssh/martin
+  role: worker
+
+######
+
+
+
+###### FluxCD configuration ######
+
+## Will deploy FluxCD to the cluster, if true;
+install_fluxcd: true
+
+## Will deploy FluxCD's image automation controller to the cluster, if true;
+install_fluxcd_image_automation: false
+
+## k8s SSH url that FluxCD will keep track of;
+repository_ssh_url: ssh://git@bitbucket.procreditbank.bg:7999/msy/monitoring-system.git
+
+## Path to private key file to provide FluxCD with access to the repository;
+repository_ssh_private_key_path: /root/.ssh/martin
+
+## Branch to track;
+repository_branch: prod
+
+## Path to the directory in the repository that will contain the k8s manifests;
+repository_dir_path: kubernetes/clusters/prod
+
+######
