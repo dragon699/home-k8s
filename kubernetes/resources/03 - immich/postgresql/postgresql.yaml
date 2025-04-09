@@ -20,7 +20,7 @@ spec:
       interval: 5m0s
   values:
     image:
-      tag: "14"
+      tag: "16"
     postgresql:
       username: immich
       password: immich
