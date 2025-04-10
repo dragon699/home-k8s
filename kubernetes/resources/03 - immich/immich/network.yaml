@@ -1,0 +1,23 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: immich
+  namespace: immich
+  annotations:
+    kubernetes.io/ingress.class: nginx
+  labels:
+    app: immich
+    env: home
+spec:
+  rules:
+  - host: immich.home.k8s
+    http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: immich-server
+            port:
+              number: 2283
