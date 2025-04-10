@@ -24,7 +24,7 @@ spec:
       DB_USERNAME: postgres
       DB_PASSWORD: immich
       DB_DATABASE_NAME: immich
-      UPLOAD_LOCATION: /usr/src/app/upload
+      UPLOAD_LOCATION: /usr/src/app/upload/library
       IMMICH_IGNORE_MOUNT_CHECK_ERRORS: 'true'
     immich:
       persistence:
