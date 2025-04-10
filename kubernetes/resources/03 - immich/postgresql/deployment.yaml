@@ -38,4 +38,4 @@ spec:
             claimName: postgresql
         - name: init-scripts
           configMap:
-            name: postgresql-init-scripts
+            name: postgresql-initdb
