@@ -14,7 +14,7 @@ metadata:
     env: home
 spec:
   rules:
-  - host: longhorn.home.k8s
+  - host: longhorn.k8s.iaminyourpc.xyz
     http:
       paths:
       - pathType: Prefix

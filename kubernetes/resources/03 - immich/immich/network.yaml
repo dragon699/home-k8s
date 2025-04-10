@@ -13,7 +13,7 @@ metadata:
     env: home
 spec:
   rules:
-  - host: immich.home.k8s
+  - host: kris40.k8s.iaminyourpc.xyz
     http:
       paths:
       - pathType: Prefix
