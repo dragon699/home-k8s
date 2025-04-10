@@ -24,6 +24,7 @@ spec:
       DB_USERNAME: postgres
       DB_PASSWORD: immich
       DB_DATABASE_NAME: immich
+      UPLOAD_LOCATION: /library
     immich:
       persistence:
         library:
