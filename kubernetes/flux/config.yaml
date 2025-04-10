@@ -82,3 +82,27 @@ spec:
     - name: infra-base
     - name: infra-dependencies
     - name: infra-post-dependencies
+
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: monitoring
+  namespace: flux-system
+spec:
+  suspend: false
+  interval: 10m0s
+  retryInterval: 1m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  path: kubernetes/resources/04 - monitoring
+  prune: true
+  wait: true
+  timeout: 35m
+  dependsOn:
+    - name: infra-base
+    - name: infra-dependencies
+    - name: infra-post-dependencies
+    - name: immich
