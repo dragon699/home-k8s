@@ -1,0 +1,22 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: minio
+  namespace: monitoring
+  annotations:
+    kubernetes.io/ingress.class: nginx
+  labels:
+    app: minio
+spec:
+  rules:
+  - host: minio.k8s.iaminyourpc.xyz
+    http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: minio
+            port:
+              number: 9001

@@ -22,8 +22,28 @@ metadata:
 apiVersion: v1
 kind: Namespace
 metadata:
+  name: postgresql
+  labels:
+    app.kubernetes.io/name: postgresql
+    app.kubernetes.io/instance: postgresql
+    app.kubernetes.io/env: home
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
   name: immich
   labels:
     app.kubernetes.io/name: immich
     app.kubernetes.io/instance: immich
+    app.kubernetes.io/env: home
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: monitoring
+  labels:
+    app.kubernetes.io/name: monitoring
+    app.kubernetes.io/instance: monitoring
     app.kubernetes.io/env: home

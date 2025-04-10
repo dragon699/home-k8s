@@ -3,7 +3,7 @@
 # kind: PersistentVolumeClaim
 # metadata:
 #   name: postgresql
-#   namespace: immich
+#   namespace: postgresql
 #   labels:
 #     env: home
 # spec:

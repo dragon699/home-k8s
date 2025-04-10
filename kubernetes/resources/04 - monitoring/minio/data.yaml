@@ -1,0 +1,12 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: minio
+  namespace: monitoring
+type: Opaque
+data:
+  MINIO_SERVER_ROOT_USER: c3lz
+  MINIO_SERVER_ROOT_PASSWORD: WFdSRXFvU2llSjBrOEJZTXRKUzM1dWFsUEE=
+  MINIO_SERVER_HOST: bWluaW8uZXZlbnQtdHJhY2tpbmcuc3Zj
+  MINIO_SERVICE_PORT: OTAwMA==

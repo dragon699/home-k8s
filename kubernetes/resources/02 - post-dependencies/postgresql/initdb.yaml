@@ -1,0 +1,15 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgresql-initdb
+  namespace: postgresql
+  labels:
+    env: home
+data:
+  init.sql: |
+    CREATE DATABASE grafana;
+    CREATE DATABASE immich;
+    CREATE EXTENSION IF NOT EXISTS cube;
+    CREATE EXTENSION IF NOT EXISTS earthdistance;
+    CREATE EXTENSION IF NOT EXISTS vectors;

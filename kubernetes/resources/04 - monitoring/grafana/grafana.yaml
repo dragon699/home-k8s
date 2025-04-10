@@ -1,0 +1,69 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta2
+kind: HelmRelease
+metadata:
+  name: grafana
+  namespace: monitoring
+spec:
+  interval: 5m
+  chart:
+    spec:
+      chart: grafana
+      version: 8.5.8
+      sourceRef:
+        kind: HelmRepository
+        name: grafana
+        namespace: monitoring
+  values:
+    replicas: 1
+    deploymentStrategy:
+      type: Recreate
+
+    resources:
+      requests:
+        cpu: 0.1
+        memory: 128Mi
+      limits:
+        cpu: 4
+        memory: 1Gi
+
+    # Separate postgresql instance with persistence is being used;
+    persistence:
+      enabled: false
+
+    imageRenderer:
+      enabled: false
+      image:
+        repository: grafana/grafana-image-renderer
+        # There's a bug causing Internal 500 error with later versions of image-renderer;
+        tag: 3.11.0
+
+    envFromSecret: "grafana-db-creds"
+    admin:
+      existingSecret: grafana-login-creds
+      userKey: GRAFANA_ADMIN_USER
+      passwordKey: GRAFANA_ADMIN_PASSWORD
+
+    grafana.ini:
+      server:
+        root_url: http://grafana.k8s.iaminyourpc.xyz:30080
+      date_formats:
+        default_timezone: Europe/Sofia
+      log:
+        mode: console
+        level: warn
+      log.frontend:
+        instrumentations_tracing_enabled: false
+      unified_alerting.screenshots:
+        capture: false
+      auth.anonymous:
+        hide_version: true
+      database:
+        type: postgres
+        host: postgresql.postgresql.svc:5432
+        name: ${POSTGRES_DB}
+        user: ${POSTGRES_USER}
+        password: ${POSTGRES_PASSWORD}
+        ssl_mode: disable
+      feature_toggles:
+        enable: nestedFolders

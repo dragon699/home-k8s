@@ -1,0 +1,53 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta2
+kind: HelmRelease
+metadata:
+  name: minio
+  namespace: monitoring
+spec:
+  interval: 5m
+  chart:
+    spec:
+      chart: minio
+      version: 14.7.0
+      sourceRef:
+        kind: HelmRepository
+        name: bitnami
+        namespace: monitoring
+  values:
+    resources:
+      requests:
+        cpu: 0.1
+        memory: 128Mi
+      limits:
+        cpu: 3
+        memory: 512Mi
+
+    persistence:
+      enabled: true
+      size: 30Gi
+
+    mode: distributed
+
+    statefulset:
+      replicaCount: 1
+
+    auth:
+      existingSecret: minio
+      rootUserSecretKey: MINIO_SERVER_ROOT_USER
+      rootPasswordSecretKey: MINIO_SERVER_ROOT_PASSWORD
+
+    extraEnvVarsSecret: minio
+
+    provisioning:
+      enabled: true
+      extraCommands:
+      - mc alias set minio ${MINIO_SCHEME}://${MINIO_SERVER_HOST}:${MINIO_SERVICE_PORT} ${MINIO_SERVER_ROOT_USER} ${MINIO_SERVER_ROOT_PASSWORD}
+      - |
+          cd /tmp &&
+
+          mc mb minio/loki-chunks &&
+          mc ilm rule add --expire-days 180 minio/loki-chunks &&
+
+          mc mb minio/loki-ruler &&
+          mc ilm rule add --expire-days 180 minio/loki-ruler &&

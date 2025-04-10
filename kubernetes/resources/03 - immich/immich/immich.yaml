@@ -20,9 +20,9 @@ spec:
       interval: 5m0s
   values:
     env:
-      DB_HOSTNAME: postgresql.immich.svc
+      DB_HOSTNAME: postgresql.postgresql.svc
       DB_USERNAME: postgres
-      DB_PASSWORD: immich
+      DB_PASSWORD: LSwXeNmwyFe5DsZ
       DB_DATABASE_NAME: immich
       UPLOAD_LOCATION: /usr/src/app/upload/library
       IMMICH_IGNORE_MOUNT_CHECK_ERRORS: 'true'
@@ -51,5 +51,5 @@ spec:
       persistence:
         cache:
           enabled: true
-          size: 15Gi
+          size: 10Gi
           storageClass: longhorn
