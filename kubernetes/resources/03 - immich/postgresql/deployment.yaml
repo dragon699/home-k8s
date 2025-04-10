@@ -26,16 +26,16 @@ spec:
           env:
             - name: POSTGRES_PASSWORD
               value: immich
-          volumeMounts:
-            - name: postgresql-data
-              mountPath: /var/lib/postgresql/data
+          # volumeMounts:
+          #   - name: postgresql-data
+          #     mountPath: /var/lib/postgresql/data
             # - name: init-scripts
             #   mountPath: /docker-entrypoint-initdb.d/init.sql
             #   subPath: init.sql
-      volumes:
-        - name: postgresql-data
-          persistentVolumeClaim:
-            claimName: postgresql
+      # volumes:
+      #   - name: postgresql-data
+      #     persistentVolumeClaim:
+      #       claimName: postgresql
         # - name: init-scripts
         #   configMap:
         #     name: postgresql-initdb
