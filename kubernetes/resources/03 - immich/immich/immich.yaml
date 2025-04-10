@@ -17,7 +17,7 @@ spec:
         name: immich
       reconcileStrategy: ChartVersion
       version: 0.9.2
-      interval: 5m0s
+      interval: 10m0s
   values:
     env:
       DB_HOSTNAME: postgresql.postgresql.svc
