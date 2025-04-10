@@ -30,7 +30,7 @@ spec:
             - name: postgresql-data
               mountPath: /var/lib/postgresql/data
             - name: init-scripts
-              mountPath: /docker-entrypoint-initdb.d
+              mountPath: /docker-entrypoint-initdb.d/init.sql
               subPath: init.sql
       volumes:
         - name: postgresql-data
