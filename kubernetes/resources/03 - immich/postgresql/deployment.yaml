@@ -1,0 +1,53 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgresql
+  namespace: immich
+  labels:
+    app: postgresql
+    env: home
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgresql
+  template:
+    metadata:
+      labels:
+        app: postgresql
+        env: home
+    spec:
+      initContainers:
+        - name: initdb
+          image: tensorchord/pgvecto-rs:pg15-v0.3.0
+          command: ["sh", "-c"]
+          args:
+            - |
+              set -e
+              echo "Creating database..."
+              psql -h localhost -U postgres -d postgres -c "CREATE DATABASE immich;"
+              psql -h localhost -U postgres -d postgres -c "CREATE USER immich WITH PASSWORD 'immich'; GRANT ALL PRIVILEGES ON DATABASE immich TO immich;"
+              echo "Creating extensions..."
+              psql -h localhost -U postgres -d postgres -c "CREATE EXTENSION IF NOT EXISTS cube; CREATE EXTENSION IF NOT EXISTS earthdistance; CREATE EXTENSION IF NOT EXISTS vectors;"
+          env:
+            - name: POSTGRES_PASSWORD
+              value: immich
+          volumeMounts:
+            - name: postgresql-data
+              mountPath: /docker-entrypoint-initdb.d
+      containers:
+        - name: postgresql
+          image: tensorchord/pgvecto-rs:pg15-v0.3.0
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_PASSWORD
+              value: immich
+          volumeMounts:
+            - name: postgresql-data
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: postgresql-data
+          persistentVolumeClaim:
+            claimName: postgresql-data
