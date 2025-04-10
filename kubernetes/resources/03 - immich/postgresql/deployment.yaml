@@ -18,24 +18,6 @@ spec:
         app: postgresql
         env: home
     spec:
-      initContainers:
-        - name: initdb
-          image: tensorchord/pgvecto-rs:pg15-v0.3.0
-          command: ["sh", "-c"]
-          args:
-            - |
-              set -e
-              echo "Creating database..."
-              psql -h localhost -U postgres -d postgres -c "CREATE DATABASE immich;"
-              psql -h localhost -U postgres -d postgres -c "CREATE USER immich WITH PASSWORD 'immich'; GRANT ALL PRIVILEGES ON DATABASE immich TO immich;"
-              echo "Creating extensions..."
-              psql -h localhost -U postgres -d postgres -c "CREATE EXTENSION IF NOT EXISTS cube; CREATE EXTENSION IF NOT EXISTS earthdistance; CREATE EXTENSION IF NOT EXISTS vectors;"
-          env:
-            - name: POSTGRES_PASSWORD
-              value: immich
-          volumeMounts:
-            - name: postgresql-data
-              mountPath: /docker-entrypoint-initdb.d
       containers:
         - name: postgresql
           image: tensorchord/pgvecto-rs:pg15-v0.3.0
@@ -47,7 +29,13 @@ spec:
           volumeMounts:
             - name: postgresql-data
               mountPath: /var/lib/postgresql/data
+            - name: init-scripts
+              mountPath: /docker-entrypoint-initdb.d
+              subPath: init.sql
       volumes:
         - name: postgresql-data
           persistentVolumeClaim:
             claimName: postgresql
+        - name: init-scripts
+          configMap:
+            name: postgresql-init-scripts
