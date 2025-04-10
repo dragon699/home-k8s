@@ -43,7 +43,7 @@ spec:
       enabled: true
       ingress:
         main:
-          enabled: true
+          enabled: false
           hosts:
           - host: immich.home.k8s
     machine-learning:
