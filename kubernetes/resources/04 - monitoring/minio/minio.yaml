@@ -51,4 +51,4 @@ spec:
           mc ilm rule add --expire-days 180 minio/loki-chunks &&
 
           mc mb minio/loki-ruler &&
-          mc ilm rule add --expire-days 180 minio/loki-ruler &&
+          mc ilm rule add --expire-days 180 minio/loki-ruler
