@@ -14,6 +14,7 @@ spec:
         kind: HelmRepository
         name: grafana
         namespace: monitoring
+      interval: 10m0s
   values:
     replicas: 1
     deploymentStrategy:

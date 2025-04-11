@@ -30,7 +30,8 @@ spec:
     mode: distributed
 
     statefulset:
-      replicaCount: 1
+      replicaCount: 2
+      drivesPerNode: 2
 
     auth:
       existingSecret: minio
