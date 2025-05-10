@@ -30,7 +30,7 @@ spec:
           http: 30080
           https: 30443
 
-      allowSnippetAnnotations: false
+      allowSnippetAnnotations: true
 
       # opentelemetry:
       #   enabled: true
