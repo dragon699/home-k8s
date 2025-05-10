@@ -12,6 +12,16 @@ metadata:
 apiVersion: v1
 kind: Namespace
 metadata:
+  name: metallb
+  labels:
+    app.kubernetes.io/name: metallb
+    app.kubernetes.io/instance: metallb
+    app.kubernetes.io/env: home
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
   name: longhorn
   labels:
     app.kubernetes.io/name: longhorn
