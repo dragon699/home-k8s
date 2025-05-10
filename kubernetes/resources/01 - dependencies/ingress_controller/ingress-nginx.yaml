@@ -19,18 +19,19 @@ spec:
   values:
     controller:
       replicaCount: 1
-      service:
-        enabled: true
-        type: NodePort
-        ipFamilyPolicy: SingleStack
-        ipFamilies:
-        - IPv4
-        externalTrafficPolicy: Cluster
-        nodePorts:
-          http: 30080
-          https: 30443
-
+      hostNetwork: true
       allowSnippetAnnotations: true
+
+      # service:
+      #   enabled: true
+      #   type: NodePort
+      #   ipFamilyPolicy: SingleStack
+      #   ipFamilies:
+      #   - IPv4
+      #   externalTrafficPolicy: Cluster
+      #   nodePorts:
+      #     http: 30080
+      #     https: 30443
 
       # opentelemetry:
       #   enabled: true
