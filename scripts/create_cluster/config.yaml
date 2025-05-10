@@ -56,7 +56,7 @@ cluster_is_default: true
 ##   keyPath: /home/user/.ssh/key2
 ##   role: worker
 cluster_nodes:
-- address: 192.168.1.123
+- address: 192.168.1.170
   user: root
   port: 22
   keyPath: /root/.ssh/id_rsa

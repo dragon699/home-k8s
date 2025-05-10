@@ -22,6 +22,16 @@ metadata:
 apiVersion: v1
 kind: Namespace
 metadata:
+  name: longhorn
+  labels:
+    app.kubernetes.io/name: cert-manager
+    app.kubernetes.io/instance: cert-manager
+    app.kubernetes.io/env: home
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
   name: postgresql
   labels:
     app.kubernetes.io/name: postgresql
