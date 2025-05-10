@@ -22,7 +22,7 @@ metadata:
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: longhorn
+  name: cert-manager
   labels:
     app.kubernetes.io/name: cert-manager
     app.kubernetes.io/instance: cert-manager
