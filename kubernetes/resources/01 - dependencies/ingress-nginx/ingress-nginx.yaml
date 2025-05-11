@@ -7,8 +7,6 @@ metadata:
   labels:
     env: home
 spec:
-  dependsOn:
-  - name: metallb
   interval: 5m
   chart:
     spec:
