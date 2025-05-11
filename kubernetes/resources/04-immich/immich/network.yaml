@@ -16,7 +16,7 @@ spec:
   tls:
   - hosts:
     - kris40.k8s.iaminyourpc.xyz
-    secretName: letsencrypt-home
+    secretName: tls-kris40-k8s-iaminyourpc-xyz
   rules:
   - host: kris40.k8s.iaminyourpc.xyz
     http:

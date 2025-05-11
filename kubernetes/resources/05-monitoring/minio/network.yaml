@@ -13,7 +13,7 @@ spec:
   tls:
   - hosts:
     - minio.k8s.iaminyourpc.xyz
-    secretName: letsencrypt-home
+    secretName: tls-minio-k8s-iaminyourpc-xyz
   rules:
   - host: minio.k8s.iaminyourpc.xyz
     http:

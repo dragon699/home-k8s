@@ -17,7 +17,7 @@ spec:
   tls:
   - hosts:
     - longhorn.k8s.iaminyourpc.xyz
-    secretName: letsencrypt-home
+    secretName: tls-longhorn-k8s-iaminyourpc-xyz
   rules:
   - host: longhorn.k8s.iaminyourpc.xyz
     http:

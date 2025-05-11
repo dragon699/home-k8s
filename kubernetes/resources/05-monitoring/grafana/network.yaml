@@ -13,7 +13,7 @@ spec:
   tls:
   - hosts:
     - grafana.k8s.iaminyourpc.xyz
-    secretName: letsencrypt-home
+    secretName: tls-grafana-k8s-iaminyourpc-xyz
   rules:
   - host: grafana.k8s.iaminyourpc.xyz
     http: 
