@@ -8,6 +8,7 @@ metadata:
     env: home
 data:
   init.sql: |
+    CREATE DATABASE teslamate;
     CREATE DATABASE grafana;
     CREATE DATABASE immich;
     CREATE EXTENSION IF NOT EXISTS cube;
