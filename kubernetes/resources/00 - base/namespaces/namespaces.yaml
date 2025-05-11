@@ -12,10 +12,10 @@ metadata:
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: metallb
+  name: metallb-system
   labels:
-    app.kubernetes.io/name: metallb
-    app.kubernetes.io/instance: metallb
+    app.kubernetes.io/name: metallb-system
+    app.kubernetes.io/instance: metallb-system
     app.kubernetes.io/env: home
 
 ---
