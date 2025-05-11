@@ -5,10 +5,15 @@ metadata:
   name: minio
   namespace: monitoring
   annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-home
     kubernetes.io/ingress.class: nginx
   labels:
     app: minio
 spec:
+  tls:
+  - hosts:
+    - minio.k8s.iaminyourpc.xyz
+    secretName: letsencrypt-home
   rules:
   - host: minio.k8s.iaminyourpc.xyz
     http:
