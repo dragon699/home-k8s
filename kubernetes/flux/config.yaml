@@ -2,107 +2,132 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: infra-base
+  name: 00-base
   namespace: flux-system
 spec:
   suspend: false
   interval: 10m0s
-  retryInterval: 1m
+  retryInterval: 30s
   sourceRef:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  path: kubernetes/resources/00 - base
+  path: kubernetes/resources/00-base
   prune: true
   wait: true
   timeout: 35m
 
----
-apiVersion: kustomize.toolkit.fluxcd.io/v1
-kind: Kustomization
-metadata:
-  name: infra-dependencies
-  namespace: flux-system
-spec:
-  suspend: false
-  interval: 10m0s
-  retryInterval: 1m
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-    namespace: flux-system
-  path: kubernetes/resources/01 - dependencies
-  prune: true
-  wait: true
-  timeout: 35m
-  dependsOn:
-    - name: infra-base
+# ---
+# apiVersion: kustomize.toolkit.fluxcd.io/v1
+# kind: Kustomization
+# metadata:
+#   name: 01-prerequisites
+#   namespace: flux-system
+# spec:
+#   suspend: false
+#   interval: 10m0s
+#   retryInterval: 30s
+#   sourceRef:
+#     kind: GitRepository
+#     name: flux-system
+#     namespace: flux-system
+#   path: kubernetes/resources/01-prerequisites
+#   prune: true
+#   wait: true
+#   timeout: 35m
+#   dependsOn:
+#   - name: 00-base
 
----
-apiVersion: kustomize.toolkit.fluxcd.io/v1
-kind: Kustomization
-metadata:
-  name: infra-post-dependencies
-  namespace: flux-system
-spec:
-  suspend: false
-  interval: 10m0s
-  retryInterval: 1m
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-    namespace: flux-system
-  path: kubernetes/resources/02 - post-dependencies
-  prune: true
-  wait: true
-  timeout: 35m
-  dependsOn:
-    - name: infra-base
-    - name: infra-dependencies
+# ---
+# apiVersion: kustomize.toolkit.fluxcd.io/v1
+# kind: Kustomization
+# metadata:
+#   name: 02-dependencies
+#   namespace: flux-system
+# spec:
+#   suspend: false
+#   interval: 10m0s
+#   retryInterval: 30s
+#   sourceRef:
+#     kind: GitRepository
+#     name: flux-system
+#     namespace: flux-system
+#   path: kubernetes/resources/02-dependencies
+#   prune: true
+#   wait: true
+#   timeout: 35m
+#   dependsOn:
+#   - name: 00-base
+#   - name: 01-prerequisites
 
----
-apiVersion: kustomize.toolkit.fluxcd.io/v1
-kind: Kustomization
-metadata:
-  name: immich
-  namespace: flux-system
-spec:
-  suspend: false
-  interval: 10m0s
-  retryInterval: 1m
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-    namespace: flux-system
-  path: kubernetes/resources/03 - immich
-  prune: true
-  wait: true
-  timeout: 35m
-  dependsOn:
-    - name: infra-base
-    - name: infra-dependencies
-    - name: infra-post-dependencies
+# ---
+# apiVersion: kustomize.toolkit.fluxcd.io/v1
+# kind: Kustomization
+# metadata:
+#   name: 03-app-dependencies
+#   namespace: flux-system
+# spec:
+#   suspend: false
+#   interval: 10m0s
+#   retryInterval: 30s
+#   sourceRef:
+#     kind: GitRepository
+#     name: flux-system
+#     namespace: flux-system
+#   path: kubernetes/resources/03-app-dependencies
+#   prune: true
+#   wait: true
+#   timeout: 35m
+#   dependsOn:
+#   - name: 00-base
+#   - name: 01-prerequisites
+#   - name: 02-dependencies
 
----
-apiVersion: kustomize.toolkit.fluxcd.io/v1
-kind: Kustomization
-metadata:
-  name: monitoring
-  namespace: flux-system
-spec:
-  suspend: false
-  interval: 10m0s
-  retryInterval: 1m
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-    namespace: flux-system
-  path: kubernetes/resources/04 - monitoring
-  prune: true
-  wait: true
-  timeout: 35m
-  dependsOn:
-    - name: infra-base
-    - name: infra-dependencies
-    - name: infra-post-dependencies
-    - name: immich
+# ---
+# apiVersion: kustomize.toolkit.fluxcd.io/v1
+# kind: Kustomization
+# metadata:
+#   name: 04-immich
+#   namespace: flux-system
+# spec:
+#   suspend: false
+#   interval: 10m0s
+#   retryInterval: 30s
+#   sourceRef:
+#     kind: GitRepository
+#     name: flux-system
+#     namespace: flux-system
+#   path: kubernetes/resources/04-immich
+#   prune: true
+#   wait: true
+#   timeout: 35m
+#   dependsOn:
+#   - name: 00-base
+#   - name: 01-prerequisites
+#   - name: 02-dependencies
+#   - name: 03-app-dependencies
+
+# ---
+# apiVersion: kustomize.toolkit.fluxcd.io/v1
+# kind: Kustomization
+# metadata:
+#   name: 05-monitoring
+#   namespace: flux-system
+# spec:
+#   suspend: false
+#   interval: 10m0s
+#   retryInterval: 30s
+#   sourceRef:
+#     kind: GitRepository
+#     name: flux-system
+#     namespace: flux-system
+#   path: kubernetes/resources/05-monitoring
+#   prune: true
+#   wait: true
+#   timeout: 35m
+#   dependsOn:
+#   - name: 00-base
+#   - name: 01-prerequisites
+#   - name: 02-dependencies
+#   - name: 03-app-dependencies
+#   - name: 04-immich
