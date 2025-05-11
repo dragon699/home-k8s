@@ -1,0 +1,30 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: immich
+  namespace: immich
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-home
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/client-body-buffer-size: 512M
+    nginx.ingress.kubernetes.io/proxy-body-size: 512M
+  labels:
+    app: immich
+    env: home
+spec:
+  tls:
+  - hosts:
+    - kris40.k8s.iaminyourpc.xyz
+    secretName: tls-kris40-k8s-iaminyourpc-xyz
+  rules:
+  - host: kris40.k8s.iaminyourpc.xyz
+    http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: immich-server
+            port:
+              number: 2283

@@ -62,6 +62,16 @@ metadata:
 apiVersion: v1
 kind: Namespace
 metadata:
+  name: tesla
+  labels:
+    app.kubernetes.io/name: tesla
+    app.kubernetes.io/instance: tesla
+    app.kubernetes.io/env: home
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
   name: monitoring
   labels:
     app.kubernetes.io/name: monitoring
