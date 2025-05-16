@@ -38,9 +38,9 @@ spec:
         - name: ENCRYPTION_KEY
           value: <>
         - name: MQTT_HOST
-          value: mosquitto.apps.svc:1883
+          value: mosquitto.apps.svc
         - name: DATABASE_HOST
-          value: postgresql-pooler.apps.svc
+          value: postgresql.apps.svc
         - name: DATABASE_NAME
           value: teslamate
         - name: DATABASE_USER
