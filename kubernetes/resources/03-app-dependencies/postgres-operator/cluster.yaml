@@ -22,6 +22,9 @@ spec:
     proxy:
       pgBouncer:
         replicas: 1
+        config:
+          global:
+            client_tls_sslmode: "allow"
     instances:
     - name: postgresql
       replicas: 1
