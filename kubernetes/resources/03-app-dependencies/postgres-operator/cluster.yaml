@@ -17,9 +17,26 @@ spec:
       version: "2.6.0"
       interval: 5m0s
   values:
+    image: perconalab/percona-postgresql-operator:main-ppg17-postgres
     postgresVersion: 17
+    proxy:
+      pgBouncer:
+        replicas: 1
     instances:
+    - name: postgresql
       replicas: 1
+      dataVolumeClaimSpec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 20Gi
     users:
-      name: apps
-      databases: immich,teslamate
+    - name: immich
+      secretName: data-postgresql-immich
+      databases:
+      - immich
+    - name: teslamate
+      secretName: data-postgresql-teslamate
+      databases:
+      - teslamate

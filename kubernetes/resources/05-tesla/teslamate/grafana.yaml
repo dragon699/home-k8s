@@ -32,19 +32,19 @@ spec:
           mountPath: /var/lib/grafana
         env:
         - name: DATABASE_HOST
-          value: postgresql-pooler.apps.svc
+          value: postgresql-pg-db-pgbouncer.apps.svc
         - name: DATABASE_NAME
-          value: teslamate
+          valueFrom:
+            secretKeyRef:
+              name: data-postgresql-teslamate
+              key: dbname
         - name: DATABASE_USER
           valueFrom:
             secretKeyRef:
-              name: teslamate.postgresql.credentials.postgresql.acid.zalan.do
-              key: username
+              name: data-postgresql-teslamate
+              key: user
         - name: DATABASE_PASS
           valueFrom:
             secretKeyRef:
-              name: teslamate.postgresql.credentials.postgresql.acid.zalan.do
+              name: data-postgresql-teslamate
               key: password
-      securityContext:
-        runAsUser: 472
-        fsGroup: 472

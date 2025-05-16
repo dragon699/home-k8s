@@ -2,11 +2,11 @@
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: postgres-operator
+  name: pg-operator
   namespace: apps
 spec:
   interval: 1m
-  releaseName: postgres-operator
+  releaseName: pg-operator
   chart:
     spec:
       chart: pg-operator
