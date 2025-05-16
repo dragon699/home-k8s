@@ -48,3 +48,6 @@ spec:
             secretKeyRef:
               name: data-postgresql-teslamate
               key: password
+      securityContext:
+        runAsUser: 472
+        fsGroup: 472
