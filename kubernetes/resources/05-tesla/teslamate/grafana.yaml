@@ -32,7 +32,7 @@ spec:
           mountPath: /var/lib/grafana
         env:
         - name: DATABASE_HOST
-          value: postgresql-pooler.apps.svc:5432
+          value: postgresql.apps.svc
         - name: DATABASE_NAME
           value: teslamate
         - name: DATABASE_USER
