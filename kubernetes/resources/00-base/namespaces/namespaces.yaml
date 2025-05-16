@@ -12,6 +12,16 @@ metadata:
 apiVersion: v1
 kind: Namespace
 metadata:
+  name: portainer
+  labels:
+    app.kubernetes.io/name: portainer
+    app.kubernetes.io/instance: portainer
+    app.kubernetes.io/env: home
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
   name: ingress-nginx
   labels:
     app.kubernetes.io/name: ingress-nginx
