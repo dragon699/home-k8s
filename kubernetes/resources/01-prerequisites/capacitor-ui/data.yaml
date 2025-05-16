@@ -1,0 +1,12 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: capacitor-ui-auth
+  namespace: flux-system
+  labels:
+    env: home
+    htpasswd: capacitor-ui
+type: Opaque
+data:
+  auth: c3lzOiRhcHIxJGdsMnQ1bWRpJC8vd0NEZ1hBL0RlS01rbFpDRm9WNzE=
