@@ -3,7 +3,7 @@ apiVersion: "acid.zalan.do/v1"
 kind: postgresql
 metadata:
   name: postgresql
-  namespace: shared
+  namespace: apps
   labels:
     app: postgresql
 spec:

@@ -3,7 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: grafana
-  namespace: tesla
+  namespace: apps
   labels:
     app: grafana
     env: home
@@ -32,10 +32,16 @@ spec:
           mountPath: /var/lib/grafana
         env:
         - name: DATABASE_HOST
-          value: postgresql.tesla.svc:5432
+          value: postgresql-pooler.apps.svc:5432
         - name: DATABASE_NAME
           value: teslamate
         - name: DATABASE_USER
-          value: teslamate
+          valueFrom:
+            secretKeyRef:
+              name: teslamate.postgresql.credentials.postgresql.acid.zalan.do
+              key: username
         - name: DATABASE_PASS
-          value: teslamate
+          valueFrom:
+            secretKeyRef:
+              name: teslamate.postgresql.credentials.postgresql.acid.zalan.do
+              key: password

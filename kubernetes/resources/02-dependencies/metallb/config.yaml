@@ -8,7 +8,7 @@ metadata:
     app.kubernetes.io/env: home
 spec:
   addresses:
-  - 192.168.1.171-192.168.1.175
+  - 192.168.1.171-192.168.1.180
   autoAssign: true
 
 ---

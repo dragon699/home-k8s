@@ -72,16 +72,6 @@ metadata:
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: shared
-  labels:
-    app.kubernetes.io/name: shared
-    app.kubernetes.io/instance: shared
-    app.kubernetes.io/env: home
-
----
-apiVersion: v1
-kind: Namespace
-metadata:
   name: immich
   labels:
     app.kubernetes.io/name: immich
@@ -92,10 +82,10 @@ metadata:
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: tesla
+  name: apps
   labels:
-    app.kubernetes.io/name: tesla
-    app.kubernetes.io/instance: tesla
+    app.kubernetes.io/name: apps
+    app.kubernetes.io/instance: apps
     app.kubernetes.io/env: home
 
 ---
