@@ -39,7 +39,9 @@ spec:
       secretName: data-postgresql-immich
       databases:
       - immich
+      options: "SUPERUSER"
     - name: teslamate
       secretName: data-postgresql-teslamate
       databases:
       - teslamate
+      options: "SUPERUSER"
