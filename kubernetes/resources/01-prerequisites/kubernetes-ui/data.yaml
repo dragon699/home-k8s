@@ -3,9 +3,9 @@ apiVersion: v1
 kind: Secret
 metadata:
   labels:
-    k8s-app: kubernetes-ui
-  name: kubernetes-ui-certs
-  namespace: kubernetes-ui
+    k8s-app: kubernetes-dashboard
+  name: kubernetes-dashboard-certs
+  namespace: kubernetes-dashboard
 type: Opaque
 
 ---
@@ -13,9 +13,9 @@ apiVersion: v1
 kind: Secret
 metadata:
   labels:
-    k8s-app: kubernetes-ui
-  name: kubernetes-ui-csrf
-  namespace: kubernetes-ui
+    k8s-app: kubernetes-dashboard
+  name: kubernetes-dashboard-csrf
+  namespace: kubernetes-dashboard
 type: Opaque
 data:
   csrf: ""
@@ -25,9 +25,9 @@ apiVersion: v1
 kind: Secret
 metadata:
   labels:
-    k8s-app: kubernetes-ui
-  name: kubernetes-ui-key-holder
-  namespace: kubernetes-ui
+    k8s-app: kubernetes-dashboard
+  name: kubernetes-dashboard-key-holder
+  namespace: kubernetes-dashboard
 type: Opaque
 
 ---
@@ -35,19 +35,19 @@ kind: ConfigMap
 apiVersion: v1
 metadata:
   labels:
-    k8s-app: kubernetes-ui
-  name: kubernetes-ui-settings
-  namespace: kubernetes-ui
+    k8s-app: kubernetes-dashboard
+  name: kubernetes-dashboard-settings
+  namespace: kubernetes-dashboard
 
 ---
 apiVersion: v1
 kind: Secret
 metadata:
-  name: kubernetes-ui-auth
-  namespace: kubernetes-ui
+  name: kubernetes-dashboard-auth
+  namespace: kubernetes-dashboard
   labels:
     env: home
-    htpasswd: kubernetes-ui
+    htpasswd: kubernetes-dashboard
 type: Opaque
 data:
   auth: c3lzOiRhcHIxJHFnZW81Y3diJG5xRGdGbE1EeWF2UE0xZ3Z5ZUVpcDA=
