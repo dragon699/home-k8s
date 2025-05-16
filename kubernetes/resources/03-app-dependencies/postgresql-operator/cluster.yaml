@@ -38,12 +38,12 @@ spec:
       log_statement: "none"
       log_destination: "stderr"
       logging_collector: "off"
-  enableMasterLoadBalancer: false
-  enableReplicaLoadBalancer: false
-  enableConnectionPooler: false
-  enableReplicaConnectionPooler: false
-  enableMasterPoolerLoadBalancer: false
-  enableReplicaPoolerLoadBalancer: false
+  enableMasterLoadBalancer: true
+  enableReplicaLoadBalancer: true
+  enableConnectionPooler: true
+  enableReplicaConnectionPooler: true
+  enableMasterPoolerLoadBalancer: true
+  enableReplicaPoolerLoadBalancer: true
   env:
   - name: PGPASSWORD_SUPERUSER
     value: "UEdQQVNTV09SRF9TVVBFUlVTRVIgLW4K"
