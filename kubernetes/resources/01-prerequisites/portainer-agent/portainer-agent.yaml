@@ -22,7 +22,7 @@ spec:
         - name: LOG_LEVEL
           value: DEBUG
         - name: AGENT_SECRET
-          value: "haha"
+          value: "pooPBzd5EUvbdAePEAt2Gsgek"
         - name: AGENT_CLUSTER_ADDR
           value: "portainer-agent-headless"
         - name: KUBERNETES_POD_IP
