@@ -8,10 +8,10 @@ metadata:
     env: home
 spec:
   interval: 1m
-  releaseName: k8s-dashboard
+  releaseName: kubernetes-dashboard
   chart:
     spec:
-      chart: longhorn
+      chart: kubernetes-dashboard
       sourceRef:
         kind: HelmRepository
         name: kubernetes
