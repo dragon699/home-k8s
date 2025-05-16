@@ -77,3 +77,32 @@ spec:
             name: teslamate
             port:
               number: 4000
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: grafana
+  namespace: apps
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-home
+    kubernetes.io/ingress.class: nginx
+  labels:
+    app: grafana
+    env: home
+spec:
+  tls:
+  - hosts:
+    - grafana.car.k8s.iaminyourpc.xyz
+    secretName: tls-grafana-car-k8s-iaminyourpc-xyz
+  rules:
+  - host: grafana.car.k8s.iaminyourpc.xyz
+    http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: grafana
+            port:
+              number: 3000
