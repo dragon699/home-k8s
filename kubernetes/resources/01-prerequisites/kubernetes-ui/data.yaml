@@ -1,0 +1,12 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: kubernetes-ui-auth
+  namespace: kubernetes-ui
+  labels:
+    env: home
+    htpasswd: kubernetes-ui
+type: Opaque
+data:
+  auth: c3lzOiRhcHIxJHFnZW81Y3diJG5xRGdGbE1EeWF2UE0xZ3Z5ZUVpcDA=
