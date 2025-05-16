@@ -2,43 +2,35 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: teslamate
+  name: grafana
   namespace: tesla
   labels:
-    app: teslamate
+    app: grafana
     env: home
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: teslamate
+      app: grafana
   template:
     metadata:
       labels:
-        app: teslamate
+        app: grafana
         env: home
     spec:
       volumes:
-      - name: teslamate-data
+      - name: grafana-data
         persistentVolumeClaim:
-          claimName: teslamate
+          claimName: grafana
       containers:
-      - name: teslamate
-        image: teslamate/teslamate:latest
+      - name: grafana
+        image: teslamate/grafana:latest
         ports:
-        - containerPort: 4000
+        - containerPort: 3000
         volumeMounts:
-        - name: teslamate-data
-          mountPath: /opt/app/import
-        securityContext:
-          capabilities:
-            drop:
-            - ALL
+        - name: grafana-data
+          mountPath: /var/lib/grafana
         env:
-        - name: ENCRYPTION_KEY
-          value: <>
-        - name: MQTT_HOST
-          value: mosquitto.tesla.svc:1883
         - name: DATABASE_HOST
           value: postgresql.tesla.svc:5432
         - name: DATABASE_NAME
