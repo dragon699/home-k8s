@@ -1,20 +1,98 @@
 ---
-apiVersion: helm.toolkit.fluxcd.io/v2beta2
-kind: HelmRelease
+kind: Deployment
+apiVersion: apps/v1
 metadata:
+  labels:
+    k8s-app: kubernetes-ui
   name: kubernetes-ui
   namespace: kubernetes-ui
-  labels:
-    env: home
 spec:
-  interval: 1m
-  releaseName: kubernetes-dashboard
-  chart:
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      k8s-app: kubernetes-ui
+  template:
+    metadata:
+      labels:
+        k8s-app: kubernetes-ui
     spec:
-      chart: kubernetes-dashboard
-      sourceRef:
-        kind: HelmRepository
-        name: kubernetes
-      reconcileStrategy: ChartVersion
-      version: 7.12.0
-      interval: 5m0s
+      containers:
+        - name: kubernetes-ui
+          image: kubernetesui/dashboard:v2.7.0
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8443
+              protocol: TCP
+            - containerPort: 9090
+              protocol: TCP
+          args:
+            - --namespace=kubernetes-ui
+            - --enable-insecure-login
+            - --insecure-bind-address=0.0.0.0
+            - --enable-skip-login
+          volumeMounts:
+            - name: kubernetes-ui-certs
+              mountPath: /certs
+            - mountPath: /tmp
+              name: tmp-volume
+          livenessProbe:
+            httpGet:
+              scheme: HTTP
+              path: /
+              port: 9090
+            initialDelaySeconds: 30
+            timeoutSeconds: 30
+      volumes:
+        - name: kubernetes-ui-certs
+          secret:
+            secretName: kubernetes-ui-certs
+        - name: tmp-volume
+          emptyDir: {}
+      serviceAccountName: kubernetes-ui
+      tolerations:
+        - key: node-role.kubernetes.io/master
+          effect: NoSchedule
+
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  labels:
+    k8s-app: dashboard-metrics-scraper
+  name: dashboard-metrics-scraper
+  namespace: kubernetes-ui
+spec:
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      k8s-app: dashboard-metrics-scraper
+  template:
+    metadata:
+      labels:
+        k8s-app: dashboard-metrics-scraper
+    spec:
+      containers:
+        - name: dashboard-metrics-scraper
+          image: kubernetesui/metrics-scraper:v1.0.9
+          ports:
+            - containerPort: 8000
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              scheme: HTTP
+              path: /
+              port: 8000
+            initialDelaySeconds: 30
+            timeoutSeconds: 30
+          volumeMounts:
+          - mountPath: /tmp
+            name: tmp-volume
+      serviceAccountName: kubernetes-ui
+      tolerations:
+        - key: node-role.kubernetes.io/master
+          effect: NoSchedule
+      volumes:
+        - name: tmp-volume
+          emptyDir: {}

@@ -1,9 +1,0 @@
----
-apiVersion: source.toolkit.fluxcd.io/v1beta2
-kind: HelmRepository
-metadata:
-  name: kubernetes
-  namespace: kubernetes-ui
-spec:
-  interval: 15m
-  url: https://kubernetes.github.io/dashboard
