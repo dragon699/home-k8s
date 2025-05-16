@@ -1,0 +1,23 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: postgresql-operator
+  namespace: shared
+spec:
+  interval: 1m
+  releaseName: postgresql-operator
+  chart:
+    spec:
+      chart: postgresql-operator
+      sourceRef:
+        name: postgres-operator
+        kind: HelmRepository
+      reconcileStrategy: ChartVersion
+      version: "1.14.0"
+      interval: 5m0s
+  install:
+    crds: CreateReplace
+  upgrade:
+    crds: CreateReplace
+  values: {}
