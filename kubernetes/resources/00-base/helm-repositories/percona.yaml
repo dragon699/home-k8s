@@ -2,8 +2,8 @@
 apiVersion: source.toolkit.fluxcd.io/v1beta2
 kind: HelmRepository
 metadata:
-  name: postgres-operator
+  name: percona
   namespace: apps
 spec:
   interval: 12h
-  url: https://opensource.zalando.com/postgres-operator/charts/postgres-operator
+  url: https://percona.github.io/percona-helm-charts/

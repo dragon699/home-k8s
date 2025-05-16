@@ -9,12 +9,12 @@ spec:
   releaseName: postgres-operator
   chart:
     spec:
-      chart: postgres-operator
+      chart: pg-operator
       sourceRef:
-        name: postgres-operator
+        name: percona
         kind: HelmRepository
       reconcileStrategy: ChartVersion
-      version: "1.14.0"
+      version: "2.6.0"
       interval: 5m0s
   install:
     crds: CreateReplace
