@@ -58,6 +58,9 @@ metadata:
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-home
     kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/auth-type: basic
+    nginx.ingress.kubernetes.io/auth-secret: teslamate-auth
+    nginx.ingress.kubernetes.io/auth-realm: "Authentication Required"
   labels:
     app: teslamate
     env: home
@@ -87,6 +90,9 @@ metadata:
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-home
     kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/auth-type: basic
+    nginx.ingress.kubernetes.io/auth-secret: grafana-auth
+    nginx.ingress.kubernetes.io/auth-realm: "Authentication Required"
   labels:
     app: grafana
     env: home
