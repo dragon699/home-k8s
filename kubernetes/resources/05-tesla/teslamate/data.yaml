@@ -10,16 +10,3 @@ metadata:
 type: Opaque
 data:
   auth: c3lzOiRhcHIxJHdhamt0ZGN4JHNEckNBaFVmY2s3T0l5dHFSUkI0VDA=
-
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: grafana-auth
-  namespace: apps
-  labels:
-    env: home
-    htpasswd: grafana
-type: Opaque
-data:
-  auth: c3lzOiRhcHIxJDJyZGFiOHlxJENFamNpcU8waWsvRlZhUGVBSVBkYy8=
