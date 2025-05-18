@@ -1,0 +1,81 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  namespace: immich
+  labels:
+    env: home
+spec:
+  type: ClusterIP
+  ports:
+  - name: 
+    port: 6379
+    targetPort: 6379
+  selector:
+    app: redis
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: immich
+  namespace: immich
+  labels:
+    env: home
+spec:
+  type: ClusterIP
+  ports:
+  - name: 
+    port: 2283
+    targetPort: 2283
+  selector:
+    app: immich
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: immich-machine-learning
+  namespace: immich
+  labels:
+    env: home
+spec:
+  type: ClusterIP
+  ports:
+  - name: 
+    port: 3003
+    targetPort: 3003
+  selector:
+    app: immich-machine-learning
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: immich
+  namespace: immich
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-home
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/client-body-buffer-size: 10G
+    nginx.ingress.kubernetes.io/proxy-body-size: 10G
+  labels:
+    app: immich
+    env: home
+spec:
+  tls:
+  - hosts:
+    - photos.k8s.iaminyourpc.xyz
+    secretName: tls-photos-k8s-iaminyourpc-xyz
+  rules:
+  - host: photos.k8s.iaminyourpc.xyz
+    http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: immich-server
+            port:
+              number: 2283

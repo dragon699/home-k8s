@@ -1,0 +1,58 @@
+# ---
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: teslamate
+#   namespace: teslamate
+#   labels:
+#     app: teslamate
+#     env: home
+# spec:
+#   replicas: 1
+#   selector:
+#     matchLabels:
+#       app: teslamate
+#   template:
+#     metadata:
+#       labels:
+#         app: teslamate
+#         env: home
+#     spec:
+#       volumes:
+#       - name: teslamate-data
+#         persistentVolumeClaim:
+#           claimName: teslamate
+#       containers:
+#       - name: teslamate
+#         image: teslamate/teslamate:latest
+#         ports:
+#         - containerPort: 4000
+#         volumeMounts:
+#         - name: teslamate-data
+#           mountPath: /opt/app/import
+#         securityContext:
+#           capabilities:
+#             drop:
+#             - ALL
+#         env:
+#         - name: ENCRYPTION_KEY
+#           value: <>
+#         - name: MQTT_HOST
+#           value: mosquitto.apps.svc
+#         - name: DATABASE_HOST
+#           value: postgresql-pg-db-pgbouncer.apps.svc
+#         - name: DATABASE_NAME
+#           valueFrom:
+#             secretKeyRef:
+#               name: data-postgresql-teslamate
+#               key: dbname
+#         - name: DATABASE_USER
+#           valueFrom:
+#             secretKeyRef:
+#               name: data-postgresql-teslamate
+#               key: user
+#         - name: DATABASE_PASS
+#           valueFrom:
+#             secretKeyRef:
+#               name: data-postgresql-teslamate
+#               key: password

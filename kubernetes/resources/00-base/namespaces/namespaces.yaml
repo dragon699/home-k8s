@@ -92,8 +92,8 @@ metadata:
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: tesla
+  name: teslamate
   labels:
-    app.kubernetes.io/name: tesla
-    app.kubernetes.io/instance: tesla
+    app.kubernetes.io/name: teslamate
+    app.kubernetes.io/instance: teslamate
     app.kubernetes.io/env: home

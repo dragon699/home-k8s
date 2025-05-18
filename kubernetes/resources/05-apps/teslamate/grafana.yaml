@@ -1,0 +1,53 @@
+# ---
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: grafana
+#   namespace: teslamate
+#   labels:
+#     app: grafana
+#     env: home
+# spec:
+#   replicas: 1
+#   selector:
+#     matchLabels:
+#       app: grafana
+#   template:
+#     metadata:
+#       labels:
+#         app: grafana
+#         env: home
+#     spec:
+#       volumes:
+#       - name: grafana-data
+#         persistentVolumeClaim:
+#           claimName: grafana
+#       containers:
+#       - name: grafana
+#         image: teslamate/grafana:latest
+#         ports:
+#         - containerPort: 3000
+#         volumeMounts:
+#         - name: grafana-data
+#           mountPath: /var/lib/grafana
+#         env:
+#         - name: DATABASE_HOST
+#           value: postgresql-pg-db-pgbouncer.apps.svc
+#         - name: DATABASE_NAME
+#           valueFrom:
+#             secretKeyRef:
+#               name: data-postgresql-teslamate
+#               key: dbname
+#         - name: DATABASE_USER
+#           valueFrom:
+#             secretKeyRef:
+#               name: data-postgresql-teslamate
+#               key: user
+#         - name: DATABASE_PASS
+#           valueFrom:
+#             secretKeyRef:
+#               name: data-postgresql-teslamate
+#               key: password
+#       securityContext:
+#         runAsUser: 472
+#         fsGroup: 472

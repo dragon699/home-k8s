@@ -1,0 +1,25 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  namespace: immich
+  labels:
+    app: redis
+    env: home
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+        env: home
+    spec:
+      containers:
+      - name: redis
+        image: valkey/valkey:8-bookworm
+        ports:
+        - containerPort: 6379
