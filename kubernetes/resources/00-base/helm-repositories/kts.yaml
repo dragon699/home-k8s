@@ -1,0 +1,9 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: HelmRepository
+metadata:
+  name: kts
+  namespace: shared
+spec:
+  interval: 15m
+  url: https://charts.kts.studio
