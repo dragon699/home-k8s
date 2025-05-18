@@ -2,10 +2,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: immich-machine-learning
+  name: immich-server
   namespace: immich
   labels:
-    app: immich-machine-learning
+    app: immich-server
     env: home
 spec:
   replicas: 1
@@ -14,11 +14,11 @@ spec:
   progressDeadlineSeconds: 600
   selector:
     matchLabels:
-      app: immich-machine-learning
+      app: immich-server
   template:
     metadata:
       labels:
-        app: immich-machine-learning
+        app: immich-server
         env: home
     spec:
       serviceAccount: default
@@ -28,16 +28,16 @@ spec:
       terminationGracePeriodSeconds: 30
       restartPolicy: Always
       volumes:
-      - name: model-cache
+      - name: library
         persistentVolumeClaim:
-          claimName: immich-machine-learning
+          claimName: immich-server
       containers:
       - name: immich-server
-        image: ghcr.io/immich-app/immich-machine-learning:v1.132.3
+        image: ghcr.io/immich-app/immich-server:v1.132.3
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
-            path: /ping
+            path: /api/server/ping
             port: http
             scheme: HTTP
           periodSeconds: 10
@@ -46,7 +46,7 @@ spec:
           timeoutSeconds: 1
         readinessProbe:
           httpGet:
-            path: /ping
+            path: /api/server/ping
             port: http
             scheme: HTTP
           periodSeconds: 10
@@ -55,7 +55,7 @@ spec:
           timeoutSeconds: 1
         startupProbe:
           httpGet:
-            path: /ping
+            path: /api/server/ping
             port: http
             scheme: HTTP
           periodSeconds: 10
@@ -64,14 +64,16 @@ spec:
           timeoutSeconds: 1
         ports:
         - name: http
-          containerPort: 3003
+          containerPort: 2283
         volumeMounts:
-        - name: model-cache
-          mountPath: /cache
+        - name: library
+          mountPath: /usr/src/app/upload
         env:
         - name: UPLOAD_LOCATION
           value: "/usr/src/app/upload/library"
         - name: IMMICH_MACHINE_LEARNING_URL
           value: "http://immich-machine-learning.immich.svc:3003"
-        - name: TRANSFORMERS_CACHE
-          value: "/cache"
+        - name: REDIS_HOSTNAME
+          value: "redis.immich.svc"
+        - name: REDIS_PORT
+          value: "6379"

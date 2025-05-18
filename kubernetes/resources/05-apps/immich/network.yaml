@@ -19,7 +19,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: immich
+  name: immich-server
   namespace: immich
   labels:
     env: home
@@ -30,7 +30,7 @@ spec:
     port: 2283
     targetPort: 2283
   selector:
-    app: immich
+    app: immich-server
 
 ---
 apiVersion: v1
