@@ -94,3 +94,5 @@ spec:
               secretKeyRef:
                 name: data-postgresql
                 key: password
+        - name: IMMICH_IGNORE_MOUNT_CHECK_ERRORS
+          value: "true"
