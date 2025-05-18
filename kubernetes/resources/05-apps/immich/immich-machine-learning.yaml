@@ -1,34 +1,32 @@
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: immich-machine-learning
-  namespace: immich
-  labels:
-    app: immich-machine-learning
-    env: home
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: immich-machine-learning
-  template:
-    metadata:
-      labels:
-        app: immich-machine-learning
-        env: home
-    spec:
-      volumes:
-      - name: model-cache
-        persistentVolumeClaim:
-          claimName: immich-machine-learning
-      containers:
-      - name: immich-server
-        image: ghcr.io/immich-app/immich-machine-learning:v1.132.3
-        ports:
-        - containerPort: 2283
-        initialDelaySeconds: 30
-        periodSeconds: 10
-        volumeMounts:
-        - name: model-cache
-          mountPath: /cache
+# ---
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: immich-machine-learning
+#   namespace: immich
+#   labels:
+#     app: immich-machine-learning
+#     env: home
+# spec:
+#   replicas: 1
+#   selector:
+#     matchLabels:
+#       app: immich-machine-learning
+#   template:
+#     metadata:
+#       labels:
+#         app: immich-machine-learning
+#         env: home
+#     spec:
+#       volumes:
+#       - name: model-cache
+#         persistentVolumeClaim:
+#           claimName: immich-machine-learning
+#       containers:
+#       - name: immich-server
+#         image: ghcr.io/immich-app/immich-machine-learning:v1.132.3
+#         ports:
+#         - containerPort: 3003
+#         volumeMounts:
+#         - name: model-cache
+#           mountPath: /cache
