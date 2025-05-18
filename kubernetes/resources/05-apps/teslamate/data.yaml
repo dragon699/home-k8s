@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: Secret
 metadata:
-  name: teslamate
+  name: data-teslamate
   namespace: teslamate
   labels:
     app: teslamate

@@ -38,7 +38,7 @@ spec:
         - name: ENCRYPTION_KEY
           valueFrom:
             secretKeyRef:
-              name: teslamate
+              name: data-teslamate
               key: encryption_key
         - name: MQTT_HOST
           value: "mosquitto.apps.svc"
