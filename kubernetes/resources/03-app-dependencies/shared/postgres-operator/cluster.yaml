@@ -35,10 +35,10 @@ spec:
           requests:
             storage: 20Gi
     users:
-    - name: teslamate
-      secretName: data-postgresql-shared-teslamate
+    - name: teslamate-teslamate
+      secretName: data-postgresql-shared-teslamate-teslamate
       databases:
-      - teslamate
+      - teslamate-teslamate
       options: "SUPERUSER"
     - name: teslamate-grafana
       secretName: data-postgresql-shared-teslamate-grafana

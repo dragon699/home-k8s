@@ -1,63 +1,63 @@
-# ---
-# apiVersion: v1
-# kind: PersistentVolumeClaim
-# metadata:
-#   name: teslamate
-#   namespace: teslamate
-#   labels:
-#     env: home
-# spec:
-#   storageClassName: longhorn
-#   accessModes:
-#   - ReadWriteOnce
-#   resources:
-#     requests:
-#       storage: 5Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: teslamate
+  namespace: teslamate
+  labels:
+    env: home
+spec:
+  storageClassName: longhorn
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
 
-# ---
-# apiVersion: v1
-# kind: PersistentVolumeClaim
-# metadata:
-#   name: grafana
-#   namespace: teslamate
-#   labels:
-#     env: home
-# spec:
-#   storageClassName: longhorn
-#   accessModes:
-#   - ReadWriteOnce
-#   resources:
-#     requests:
-#       storage: 5Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: grafana
+  namespace: teslamate
+  labels:
+    env: home
+spec:
+  storageClassName: longhorn
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
 
-# ---
-# apiVersion: v1
-# kind: PersistentVolumeClaim
-# metadata:
-#   name: mosquitto-data
-#   namespace: teslamate
-#   labels:
-#     env: home
-# spec:
-#   storageClassName: longhorn
-#   accessModes:
-#   - ReadWriteOnce
-#   resources:
-#     requests:
-#       storage: 5Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: data-mosquitto
+  namespace: teslamate
+  labels:
+    env: home
+spec:
+  storageClassName: longhorn
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
 
-# ---
-# apiVersion: v1
-# kind: PersistentVolumeClaim
-# metadata:
-#   name: mosquitto-config
-#   namespace: teslamate
-#   labels:
-#     env: home
-# spec:
-#   storageClassName: longhorn
-#   accessModes:
-#   - ReadWriteOnce
-#   resources:
-#     requests:
-#       storage: 1Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: config-mosquitto
+  namespace: teslamate
+  labels:
+    env: home
+spec:
+  storageClassName: longhorn
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
