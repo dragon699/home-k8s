@@ -55,3 +55,6 @@ spec:
       databases:
       - monitoring-grafana
       options: "SUPERUSER"
+    extensions:
+      builtin:
+        pgvector: true
