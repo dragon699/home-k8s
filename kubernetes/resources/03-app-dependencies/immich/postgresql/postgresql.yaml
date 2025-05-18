@@ -1,0 +1,67 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgresql
+  namespace: immich
+  labels:
+    app: postgresql
+    env: home
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgresql
+  template:
+    metadata:
+      labels:
+        app: postgresql
+        env: home
+    spec:
+      volumes:
+      - name: postgresql-initdb
+        configMap:
+          name: postgresql-initdb
+      - name: postgresql-data
+        persistentVolumeClaim:
+          claimName: postgresql
+      securityContext:
+        fsGroup: 999
+      initContainers:
+      - name: ensure-ownership
+        image: busybox
+        command: ['sh', '-c', 'chown -R 999:999 /var/lib/postgresql/data']
+        volumeMounts:
+        - name: postgresql-data
+          mountPath: /var/lib/postgresql/data
+          subPath: pgdata
+      containers:
+      - name: postgresql
+        image: tensorchord/pgvecto-rs:pg16-v0.2.0
+        env:
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata
+        - name: POSTGRES_DB
+          valueFrom:
+            secretKeyRef:
+              name: data-postgresql
+              key: dbname
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: data-postgresql
+              key: user
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: data-postgresql
+              key: password
+        ports:
+        - containerPort: 5432
+        volumeMounts:
+        - name: postgresql-initdb
+          mountPath: /docker-entrypoint-initdb.d/create-extensions.sql
+          subPath: create-extensions.sql
+        - name: postgresql-data
+          mountPath: /var/lib/postgresql/data
+          subPath: pgdata

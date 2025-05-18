@@ -2,11 +2,11 @@
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: postgresql
-  namespace: apps
+  name: postgresql-shared
+  namespace: shared
 spec:
   interval: 1m
-  releaseName: postgresql
+  releaseName: postgresql-shared
   chart:
     spec:
       chart: pg-db
@@ -24,9 +24,9 @@ spec:
         replicas: 1
         config:
           global:
-            client_tls_sslmode: "allow"
+            client_tls_sslmode: allow
     instances:
-    - name: postgresql
+    - name: shared
       replicas: 1
       dataVolumeClaimSpec:
         accessModes:
@@ -35,13 +35,13 @@ spec:
           requests:
             storage: 20Gi
     users:
-    - name: immich
-      secretName: data-postgresql-immich
-      databases:
-      - immich
-      options: "SUPERUSER"
     - name: teslamate
-      secretName: data-postgresql-teslamate
+      secretName: data-postgresql-shared-teslamate
       databases:
       - teslamate
+      options: "SUPERUSER"
+    - name: monitoring-grafana
+      secretName: data-postgresql-shared-monitoring-grafana
+      databases:
+      - monitoring-grafana
       options: "SUPERUSER"

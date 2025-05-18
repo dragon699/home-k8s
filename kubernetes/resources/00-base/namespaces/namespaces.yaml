@@ -62,10 +62,20 @@ metadata:
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: postgresql
+  name: shared
   labels:
-    app.kubernetes.io/name: postgresql
-    app.kubernetes.io/instance: postgresql
+    app.kubernetes.io/name: shared
+    app.kubernetes.io/instance: shared
+    app.kubernetes.io/env: home
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: monitoring
+  labels:
+    app.kubernetes.io/name: monitoring
+    app.kubernetes.io/instance: monitoring
     app.kubernetes.io/env: home
 
 ---
@@ -82,18 +92,8 @@ metadata:
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: apps
+  name: tesla
   labels:
-    app.kubernetes.io/name: apps
-    app.kubernetes.io/instance: apps
-    app.kubernetes.io/env: home
-
----
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: monitoring
-  labels:
-    app.kubernetes.io/name: monitoring
-    app.kubernetes.io/instance: monitoring
+    app.kubernetes.io/name: tesla
+    app.kubernetes.io/instance: tesla
     app.kubernetes.io/env: home

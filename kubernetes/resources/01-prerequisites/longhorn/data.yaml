@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: Secret
 metadata:
-  name: longhorn-auth
+  name: auth-longhorn
   namespace: longhorn
   labels:
     env: home

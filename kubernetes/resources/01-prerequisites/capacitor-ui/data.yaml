@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: Secret
 metadata:
-  name: capacitor-ui-auth
+  name: auth-capacitor-ui
   namespace: flux-system
   labels:
     env: home

@@ -3,7 +3,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: teslamate
-  namespace: apps
+  namespace: tesla
   labels:
     env: home
 spec:
@@ -19,7 +19,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: grafana
-  namespace: apps
+  namespace: tesla
   labels:
     env: home
 spec:
@@ -35,7 +35,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: mosquitto-data
-  namespace: apps
+  namespace: tesla
   labels:
     env: home
 spec:
@@ -51,7 +51,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: mosquitto-config
-  namespace: apps
+  namespace: tesla
   labels:
     env: home
 spec:

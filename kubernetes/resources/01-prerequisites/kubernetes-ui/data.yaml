@@ -43,7 +43,7 @@ metadata:
 apiVersion: v1
 kind: Secret
 metadata:
-  name: kubernetes-dashboard-auth
+  name: auth-kubernetes-dashboard
   namespace: kubernetes-dashboard
   labels:
     env: home

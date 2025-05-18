@@ -3,7 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: grafana
-  namespace: apps
+  namespace: tesla
   labels:
     app: grafana
     env: home

@@ -1,0 +1,14 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: data-postgresql
+  namespace: immich
+  labels:
+    app: postgresql
+    env: home
+type: Opaque
+data:
+  dbname: aW1taWNo
+  user: aW1taWNo
+  password: fkhlZFszIVZ4azk1Tj0xdndA

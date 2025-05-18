@@ -132,26 +132,26 @@ spec:
   - name: 02-dependencies
   - name: 03-app-dependencies
 
----
-apiVersion: kustomize.toolkit.fluxcd.io/v1
-kind: Kustomization
-metadata:
-  name: 06-tesla
-  namespace: flux-system
-spec:
-  suspend: false
-  interval: 10m0s
-  retryInterval: 30s
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-    namespace: flux-system
-  path: kubernetes/resources/06-tesla
-  prune: true
-  wait: true
-  timeout: 35m
-  dependsOn:
-  - name: 00-base
-  - name: 01-prerequisites
-  - name: 02-dependencies
-  - name: 03-app-dependencies
+# ---
+# apiVersion: kustomize.toolkit.fluxcd.io/v1
+# kind: Kustomization
+# metadata:
+#   name: 06-tesla
+#   namespace: flux-system
+# spec:
+#   suspend: false
+#   interval: 10m0s
+#   retryInterval: 30s
+#   sourceRef:
+#     kind: GitRepository
+#     name: flux-system
+#     namespace: flux-system
+#   path: kubernetes/resources/06-tesla
+#   prune: true
+#   wait: true
+#   timeout: 35m
+#   dependsOn:
+#   - name: 00-base
+#   - name: 01-prerequisites
+#   - name: 02-dependencies
+#   - name: 03-app-dependencies

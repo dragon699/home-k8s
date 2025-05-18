@@ -20,12 +20,12 @@ spec:
       interval: 10m0s
   values:
     env:
-      DB_HOSTNAME: postgresql.postgresql.svc
-      DB_USERNAME: postgres
-      DB_PASSWORD: LSwXeNmwyFe5DsZ
+      DB_HOSTNAME: postgresql
+      DB_USERNAME: immich
+      DB_PASSWORD: '~Hed[3!Vxk95N=1vw@'
       DB_DATABASE_NAME: immich
       UPLOAD_LOCATION: /usr/src/app/upload/library
-      IMMICH_IGNORE_MOUNT_CHECK_ERRORS: 'true'
+      IMMICH_IGNORE_MOUNT_CHECK_ERRORS: true
     immich:
       persistence:
         library:

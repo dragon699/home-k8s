@@ -3,7 +3,7 @@ apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
   name: pg-operator
-  namespace: apps
+  namespace: shared
 spec:
   interval: 1m
   releaseName: pg-operator

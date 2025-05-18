@@ -3,14 +3,14 @@ apiVersion: v1
 kind: Service
 metadata:
   name: postgresql
-  namespace: postgresql
+  namespace: immich
   labels:
     env: home
 spec:
   type: ClusterIP
   ports:
-    - name: postgresql
-      port: 5432
-      targetPort: 5432
+  - name: postgresql
+    port: 5432
+    targetPort: 5432
   selector:
     app: postgresql
