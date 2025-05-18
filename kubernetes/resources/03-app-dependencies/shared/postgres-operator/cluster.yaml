@@ -35,6 +35,11 @@ spec:
           requests:
             storage: 20Gi
     users:
+    - name: immich
+      secretName: data-postgresql-shared-immich
+      databases:
+      - immich
+      options: "SUPERUSER"
     - name: teslamate
       secretName: data-postgresql-shared-teslamate
       databases:
