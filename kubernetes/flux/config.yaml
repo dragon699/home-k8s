@@ -131,4 +131,3 @@ spec:
   - name: 01-prerequisites
   - name: 02-dependencies
   - name: 03-app-dependencies
-  - name: 04-monitoring
