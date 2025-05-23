@@ -51,7 +51,7 @@ spec:
 
     grafana.ini:
       server:
-        root_url: http://grafana.k8s.iaminyourpc.xyz:30080
+        root_url: https://grafana.k8s.iaminyourpc.xyz
 
       date_formats:
         default_timezone: Europe/Sofia
