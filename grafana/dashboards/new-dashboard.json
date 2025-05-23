@@ -106,6 +106,8 @@
             "value": "alloy"
           },
           "definition": "",
+          "includeAll": true,
+          "multi": true,
           "name": "container",
           "options": [],
           "query": {
