@@ -1,0 +1,11 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: auth-grafana-alloy
+  namespace: monitoring
+  labels:
+    htpasswd: grafana-alloy
+type: Opaque
+data:
+  auth: c3lzOiRhcHIxJDFyNWZ1c3h0JExqOTlyTUNQR0c2SmM2VUozRXBRdTA=

@@ -1,0 +1,152 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: config-grafana-alloy
+  namespace: monitoring
+data:
+  alloy.yaml: |-
+    // Configuration
+  
+    logging {
+      level  = "warn"
+      format = "logfmt"
+    }
+
+    livedebugging {
+      enabled = true
+    }
+
+    // Data pipelines
+
+
+    //////////////////////////////////////////////
+    // Collect kubernetes logs
+    //////////////////////////////////////////////
+
+    // Discover pods
+    discovery.kubernetes "home_pods" {
+      role            = "pod"
+    }
+
+    // [1] Aggregate logs
+    discovery.relabel "home_logs" {
+      targets         = discovery.kubernetes.home_pods.targets
+
+      rule {
+        source_labels = ["__meta_kubernetes_namespace"]
+        action        = "replace"
+        target_label  = "namespace"
+      }
+
+      rule {
+        source_labels = ["__meta_kubernetes_pod_name"]
+        action        = "replace"
+        target_label  = "pod"
+      }
+
+      rule {
+        source_labels = ["__meta_kubernetes_pod_container_name"]
+        action        = "replace"
+        target_label  = "container"
+      }
+
+      rule {
+        source_labels = ["__meta_kubernetes_pod_label_app_kubernetes_io_name"]
+        action        = "replace"
+        target_label  = "app"
+      }
+
+      rule {
+        source_labels = ["__meta_kubernetes_namespace", "__meta_kubernetes_pod_container_name"]
+        action        = "replace"
+        target_label  = "job"
+        separator     = "/"
+        replacement   = "$1"
+      }
+
+      rule {
+        source_labels = ["__meta_kubernetes_pod_uid", "__meta_kubernetes_pod_container_name"]
+        action        = "replace"
+        target_label  = "__path__"
+        separator     = "/"
+        replacement   = "/var/log/pods/*$1/*.log"
+      }
+
+      rule {
+        source_labels = ["__meta_kubernetes_pod_container_id"]
+        action        = "replace"
+        target_label  = "container_runtime"
+        regex         = "^(\\S+):\\/\\/.+$"
+        replacement   = "$1"
+      }
+    }
+
+    // Tail logs
+    loki.source.kubernetes "home_logs" {
+      targets         = discovery.relabel.home_logs.output
+      forward_to      = [loki.process.home_logs.receiver]
+    }
+
+    // [2] Aggregate logs
+    loki.process "home_logs" {
+      stage.static_labels {
+        values        = {
+          "cluster"   = "home-k8s",
+          "source"    = "kubernetes-logs",
+        }
+      }
+
+      stage.label_drop {
+        values        = ["service_name"]
+      }
+
+      forward_to      = [loki.write.home_logs.receiver]
+    }
+
+    // Write logs to Loki
+    loki.write "home_logs" {
+      endpoint {
+        url           = "http://grafana-loki-gateway.monitoring.svc/loki/api/v1/push"
+      }
+    }
+
+    //////////////////////////////////////////////
+
+
+
+    //////////////////////////////////////////////
+    // Collect kubernetes traces
+    //////////////////////////////////////////////
+
+    //    // Receive traces
+    //    otelcol.receiver.otlp "kubernetes_traces" {
+    //      grpc {
+    //        endpoint               = "0.0.0.0:4317"
+    //      }
+    //
+    //      output {
+    //        traces                 = [otelcol.processor.batch.kubernetes_traces.input]
+    //      }
+    //    }
+    //
+    //    // Batch traces
+    //    otelcol.processor.batch "kubernetes_traces" {
+    //      output {
+    //        traces                 = [otelcol.exporter.otlphttp.kubernetes_traces.input]
+    //      }
+    //    }
+    //
+    //    // Write traces to Tempo
+    //    otelcol.exporter.otlphttp "kubernetes_traces" {
+    //      client {
+    //        endpoint               = "http://grafana-tempo-distributor.monitoring.svc:4318"
+    //
+    //        tls {
+    //          insecure             = true
+    //          insecure_skip_verify = true
+    //        }
+    //      }
+    //    }
+
+    //////////////////////////////////////////////
