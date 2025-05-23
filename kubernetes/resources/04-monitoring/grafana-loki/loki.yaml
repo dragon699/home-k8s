@@ -71,6 +71,7 @@ spec:
       extraEnvFrom:
       - secretRef:
           name: minio
+      replicas: 1
       resources:
         requests:
           cpu: 0.2
@@ -85,6 +86,7 @@ spec:
       extraEnvFrom:
       - secretRef:
           name: minio
+      replicas: 1
       resources:
         requests:
           cpu: 0.2
@@ -99,7 +101,7 @@ spec:
       extraEnvFrom:
       - secretRef:
           name: minio
-      replicas: 2
+      replicas: 1
       resources:
         requests:
           cpu: 0.1
