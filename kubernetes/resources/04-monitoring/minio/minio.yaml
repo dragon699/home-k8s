@@ -21,7 +21,7 @@ spec:
         memory: 128Mi
       limits:
         cpu: 3
-        memory: 512Mi
+        memory: 2Gi
 
     persistence:
       enabled: true
