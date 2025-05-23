@@ -69,6 +69,16 @@ spec:
       auth.anonymous:
         hide_version: true
 
+      auth:
+        login_maximum_lifetime_duration: 3d
+        login_maximum_inactive_lifetime_duration: 2h
+        login_cookie_name: __Host-grafana_session
+
+      security:
+        cookie_secure: true
+        cookie_samesite: strict
+        content_security_policy: true
+
       database:
         type: postgres
         host: ${pg-pgbouncer-host}:${pg-pgbouncer-port}
@@ -79,3 +89,14 @@ spec:
 
       feature_toggles:
         enable: nestedFolders
+
+
+    extraVolumes:
+    - name: datasources
+      configMap:
+        name: config-grafana-datasources
+
+    extraVolumeMounts:
+    - name: datasources
+      mountPath: /etc/grafana/provisioning/datasources/datasources.yaml
+      subPath: datasources.yaml

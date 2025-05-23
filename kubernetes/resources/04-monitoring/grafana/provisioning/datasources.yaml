@@ -1,0 +1,16 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: config-grafana-datasources
+  namespace: monitoring
+data:
+  datasources.yaml: |
+    - name: Loki
+      type: loki
+      uid: internal-loki
+      url: http://grafana-loki-gateway.monitoring.svc:80
+      access: proxy
+      isDefault: true
+      editable: false
+      orgId: 1
