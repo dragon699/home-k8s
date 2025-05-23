@@ -654,7 +654,7 @@ spec:
         ## @param mariadb.auth.rootPassword Password for the MariaDB `root` user
         ## ref: https://github.com/bitnami/containers/tree/main/bitnami/mariadb#setting-the-root-password-on-first-run
         ##
-        rootPassword: ""
+        rootPassword: "root123"
         ## @param mariadb.auth.database Database name to create
         ## ref: https://github.com/bitnami/containers/blob/main/bitnami/mariadb/README.md#creating-a-database-on-first-run
         ##
