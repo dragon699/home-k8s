@@ -88,7 +88,7 @@
           "query": {
             "label": "container",
             "refId": "LokiVariableQueryEditor-VariableQuery",
-            "stream": "",
+            "stream": "{pod = \"$pod\"}",
             "type": 1
           },
           "refresh": 1,
@@ -101,6 +101,7 @@
             "value": "calico-kube-controllers-695f6448bd-s2l27"
           },
           "definition": "",
+          "description": "",
           "hide": 2,
           "label": "Select desired pod",
           "name": "pod",
