@@ -5,5 +5,5 @@ metadata:
   name: kts
   namespace: shared
 spec:
-  interval: 15m
+  interval: 12h
   url: https://charts.kts.studio
