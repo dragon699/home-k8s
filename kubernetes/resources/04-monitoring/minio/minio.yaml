@@ -27,11 +27,7 @@ spec:
       enabled: true
       size: 20Gi
 
-    mode: distributed
-
-    statefulset:
-      replicaCount: 2
-      drivesPerNode: 2
+    mode: standalone
 
     auth:
       existingSecret: minio
