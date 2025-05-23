@@ -1,22 +1,10 @@
-# ---
-# apiVersion: v1
-# kind: Secret
-# metadata:
-#   name: grafana-login-creds
-#   namespace: monitoring
-# type: Opaque
-# data:
-#   GRAFANA_ADMIN_USER: c3lz
-#   GRAFANA_ADMIN_PASSWORD: WG4zd2RocDJIaWlCQUkxcDB1bW9FUXgza0I=
-
-# ---
-# apiVersion: v1
-# kind: Secret
-# metadata:
-#   name: grafana-db-creds
-#   namespace: monitoring
-# type: Opaque
-# data:
-#   POSTGRES_DB: Z3JhZmFuYQ==
-#   POSTGRES_USER: cG9zdGdyZXMK
-#   POSTGRES_PASSWORD: TFN3WGVObXd5RmU1RHNa
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: auth-grafana
+  namespace: monitoring
+type: Opaque
+data:
+  GRAFANA_ADMIN_USER: c3lz
+  GRAFANA_ADMIN_PASSWORD: WG4zd2RocDJIaWlCQUkxcDB1bW9FUXgza0I=

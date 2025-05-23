@@ -25,16 +25,16 @@ spec:
 
     persistence:
       enabled: true
-      size: 20Gi
+      size: 64Gi
 
     mode: standalone
 
     auth:
-      existingSecret: minio
+      existingSecret: auth-minio
       rootUserSecretKey: MINIO_SERVER_ROOT_USER
       rootPasswordSecretKey: MINIO_SERVER_ROOT_PASSWORD
 
-    extraEnvVarsSecret: minio
+    extraEnvVarsSecret: auth-minio
 
     provisioning:
       enabled: true

@@ -70,7 +70,7 @@ spec:
       - '-config.expand-env=true'
       extraEnvFrom:
       - secretRef:
-          name: minio
+          name: auth-minio
       replicas: 1
       resources:
         requests:
@@ -85,7 +85,7 @@ spec:
       - '-config.expand-env=true'
       extraEnvFrom:
       - secretRef:
-          name: minio
+          name: auth-minio
       replicas: 1
       resources:
         requests:
@@ -100,7 +100,7 @@ spec:
       - '-config.expand-env=true'
       extraEnvFrom:
       - secretRef:
-          name: minio
+          name: auth-minio
       replicas: 1
       resources:
         requests:
@@ -115,7 +115,7 @@ spec:
       - '-config.expand-env=true'
       extraEnvFrom:
       - secretRef:
-          name: minio
+          name: auth-minio
       resources:
         requests:
           cpu: 0.1

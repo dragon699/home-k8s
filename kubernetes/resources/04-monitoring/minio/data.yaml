@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: Secret
 metadata:
-  name: minio
+  name: auth-minio
   namespace: monitoring
 type: Opaque
 data:
