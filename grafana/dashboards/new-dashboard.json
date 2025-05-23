@@ -62,7 +62,7 @@
             },
             "direction": "backward",
             "editorMode": "code",
-            "expr": "{service_name=\"$container\"} | detected_level =~ \"warn|debug|info\"",
+            "expr": "{service_name=\"$container\"} | detected_level =~ \"warn|debug|\"",
             "queryType": "range",
             "refId": "A"
           }
