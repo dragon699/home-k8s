@@ -62,7 +62,7 @@
             },
             "direction": "backward",
             "editorMode": "code",
-            "expr": "{namespace=\"teslamate\", service_name=\"teslamate\"} |= `` ",
+            "expr": "{namespace=\"teslamate\", service_name=\"teslamate\"} | detected_level =~ \"warn|debug|info\"",
             "queryType": "range",
             "refId": "A"
           }
