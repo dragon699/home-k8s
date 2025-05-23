@@ -160,7 +160,7 @@ spec:
     ## @param allowEmptyPassword Allow DB blank passwords
     ## ref: https://github.com/bitnami/containers/tree/main/bitnami/prestashop#environment-variables
     ##
-    allowEmptyPassword: true
+    allowEmptyPassword: false
     ## @param command Override default container command (useful when using custom images)
     ##
     command: []
