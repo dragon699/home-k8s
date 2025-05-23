@@ -6,6 +6,10 @@ metadata:
   namespace: monitoring
 data:
   datasources.yaml: |
+    apiVersion: 1
+    prune: true
+
+    datasources:
     - name: Loki
       type: loki
       uid: internal-loki
