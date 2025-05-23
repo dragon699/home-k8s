@@ -90,6 +90,9 @@ spec:
       feature_toggles:
         enable: nestedFolders
 
+      users:
+        viewers_can_edit: true
+
 
     extraVolumes:
     - name: datasources
