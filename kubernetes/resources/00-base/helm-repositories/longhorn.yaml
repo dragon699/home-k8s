@@ -7,5 +7,5 @@ metadata:
   labels:
     env: home
 spec:
-  interval: 1m0s
+  interval: 12h
   url: https://charts.longhorn.io
