@@ -1239,7 +1239,7 @@ spec:
 
 
       service:
-        type: nodePort
+        type: NodePort
         port: 22
         # -- When using the NodePort type, you can specify a fixed port ([Kubernetes docs](https://kubernetes.io/docs/concepts/services-networking/service/#type-nodeport))
         externalTraffic:
