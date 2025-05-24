@@ -119,6 +119,28 @@
           "refresh": 1,
           "regex": "",
           "type": "query"
+        },
+        {
+          "current": {
+            "text": "acmesolver",
+            "value": "acmesolver"
+          },
+          "definition": "",
+          "description": "",
+          "includeAll": true,
+          "label": "choose  your dear   service name",
+          "multi": true,
+          "name": "service",
+          "options": [],
+          "query": {
+            "label": "service_name",
+            "refId": "LokiVariableQueryEditor-VariableQuery",
+            "stream": "",
+            "type": 1
+          },
+          "refresh": 1,
+          "regex": "",
+          "type": "query"
         }
       ]
     },
