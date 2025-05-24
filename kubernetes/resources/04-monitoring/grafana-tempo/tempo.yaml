@@ -79,7 +79,7 @@ spec:
             - k8s.replicaset.name
         storage:
           remote_write:
-          - url: http://victoriametrics-vminsert.monitoring.svc:8480/insert/multitenant/prometheus
+          - url: http://victoriametrics-vminsert.monitoring.svc:8480/insert/0/prometheus/api/v1/write
             send_exemplars: true
       extraArgs:
       - '-config.expand-env=true'
