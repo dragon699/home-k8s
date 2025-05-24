@@ -187,7 +187,7 @@ data:
       ]
 
       output {
-        metrics                    = [prometheus.remote_write.home_metrics.receiver]
+        metrics                    = [otelcol.processor.batch.home_metrics.input]
       }
     }
 
@@ -223,8 +223,22 @@ data:
       namespace                    = "traces_spanmetrics"
 
       output {
-        metrics                    = [prometheus.remote_write.home_metrics.receiver]
+        metrics                    = [otelcol.processor.batch.home_metrics.input]
       }
+    }
+
+    // Batch span and service graph metrics
+    otelcol.processor.batch "home_metrics" {
+      output {
+        metrics                    = [
+          otelcol.exporter.prometheus.home_metrics.input,
+        ]
+      }
+    }
+
+    // Convert span and service graph metrics from OTLP to Prometheus-based format
+    otelcol.exporter.prometheus "home_metrics" {
+      forward_to                   = [prometheus.remote_write.home_metrics.receiver]
     }
 
     // Write span and service graph metrics to VictoriaMetrics
