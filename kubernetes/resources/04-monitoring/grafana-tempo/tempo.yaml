@@ -96,11 +96,8 @@ spec:
           cpu: 0.1
           memory: 128Mi
         limits:
-          cpu: 0.5
-          memory: 512Mi
-      config:
-        log_received_spans:
-          enabled: true
+          cpu: 2
+          memory: 2Gi
       extraArgs:
       - '-config.expand-env=true'
       extraEnvFrom:
