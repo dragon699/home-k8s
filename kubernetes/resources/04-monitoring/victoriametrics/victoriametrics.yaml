@@ -10,7 +10,7 @@ spec:
   interval: 5m
   chartRef:
     kind: OCIRepository
-    name: bitnami-oci
+    name: victoriametrics
     namespace: monitoring
   values:
     vmselect:
