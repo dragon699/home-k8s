@@ -20,8 +20,8 @@ spec:
         cpu: 0.1
         memory: 128Mi
       limits:
-        cpu: 3
-        memory: 2Gi
+        cpu: 6
+        memory: 4Gi
 
     persistence:
       enabled: true
@@ -38,16 +38,22 @@ spec:
 
     provisioning:
       enabled: true
-      extraCommands:
-      - mc alias set minio ${MINIO_SCHEME}://${MINIO_SERVER_HOST}:${MINIO_SERVICE_PORT} ${MINIO_SERVER_ROOT_USER} ${MINIO_SERVER_ROOT_PASSWORD}
-      - |
-          cd /tmp &&
-
-          mc mb minio/loki-chunks &&
-          mc ilm rule add --expire-days 45 minio/loki-chunks &&
-
-          mc mb minio/loki-ruler &&
-          mc ilm rule add --expire-days 45 minio/loki-ruler
-
-          mc mb minio/tempo &&
-          mc ilm rule add --expire-days 10 minio/tempo &&
+      buckets:
+      - name: loki-chunks
+        lifecycle:
+        - id: retention
+          disabled: false
+          expiry:
+            days: 45
+      - name: loki-ruler
+        lifecycle:
+        - id: retention
+          disabled: false
+          expiry:
+            days: 45
+      - name: tempo
+        lifecycle:
+        - id: retention
+          disabled: false
+          expiry:
+            days: 10
