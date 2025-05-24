@@ -150,7 +150,7 @@ data:
       }
 
       output {
-        traces                     = [otelcol.processor.batch.home_traces.output]
+        traces                     = [otelcol.processor.batch.home_traces.input]
       }
     }
 
