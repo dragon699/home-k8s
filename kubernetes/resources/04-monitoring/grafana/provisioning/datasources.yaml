@@ -18,6 +18,37 @@ data:
       isDefault: true
       editable: false
       orgId: 1
+      jsonData:
+        derivedFields:
+        - name: "Reveal traces"
+          datasourceUid: internal-tempo
+          targetBlank: true
+          matcherRegex: "traceID"
+          matcherType: label
+          url: "$${__value.raw}"
+        - name: "Reveal traces "
+          datasourceUid: internal-tempo
+          targetBlank: true
+          matcherRegex: "trace_id"
+          matcherType: label
+          url: "$${__value.raw}"
+        - name: "Reveal traces  "
+          datasourceUid: internal-tempo
+          targetBlank: true
+          matcherRegex: "Trace_ID"
+          matcherType: label
+          url: "$${__value.raw}"
+
+    - name: Victoriametrics
+      type: prometheus
+      uid: internal-victoriametrics
+      url: http://victoriametrics-vmselect.monitoring.svc:8481/select/0/prometheus
+      access: proxy
+      isDefault: false
+      editable: false
+      orgId: 1
+      jsonData:
+        httpMethod: POST
 
     - name: Tempo
       type: tempo
@@ -25,7 +56,7 @@ data:
       url: http://grafana-tempo-query-frontend.monitoring.svc:3100
       access: proxy
       isDefault: false
-      editable: true
+      editable: false
       orgId: 1
       jsonData:
         search:
@@ -42,11 +73,11 @@ data:
           enabled: true
         streamingEnabled:
           search: false
-        # serviceMap:
-        #   datasourceUid: 
-        # tracesToMetrics:
-        #   datasourceUid: 
-        #   queries: []
+        serviceMap:
+          datasourceUid: internal-victoriametrics
+        tracesToMetrics:
+          datasourceUid: internal-victoriametrics
+          queries: []
         tracesToLogsV2:
           datasourceUid: internal-loki
           customQuery: false

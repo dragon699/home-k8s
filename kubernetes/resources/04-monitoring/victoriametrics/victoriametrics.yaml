@@ -1,0 +1,64 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta2
+kind: HelmRelease
+metadata:
+  name: victoriametrics
+  namespace: monitoring
+spec:
+  dependsOn:
+  - name: minio
+  interval: 5m
+  chart:
+    spec:
+      chart: victoriametrics
+      version: 0.1.11
+      sourceRef:
+        kind: HelmRepository
+        name: bitnami
+        namespace: monitoring
+  values:
+    vmselect:
+      resources:
+        requests:
+          cpu: 0.1
+          memory: 128Mi
+        limits:
+          cpu: 2
+          memory: 2Gi
+
+    vminsert:
+      resources:
+        requests:
+          cpu: 0.1
+          memory: 128Mi
+        limits:
+          cpu: 2
+          memory: 1Gi
+
+    vmstorage:
+      resources:
+        requests:
+          cpu: 0.1
+          memory: 128Mi
+        limits:
+          cpu: 2
+          memory: 2Gi
+      persistence:
+        enabled: true
+        size: 20Gi
+
+    vmagent:
+      resources:
+        requests:
+          cpu: 0.2
+          memory: 256Mi
+        limits:
+          cpu: 4
+          memory: 4Gi
+      existingScrapeConfigMap: config-victoriametrics-jobs
+
+    vmauth:
+      enabled: false
+
+    vmalert:
+      enabled: false
