@@ -18,10 +18,10 @@ spec:
         namespace: monitoring
   values:
     resources:
-      limits:
+      requests:
         cpu: 0.1
         memory: 16Mi
-      requests:
+      limits:
         cpu: 0.5
         memory: 128Mi
 

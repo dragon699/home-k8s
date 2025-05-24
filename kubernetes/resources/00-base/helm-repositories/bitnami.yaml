@@ -7,3 +7,13 @@ metadata:
 spec:
   interval: 12h
   url: https://charts.bitnami.com/bitnami
+
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: HelmRepository
+metadata:
+  name: bitnami-oci
+  namespace: monitoring
+spec:
+  interval: 12h
+  url: registry-1.docker.io/bitnamicharts
