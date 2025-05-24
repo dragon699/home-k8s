@@ -10,7 +10,7 @@ spec:
 
 ---
 apiVersion: source.toolkit.fluxcd.io/v1beta2
-kind: HelmRepository
+kind: OCIRepository
 metadata:
   name: bitnami-oci
   namespace: monitoring
