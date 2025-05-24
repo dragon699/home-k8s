@@ -187,7 +187,7 @@ data:
       ]
 
       output {
-        metrics                    = [prometheus.remote_write.home_metrics.input]
+        metrics                    = [prometheus.remote_write.home_metrics.receiver]
       }
     }
 
@@ -223,7 +223,7 @@ data:
       namespace                    = "traces_spanmetrics"
 
       output {
-        metrics                    = [prometheus.remote_write.home_metrics.input]
+        metrics                    = [prometheus.remote_write.home_metrics.receiver]
       }
     }
 
