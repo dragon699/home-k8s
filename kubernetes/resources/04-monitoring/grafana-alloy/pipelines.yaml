@@ -132,7 +132,7 @@ data:
 
       attributes {
         kubernetes {
-          enable            = true
+          enable            = "true"
           cluster_name      = "home-k8s"
         }
       }
