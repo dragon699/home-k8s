@@ -1,0 +1,167 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta2
+kind: HelmRelease
+metadata:
+  name: grafana-tempo
+  namespace: monitoring
+spec:
+  dependsOn:
+  - name: minio
+  interval: 5m
+  chart:
+    spec:
+      chart: tempo-distributed
+      version: 1.40.1
+      sourceRef:
+        kind: HelmRepository
+        name: grafana
+        namespace: monitoring
+  values:
+    global_overrides:
+      metrics_generator_processors:
+      - local-blocks
+      - service-graphs
+      - span-metrics
+
+    traces:
+      otlp:
+        http:
+          enabled: true
+      zipkin:
+        enabled: false
+      jaeger:
+        thriftHttp:
+          enabled: false
+      opencensus:
+        enabled: false
+
+    storage:
+      trace:
+        backend: s3
+        s3:
+          access_key: "${MINIO_SERVER_ROOT_USER}"
+          secret_key: "${MINIO_SERVER_ROOT_PASSWORD}"
+          endpoint: "${MINIO_SERVER_HOST}:${MINIO_SERVICE_PORT}"
+          bucket: tempo
+          insecure: true
+
+    metricsGenerator:
+      enabled: false
+      config:
+        registry:
+          external_labels:
+            source: tempo
+        processor:
+          span_metrics:
+            filter_policies:
+            - include:
+                match_type: strict
+                attributes:
+                - key: resource.service.name
+                  value: mobile-api
+            enable_target_info: true
+            dimensions:
+            - service.name
+            - service.instance.id
+            - server.address
+            - server.port
+            - url.path
+            - url.query
+            - url.full
+            - db.name
+            - db.statement
+            - db.system
+            - http.route
+            - http.request.method
+            - http.response.status_code
+        storage:
+          remote_write:
+          - url: http://thanos-receive.event-tracking.svc:19291/api/v1/receive
+            send_exemplars: true
+      extraArgs:
+      - '-config.expand-env=true'
+      extraEnvFrom:
+      - secretRef:
+          name: auth-minio
+
+    minio:
+      enabled: false
+
+    distributor:
+      resources:
+        requests:
+          cpu: 0.1
+          memory: 128Mi
+        limits:
+          cpu: 0.5
+          memory: 512Mi
+      config:
+        log_received_spans:
+          enabled: true
+      extraArgs:
+      - '-config.expand-env=true'
+      extraEnvFrom:
+      - secretRef:
+          name: auth-minio
+
+    ingester:
+      replicas: 1
+      resources:
+        requests:
+          cpu: 0.1
+          memory: 128Mi
+        limits:
+          cpu: 2
+          memory: 2Gi
+      config:
+        replication_factor: 1
+      extraArgs:
+      - '-config.expand-env=true'
+      extraEnvFrom:
+      - secretRef:
+          name: auth-minio
+
+    compactor:
+      resources:
+        requests:
+          cpu: 0.1
+          memory: 164Mi
+        limits:
+          cpu: 2
+          memory: 1Gi
+      extraArgs:
+      - '-config.expand-env=true'
+      extraEnvFrom:
+      - secretRef:
+          name: auth-minio
+      config:
+        compaction:
+          block_retention: 4300h
+
+    querier:
+      resources:
+        requests:
+          cpu: 0.1
+          memory: 64Mi
+        limits:
+          cpu: 2
+          memory: 2Gi
+      extraArgs:
+      - '-config.expand-env=true'
+      extraEnvFrom:
+      - secretRef:
+          name: auth-minio
+
+    queryFrontend:
+      resources:
+        requests:
+          cpu: 0.1
+          memory: 64Mi
+        limits:
+          cpu: 1
+          memory: 256Mi
+      extraArgs:
+      - '-config.expand-env=true'
+      extraEnvFrom:
+      - secretRef:
+          name: auth-minio

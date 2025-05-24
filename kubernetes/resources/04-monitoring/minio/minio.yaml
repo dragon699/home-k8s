@@ -44,7 +44,10 @@ spec:
           cd /tmp &&
 
           mc mb minio/loki-chunks &&
-          mc ilm rule add --expire-days 180 minio/loki-chunks &&
+          mc ilm rule add --expire-days 45 minio/loki-chunks &&
 
           mc mb minio/loki-ruler &&
-          mc ilm rule add --expire-days 180 minio/loki-ruler
+          mc ilm rule add --expire-days 45 minio/loki-ruler
+
+          mc mb minio/tempo &&
+          mc ilm rule add --expire-days 10 minio/tempo &&
