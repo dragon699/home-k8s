@@ -13,7 +13,7 @@ spec:
       chart: victoriametrics
       version: 0.1.11
       sourceRef:
-        kind: HelmRepository
+        kind: OCIRepository
         name: bitnami-oci
         namespace: monitoring
   values:
