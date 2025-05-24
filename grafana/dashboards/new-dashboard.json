@@ -44,13 +44,13 @@
         "id": 1,
         "options": {
           "dedupStrategy": "none",
-          "enableInfiniteScrolling": false,
+          "enableInfiniteScrolling": true,
           "enableLogDetails": true,
           "prettifyLogMessage": false,
           "showCommonLabels": false,
           "showLabels": false,
           "showTime": false,
-          "sortOrder": "Descending",
+          "sortOrder": "Ascending",
           "wrapLogMessage": false
         },
         "pluginVersion": "12.0.0",
@@ -60,9 +60,9 @@
               "type": "loki",
               "uid": "internal-loki"
             },
-            "direction": "backward",
+            "direction": "forward",
             "editorMode": "code",
-            "expr": "{service_name=\"$service\"} | detected_level =~ \"warn|debug\"",
+            "expr": "{service_name=\"$service\"} | detected_level =~ \"$level\"",
             "queryType": "range",
             "refId": "A"
           }
@@ -98,6 +98,53 @@
           "refresh": 1,
           "regex": "",
           "type": "query"
+        },
+        {
+          "current": {
+            "text": "notice",
+            "value": "notice"
+          },
+          "label": "choose your dear log level",
+          "name": "level",
+          "options": [
+            {
+              "selected": false,
+              "text": "warn",
+              "value": "warn"
+            },
+            {
+              "selected": false,
+              "text": "debug",
+              "value": "debug"
+            },
+            {
+              "selected": false,
+              "text": "info",
+              "value": "info"
+            },
+            {
+              "selected": false,
+              "text": "error",
+              "value": "error"
+            },
+            {
+              "selected": false,
+              "text": "trace",
+              "value": "trace"
+            },
+            {
+              "selected": true,
+              "text": "notice",
+              "value": "notice"
+            },
+            {
+              "selected": false,
+              "text": "fatal",
+              "value": "fatal"
+            }
+          ],
+          "query": "warn,debug,info,error,trace,notice,fatal",
+          "type": "custom"
         }
       ]
     },
