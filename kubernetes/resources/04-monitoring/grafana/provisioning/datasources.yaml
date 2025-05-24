@@ -18,3 +18,43 @@ data:
       isDefault: true
       editable: false
       orgId: 1
+
+    - name: Tempo
+      type: tempo
+      uid: internal-tempo
+      url: http://grafana-tempo-query-frontend.monitoring.svc:3100
+      access: proxy
+      isDefault: false
+      editable: true
+      orgId: 1
+      jsonData:
+        search:
+          filters:
+          - id: service-name
+            operator: "="
+            scope: resource
+            tag: service.name
+          - id: span-name
+            operator: "="
+            scope: span
+            tag: name
+        nodeGraph:
+          enabled: true
+        streamingEnabled:
+          search: false
+        # serviceMap:
+        #   datasourceUid: 
+        # tracesToMetrics:
+        #   datasourceUid: 
+        #   queries: []
+        tracesToLogsV2:
+          datasourceUid: internal-loki
+          customQuery: false
+          query: ""
+          filterByTraceID: true
+          filterBySpanID: false
+          spanStartTimeShift: "-15m"
+          spanEndTimeShift: "15m"
+          tags:
+          - key: service.name
+            value: app

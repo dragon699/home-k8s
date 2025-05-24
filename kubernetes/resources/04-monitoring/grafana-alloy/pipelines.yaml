@@ -119,34 +119,58 @@ data:
     // Collect kubernetes traces
     //////////////////////////////////////////////
 
-    //    // Receive traces
-    //    otelcol.receiver.otlp "kubernetes_traces" {
-    //      grpc {
-    //        endpoint               = "0.0.0.0:4317"
-    //      }
-    //
-    //      output {
-    //        traces                 = [otelcol.processor.batch.kubernetes_traces.input]
-    //      }
-    //    }
-    //
-    //    // Batch traces
-    //    otelcol.processor.batch "kubernetes_traces" {
-    //      output {
-    //        traces                 = [otelcol.exporter.otlphttp.kubernetes_traces.input]
-    //      }
-    //    }
-    //
-    //    // Write traces to Tempo
-    //    otelcol.exporter.otlphttp "kubernetes_traces" {
-    //      client {
-    //        endpoint               = "http://grafana-tempo-distributor.monitoring.svc:4318"
-    //
-    //        tls {
-    //          insecure             = true
-    //          insecure_skip_verify = true
-    //        }
-    //      }
-    //    }
+    // Auto-instrument traces
+    beyla.ebpf "home_traces" {
+      discovery {
+        services {
+          kubernetes {
+            namespace       = "ingress-nginx|metallb-system|longhorn|cert-manager|shared|monitoring|immich|teslamate|hostfabtech"
+            deployment_name = "."
+          }
+        }
+      }
+
+      attributes {
+        kubernetes {
+          enable namespace  = true
+          cluster_name      = "home-k8s"
+        }
+      }
+
+      metrics {
+        features = [
+          "application",
+        ]
+      }
+
+      ebpf {
+        track_request_headers      = true
+        enable_context_propagation = true
+        heuristic_sql_detect       = true
+      }
+
+      output {
+        traces                     = [otelcol.processor.batch.home_traces.output]
+      }
+    }
+
+    // Batch traces
+    otelcol.processor.batch "home_traces" {
+      output {
+        traces                     = [otelcol.exporter.otlphttp.home_traces.input]
+      }
+    }
+
+    // Write traces to Tempo
+    otelcol.exporter.otlphttp "home_traces" {
+      client {
+        endpoint                   = "http://grafana-tempo-distributor.monitoring.svc:4318"
+
+        tls {
+          insecure                 = true
+          insecure_skip_verify     = true
+        }
+      }
+    }
 
     //////////////////////////////////////////////
