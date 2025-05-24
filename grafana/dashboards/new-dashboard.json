@@ -62,7 +62,7 @@
             },
             "direction": "backward",
             "editorMode": "code",
-            "expr": "{container =\"$container\", pod = \"$pod\"} | detected_level =~ \"warn|debug\"",
+            "expr": "{service_name=\"$service\"} | detected_level =~ \"warn|debug\"",
             "queryType": "range",
             "refId": "A"
           }
