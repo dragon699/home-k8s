@@ -157,7 +157,10 @@ data:
     // Batch traces
     otelcol.processor.batch "home_traces" {
       output {
-        traces                     = [otelcol.exporter.otlphttp.home_traces.input]
+        traces                     = [
+          otelcol.exporter.otlphttp.home_traces.input,
+          otelcol.connector.servicegraph.home_metrics.input,
+        ]
       }
     }
 
@@ -165,6 +168,31 @@ data:
     otelcol.exporter.otlphttp "home_traces" {
       client {
         endpoint                   = "http://grafana-tempo-distributor.monitoring.svc:4318"
+
+        tls {
+          insecure                 = true
+          insecure_skip_verify     = true
+        }
+      }
+    }
+
+    // Generate service graph metrics from traces
+    otelcol.connector.servicegraph "home_metrics" {
+      dimensions = [
+        "http.method",
+        "http.request.method",
+        "http.target",
+        "url.path",
+      ]
+
+      output {
+        metrics                    = [otelcol.exporter.otlphttp.home_metrics.input]
+      }
+    }
+
+    otelcol.exporter.otlphttp "home_metrics" {
+      client {
+        endpoint                   = "http://victoriametrics-vminsert.monitoring.svc:8480/insert/0/prometheus/api/v1/write"
 
         tls {
           insecure                 = true

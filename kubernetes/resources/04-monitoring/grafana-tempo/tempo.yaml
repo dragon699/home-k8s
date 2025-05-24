@@ -46,7 +46,7 @@ spec:
           insecure: true
 
     metricsGenerator:
-      enabled: true
+      enabled: false
       config:
         registry:
           external_labels:
