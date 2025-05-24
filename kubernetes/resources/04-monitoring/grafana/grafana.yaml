@@ -89,6 +89,10 @@ spec:
 
       feature_toggles:
         enable: nestedFolders
+        provisioning: true
+        kubernetesDashboards: true
+        kubernetesClientDashboardsFolders: true
+        grafanaAPIServerEnsureKubectlAccess: true
 
       users:
         viewers_can_edit: true
