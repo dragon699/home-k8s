@@ -230,7 +230,7 @@ data:
     // Write span and service graph metrics to VictoriaMetrics
     otelcol.exporter.otlphttp "home_metrics" {
       client {
-        endpoint                   = "http://victoriametrics-vminsert.monitoring.svc:8480/insert/0/prometheus/api/v1/import/prometheus"
+        endpoint                   = "http://victoriametrics-vminsert.monitoring.svc:8480/insert/0/prometheus/api/v1/write"
 
         tls {
           insecure                 = true
