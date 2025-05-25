@@ -124,14 +124,15 @@ data:
       discovery {
         services {
           kubernetes {
-            namespace              = "ingress-nginx|metallb-system|longhorn|cert-manager|shared|monitoring|immich|teslamate|hostfabtech"
+            namespace              = "ingress-nginx|metallb-system|cert-manager|shared|immich|teslamate|hostfabtech"
             deployment_name        = "."
           }
         }
 
         exclude_services {
           kubernetes {
-            namespace              = "kube-system|kubernetes-dashboard|k0s-autopilot|flux-system|monitoring"
+            namespace              = "kube-system|kubernetes-dashboard|k0s-autopilot|flux-system"
+            deployment_name        = "pg-operator|secret-mirrors-controller-manager|grafana"
           }
         }
       }
@@ -212,13 +213,8 @@ data:
         default                    = "GET"
       }
 
-      dimension {
-        name                       = "http.target"
-      }
-
-      dimension {
-        name                       = "url.path"
-      }
+      dimension {name = "http.target"}
+      dimension {name = "url.path"}
 
       aggregation_temporality      = "DELTA"
 
