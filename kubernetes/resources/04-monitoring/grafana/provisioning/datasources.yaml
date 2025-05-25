@@ -59,16 +59,6 @@ data:
       editable: false
       orgId: 1
       jsonData:
-        search:
-          filters:
-          - id: service-name
-            operator: "="
-            scope: resource
-            tag: service.name
-          - id: span-name
-            operator: "="
-            scope: span
-            tag: name
         nodeGraph:
           enabled: true
         streamingEnabled:

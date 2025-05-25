@@ -131,7 +131,7 @@ data:
 
         exclude_services {
           kubernetes {
-            namespace = "kube-system|kubernetes-dashboard|k0s-autopilot|flux-system"
+            namespace       = "kube-system|kubernetes-dashboard|k0s-autopilot|flux-system|monitoring"
           }
         }
       }
@@ -206,7 +206,7 @@ data:
       }
 
       dimension {
-        name = "http.request.method"
+        name                       = "http.request.method"
         default                    = "GET"
       }
 
