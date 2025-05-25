@@ -261,7 +261,13 @@ data:
 
     // Aggregate service graph metrics
     otelcol.processor.filter "home_metrics" {
-      error_mode                   = "ignore"response.status_code
+      error_mode                   = "ignore"
+
+      metrics {
+        datapoint = [
+          `attributes["server"] == "unknown"`,
+          `attributes["client"] == "user" and not IsMatch(attributes["server"], ".*nginx.*")`,
+        ]
       }
 
       output {
