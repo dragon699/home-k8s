@@ -142,6 +142,7 @@ data:
         select {
           attr                     = "*"
           include                  = ["*"]
+          exclude                  = ["nothing"]
         }
       }
 
