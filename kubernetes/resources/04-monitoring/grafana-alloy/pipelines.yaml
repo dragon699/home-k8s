@@ -115,7 +115,7 @@ data:
     // Collect metrics and traces from kubernetes pods
     //////////////////////////////////////////////
 
-    // Auto-instrument metrics and traces using Beyla
+    // Auto-instrument collection of metrics and traces using Beyla
     beyla.ebpf "home_discovery" {
       discovery {
         services {
@@ -268,43 +268,44 @@ data:
     //      }
     //    }
     //
-    //    // Aggregate service graph metrics
-    //    otelcol.processor.filter "home_metrics" {
-    //      error_mode                   = "ignore"
-    //
-    //      metrics {
-    //        datapoint = [
-    //          `attributes["server"] == "unknown"`,
-    //          `attributes["client"] == "user" and not IsMatch(attributes["server"], ".*nginx.*")`,
-    //        ]
-    //      }
-    //
-    //      output {
-    //        metrics                    = [otelcol.processor.batch.home_metrics.input]
-    //      }
-    //    }
 
     // Scrape metrics from Beyla
     prometheus.scrape "home_metrics" {
       targets                      = beyla.ebpf.home_discovery.targets
-      honor_labels                 = true
 
+      honor_labels                 = true
       scrape_interval              = "10s"
   
-      forward_to                   = [prometheus.remote_write.home_metrics.receiver]
+      forward_to                   = [otelcol.processor.filter.home_metrics.input]
     }
 
-    // Batch span and service graph metrics
-    //    otelcol.processor.batch "home_metrics" {
-    //      output {
-    //        metrics                    = [otelcol.exporter.prometheus.home_metrics.input]
-    //      }
-    //    }
-    //
-    //    // Convert span and service graph metrics from OTLP to Prometheus-based format
-    //    otelcol.exporter.prometheus "home_metrics" {
-    //      forward_to                   = [prometheus.remote_write.home_metrics.receiver]
-    //    }
+    // Aggregate metrics
+    // Drop unneeded IPs from trace service graph metrics of kind=server
+    otelcol.processor.filter "home_metrics" {
+      error_mode                   = "ignore"
+
+      metrics {
+        datapoint = [
+          `attributes["source"] == "beyla" and IsMatch(attributes["server"], "\b(?:\d{1,3}\.){3}\d{1,3}\b")`,
+        ]
+      }
+
+      output {
+        metrics                    = [otelcol.processor.batch.home_metrics.input]
+      }
+    }
+
+    // Batch metrics
+    otelcol.processor.batch "home_metrics" {
+      output {
+        metrics                    = [otelcol.exporter.prometheus.home_metrics.input]
+      }
+    }
+
+    // Convertmetrics from OTLP to Prometheus-based format
+    otelcol.exporter.prometheus "home_metrics" {
+      forward_to                   = [prometheus.remote_write.home_metrics.receiver]
+    }
 
     // Write metrics to VictoriaMetrics
     prometheus.remote_write "home_metrics" {
