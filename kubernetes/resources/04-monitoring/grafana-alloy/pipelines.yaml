@@ -213,19 +213,14 @@ data:
         default                    = "GET"
       }
 
-      dimension {name = "http.target"}
-      dimension {name = "url.path"}
-
-      aggregation_temporality      = "DELTA"
+      dimension { name = "http.target" }
+      dimension { name = "url.path" }
 
       histogram {
         explicit {
           buckets                  = ["50ms", "100ms", "250ms", "1s", "5s", "10s"]
         }
       }
-
-      metrics_flush_interval       = "15s"
-      namespace                    = "traces_spanmetrics"
 
       output {
         metrics                    = [otelcol.processor.batch.home_metrics.input]
