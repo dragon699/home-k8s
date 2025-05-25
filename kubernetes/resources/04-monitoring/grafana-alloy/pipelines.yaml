@@ -141,7 +141,7 @@ data:
 
         select {
           attr                     = "*"
-          include                  = "*"
+          include                  = ["*"]
         }
       }
 
