@@ -21,7 +21,7 @@ data:
 
 
     //////////////////////////////////////////////
-    // Collect kubernetes logs
+    // Collect logs from kubernetes pods
     //////////////////////////////////////////////
 
     // Discover pods
@@ -116,7 +116,7 @@ data:
 
 
     //////////////////////////////////////////////
-    // Collect kubernetes traces
+    // Collect traces from kubernetes pods
     //////////////////////////////////////////////
 
     // Auto-instrument traces
@@ -124,22 +124,22 @@ data:
       discovery {
         services {
           kubernetes {
-            namespace       = "ingress-nginx|metallb-system|longhorn|cert-manager|shared|monitoring|immich|teslamate|hostfabtech"
-            deployment_name = "."
+            namespace              = "ingress-nginx|metallb-system|longhorn|cert-manager|shared|monitoring|immich|teslamate|hostfabtech"
+            deployment_name        = "."
           }
         }
 
         exclude_services {
           kubernetes {
-            namespace       = "kube-system|kubernetes-dashboard|k0s-autopilot|flux-system|monitoring"
+            namespace              = "kube-system|kubernetes-dashboard|k0s-autopilot|flux-system|monitoring"
           }
         }
       }
 
       attributes {
         kubernetes {
-          enable            = "true"
-          cluster_name      = "home-k8s"
+          enable                   = "true"
+          cluster_name             = "home-k8s"
         }
       }
 
@@ -193,6 +193,8 @@ data:
         "url.path",
       ]
 
+      database_name_attribute      = "db.system.name"
+
       output {
         metrics                    = [otelcol.processor.batch.home_metrics.input]
       }
@@ -226,7 +228,7 @@ data:
         }
       }
 
-      metrics_flush_interval = "15s"
+      metrics_flush_interval       = "15s"
       namespace                    = "traces_spanmetrics"
 
       output {
