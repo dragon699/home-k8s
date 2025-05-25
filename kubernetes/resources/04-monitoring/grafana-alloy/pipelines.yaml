@@ -97,10 +97,6 @@ data:
         }
       }
 
-      stage.label_drop {
-        values        = ["service_name"]
-      }
-
       forward_to      = [loki.write.home_logs.receiver]
     }
 
@@ -165,6 +161,21 @@ data:
     // Batch traces
     otelcol.processor.batch "home_traces" {
       output {
+        traces                     = [otelcol.processor.filter.home_traces.input]
+      }
+    }
+
+    // Aggregate traces
+    otelcol.processor.filter "home_traces" {
+      error_mode                   = "ignore"
+
+      traces {
+        span = [
+          `kind.string == "Unspecified"`,
+        ]
+      }
+
+      output {
         traces                     = [
           otelcol.exporter.otlphttp.home_traces.input,
           otelcol.connector.servicegraph.home_metrics.input,
@@ -192,6 +203,7 @@ data:
         "http.request.method",
         "http.target",
         "url.path",
+
       ]
 
       database_name_attribute      = "db.system.name"
