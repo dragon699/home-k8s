@@ -276,7 +276,14 @@ data:
       honor_labels                 = true
       scrape_interval              = "10s"
   
-      forward_to                   = [otelcol.processor.filter.home_metrics.input]
+      forward_to                   = [otelcol.receiver.prometheus.home_metrics.receiver]
+    }
+
+    // Convert metrics from Prometheus to OTLP-based format
+    otelcol.receiver.prometheus "home_metrics" {
+      output {
+        metrics                    = [otelcol.processor.filter.home_metrics.input]
+      }
     }
 
     // Aggregate metrics
@@ -286,23 +293,16 @@ data:
 
       metrics {
         datapoint = [
-          `attributes["source"] == "beyla" and IsMatch(attributes["server"], "\b(?:\d{1,3}\.){3}\d{1,3}\b")`,
+          `attributes["source"] == "beyla" and IsMatch(attributes["server"], "^([0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3})$")`,
         ]
       }
 
-      output {
-        metrics                    = [otelcol.processor.batch.home_metrics.input]
-      }
-    }
-
-    // Batch metrics
-    otelcol.processor.batch "home_metrics" {
       output {
         metrics                    = [otelcol.exporter.prometheus.home_metrics.input]
       }
     }
 
-    // Convertmetrics from OTLP to Prometheus-based format
+    // Convert metrics from OTLP to Prometheus-based format
     otelcol.exporter.prometheus "home_metrics" {
       forward_to                   = [prometheus.remote_write.home_metrics.receiver]
     }
