@@ -231,6 +231,7 @@ data:
       metrics {
         datapoint = [
           `attributes["server"] == "unknown"`,
+          `attributes["client"] == "user" and not IsMatch(attributes["server"], ".*nginx.*")`,
         ]
       }
 
