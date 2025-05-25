@@ -283,6 +283,9 @@ data:
     prometheus.scrape "home_metrics" {
       targets                      = beyla.ebpf.home_discovery.targets
       honor_labels                 = true
+
+      scrape_interval              = "10s"
+  
       forward_to                   = [prometheus.remote_write.home_metrics.receiver]
     }
 
