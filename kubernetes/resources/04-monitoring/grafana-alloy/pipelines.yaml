@@ -138,6 +138,11 @@ data:
           enable                   = "true"
           cluster_name             = "home-k8s"
         }
+
+        select {
+          attr                     = "*"
+          include                  = "*"
+        }
       }
 
       metrics {
@@ -146,7 +151,6 @@ data:
           "application_process",
           "application_service_graph",
           "application_span",
-          "network",
         ]
       }
 
