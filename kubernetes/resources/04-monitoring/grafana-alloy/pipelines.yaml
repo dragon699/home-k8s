@@ -159,7 +159,6 @@ data:
 
       output {
         traces                     = [otelcol.processor.batch.home_traces.input]
-        metrics                    = [otelcol.processor.batch.home_metrics.input]
       }
     }
 
