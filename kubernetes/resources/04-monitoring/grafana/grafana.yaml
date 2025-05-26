@@ -96,7 +96,7 @@ spec:
 
       users:
         viewers_can_edit: true
-
+        default_theme: gloom
 
     extraVolumes:
     - name: datasources
