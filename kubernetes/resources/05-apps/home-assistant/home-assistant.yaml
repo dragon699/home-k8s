@@ -39,16 +39,30 @@ spec:
 
     configuration:
       enabled: true
-      trusted_proxies:
-      - 192.168.1.170/31
-      - 192.168.1.172/30
-      - 192.168.1.176/30
-      - 192.168.1.180/32
-      - 192.168.0.170/31
-      - 192.168.0.172/30
-      - 192.168.0.176/30
-      - 192.168.0.180/32
-      - 10.0.0.0/8
-      - 172.16.0.0/12
-      - 192.168.0.0/16
-      - 127.0.0.0/8
+      templateConfig: |-
+        # Loads default set of integrations. Do not remove.
+        default_config:
+
+        http:
+          use_x_forwarded_for: true
+          trusted_proxies:
+          - 192.168.1.170/31
+          - 192.168.1.172/30
+          - 192.168.1.176/30
+          - 192.168.1.180/32
+          - 192.168.0.170/31
+          - 192.168.0.172/30
+          - 192.168.0.176/30
+          - 192.168.0.180/32
+          - 10.0.0.0/8
+          - 172.16.0.0/12
+          - 192.168.0.0/16
+          - 127.0.0.0/8
+
+        # Load frontend themes from the themes folder
+        frontend:
+          themes: !include_dir_merge_named themes
+
+        automation: !include automations.yaml
+        script: !include scripts.yaml
+        scene: !include scenes.yaml
