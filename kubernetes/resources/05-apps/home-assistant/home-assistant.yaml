@@ -40,7 +40,6 @@ spec:
     configuration:
       enabled: true
       templateConfig: |-
-        # Loads default set of integrations. Do not remove.
         default_config:
 
         http:
@@ -59,10 +58,35 @@ spec:
           - 192.168.0.0/16
           - 127.0.0.0/8
 
-        # Load frontend themes from the themes folder
         frontend:
           themes: !include_dir_merge_named themes
 
         automation: !include automations.yaml
         script: !include scripts.yaml
         scene: !include scenes.yaml
+
+        proximity:
+          home_tesla:
+            zone: home
+            devices:
+              - device_tracker.tesla_location
+            tolerance: 10
+            unit_of_measurement: km
+
+        mqtt: !include mqtt_sensors.yaml
+    
+    additionalVolumes:
+    - name: teslamate-mqtt-sensors
+      configMap:
+        name: config-teslamate-mqtt-sensors
+    - name: teslamate-ui-lovelace
+      configMap:
+        name: config-teslamate-ui-lovelace
+
+    additionalMounts:
+    - name: teslamate-mqtt-sensors
+      mountPath: /config/mqtt_sensors.yaml
+      subPath: mqtt_sensors.yaml
+    - name: teslamate-ui-lovelace
+      mountPath: /config/ui-lovelace.yaml
+      subPath: ui-lovelace.yaml
