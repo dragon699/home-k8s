@@ -107,13 +107,3 @@ metadata:
     app.kubernetes.io/name: hostfabtech
     app.kubernetes.io/instance: hostfabtech
     app.kubernetes.io/env: home
-
----
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: home-assistant
-  labels:
-    app.kubernetes.io/name: home-assistant
-    app.kubernetes.io/instance: home-assistant
-    app.kubernetes.io/env: home
