@@ -35,4 +35,7 @@ spec:
 
     persistence:
       enabled: true
-      size: 15Gi
+      existingClaim: home-assistant
+
+    configuration:
+      enabled: true
