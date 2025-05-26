@@ -41,7 +41,10 @@ spec:
 
     envFromSecrets:
     - name: data-postgresql-shared-monitoring-grafana
-      prefix: pg-
+      prefix: pg-grafana-
+      optional: false
+    - name: data-postgresql-shared-teslamate-teslamate
+      prefix: pg-teslamate-
       optional: false
 
     admin:
@@ -81,10 +84,10 @@ spec:
 
       database:
         type: postgres
-        host: ${pg-pgbouncer-host}:${pg-pgbouncer-port}
-        name: ${pg-dbname}
-        user: ${pg-user}
-        password: ${pg-password}
+        host: ${pg-grafana-pgbouncer-host}:${pg-grafana-pgbouncer-port}
+        name: ${pg-grafana-dbname}
+        user: ${pg-grafana-user}
+        password: ${pg-grafana-password}
         ssl_mode: disable
 
       feature_toggles:
