@@ -39,6 +39,7 @@ spec:
 
     configuration:
       enabled: true
+      forceInit: true
       templateConfig: |-
         default_config:
 
@@ -65,13 +66,14 @@ spec:
         script: !include scripts.yaml
         scene: !include scenes.yaml
 
-        proximity:
-          home_tesla:
-            zone: home
-            devices:
-              - device_tracker.tesla_location
-            tolerance: 10
-            unit_of_measurement: km
+        Must be configured manually in the UI;
+        # proximity:
+        #   home_tesla:
+        #     zone: home
+        #     devices:
+        #       - device_tracker.tesla_location
+        #     tolerance: 10
+        #     unit_of_measurement: km
 
         mqtt: !include mqtt_sensors.yaml
     
@@ -79,14 +81,8 @@ spec:
     - name: teslamate-mqtt-sensors
       configMap:
         name: config-teslamate-mqtt-sensors
-    - name: teslamate-ui-lovelace
-      configMap:
-        name: config-teslamate-ui-lovelace
 
     additionalMounts:
     - name: teslamate-mqtt-sensors
       mountPath: /config/mqtt_sensors.yaml
       subPath: mqtt_sensors.yaml
-    - name: teslamate-ui-lovelace
-      mountPath: /config/ui-lovelace.yaml
-      subPath: ui-lovelace.yaml
