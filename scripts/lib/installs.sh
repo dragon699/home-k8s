@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Common install functions utilized by create_cluster.sh;
+# Common install functions utilized by create-cluster.sh;
 # Used to install dependency tools for k0s, kubernetes and CD (Flux);
 
 

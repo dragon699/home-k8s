@@ -107,7 +107,6 @@ spec:
   - name: 02-dependencies
   - name: 03-app-dependencies
 
-
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization

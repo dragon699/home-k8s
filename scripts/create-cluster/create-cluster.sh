@@ -6,7 +6,7 @@
 # !!
 
 # - Edit parameters in config.yaml located in the same directory;
-# - Run: ./create_cluster.sh to provision and deploy the entire kubernetes cluster;
+# - Run: ./create-cluster.sh to provision and deploy the entire kubernetes cluster;
 #   If parameters under `FluxCD configuration` were set;
 #   Flux (CD) will also be installed into the cluster;
 
@@ -23,7 +23,7 @@ function set_env {
 
     export SSH_KNOWN_HOSTS="/dev/null"
 
-    export K0SCTL_CONFIG_TEMPLATE_PATH="${LIB_DIR}/templates/k0s_cluster.yaml.j2"
+    export K0SCTL_CONFIG_TEMPLATE_PATH="${LIB_DIR}/templates/create-cluster/k0s-cluster.yaml.j2"
     export K0SCTL_CONFIG_INPUTS_PATH="${SCRIPT_DIR}/config.yaml"
     export K0SCTL_CLUSTER_NAME="$(yq e .cluster_name "${K0SCTL_CONFIG_INPUTS_PATH}")"
     export K0SCTL_CLUSTER_IS_DEFAULT="$(yq e .cluster_is_default "${K0SCTL_CONFIG_INPUTS_PATH}")"
@@ -32,15 +32,15 @@ function set_env {
     fail "${K0SCTL_CONFIG_INPUTS_PATH}: Invalid configuration!"
 
     export K0SCTL_CLUSTER_DIR="${HOME}/${K0SCTL_CLUSTER_NAME}"
-    export K0SCTL_DESTROY_SCRIPT_TEMPLATE_PATH="${LIB_DIR}/templates/destroy_cluster.sh.j2"
+    export K0SCTL_DESTROY_SCRIPT_TEMPLATE_PATH="${LIB_DIR}/templates/create-cluster/destroy-cluster.sh.j2"
     export K0SCTL_CONFIG_PATH="${K0SCTL_CLUSTER_DIR}/k0sctl.yaml"
-    export K0SCTL_DESTROY_SCRIPT_PATH="${K0SCTL_CLUSTER_DIR}/destroy_cluster.sh"
+    export K0SCTL_DESTROY_SCRIPT_PATH="${K0SCTL_CLUSTER_DIR}/destroy-cluster.sh"
     export K0SCTL_KUBECONFIG_PATH="${K0SCTL_CLUSTER_DIR}/kubeconfig"
 
     export FLUXCD_ENABLED="$(yq e .install_fluxcd "${K0SCTL_CONFIG_INPUTS_PATH}")"
     export FLUXCD_IMAGE_AUTOMATION="$(yq e .install_fluxcd_image_automation "${K0SCTL_CONFIG_INPUTS_PATH}")"
 
-    export REMOTE_SCRIPT="${LIB_DIR}/kubernetes_prerequisites.sh"
+    export REMOTE_SCRIPT="${LIB_DIR}/kubernetes-prerequisites.sh"
 }
 
 

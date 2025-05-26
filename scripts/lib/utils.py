@@ -330,7 +330,7 @@ def get_args():
             'func': lambda: CreateCluster.create_k0sctl_config(),
         },
         '--create-destroy-script': {
-            'help': 'Create destroy_cluster.sh script for deleting the k0s cluster',
+            'help': 'Create destroy-cluster.sh script for deleting the k0s cluster',
             'func': lambda: CreateCluster.create_destroy_script(),
         },
         '--get-flux-params': {
@@ -338,7 +338,7 @@ def get_args():
             'func': lambda: CreateCluster.get_flux_params(),
         },
         '--apply-vm-kubernetes-prerequisites': {
-            'help': 'Apply prerequisites for running k0sctl on VMs; Runs scripts/lib/kubernetes_prerequisites.sh',
+            'help': 'Apply prerequisites for running k0sctl on VMs; Runs scripts/lib/kubernetes-prerequisites.sh',
             'func': lambda: CreateCluster.apply_vm_kubernetes_prerequisites(),
         },
         '--import-grafana-dashboards': {
