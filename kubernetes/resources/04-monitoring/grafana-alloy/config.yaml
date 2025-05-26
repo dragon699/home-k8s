@@ -1,0 +1,10 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: config-grafana-alloy
+  namespace: monitoring
+data:
+  ENDPOINT_LOKI: "http://grafana-loki-gateway.monitoring.svc/loki/api/v1/push"
+  ENDPOINT_TEMPO: "http://grafana-tempo-distributor.monitoring.svc:4318"
+  ENDPOINT_VICTORIAMETRICS: "http://victoriametrics-vminsert.monitoring.svc:8480/insert/0/prometheus/api/v1/write"

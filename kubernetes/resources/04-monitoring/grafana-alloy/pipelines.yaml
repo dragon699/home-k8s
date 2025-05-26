@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: config-grafana-alloy
+  name: pipelines-grafana-alloy
   namespace: monitoring
 data:
   alloy.yaml: |-
@@ -105,7 +105,7 @@ data:
     // Write logs to Loki
     loki.write "home_logs" {
       endpoint {
-        url           = "http://grafana-loki-gateway.monitoring.svc/loki/api/v1/push"
+        url           = sys.env("ENDPOINT_LOKI")
       }
     }
 
@@ -183,7 +183,7 @@ data:
     // Write traces to Tempo
     otelcol.exporter.otlphttp "home_traces" {
       client {
-        endpoint                   = "http://grafana-tempo-distributor.monitoring.svc:4318"
+        endpoint                   = sys.env("ENDPOINT_TEMPO")
 
         tls {
           insecure                 = true
@@ -332,7 +332,7 @@ data:
     // Write metrics to VictoriaMetrics
     prometheus.remote_write "home_metrics" {
       endpoint {
-        url                        = "http://victoriametrics-vminsert.monitoring.svc:8480/insert/0/prometheus/api/v1/write"
+        url                        = sys.env("ENDPOINT_VICTORIAMETRICS")
       }
     }
 

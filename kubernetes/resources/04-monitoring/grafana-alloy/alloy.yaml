@@ -51,5 +51,9 @@ spec:
 
       configMap:
         create: false
-        name: config-grafana-alloy
+        name: pipelines-grafana-alloy
         key: alloy.yaml
+
+      envFrom:
+      - configMapRef:
+          name: config-grafana-alloy
