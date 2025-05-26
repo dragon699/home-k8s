@@ -19,7 +19,7 @@ spec:
     replicaCount: 1
 
     controller:
-      type: Deployment
+      type: StatefulSet
 
     env:
     - name: TZ
@@ -34,7 +34,7 @@ spec:
         memory: 768Mi
 
     persistence:
-      enabled: true
+      enabled: false
       existingClaim: home-assistant
 
     configuration:
