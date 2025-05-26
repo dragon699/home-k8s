@@ -12,7 +12,7 @@ data:
         unique_id: teslamate_1_display_name
         device: &teslamate_device_info
           identifiers: [teslamate_car_1]
-          configuration_url: mosquitto.teslamate.svc
+          configuration_url: https://sys:jTgz4VxDrVNeGkDdAt@car.k8s.iaminyourpc.xyz
           manufacturer: Tesla
           model: Model 3
           name: Model 3

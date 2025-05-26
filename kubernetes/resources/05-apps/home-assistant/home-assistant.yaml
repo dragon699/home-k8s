@@ -75,14 +75,14 @@ spec:
         #     tolerance: 10
         #     unit_of_measurement: km
 
-        mqtt: !include mqtt_sensors.yaml
+        # mqtt: !include mqtt_sensors.yaml
     
-    additionalVolumes:
-    - name: teslamate-mqtt-sensors
-      configMap:
-        name: config-teslamate-mqtt-sensors
+    # additionalVolumes:
+    # - name: teslamate-mqtt-sensors
+    #   configMap:
+    #     name: config-teslamate-mqtt-sensors
 
-    additionalMounts:
-    - name: teslamate-mqtt-sensors
-      mountPath: /config/mqtt_sensors.yaml
-      subPath: mqtt_sensors.yaml
+    # additionalMounts:
+    # - name: teslamate-mqtt-sensors
+    #   mountPath: /config/mqtt_sensors.yaml
+    #   subPath: mqtt_sensors.yaml
