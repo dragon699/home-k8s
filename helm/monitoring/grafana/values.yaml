@@ -9,7 +9,7 @@ resources:
     memory: 128Mi
   limits:
     cpu: 4
-    memory: 2Gi
+    memory: 3Gi
 
 persistence:
   enabled: false
@@ -96,6 +96,9 @@ extraVolumes:
 - name: dashboard-kubernetes-view-by-pods
   configMap:
     name: config-grafana-dashboard-kubernetes-view-by-pods
+- name: dashboard-kubernetes-cluster
+  configMap:
+    name: config-grafana-dashboard-kubernetes-cluster
 
 
 extraVolumeMounts:
@@ -109,3 +112,6 @@ extraVolumeMounts:
 - name: dashboard-kubernetes-view-by-pods
   mountPath: '/var/lib/grafana/dashboards/Kubernetes/view-by-pods.json'
   subPath: view-by-pods.json
+- name: dashboard-kubernetes-cluster
+  mountPath: '/var/lib/grafana/dashboards/Kubernetes/cluster.json'
+  subPath: cluster.json

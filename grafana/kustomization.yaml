@@ -8,3 +8,6 @@ configMapGenerator:
 - name: config-grafana-dashboard-kubernetes-view-by-pods
   files:
   - 'dashboards/Kubernetes/view-by-pods.json'
+- name: config-grafana-dashboard-kubernetes-cluster
+  files:
+  - 'dashboards/Kubernetes/cluster.json'
