@@ -12,7 +12,7 @@ spec:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  path: helm/kustomize
+  path: helm
   prune: true
   wait: true
   timeout: 35m
