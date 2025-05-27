@@ -20,4 +20,3 @@ spec:
     crds: CreateReplace
   upgrade:
     crds: CreateReplace
-  values: {}

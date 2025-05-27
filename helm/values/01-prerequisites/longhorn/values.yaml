@@ -1,0 +1,18 @@
+csi:
+  attacherReplicaCount: 1
+  provisionerReplicaCount: 1
+  resizerReplicaCount: 1
+  snapshotterReplicaCount: 1
+
+persistence:
+  defaultClassReplicaCount: 1
+  defaultDataLocality: best-effort
+  migratable: true
+
+defaultSettings:
+  defaultReplicaCount: 1
+  storageReservedPercentageForDefaultDisk: 10
+
+service:
+  ui:
+    type: ClusterIP

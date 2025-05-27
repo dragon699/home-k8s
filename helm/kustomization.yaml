@@ -1,10 +1,39 @@
 ---
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
+namespace: cert-manager
+generatorOptions:
+  disableNameSuffixHash: true
+configMapGenerator:
+- name: values-cert-manager
+  files: ['values/01-prerequisites/cert-manager/values.yaml']
+
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: longhorn
+generatorOptions:
+  disableNameSuffixHash: true
+configMapGenerator:
+- name: values-longhorn
+  files: ['values/01-prerequisites/longhorn/values.yaml']
+
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: ingress-nginx
+generatorOptions:
+  disableNameSuffixHash: true
+configMapGenerator:
+- name: values-ingress-nginx
+  files: ['values/02-dependencies/ingress-nginx/values.yaml']
+
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
 namespace: monitoring
 generatorOptions:
   disableNameSuffixHash: true
 configMapGenerator:
 - name: values-grafana
-  files:
-  - values/04-monitoring/grafana/values.yaml
+  files: ['values/04-monitoring/grafana/values.yaml']

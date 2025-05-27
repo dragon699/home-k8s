@@ -35,8 +35,6 @@ spec:
   prune: true
   wait: true
   timeout: 35m
-  dependsOn:
-  - name: flux-generators
 
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1

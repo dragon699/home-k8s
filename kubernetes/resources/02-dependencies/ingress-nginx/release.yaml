@@ -1,5 +1,5 @@
 ---
-apiVersion: helm.toolkit.fluxcd.io/v2beta2
+apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: ingress-nginx
@@ -15,11 +15,7 @@ spec:
       sourceRef:
         kind: HelmRepository
         name: ingress-nginx
-        namespace: ingress-nginx
-  values:
-    controller:
-      replicaCount: 1
-      hostNetwork: true
-      allowSnippetAnnotations: true
-      service:
-        externalTrafficPolicy: Local
+      interval: 10m0s
+  valuesFrom:
+  - name: values-ingress-nginx
+    kind: ConfigMap

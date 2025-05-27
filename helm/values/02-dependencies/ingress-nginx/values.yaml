@@ -1,0 +1,6 @@
+controller:
+  replicaCount: 1
+  hostNetwork: true
+  allowSnippetAnnotations: true
+  service:
+    externalTrafficPolicy: Local
