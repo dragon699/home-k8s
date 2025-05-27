@@ -83,12 +83,29 @@ grafana.ini:
     viewers_can_edit: true
     default_theme: gloom
 
+
+# Grafana provisioning
 extraVolumes:
 - name: datasources
   configMap:
     name: config-grafana-datasources
+- name: dashboards
+  configMap:
+    name: config-grafana-dashboards
+
+- name: dashboard-kubernetes-views-pods
+  configMap:
+    name: config-grafana-dashboard-kubernetes-views-pods
+
 
 extraVolumeMounts:
 - name: datasources
   mountPath: /etc/grafana/provisioning/datasources/datasources.yaml
   subPath: datasources.yaml
+- name: dashboards
+  mountPath: /etc/grafana/provisioning/dashboards/dashboards.yaml
+  subPath: dashboards.yaml
+
+- name: dashboard-kubernetes-views-pods
+  mountPath: '/var/lib/grafana/dashboards/Kubernetes/Views/Pods.json'
+  subPath: Pods.json

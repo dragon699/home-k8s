@@ -1,0 +1,23 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: config-grafana-dashboards
+  namespace: monitoring
+data:
+  providers.yaml: |
+    apiVersion: 1
+
+    providers:
+
+    - name: Kubernetes
+      folder: Kubernetes
+      folderUid: Kubernetes
+      orgId: 1
+      type: file
+      disableDeletion: true
+      allowUiUpdates: true
+      updateIntervalSeconds: 15
+      options:
+        path: /var/lib/grafana/dashboards/Kubernetes
+        foldersFromFilesStructure: true
