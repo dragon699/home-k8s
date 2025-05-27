@@ -2,7 +2,7 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: flux-generators
+  name: flux-helm-generator
   namespace: flux-system
 spec:
   suspend: false
@@ -74,7 +74,7 @@ spec:
   wait: true
   timeout: 35m
   dependsOn:
-  - name: flux-generators
+  - name: flux-helm-generator
   - name: flux-grafana-assets
   - name: 00-base
 
@@ -97,7 +97,7 @@ spec:
   wait: true
   timeout: 35m
   dependsOn:
-  - name: flux-generators
+  - name: flux-helm-generator
   - name: flux-grafana-assets
   - name: 00-base
   - name: 01-prerequisites
@@ -121,7 +121,7 @@ spec:
   wait: true
   timeout: 35m
   dependsOn:
-  - name: flux-generators
+  - name: flux-helm-generator
   - name: flux-grafana-assets
   - name: 00-base
   - name: 01-prerequisites
@@ -146,7 +146,7 @@ spec:
   wait: true
   timeout: 35m
   dependsOn:
-  - name: flux-generators
+  - name: flux-helm-generator
   - name: flux-grafana-assets
   - name: 00-base
   - name: 01-prerequisites
@@ -172,7 +172,7 @@ spec:
   wait: true
   timeout: 35m
   dependsOn:
-  - name: flux-generators
+  - name: flux-helm-generator
   - name: flux-grafana-assets
   - name: 00-base
   - name: 01-prerequisites
