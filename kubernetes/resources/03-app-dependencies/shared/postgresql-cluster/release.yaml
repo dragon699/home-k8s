@@ -1,0 +1,22 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: postgresql-shared
+  namespace: shared
+  labels:
+    env: home
+spec:
+  interval: 5m
+  chart:
+    spec:
+      chart: pg-db
+      version: 2.6.0
+      sourceRef:
+        name: percona
+        kind: HelmRepository
+      reconcileStrategy: ChartVersion
+      interval: 5m0s
+  valuesFrom:
+  - name: values-postgresql-shared
+    kind: ConfigMap

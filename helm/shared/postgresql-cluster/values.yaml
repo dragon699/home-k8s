@@ -1,0 +1,38 @@
+image: perconalab/percona-postgresql-operator:main-ppg17-postgres
+postgresVersion: 17
+
+proxy:
+  pgBouncer:
+    replicas: 1
+    config:
+      global:
+        client_tls_sslmode: allow
+
+instances:
+- name: shared
+  replicas: 1
+  dataVolumeClaimSpec:
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: 20Gi
+
+users:
+- name: teslamate-teslamate
+  secretName: data-postgresql-shared-teslamate-teslamate
+  databases:
+  - teslamate-teslamate
+  options: "SUPERUSER"
+
+- name: teslamate-grafana
+  secretName: data-postgresql-shared-teslamate-grafana
+  databases:
+  - teslamate-grafana
+  options: "SUPERUSER"
+
+- name: monitoring-grafana
+  secretName: data-postgresql-shared-monitoring-grafana
+  databases:
+  - monitoring-grafana
+  options: "SUPERUSER"
