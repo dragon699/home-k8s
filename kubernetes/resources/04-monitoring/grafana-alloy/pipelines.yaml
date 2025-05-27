@@ -172,11 +172,7 @@ data:
     // Batch traces
     otelcol.processor.batch "home_traces" {
       output {
-        traces                     = [
-          otelcol.exporter.otlphttp.home_traces.input,
-    //      otelcol.connector.servicegraph.home_metrics.input,
-    //      otelcol.connector.spanmetrics.home_metrics.input,
-        ]
+        traces                     = [otelcol.exporter.otlphttp.home_traces.input]
       }
     }
 
@@ -191,85 +187,6 @@ data:
         }
       }
     }
-
-    //    // Generate service graph metrics from traces
-    //    otelcol.connector.servicegraph "home_metrics" {
-    //      dimensions = [
-    //        "http.method",
-    //        "http.route",
-    //        "http.request.method",
-    //        "http.target",
-    //        "http.response.status_code",
-    //        "url.path",
-    //        "url.full",
-    //        "server.address",
-    //        "client.address",
-    //        "db.system.name",
-    //        "db.collection.name",
-    //        "db.operation.name",
-    //        "k8s.cluster.name",
-    //        "k8s.node.name",
-    //        "k8s.namespace.name",
-    //        "k8s.replicaset.name",
-    //        "k8s.deployment.name",
-    //        "k8s.pod.name",
-    //        "k8s.container.name",
-    //        "service.name",
-    //        "service.instance.id",
-    //      ]
-    //
-    //      database_name_attribute      = "db.system.name"
-    //
-    //      output {
-    //        metrics                    = [otelcol.processor.filter.home_metrics.input]
-    //      }
-    //    }
-    //
-    //    // Generate span metrics from traces
-    //    otelcol.connector.spanmetrics "home_metrics" {
-    //      dimension {
-    //        name                       = "http.method"
-    //        default                    = "GET"
-    //      }
-    //
-    //      dimension {
-    //        name                       = "http.request.method"
-    //        default                    = "GET"
-    //      }
-    //
-    //      dimension { name = "http.method" }
-    //      dimension { name = "http.route" }
-    //      dimension { name = "http.request.method" }
-    //      dimension { name = "http.target" }
-    //      dimension { name = "http.response.status_code" }
-    //      dimension { name = "url.path" }
-    //      dimension { name = "url.full" }
-    //      dimension { name = "server.address" }
-    //      dimension { name = "client.address" }
-    //      dimension { name = "db.system.name" }
-    //      dimension { name = "db.collection.name" }
-    //      dimension { name = "db.operation.name" }
-    //      dimension { name = "k8s.cluster.name" }
-    //      dimension { name = "k8s.node.name" }
-    //      dimension { name = "k8s.namespace.name" }
-    //      dimension { name = "k8s.replicaset.name" }
-    //      dimension { name = "k8s.deployment.name" }
-    //      dimension { name = "k8s.pod.name" }
-    //      dimension { name = "k8s.container.name" }
-    //      dimension { name = "service.name" }
-    //      dimension { name = "service.instance.id" }
-    //
-    //      histogram {
-    //        explicit {
-    //          buckets                  = ["50ms", "100ms", "250ms", "1s", "5s", "10s"]
-    //        }
-    //      }
-    //
-    //      output {
-    //        metrics                    = [otelcol.processor.batch.home_metrics.input]
-    //      }
-    //    }
-    //
 
     // Scrape metrics from Beyla
     prometheus.scrape "home_metrics" {

@@ -29,7 +29,7 @@ spec:
           memory: 256Mi
         limits:
           cpu: 4
-          memory: 2Gi
+          memory: 3Gi
 
       clustering:
         enabled: false
