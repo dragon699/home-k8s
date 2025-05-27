@@ -34,7 +34,7 @@
         "datasource": {
           "default": true,
           "type": "prometheus",
-          "uid": "event-tracking-prod-prometheus"
+          "uid": "internal-victoriametrics"
         },
         "description": "",
         "fieldConfig": {
@@ -82,7 +82,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "event-tracking-prod-prometheus"
+              "uid": "internal-victoriametrics"
             },
             "editorMode": "code",
             "expr": "(count(gotk_reconcile_condition{cluster=\"$cluster\", namespace=~\"$namespace\",type=\"Ready\",status=\"True\",kind=~\"GitRepository|HelmRepository|Bucket\"}) or vector(0))\n-\n(sum(gotk_reconcile_condition{cluster=\"$cluster\", namespace=~\"$namespace\",type=\"Ready\",status=\"Deleted\",kind=~\"GitRepository|HelmRepository|Bucket\"}) or vector(0))",
@@ -99,7 +99,7 @@
         "datasource": {
           "default": true,
           "type": "prometheus",
-          "uid": "event-tracking-prod-prometheus"
+          "uid": "internal-victoriametrics"
         },
         "description": "",
         "fieldConfig": {
@@ -153,7 +153,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "event-tracking-prod-prometheus"
+              "uid": "internal-victoriametrics"
             },
             "editorMode": "code",
             "exemplar": true,
@@ -171,7 +171,7 @@
         "datasource": {
           "default": true,
           "type": "prometheus",
-          "uid": "event-tracking-prod-prometheus"
+          "uid": "internal-victoriametrics"
         },
         "description": "",
         "fieldConfig": {
@@ -225,7 +225,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "event-tracking-prod-prometheus"
+              "uid": "internal-victoriametrics"
             },
             "editorMode": "code",
             "expr": "sum(gotk_reconcile_condition{cluster=\"$cluster\", namespace=~\"$namespace\",type=\"Ready\",status=\"False\",kind=~\"GitRepository|HelmRepository|Bucket\"})",
@@ -242,7 +242,7 @@
         "datasource": {
           "default": true,
           "type": "prometheus",
-          "uid": "event-tracking-prod-prometheus"
+          "uid": "internal-victoriametrics"
         },
         "description": "",
         "fieldConfig": {
@@ -296,7 +296,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "event-tracking-prod-prometheus"
+              "uid": "internal-victoriametrics"
             },
             "editorMode": "code",
             "expr": "sum(gotk_reconcile_condition{cluster=\"$cluster\", namespace=~\"$namespace\",type=\"Ready\",status=\"False\",kind=~\"Kustomization|HelmRelease\"})",
@@ -313,7 +313,7 @@
         "datasource": {
           "default": true,
           "type": "prometheus",
-          "uid": "event-tracking-prod-prometheus"
+          "uid": "internal-victoriametrics"
         },
         "description": "",
         "fieldConfig": {
@@ -371,7 +371,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "event-tracking-prod-prometheus"
+              "uid": "internal-victoriametrics"
             },
             "editorMode": "code",
             "expr": "sum(rate(gotk_reconcile_duration_seconds_sum{cluster=\"$cluster\", namespace=~\"$namespace\",kind=~\"GitRepository|HelmRepository|Bucket\"}[5m])) by (kind)\n/\nsum(rate(gotk_reconcile_duration_seconds_count{cluster=\"$cluster\", namespace=~\"$namespace\",kind=~\"GitRepository|HelmRepository|Bucket\"}[5m])) by (kind)",
@@ -388,7 +388,7 @@
         "datasource": {
           "default": true,
           "type": "prometheus",
-          "uid": "event-tracking-prod-prometheus"
+          "uid": "internal-victoriametrics"
         },
         "description": "",
         "fieldConfig": {
@@ -446,7 +446,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "event-tracking-prod-prometheus"
+              "uid": "internal-victoriametrics"
             },
             "editorMode": "code",
             "expr": "sum(rate(gotk_reconcile_duration_seconds_sum{cluster=\"$cluster\", namespace=~\"$namespace\",kind=~\"Kustomization|HelmRelease\"}[5m])) by (kind)\n/\nsum(rate(gotk_reconcile_duration_seconds_count{cluster=\"$cluster\", namespace=~\"$namespace\",kind=~\"Kustomization|HelmRelease\"}[5m])) by (kind)",
@@ -489,7 +489,7 @@
         "datasource": {
           "default": true,
           "type": "prometheus",
-          "uid": "event-tracking-prod-prometheus"
+          "uid": "internal-victoriametrics"
         },
         "description": "",
         "fieldConfig": {
@@ -566,7 +566,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "event-tracking-prod-prometheus"
+              "uid": "internal-victoriametrics"
             },
             "editorMode": "code",
             "expr": "label_join(gotk_reconcile_condition{cluster=\"$cluster\", namespace=~\"$namespace\",type=\"Ready\",status=\"False\",kind=~\"GitRepository|HelmRepository|Bucket\"}, \"join_key\", \",\", \"kind\", \"exported_namespace\", \"name\")",
@@ -579,7 +579,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "event-tracking-prod-prometheus"
+              "uid": "internal-victoriametrics"
             },
             "editorMode": "code",
             "expr": "label_join(gotk_suspend_status{cluster=\"$cluster\", namespace=~\"$namespace\",kind=~\"GitRepository|HelmRepository|Bucket\"} - 2, \"join_key\", \",\", \"kind\", \"exported_namespace\", \"name\")",
@@ -703,7 +703,7 @@
         "datasource": {
           "default": true,
           "type": "prometheus",
-          "uid": "event-tracking-prod-prometheus"
+          "uid": "internal-victoriametrics"
         },
         "description": "",
         "fieldConfig": {
@@ -805,7 +805,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "event-tracking-prod-prometheus"
+              "uid": "internal-victoriametrics"
             },
             "editorMode": "code",
             "expr": "label_join(gotk_reconcile_condition{cluster=\"$cluster\", namespace=~\"$namespace\",type=\"Ready\",status=\"False\",kind=~\"Kustomization|HelmRelease\"}, \"join_key\", \",\", \"kind\", \"exported_namespace\", \"name\")",
@@ -818,7 +818,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "event-tracking-prod-prometheus"
+              "uid": "internal-victoriametrics"
             },
             "editorMode": "code",
             "expr": "label_join(gotk_suspend_status{cluster=\"$cluster\", namespace=~\"$namespace\",kind=~\"Kustomization|HelmRelease\"} - 2, \"join_key\", \",\", \"kind\", \"exported_namespace\", \"name\")",
@@ -960,7 +960,7 @@
             "datasource": {
               "default": true,
               "type": "prometheus",
-              "uid": "event-tracking-prod-prometheus"
+              "uid": "internal-victoriametrics"
             },
             "description": "",
             "fieldConfig": {
@@ -1047,7 +1047,7 @@
               {
                 "datasource": {
                   "type": "prometheus",
-                  "uid": "event-tracking-prod-prometheus"
+                  "uid": "internal-victoriametrics"
                 },
                 "editorMode": "code",
                 "expr": "sum(rate(gotk_reconcile_duration_seconds_sum{cluster=\"$cluster\", namespace=~\"$namespace\",kind=~\"GitRepository|HelmRepository|Bucket\"}[5m])) by (kind, exported_namespace, name)\n/\nsum(rate(gotk_reconcile_duration_seconds_count{cluster=\"$cluster\", namespace=~\"$namespace\",kind=~\"GitRepository|HelmRepository|Bucket\"}[5m])) by (kind, exported_namespace, name)",
@@ -1064,7 +1064,7 @@
             "datasource": {
               "default": true,
               "type": "prometheus",
-              "uid": "event-tracking-prod-prometheus"
+              "uid": "internal-victoriametrics"
             },
             "description": "",
             "fieldConfig": {
@@ -1151,7 +1151,7 @@
               {
                 "datasource": {
                   "type": "prometheus",
-                  "uid": "event-tracking-prod-prometheus"
+                  "uid": "internal-victoriametrics"
                 },
                 "editorMode": "code",
                 "expr": "sum(rate(gotk_reconcile_duration_seconds_sum{cluster=\"$cluster\", namespace=~\"$namespace\",kind=~\"Kustomization|HelmRelease\"}[5m])) by (kind, name, exported_namespace)\n/\nsum(rate(gotk_reconcile_duration_seconds_count{cluster=\"$cluster\", namespace=~\"$namespace\",kind=~\"Kustomization|HelmRelease\"}[5m])) by (kind, name, exported_namespace)",
@@ -1194,12 +1194,12 @@
         {
           "current": {
             "selected": false,
-            "text": "event-tracking-prod",
-            "value": "event-tracking-prod"
+            "text": "home-k8s",
+            "value": "home-k8s"
           },
           "datasource": {
             "type": "prometheus",
-            "uid": "event-tracking-prod-prometheus"
+            "uid": "internal-victoriametrics"
           },
           "definition": "label_values(kube_node_info,cluster)",
           "hide": 0,
@@ -1228,7 +1228,7 @@
           },
           "datasource": {
             "type": "prometheus",
-            "uid": "event-tracking-prod-prometheus"
+            "uid": "internal-victoriametrics"
           },
           "definition": "label_values(kube_pod_info{cluster=\"$cluster\"},namespace)",
           "hide": 0,

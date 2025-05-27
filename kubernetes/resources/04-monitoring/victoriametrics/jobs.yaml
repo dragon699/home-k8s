@@ -13,7 +13,29 @@ data:
       static_configs:
       - targets:
         - localhost:8429
- 
+
+    - job_name: 'longhorn'
+      scrape_interval: 15s
+      scrape_timeout: 10s
+      metrics_path: /metrics
+      kubernetes_sd_configs:
+      - role: pod
+        namespaces:
+          names:
+          - longhorn
+      relabel_configs:
+      - source_labels: [__meta_kubernetes_pod_label_app]
+        action: keep
+        regex: longhorn-manager
+      - source_labels: [__meta_kubernetes_pod_ip]
+        target_label: __address__
+        replacement: $1:9500
+      - source_labels: [__meta_kubernetes_pod_node_name]
+        action: replace
+        target_label: instance
+      - target_label: cluster
+        replacement: home-k8s
+
     ## Kubernetes-related jobs
     - job_name: 'kubernetes-nodes'
       scheme: https
