@@ -3100,7 +3100,6 @@
       "victoriametrics",
       "kubernetes",
       "nodes",
-      "prometheus-node-exporter",
       "kube-state-metrics",
       "self-monitoring"
     ],

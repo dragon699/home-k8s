@@ -2384,7 +2384,6 @@
     "victoriametrics",
     "kubernetes",
     "pods",
-    "prometheus-node-exporter",
     "kube-state-metrics",
     "self-monitoring"
   ],

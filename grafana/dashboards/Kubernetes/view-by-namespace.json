@@ -2595,7 +2595,6 @@
       "victoriametrics",
       "kubernetes",
       "namespaces",
-      "prometheus-node-exporter",
       "kube-state-metrics",
       "self-monitoring"
     ],

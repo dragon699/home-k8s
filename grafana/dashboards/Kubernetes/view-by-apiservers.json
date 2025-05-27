@@ -1316,7 +1316,6 @@
       "victoriametrics",
       "kubernetes",
       "api-servers",
-      "prometheus-node-exporter",
       "kube-state-metrics",
       "self-monitoring"
     ],

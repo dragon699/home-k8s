@@ -21,3 +21,15 @@ data:
       options:
         path: /var/lib/grafana/dashboards/Kubernetes
         foldersFromFilesStructure: false
+
+    - name: Machines
+      folder: Machines
+      folderUid: Machines
+      orgId: 1
+      type: file
+      disableDeletion: true
+      allowUiUpdates: true
+      updateIntervalSeconds: 15
+      options:
+        path: /var/lib/grafana/dashboards/Machines
+        foldersFromFilesStructure: false

@@ -93,6 +93,8 @@ extraVolumes:
   configMap:
     name: config-grafana-dashboards
 
+
+# Provisioning: Dashboards
 - name: dashboard-kubernetes-cluster
   configMap:
     name: config-grafana-dashboard-kubernetes-cluster
@@ -109,6 +111,10 @@ extraVolumes:
   configMap:
     name: config-grafana-dashboard-kubernetes-view-by-pods
 
+- name: dashboard-machines-view-by-node
+  configMap:
+    name: config-grafana-dashboard-machines-view-by-node
+
 
 extraVolumeMounts:
 - name: datasources
@@ -118,6 +124,8 @@ extraVolumeMounts:
   mountPath: /etc/grafana/provisioning/dashboards/dashboards.yaml
   subPath: dashboards.yaml
 
+
+# Provisioning: Dashboards
 - name: dashboard-kubernetes-cluster
   mountPath: '/var/lib/grafana/dashboards/Kubernetes/cluster.json'
   subPath: cluster.json
@@ -133,3 +141,7 @@ extraVolumeMounts:
 - name: dashboard-kubernetes-view-by-pods
   mountPath: '/var/lib/grafana/dashboards/Kubernetes/view-by-pods.json'
   subPath: view-by-pods.json
+
+- name: dashboard-machines-view-by-node
+  mountPath: '/var/lib/grafana/dashboards/Machines/view-by-node.json'
+  subPath: view-by-node.json
