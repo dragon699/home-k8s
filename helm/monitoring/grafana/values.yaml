@@ -110,6 +110,9 @@ extraVolumes:
 - name: dashboard-kubernetes-view-by-pods
   configMap:
     name: config-grafana-dashboard-kubernetes-view-by-pods
+- name: dashboard-kubernetes-flux
+  configMap:
+    name: config-grafana-dashboard-kubernetes-flux
 
 - name: dashboard-machines-view-by-node
   configMap:
@@ -141,6 +144,9 @@ extraVolumeMounts:
 - name: dashboard-kubernetes-view-by-pods
   mountPath: '/var/lib/grafana/dashboards/Kubernetes/view-by-pods.json'
   subPath: view-by-pods.json
+- name: dashboard-kubernetes-flux
+  mountPath: '/var/lib/grafana/dashboards/Kubernetes/flux.json'
+  subPath: flux.json
 
 - name: dashboard-machines-view-by-node
   mountPath: '/var/lib/grafana/dashboards/Machines/view-by-node.json'
