@@ -4,7 +4,7 @@ kind: Kustomization
 namespace: monitoring
 
 configurations:
-- kustomizeconfig.yaml
+- config.yaml
 
 configMapGenerator:
 - name: release-values
@@ -12,7 +12,7 @@ configMapGenerator:
   - ../../../helm/04-monitoring/grafana/values.yaml
 
 resources:
-- resources/provisioning/datasources.yaml
 - resources/network.yaml
 - resources/data.yaml
 - resources/release.yaml
+- resources/provisioning/datasources.yaml
