@@ -15,98 +15,101 @@ spec:
         name: grafana
         namespace: monitoring
       interval: 10m0s
-  values:
-    replicas: 1
+  valuesFiles:
+  - ../../../helm/04-monitoring/grafana/values.yaml
 
-    deploymentStrategy:
-      type: Recreate
+  # values:
+  #   replicas: 1
 
-    resources:
-      requests:
-        cpu: 0.1
-        memory: 128Mi
-      limits:
-        cpu: 4
-        memory: 2Gi
+  #   deploymentStrategy:
+  #     type: Recreate
 
-    persistence:
-      enabled: false
+  #   resources:
+  #     requests:
+  #       cpu: 0.1
+  #       memory: 128Mi
+  #     limits:
+  #       cpu: 4
+  #       memory: 2Gi
 
-    imageRenderer:
-      enabled: true
-      image:
-        repository: grafana/grafana-image-renderer
-        # There's a bug causing Internal 500 error with later versions of image-renderer;
-        tag: 3.11.0
+  #   persistence:
+  #     enabled: false
 
-    envFromSecrets:
-    - name: data-postgresql-shared-monitoring-grafana
-      prefix: pg-grafana-
-      optional: false
-    - name: data-postgresql-shared-teslamate-teslamate
-      prefix: pg-teslamate-
-      optional: false
+  #   imageRenderer:
+  #     enabled: true
+  #     image:
+  #       repository: grafana/grafana-image-renderer
+  #       # There's a bug causing Internal 500 error with later versions of image-renderer;
+  #       tag: 3.11.0
 
-    admin:
-      existingSecret: auth-grafana
-      userKey: GRAFANA_ADMIN_USER
-      passwordKey: GRAFANA_ADMIN_PASSWORD
+  #   envFromSecrets:
+  #   - name: data-postgresql-shared-monitoring-grafana
+  #     prefix: pg-grafana-
+  #     optional: false
+  #   - name: data-postgresql-shared-teslamate-teslamate
+  #     prefix: pg-teslamate-
+  #     optional: false
 
-    grafana.ini:
-      server:
-        root_url: https://grafana.k8s.iaminyourpc.xyz
+  #   admin:
+  #     existingSecret: auth-grafana
+  #     userKey: GRAFANA_ADMIN_USER
+  #     passwordKey: GRAFANA_ADMIN_PASSWORD
 
-      date_formats:
-        default_timezone: Europe/Sofia
+  #   grafana.ini:
+  #     server:
+  #       root_url: https://grafana.k8s.iaminyourpc.xyz
 
-      log:
-        mode: console
-        level: warn
+  #     date_formats:
+  #       default_timezone: Europe/Sofia
 
-      log.frontend:
-        instrumentations_tracing_enabled: false
+  #     log:
+  #       mode: console
+  #       level: warn
 
-      unified_alerting.screenshots:
-        capture: true
+  #     log.frontend:
+  #       instrumentations_tracing_enabled: false
 
-      auth.anonymous:
-        hide_version: true
+  #     unified_alerting.screenshots:
+  #       capture: true
 
-      auth:
-        login_maximum_lifetime_duration: 3d
-        login_maximum_inactive_lifetime_duration: 2h
-        login_cookie_name: __Host-grafana_session
+  #     auth.anonymous:
+  #       hide_version: true
 
-      security:
-        cookie_secure: true
-        cookie_samesite: strict
-        content_security_policy: true
+  #     auth:
+  #       login_maximum_lifetime_duration: 3d
+  #       login_maximum_inactive_lifetime_duration: 2h
+  #       login_cookie_name: __Host-grafana_session
 
-      database:
-        type: postgres
-        host: ${pg-grafana-pgbouncer-host}:${pg-grafana-pgbouncer-port}
-        name: ${pg-grafana-dbname}
-        user: ${pg-grafana-user}
-        password: ${pg-grafana-password}
-        ssl_mode: disable
+  #     security:
+  #       cookie_secure: true
+  #       cookie_samesite: strict
+  #       content_security_policy: true
 
-      feature_toggles:
-        enable: nestedFolders
-        provisioning: true
-        kubernetesDashboards: true
-        kubernetesClientDashboardsFolders: true
-        grafanaAPIServerEnsureKubectlAccess: true
+  #     database:
+  #       type: postgres
+  #       host: ${pg-grafana-pgbouncer-host}:${pg-grafana-pgbouncer-port}
+  #       name: ${pg-grafana-dbname}
+  #       user: ${pg-grafana-user}
+  #       password: ${pg-grafana-password}
+  #       ssl_mode: disable
 
-      users:
-        viewers_can_edit: true
-        default_theme: gloom
+  #     feature_toggles:
+  #       enable: nestedFolders
+  #       provisioning: true
+  #       kubernetesDashboards: true
+  #       kubernetesClientDashboardsFolders: true
+  #       grafanaAPIServerEnsureKubectlAccess: true
 
-    extraVolumes:
-    - name: datasources
-      configMap:
-        name: config-grafana-datasources
+  #     users:
+  #       viewers_can_edit: true
+  #       default_theme: gloom
 
-    extraVolumeMounts:
-    - name: datasources
-      mountPath: /etc/grafana/provisioning/datasources/datasources.yaml
-      subPath: datasources.yaml
+  #   extraVolumes:
+  #   - name: datasources
+  #     configMap:
+  #       name: config-grafana-datasources
+
+  #   extraVolumeMounts:
+  #   - name: datasources
+  #     mountPath: /etc/grafana/provisioning/datasources/datasources.yaml
+  #     subPath: datasources.yaml
