@@ -7,4 +7,4 @@ generatorOptions:
 configMapGenerator:
 - name: config-grafana-dashboard-kubernetes-view-by-pods
   files:
-  - 'dashboards/Kubernetes/View by Pods.json'
+  - 'dashboards/Kubernetes/view-by-pods.json'

@@ -107,5 +107,5 @@ extraVolumeMounts:
   subPath: dashboards.yaml
 
 - name: dashboard-kubernetes-view-by-pods
-  mountPath: '/var/lib/grafana/dashboards/Kubernetes/View by Pods.json'
+  mountPath: '/var/lib/grafana/dashboards/Kubernetes/view-by-pods.json'
   subPath: Pods.json
