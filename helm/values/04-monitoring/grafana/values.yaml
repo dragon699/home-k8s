@@ -1,0 +1,94 @@
+replicas: 1
+
+deploymentStrategy:
+  type: Recreate
+
+resources:
+  requests:
+    cpu: 0.1
+    memory: 128Mi
+  limits:
+    cpu: 4
+    memory: 2Gi
+
+persistence:
+  enabled: false
+
+imageRenderer:
+  enabled: true
+  image:
+    repository: grafana/grafana-image-renderer
+    # There's a bug causing Internal 500 error with later versions of image-renderer;
+    tag: 3.11.0
+
+envFromSecrets:
+- name: data-postgresql-shared-monitoring-grafana
+  prefix: pg-grafana-
+  optional: false
+- name: data-postgresql-shared-teslamate-teslamate
+  prefix: pg-teslamate-
+  optional: false
+
+admin:
+  existingSecret: auth-grafana
+  userKey: GRAFANA_ADMIN_USER
+  passwordKey: GRAFANA_ADMIN_PASSWORD
+
+grafana.ini:
+  server:
+    root_url: https://grafana.k8s.iaminyourpc.xyz
+
+  date_formats:
+    default_timezone: Europe/Sofia
+
+  log:
+    mode: console
+    level: warn
+
+  log.frontend:
+    instrumentations_tracing_enabled: false
+
+  unified_alerting.screenshots:
+    capture: true
+
+  auth.anonymous:
+    hide_version: true
+
+  auth:
+    login_maximum_lifetime_duration: 3d
+    login_maximum_inactive_lifetime_duration: 2h
+    login_cookie_name: __Host-grafana_session
+
+  security:
+    cookie_secure: true
+    cookie_samesite: strict
+    content_security_policy: true
+
+  database:
+    type: postgres
+    host: ${pg-grafana-pgbouncer-host}:${pg-grafana-pgbouncer-port}
+    name: ${pg-grafana-dbname}
+    user: ${pg-grafana-user}
+    password: ${pg-grafana-password}
+    ssl_mode: disable
+
+  feature_toggles:
+    enable: nestedFolders
+    provisioning: true
+    kubernetesDashboards: true
+    kubernetesClientDashboardsFolders: true
+    grafanaAPIServerEnsureKubectlAccess: true
+
+  users:
+    viewers_can_edit: true
+    default_theme: gloom
+
+extraVolumes:
+- name: datasources
+  configMap:
+    name: config-grafana-datasources
+
+extraVolumeMounts:
+- name: datasources
+  mountPath: /etc/grafana/provisioning/datasources/datasources.yaml
+  subPath: datasources.yaml

@@ -2,12 +2,31 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
+  name: flux-generators
+  namespace: flux-system
+spec:
+  suspend: false
+  interval: 10m0s
+  retryInterval: 15s
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  path: helm/kustomize
+  prune: true
+  wait: true
+  timeout: 35m
+
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
   name: 00-base
   namespace: flux-system
 spec:
   suspend: false
   interval: 10m0s
-  retryInterval: 30s
+  retryInterval: 15s
   sourceRef:
     kind: GitRepository
     name: flux-system
@@ -16,6 +35,8 @@ spec:
   prune: true
   wait: true
   timeout: 35m
+  dependsOn:
+  - name: flux-generators
 
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
@@ -26,7 +47,7 @@ metadata:
 spec:
   suspend: false
   interval: 10m0s
-  retryInterval: 30s
+  retryInterval: 15s
   sourceRef:
     kind: GitRepository
     name: flux-system
@@ -36,6 +57,7 @@ spec:
   wait: true
   timeout: 35m
   dependsOn:
+  - name: flux-generators
   - name: 00-base
 
 ---
@@ -47,7 +69,7 @@ metadata:
 spec:
   suspend: false
   interval: 10m0s
-  retryInterval: 30s
+  retryInterval: 15s
   sourceRef:
     kind: GitRepository
     name: flux-system
@@ -57,6 +79,7 @@ spec:
   wait: true
   timeout: 35m
   dependsOn:
+  - name: flux-generators
   - name: 00-base
   - name: 01-prerequisites
 
@@ -69,7 +92,7 @@ metadata:
 spec:
   suspend: false
   interval: 10m0s
-  retryInterval: 30s
+  retryInterval: 15s
   sourceRef:
     kind: GitRepository
     name: flux-system
@@ -79,6 +102,7 @@ spec:
   wait: true
   timeout: 35m
   dependsOn:
+  - name: flux-generators
   - name: 00-base
   - name: 01-prerequisites
   - name: 02-dependencies
@@ -92,7 +116,7 @@ metadata:
 spec:
   suspend: false
   interval: 10m0s
-  retryInterval: 30s
+  retryInterval: 15s
   sourceRef:
     kind: GitRepository
     name: flux-system
@@ -102,6 +126,7 @@ spec:
   wait: true
   timeout: 35m
   dependsOn:
+  - name: flux-generators
   - name: 00-base
   - name: 01-prerequisites
   - name: 02-dependencies
@@ -116,7 +141,7 @@ metadata:
 spec:
   suspend: false
   interval: 10m0s
-  retryInterval: 30s
+  retryInterval: 15s
   sourceRef:
     kind: GitRepository
     name: flux-system
@@ -126,6 +151,7 @@ spec:
   wait: true
   timeout: 35m
   dependsOn:
+  - name: flux-generators
   - name: 00-base
   - name: 01-prerequisites
   - name: 02-dependencies
