@@ -26,7 +26,20 @@
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
   "id": 18,
-  "links": [],
+  "links": [
+    {
+      "asDropdown": false,
+      "icon": "external link",
+      "includeVars": false,
+      "keepTime": false,
+      "tags": [],
+      "targetBlank": true,
+      "title": "Open FluxCD",
+      "tooltip": "Open FluxCD (Capacitor UI) in a new tab",
+      "type": "link",
+      "url": "http://flux.k8s.iaminyourpc.xyz/"
+    }
+  ],
   "panels": [
     {
       "datasource": {

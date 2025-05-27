@@ -38,7 +38,7 @@
       "title": "Open Longhorn",
       "tooltip": "Open Longhorn in a new tab",
       "type": "link",
-      "url": "https://longhorn.monitor.procreditbank.bg:30443"
+      "url": "http://longhorn.k8s.iaminyourpc.xyz/"
     }
   ],
   "liveNow": false,
