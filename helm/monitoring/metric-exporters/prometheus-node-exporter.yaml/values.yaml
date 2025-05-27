@@ -1,0 +1,18 @@
+resources:
+  requests:
+    cpu: 0.1
+    memory: 16Mi
+  limits:
+    cpu: 0.5
+    memory: 128Mi
+
+extraArgs:
+- --collector.disable-defaults
+- --collector.cpu
+- --collector.diskstats
+- --collector.filesystem
+- --collector.loadavg
+- --collector.meminfo
+- --collector.vmstat
+- --collector.netdev
+- --collector.processes

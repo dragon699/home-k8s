@@ -1,0 +1,42 @@
+resources:
+  requests:
+    cpu: 0.1
+    memory: 128Mi
+  limits:
+    cpu: 6
+    memory: 4Gi
+
+persistence:
+  enabled: true
+  size: 64Gi
+
+mode: standalone
+
+auth:
+  existingSecret: auth-minio
+  rootUserSecretKey: MINIO_SERVER_ROOT_USER
+  rootPasswordSecretKey: MINIO_SERVER_ROOT_PASSWORD
+
+extraEnvVarsSecret: auth-minio
+
+provisioning:
+  enabled: true
+  buckets:
+  - name: loki-chunks
+    lifecycle:
+    - id: retention
+      disabled: false
+      expiry:
+        days: 45
+  - name: loki-ruler
+    lifecycle:
+    - id: retention
+      disabled: false
+      expiry:
+        days: 45
+  - name: tempo
+    lifecycle:
+    - id: retention
+      disabled: false
+      expiry:
+        days: 10

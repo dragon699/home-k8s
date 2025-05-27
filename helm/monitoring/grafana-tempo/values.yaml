@@ -1,0 +1,153 @@
+global_overrides:
+  defaults:
+    ingestion:
+      rate_limit_bytes: 32000000
+      burst_size_bytes: 48000000
+      max_traces_per_user: 50000
+  metrics_generator_processors:
+  - local-blocks
+  - service-graphs
+  - span-metrics
+
+traces:
+  otlp:
+    http:
+      enabled: true
+  zipkin:
+    enabled: false
+  jaeger:
+    thriftHttp:
+      enabled: false
+  opencensus:
+    enabled: false
+
+storage:
+  trace:
+    backend: s3
+    s3:
+      access_key: "${MINIO_SERVER_ROOT_USER}"
+      secret_key: "${MINIO_SERVER_ROOT_PASSWORD}"
+      endpoint: "${MINIO_SERVER_HOST}:${MINIO_SERVICE_PORT}"
+      bucket: tempo
+      insecure: true
+
+metricsGenerator:
+  enabled: false
+  config:
+    registry:
+      external_labels:
+        source: tempo
+    processor:
+      span_metrics:
+        enable_target_info: true
+        dimensions:
+        - service.name
+        - service.namespace
+        - service.instance.id
+        - server.address
+        - server.port
+        - url.path
+        - url.query
+        - url.full
+        - db.name
+        - db.statement
+        - db.system.name
+        - db.operation.name
+        - db.collection.name
+        - http.route
+        - http.request.method
+        - http.response.status_code
+        - k8s.cluster.name
+        - k8s.container.name
+        - k8s.deployment.name
+        - k8s.node.name
+        - k8s.pod.name
+        - k8s.replicaset.name
+    storage:
+      remote_write:
+      - url: http://victoriametrics-vminsert.monitoring.svc:8480/insert/0/prometheus/api/v1/write
+        send_exemplars: true
+  extraArgs:
+  - '-config.expand-env=true'
+  extraEnvFrom:
+  - secretRef:
+      name: auth-minio
+
+minio:
+  enabled: false
+
+distributor:
+  resources:
+    requests:
+      cpu: 0.1
+      memory: 128Mi
+    limits:
+      cpu: 2
+      memory: 2Gi
+  extraArgs:
+  - '-config.expand-env=true'
+  extraEnvFrom:
+  - secretRef:
+      name: auth-minio
+
+ingester:
+  replicas: 1
+  resources:
+    requests:
+      cpu: 0.1
+      memory: 128Mi
+    limits:
+      cpu: 4
+      memory: 4Gi
+  config:
+    replication_factor: 1
+  extraArgs:
+  - '-config.expand-env=true'
+  extraEnvFrom:
+  - secretRef:
+      name: auth-minio
+
+compactor:
+  resources:
+    requests:
+      cpu: 0.1
+      memory: 164Mi
+    limits:
+      cpu: 2
+      memory: 2Gi
+  extraArgs:
+  - '-config.expand-env=true'
+  extraEnvFrom:
+  - secretRef:
+      name: auth-minio
+  config:
+    compaction:
+      block_retention: 4300h
+
+querier:
+  resources:
+    requests:
+      cpu: 0.1
+      memory: 64Mi
+    limits:
+      cpu: 2
+      memory: 2Gi
+  extraArgs:
+  - '-config.expand-env=true'
+  extraEnvFrom:
+  - secretRef:
+      name: auth-minio
+
+queryFrontend:
+  resources:
+    requests:
+      cpu: 0.1
+      memory: 64Mi
+    limits:
+      cpu: 1
+      memory: 256Mi
+  extraArgs:
+  - '-config.expand-env=true'
+  extraEnvFrom:
+  - secretRef:
+      name: auth-minio
