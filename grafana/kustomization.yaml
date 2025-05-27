@@ -5,6 +5,6 @@ namespace: monitoring
 generatorOptions:
   disableNameSuffixHash: true
 configMapGenerator:
-- name: config-grafana-dashboard-kubernetes-views-pods
+- name: config-grafana-dashboard-kubernetes-view-by-pods
   files:
-  - 'dashboards/Kubernetes/Views/Pods.json'
+  - 'dashboards/Kubernetes/View by Pods.json'

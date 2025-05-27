@@ -93,9 +93,9 @@ extraVolumes:
   configMap:
     name: config-grafana-dashboards
 
-- name: dashboard-kubernetes-views-pods
+- name: dashboard-kubernetes-view-by-pods
   configMap:
-    name: config-grafana-dashboard-kubernetes-views-pods
+    name: config-grafana-dashboard-kubernetes-view-by-pods
 
 
 extraVolumeMounts:
@@ -106,6 +106,6 @@ extraVolumeMounts:
   mountPath: /etc/grafana/provisioning/dashboards/dashboards.yaml
   subPath: dashboards.yaml
 
-- name: dashboard-kubernetes-views-pods
-  mountPath: '/var/lib/grafana/dashboards/Kubernetes/Views/Pods.json'
+- name: dashboard-kubernetes-view-by-pods
+  mountPath: '/var/lib/grafana/dashboards/Kubernetes/View by Pods.json'
   subPath: Pods.json

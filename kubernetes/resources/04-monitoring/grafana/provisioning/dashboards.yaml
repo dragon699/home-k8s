@@ -20,4 +20,4 @@ data:
       updateIntervalSeconds: 15
       options:
         path: /var/lib/grafana/dashboards/Kubernetes
-        foldersFromFilesStructure: true
+        foldersFromFilesStructure: false

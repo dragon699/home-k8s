@@ -2501,7 +2501,7 @@
   },
   "timepicker": {},
   "timezone": "",
-  "title": "Pods",
+  "title": "View by Pods",
   "uid": "k8s_views_podss",
   "version": 0
 }
