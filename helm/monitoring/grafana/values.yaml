@@ -93,12 +93,21 @@ extraVolumes:
   configMap:
     name: config-grafana-dashboards
 
-- name: dashboard-kubernetes-view-by-pods
-  configMap:
-    name: config-grafana-dashboard-kubernetes-view-by-pods
 - name: dashboard-kubernetes-cluster
   configMap:
     name: config-grafana-dashboard-kubernetes-cluster
+- name: dashboard-kubernetes-view-by-nodes
+  configMap:
+    name: config-grafana-dashboard-kubernetes-view-by-nodes
+- name: dashboard-kubernetes-view-by-apiservers
+  configMap:
+    name: config-grafana-dashboard-kubernetes-view-by-apiservers
+- name: dashboard-kubernetes-view-by-namespace
+  configMap:
+    name: config-grafana-dashboard-kubernetes-view-by-namespace
+- name: dashboard-kubernetes-view-by-pods
+  configMap:
+    name: config-grafana-dashboard-kubernetes-view-by-pods
 
 
 extraVolumeMounts:
@@ -109,9 +118,18 @@ extraVolumeMounts:
   mountPath: /etc/grafana/provisioning/dashboards/dashboards.yaml
   subPath: dashboards.yaml
 
-- name: dashboard-kubernetes-view-by-pods
-  mountPath: '/var/lib/grafana/dashboards/Kubernetes/view-by-pods.json'
-  subPath: view-by-pods.json
 - name: dashboard-kubernetes-cluster
   mountPath: '/var/lib/grafana/dashboards/Kubernetes/cluster.json'
   subPath: cluster.json
+- name: dashboard-kubernetes-view-by-nodes
+  mountPath: '/var/lib/grafana/dashboards/Kubernetes/view-by-nodes.json'
+  subPath: view-by-nodes.json
+- name: dashboard-kubernetes-view-by-apiservers
+  mountPath: '/var/lib/grafana/dashboards/Kubernetes/view-by-apiservers.json'
+  subPath: view-by-apiservers.json
+- name: dashboard-kubernetes-view-by-namespace
+  mountPath: '/var/lib/grafana/dashboards/Kubernetes/view-by-namespace.json'
+  subPath: view-by-namespace.json
+- name: dashboard-kubernetes-view-by-pods
+  mountPath: '/var/lib/grafana/dashboards/Kubernetes/view-by-pods.json'
+  subPath: view-by-pods.json

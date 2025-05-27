@@ -5,9 +5,18 @@ namespace: monitoring
 generatorOptions:
   disableNameSuffixHash: true
 configMapGenerator:
-- name: config-grafana-dashboard-kubernetes-view-by-pods
-  files:
-  - 'dashboards/Kubernetes/view-by-pods.json'
 - name: config-grafana-dashboard-kubernetes-cluster
   files:
   - 'dashboards/Kubernetes/cluster.json'
+- name: config-grafana-dashboard-kubernetes-view-by-nodes
+  files:
+  - 'dashboards/Kubernetes/view-by-nodes.json'
+- name: config-grafana-dashboard-kubernetes-view-by-apiservers
+  files:
+  - 'dashboards/Kubernetes/view-by-apiservers.json'
+- name: config-grafana-dashboard-kubernetes-view-by-namespace
+  files:
+  - 'dashboards/Kubernetes/view-by-namespace.json'
+- name: config-grafana-dashboard-kubernetes-view-by-pods
+  files:
+  - 'dashboards/Kubernetes/view-by-pods.json'
