@@ -113,10 +113,14 @@ extraVolumes:
 - name: dashboard-kubernetes-flux
   configMap:
     name: config-grafana-dashboard-kubernetes-flux
+- name: dashboard-kubernetes-longhorn
+  configMap:
+    name: config-grafana-dashboard-kubernetes-longhorn
 
 - name: dashboard-machines-view-by-node
   configMap:
     name: config-grafana-dashboard-machines-view-by-node
+
 
 
 extraVolumeMounts:
@@ -147,6 +151,9 @@ extraVolumeMounts:
 - name: dashboard-kubernetes-flux
   mountPath: '/var/lib/grafana/dashboards/Kubernetes/flux.json'
   subPath: flux.json
+- name: dashboard-kubernetes-longhorn
+  mountPath: '/var/lib/grafana/dashboards/Kubernetes/longhorn.json'
+  subPath: longhorn.json
 
 - name: dashboard-machines-view-by-node
   mountPath: '/var/lib/grafana/dashboards/Machines/view-by-node.json'

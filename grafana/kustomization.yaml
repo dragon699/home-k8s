@@ -24,6 +24,9 @@ configMapGenerator:
 - name: config-grafana-dashboard-kubernetes-flux
   files:
   - 'dashboards/Kubernetes/flux.json'
+- name: config-grafana-dashboard-kubernetes-longhorn
+  files:
+  - 'dashboards/Kubernetes/longhorn.json'
 
 - name: config-grafana-dashboard-machines-view-by-node
   files:
