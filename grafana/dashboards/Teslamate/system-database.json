@@ -1551,7 +1551,8 @@
     "home",
     "postgresql",
     "car",
-    "system"
+    "system",
+    "database"
   ],
   "templating": {
     "list": [

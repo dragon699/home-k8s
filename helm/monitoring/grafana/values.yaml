@@ -182,6 +182,18 @@ extraVolumes:
 - name: dashboard-teslamate-places-visits
   configMap:
     name: config-grafana-dashboard-teslamate-places-visits
+- name: dashboard-teslamate-driving-dutch-tax
+  configMap:
+    name: config-grafana-dashboard-teslamate-driving-dutch-tax
+- name: dashboard-teslamate-charging-details
+  configMap:
+    name: config-grafana-dashboard-teslamate-charging-details
+- name: dashboard-teslamate-driving-details
+  configMap:
+    name: config-grafana-dashboard-teslamate-driving-details
+- name: dashboard-teslamate-system-root
+  configMap:
+    name: config-grafana-dashboard-teslamate-system-root
 
 
 extraVolumeMounts:
@@ -281,3 +293,15 @@ extraVolumeMounts:
 - name: dashboard-teslamate-places-visits
   mountPath: '/var/lib/grafana/dashboards/Teslamate/places-visits.json'
   subPath: places-visits.json
+- name: dashboard-teslamate-driving-dutch-tax
+  mountPath: '/var/lib/grafana/dashboards/Teslamate/driving-dutch-tax.json'
+  subPath: driving-dutch-tax.json
+- name: dashboard-teslamate-charging-details
+  mountPath: '/var/lib/grafana/dashboards/Teslamate/charging-details.json'
+  subPath: charging-details.json
+- name: dashboard-teslamate-driving-details
+  mountPath: '/var/lib/grafana/dashboards/Teslamate/driving-details.json'
+  subPath: driving-details.json
+- name: dashboard-teslamate-system-root
+  mountPath: '/var/lib/grafana/dashboards/Teslamate/system-root.json'
+  subPath: system-root.json

@@ -92,3 +92,15 @@ configMapGenerator:
 - name: config-grafana-dashboard-teslamate-places-visits
   files:
   - 'dashboards/Teslamate/places-visits.json'
+- name: config-grafana-dashboard-teslamate-driving-dutch-tax
+  files:
+  - 'dashboards/Teslamate/driving-dutch-tax.json'
+- name: config-grafana-dashboard-teslamate-charging-details
+  files:
+  - 'dashboards/Teslamate/charging-details.json'
+- name: config-grafana-dashboard-teslamate-driving-details
+  files:
+  - 'dashboards/Teslamate/driving-details.json'
+- name: config-grafana-dashboard-teslamate-system-root
+  files:
+  - 'dashboards/Teslamate/system-root.json'
