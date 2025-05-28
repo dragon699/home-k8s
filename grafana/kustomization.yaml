@@ -31,3 +31,16 @@ configMapGenerator:
 - name: config-grafana-dashboard-machines-view-by-node
   files:
   - 'dashboards/Machines/view-by-node.json'
+
+- name: config-grafana-dashboard-teslamate-battery-health
+  files:
+  - 'dashboards/Teslamate/battery-health.json'
+- name: config-grafana-dashboard-teslamate-charging-level
+  files:
+  - 'dashboards/Teslamate/charging-level.json'
+- name: config-grafana-dashboard-teslamate-charging-history
+  files:
+  - 'dashboards/Teslamate/charging-history.json'
+- name: config-grafana-dashboard-teslamate-charging-stats
+  files:
+  - 'dashboards/Teslamate/charging-stats.json'

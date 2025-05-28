@@ -11,27 +11,6 @@ data:
 
     datasources:
 
-    - name: Teslamate
-      type: grafana-postgresql-datasource
-      uid: internal-teslamate
-      url: ${pg-teslamate-pgbouncer-host}:${pg-teslamate-pgbouncer-port}
-      access: proxy
-      isDefault: false
-      editable: false
-      orgId: 1
-      basicAuth: false
-      user: ${pg-teslamate-user}
-      jsonData:
-        database: ${pg-teslamate-dbname}
-        connMaxLifetime: 14400
-        maxIdleConns: 100
-        maxIdleConnsAuto: true
-        maxOpenConns: 100
-        postgresVersion: 1500
-        sslmode: disable
-      secureJsonData:
-        password: ${pg-teslamate-password}
-
     - name: Loki
       type: loki
       uid: internal-loki
@@ -101,3 +80,24 @@ data:
           tags:
           - key: service.name
             value: app
+
+    - name: Teslamate
+      type: grafana-postgresql-datasource
+      uid: internal-teslamate
+      url: ${pg-teslamate-pgbouncer-host}:${pg-teslamate-pgbouncer-port}
+      access: proxy
+      isDefault: false
+      editable: false
+      orgId: 1
+      basicAuth: false
+      user: ${pg-teslamate-user}
+      jsonData:
+        database: ${pg-teslamate-dbname}
+        connMaxLifetime: 14400
+        maxIdleConns: 500
+        maxIdleConnsAuto: true
+        maxOpenConns: 500
+        postgresVersion: 1500
+        sslmode: disable
+      secureJsonData:
+        password: ${pg-teslamate-password}

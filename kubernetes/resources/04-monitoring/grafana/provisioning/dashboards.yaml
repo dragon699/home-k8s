@@ -33,3 +33,15 @@ data:
       options:
         path: /var/lib/grafana/dashboards/Machines
         foldersFromFilesStructure: false
+
+    - name: Teslamate
+      folder: Teslamate
+      folderUid: Teslamate
+      orgId: 1
+      type: file
+      disableDeletion: true
+      allowUiUpdates: true
+      updateIntervalSeconds: 15
+      options:
+        path: /var/lib/grafana/dashboards/Teslamate
+        foldersFromFilesStructure: false

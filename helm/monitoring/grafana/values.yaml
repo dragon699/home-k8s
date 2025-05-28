@@ -95,6 +95,8 @@ extraVolumes:
 
 
 # Provisioning: Dashboards
+
+# :Kubernetes
 - name: dashboard-kubernetes-cluster
   configMap:
     name: config-grafana-dashboard-kubernetes-cluster
@@ -117,10 +119,24 @@ extraVolumes:
   configMap:
     name: config-grafana-dashboard-kubernetes-longhorn
 
+# :Machines
 - name: dashboard-machines-view-by-node
   configMap:
     name: config-grafana-dashboard-machines-view-by-node
 
+# :Teslamate
+- name: dashboard-teslamate-battery-health
+  configMap:
+    name: config-grafana-dashboard-teslamate-battery-health
+- name: dashboard-teslamate-charging-level
+  configMap:
+    name: config-grafana-dashboard-teslamate-charging-level
+- name: dashboard-teslamate-charging-history
+  configMap:
+    name: config-grafana-dashboard-teslamate-charging-history
+- name: dashboard-teslamate-charging-stats
+  configMap:
+    name: config-grafana-dashboard-teslamate-charging-stats
 
 
 extraVolumeMounts:
@@ -133,6 +149,8 @@ extraVolumeMounts:
 
 
 # Provisioning: Dashboards
+
+# :Kubernetes
 - name: dashboard-kubernetes-cluster
   mountPath: '/var/lib/grafana/dashboards/Kubernetes/cluster.json'
   subPath: cluster.json
@@ -155,6 +173,21 @@ extraVolumeMounts:
   mountPath: '/var/lib/grafana/dashboards/Kubernetes/longhorn.json'
   subPath: longhorn.json
 
+# :Machines
 - name: dashboard-machines-view-by-node
   mountPath: '/var/lib/grafana/dashboards/Machines/view-by-node.json'
   subPath: view-by-node.json
+
+# :Teslamate
+- name: dashboard-teslamate-battery-health
+  mountPath: '/var/lib/grafana/dashboards/Teslamate/battery-health.json'
+  subPath: battery-health.json
+- name: dashboard-teslamate-charging-level
+  mountPath: '/var/lib/grafana/dashboards/Teslamate/charging-level.json'
+  subPath: charging-level.json
+- name: dashboard-teslamate-charging-history
+  mountPath: '/var/lib/grafana/dashboards/Teslamate/charging-history.json'
+  subPath: charging-history.json
+- name: dashboard-teslamate-charging-stats
+  mountPath: '/var/lib/grafana/dashboards/Teslamate/charging-stats.json'
+  subPath: charging-stats.json
