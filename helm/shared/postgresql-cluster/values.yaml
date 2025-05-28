@@ -25,12 +25,6 @@ users:
   - teslamate-teslamate
   options: "SUPERUSER"
 
-- name: teslamate-grafana
-  secretName: data-postgresql-shared-teslamate-grafana
-  databases:
-  - teslamate-grafana
-  options: "SUPERUSER"
-
 - name: monitoring-grafana
   secretName: data-postgresql-shared-monitoring-grafana
   databases:
