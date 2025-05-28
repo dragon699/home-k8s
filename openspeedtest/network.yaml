@@ -1,0 +1,28 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: openspeedtest
+  namespace: speedtest
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-home
+    kubernetes.io/ingress.class: nginx
+  labels:
+    app: openspeedtest
+    env: home
+spec:
+  tls:
+  - hosts:
+    - speedtest.k8s.iaminyourpc.xyz
+    secretName: tls-speedtest-k8s-iaminyourpc-xyz
+  rules:
+  - host: speedtest.k8s.iaminyourpc.xyz
+    http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: openspeedtest
+            port:
+              number: 3000
