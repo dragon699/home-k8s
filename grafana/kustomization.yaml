@@ -6,6 +6,7 @@ generatorOptions:
   disableNameSuffixHash: true
 configMapGenerator:
 
+# Kubernetes Dashboards
 - name: config-grafana-dashboard-kubernetes-cluster
   files:
   - 'dashboards/Kubernetes/cluster.json'
@@ -28,10 +29,12 @@ configMapGenerator:
   files:
   - 'dashboards/Kubernetes/longhorn.json'
 
+# Machines Dashboards
 - name: config-grafana-dashboard-machines-view-by-node
   files:
   - 'dashboards/Machines/view-by-node.json'
 
+# Teslamate Dashboards
 - name: config-grafana-dashboard-teslamate-battery-health
   files:
   - 'dashboards/Teslamate/battery-health.json'
@@ -44,3 +47,18 @@ configMapGenerator:
 - name: config-grafana-dashboard-teslamate-charging-stats
   files:
   - 'dashboards/Teslamate/charging-stats.json'
+- name: config-grafana-dashboard-teslamate-system-database
+  files:
+  - 'dashboards/Teslamate/system-database.json'
+- name: config-grafana-dashboard-teslamate-driving-stats
+  files:
+  - 'dashboards/Teslamate/driving-stats.json'
+- name: config-grafana-dashboard-teslamate-driving-history
+  files:
+  - 'dashboards/Teslamate/driving-history.json'
+- name: config-grafana-dashboard-teslamate-driving-efficiency
+  files:
+  - 'dashboards/Teslamate/driving-efficiency.json'
+- name: config-grafana-dashboard-teslamate-places-locations
+  files:
+  - 'dashboards/Teslamate/places-locations.json'

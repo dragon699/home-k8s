@@ -137,6 +137,21 @@ extraVolumes:
 - name: dashboard-teslamate-charging-stats
   configMap:
     name: config-grafana-dashboard-teslamate-charging-stats
+- name: dashboard-teslamate-system-database
+  configMap:
+    name: config-grafana-dashboard-teslamate-system-database
+- name: dashboard-teslamate-driving-stats
+  configMap:
+    name: config-grafana-dashboard-teslamate-driving-stats
+- name: dashboard-teslamate-driving-history
+  configMap:
+    name: config-grafana-dashboard-teslamate-driving-history
+- name: dashboard-teslamate-driving-efficiency
+  configMap:
+    name: config-grafana-dashboard-teslamate-driving-efficiency
+- name: dashboard-teslamate-places-locations
+  configMap:
+    name: config-grafana-dashboard-teslamate-places-locations
 
 
 extraVolumeMounts:
@@ -191,3 +206,18 @@ extraVolumeMounts:
 - name: dashboard-teslamate-charging-stats
   mountPath: '/var/lib/grafana/dashboards/Teslamate/charging-stats.json'
   subPath: charging-stats.json
+- name: dashboard-teslamate-system-database
+  mountPath: '/var/lib/grafana/dashboards/Teslamate/system-database.json'
+  subPath: system-database.json
+- name: dashboard-teslamate-driving-stats
+  mountPath: '/var/lib/grafana/dashboards/Teslamate/driving-stats.json'
+  subPath: driving-stats.json
+- name: dashboard-teslamate-driving-history
+  mountPath: '/var/lib/grafana/dashboards/Teslamate/driving-history.json'
+  subPath: driving-history.json
+- name: dashboard-teslamate-driving-efficiency
+  mountPath: '/var/lib/grafana/dashboards/Teslamate/driving-efficiency.json'
+  subPath: driving-efficiency.json
+- name: dashboard-teslamate-places-locations
+  mountPath: '/var/lib/grafana/dashboards/Teslamate/places-locations.json'
+  subPath: places-locations.json
