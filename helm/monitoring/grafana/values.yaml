@@ -161,6 +161,27 @@ extraVolumes:
 - name: dashboard-teslamate-mileage-projected-range
   configMap:
     name: config-grafana-dashboard-teslamate-mileage-projected-range
+- name: dashboard-teslamate-lifecycle-states
+  configMap:
+    name: config-grafana-dashboard-teslamate-lifecycle-states
+- name: dashboard-teslamate-lifecycle-stats
+  configMap:
+    name: config-grafana-dashboard-teslamate-lifecycle-stats
+- name: dashboard-teslamate-lifecycle-timeline
+  configMap:
+    name: config-grafana-dashboard-teslamate-lifecycle-timeline
+- name: dashboard-teslamate-places-trip
+  configMap:
+    name: config-grafana-dashboard-teslamate-places-trip
+- name: dashboard-teslamate-system-software-updates
+  configMap:
+    name: config-grafana-dashboard-teslamate-system-software-updates
+- name: dashboard-teslamate-lifecycle-vampire-drain
+  configMap:
+    name: config-grafana-dashboard-teslamate-lifecycle-vampire-drain
+- name: dashboard-teslamate-places-visits
+  configMap:
+    name: config-grafana-dashboard-teslamate-places-visits
 
 
 extraVolumeMounts:
@@ -239,3 +260,24 @@ extraVolumeMounts:
 - name: dashboard-teslamate-mileage-projected-range
   mountPath: '/var/lib/grafana/dashboards/Teslamate/mileage-projected-range.json'
   subPath: mileage-projected-range.json
+- name: dashboard-teslamate-lifecycle-states
+  mountPath: '/var/lib/grafana/dashboards/Teslamate/lifecycle-states.json'
+  subPath: lifecycle-states.json
+- name: dashboard-teslamate-lifecycle-stats
+  mountPath: '/var/lib/grafana/dashboards/Teslamate/lifecycle-stats.json'
+  subPath: lifecycle-stats.json
+- name: dashboard-teslamate-lifecycle-timeline
+  mountPath: '/var/lib/grafana/dashboards/Teslamate/lifecycle-timeline.json'
+  subPath: lifecycle-timeline.json
+- name: dashboard-teslamate-places-trip
+  mountPath: '/var/lib/grafana/dashboards/Teslamate/places-trip.json'
+  subPath: places-trip.json
+- name: dashboard-teslamate-system-software-updates
+  mountPath: '/var/lib/grafana/dashboards/Teslamate/system-software-updates.json'
+  subPath: system-software-updates.json
+- name: dashboard-teslamate-lifecycle-vampire-drain
+  mountPath: '/var/lib/grafana/dashboards/Teslamate/lifecycle-vampire-drain.json'
+  subPath: lifecycle-vampire-drain.json
+- name: dashboard-teslamate-places-visits
+  mountPath: '/var/lib/grafana/dashboards/Teslamate/places-visits.json'
+  subPath: places-visits.json

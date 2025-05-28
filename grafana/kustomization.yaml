@@ -71,3 +71,24 @@ configMapGenerator:
 - name: config-grafana-dashboard-teslamate-mileage-projected-range
   files:
   - 'dashboards/Teslamate/mileage-projected-range.json'
+- name: config-grafana-dashboard-teslamate-lifecycle-states
+  files:
+  - 'dashboards/Teslamate/lifecycle-states.json'
+- name: config-grafana-dashboard-teslamate-lifecycle-stats
+  files:
+  - 'dashboards/Teslamate/lifecycle-stats.json'
+- name: config-grafana-dashboard-teslamate-lifecycle-timeline
+  files:
+  - 'dashboards/Teslamate/lifecycle-timeline.json'
+- name: config-grafana-dashboard-teslamate-places-trip
+  files:
+  - 'dashboards/Teslamate/places-trip.json'
+- name: config-grafana-dashboard-teslamate-system-software-updates
+  files:
+  - 'dashboards/Teslamate/system-software-updates.json'
+- name: config-grafana-dashboard-teslamate-lifecycle-vampire-drain
+  files:
+  - 'dashboards/Teslamate/lifecycle-vampire-drain.json'
+- name: config-grafana-dashboard-teslamate-places-visits
+  files:
+  - 'dashboards/Teslamate/places-visits.json'
