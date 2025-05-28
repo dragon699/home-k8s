@@ -99,7 +99,14 @@
   ],
   "preload": false,
   "schemaVersion": 41,
-  "tags": [],
+  "tags": [
+    "tesla",
+    "home",
+    "postgresql",
+    "car",
+    "system",
+    "root"
+  ],
   "templating": {
     "list": []
   },
