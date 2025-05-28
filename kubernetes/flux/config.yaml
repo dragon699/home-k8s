@@ -2,7 +2,7 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: kustomize-generator-configmap
+  name: generator-configmap
   namespace: flux-system
 spec:
   suspend: false
@@ -21,7 +21,7 @@ spec:
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: kustomize-generator-dashboards
+  name: generator-dashboards
   namespace: flux-system
 spec:
   suspend: false
@@ -74,8 +74,8 @@ spec:
   wait: true
   timeout: 35m
   dependsOn:
-  - name: kustomize-generator-configmap
-  - name: kustomize-generator-dashboards
+  - name: generator-configmap
+  - name: generator-dashboards
   - name: 00-base
 
 ---
@@ -97,8 +97,8 @@ spec:
   wait: true
   timeout: 35m
   dependsOn:
-  - name: kustomize-generator-configmap
-  - name: kustomize-generator-dashboards
+  - name: generator-configmap
+  - name: generator-dashboards
   - name: 00-base
   - name: 01-prerequisites
 
@@ -121,8 +121,8 @@ spec:
   wait: true
   timeout: 35m
   dependsOn:
-  - name: kustomize-generator-configmap
-  - name: kustomize-generator-dashboards
+  - name: generator-configmap
+  - name: generator-dashboards
   - name: 00-base
   - name: 01-prerequisites
   - name: 02-dependencies
@@ -146,8 +146,8 @@ spec:
   wait: true
   timeout: 35m
   dependsOn:
-  - name: kustomize-generator-configmap
-  - name: kustomize-generator-dashboards
+  - name: generator-configmap
+  - name: generator-dashboards
   - name: 00-base
   - name: 01-prerequisites
   - name: 02-dependencies
@@ -172,8 +172,8 @@ spec:
   wait: true
   timeout: 35m
   dependsOn:
-  - name: kustomize-generator-configmap
-  - name: kustomize-generator-dashboards
+  - name: generator-configmap
+  - name: generator-dashboards
   - name: 00-base
   - name: 01-prerequisites
   - name: 02-dependencies
