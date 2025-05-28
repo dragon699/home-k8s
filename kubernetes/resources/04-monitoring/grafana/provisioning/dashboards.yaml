@@ -15,7 +15,7 @@ data:
       folderUid: Kubernetes
       orgId: 1
       type: file
-      disableDeletion: true
+      disableDeletion: false
       allowUiUpdates: true
       updateIntervalSeconds: 15
       options:
@@ -27,7 +27,7 @@ data:
       folderUid: Machines
       orgId: 1
       type: file
-      disableDeletion: true
+      disableDeletion: false
       allowUiUpdates: true
       updateIntervalSeconds: 15
       options:
@@ -39,7 +39,7 @@ data:
       folderUid: Teslamate
       orgId: 1
       type: file
-      disableDeletion: true
+      disableDeletion: false
       allowUiUpdates: true
       updateIntervalSeconds: 15
       options:
