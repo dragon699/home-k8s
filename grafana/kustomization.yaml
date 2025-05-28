@@ -62,3 +62,12 @@ configMapGenerator:
 - name: config-grafana-dashboard-teslamate-places-locations
   files:
   - 'dashboards/Teslamate/places-locations.json'
+- name: config-grafana-dashboard-teslamate-mileage-total
+  files:
+  - 'dashboards/Teslamate/mileage-total.json'
+- name: config-grafana-dashboard-teslamate-overview
+  files:
+  - 'dashboards/Teslamate/overview.json'
+- name: config-grafana-dashboard-teslamate-mileage-projected-range
+  files:
+  - 'dashboards/Teslamate/mileage-projected-range.json'

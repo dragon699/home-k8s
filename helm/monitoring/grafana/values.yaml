@@ -152,6 +152,15 @@ extraVolumes:
 - name: dashboard-teslamate-places-locations
   configMap:
     name: config-grafana-dashboard-teslamate-places-locations
+- name: dashboard-teslamate-mileage-total
+  configMap:
+    name: config-grafana-dashboard-teslamate-mileage-total
+- name: dashboard-teslamate-overview
+  configMap:
+    name: config-grafana-dashboard-teslamate-overview
+- name: dashboard-teslamate-mileage-projected-range
+  configMap:
+    name: config-grafana-dashboard-teslamate-mileage-projected-range
 
 
 extraVolumeMounts:
@@ -221,3 +230,12 @@ extraVolumeMounts:
 - name: dashboard-teslamate-places-locations
   mountPath: '/var/lib/grafana/dashboards/Teslamate/places-locations.json'
   subPath: places-locations.json
+- name: dashboard-teslamate-mileage-total
+  mountPath: '/var/lib/grafana/dashboards/Teslamate/mileage-total.json'
+  subPath: mileage-total.json
+- name: dashboard-teslamate-overview
+  mountPath: '/var/lib/grafana/dashboards/Teslamate/overview.json'
+  subPath: overview.json
+- name: dashboard-teslamate-mileage-projected-range
+  mountPath: '/var/lib/grafana/dashboards/Teslamate/mileage-projected-range.json'
+  subPath: mileage-projected-range.json
