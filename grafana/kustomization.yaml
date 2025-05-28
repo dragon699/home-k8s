@@ -101,6 +101,3 @@ configMapGenerator:
 - name: config-grafana-dashboard-teslamate-driving-details
   files:
   - 'dashboards/Teslamate/driving-details.json'
-- name: config-grafana-dashboard-teslamate-system-root
-  files:
-  - 'dashboards/Teslamate/system-root.json'

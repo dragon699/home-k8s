@@ -191,9 +191,7 @@ extraVolumes:
 - name: dashboard-teslamate-driving-details
   configMap:
     name: config-grafana-dashboard-teslamate-driving-details
-- name: dashboard-teslamate-system-root
-  configMap:
-    name: config-grafana-dashboard-teslamate-system-root
+
 
 
 extraVolumeMounts:
@@ -302,6 +300,3 @@ extraVolumeMounts:
 - name: dashboard-teslamate-driving-details
   mountPath: '/var/lib/grafana/dashboards/Teslamate/driving-details.json'
   subPath: driving-details.json
-- name: dashboard-teslamate-system-root
-  mountPath: '/var/lib/grafana/dashboards/Teslamate/system-root.json'
-  subPath: system-root.json
