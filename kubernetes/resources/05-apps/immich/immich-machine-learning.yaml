@@ -63,8 +63,7 @@ spec:
           failureThreshold: 3
           timeoutSeconds: 1
         ports:
-        - name: http
-          containerPort: 3003
+        - containerPort: 3003
         volumeMounts:
         - name: model-cache
           mountPath: /cache
