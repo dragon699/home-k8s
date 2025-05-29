@@ -113,15 +113,8 @@ beyla.ebpf "home_discovery" {
   discovery {
     services {
       kubernetes {
-        namespace              = "ingress-nginx|metallb-system|shared|immich|teslamate|hostfabtech"
+        namespace              = "ingress-nginx|metallb-system|shared|immich|teslamate|hostfabtech|monitoring|portainer"
         deployment_name        = "."
-      }
-    }
-
-    exclude_services {
-      kubernetes {
-        namespace              = "kube-system|kubernetes-dashboard|k0s-autopilot|flux-system"
-        deployment_name        = "pg-operator|secret-mirrors-controller-manager|grafana"
       }
     }
   }
