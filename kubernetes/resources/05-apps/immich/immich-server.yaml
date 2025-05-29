@@ -38,7 +38,7 @@ spec:
         livenessProbe:
           httpGet:
             path: /api/server/ping
-            port: http
+            port: 2283
             scheme: HTTP
           periodSeconds: 10
           successThreshold: 1
@@ -47,7 +47,7 @@ spec:
         readinessProbe:
           httpGet:
             path: /api/server/ping
-            port: http
+            port: 2283
             scheme: HTTP
           periodSeconds: 10
           successThreshold: 1
@@ -56,7 +56,7 @@ spec:
         startupProbe:
           httpGet:
             path: /api/server/ping
-            port: http
+            port: 2283
             scheme: HTTP
           periodSeconds: 10
           successThreshold: 1
