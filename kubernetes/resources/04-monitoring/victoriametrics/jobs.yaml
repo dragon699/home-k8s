@@ -56,7 +56,7 @@ data:
         replacement: /api/v1/nodes/$1/proxy/metrics
       - target_label: cluster
         replacement: home-k8s
- 
+
     - job_name: 'kubernetes-nodes-cadvisor'
       scheme: https
       scrape_interval: 15s
@@ -78,7 +78,7 @@ data:
         replacement: /api/v1/nodes/$1/proxy/metrics/cadvisor
       - target_label: cluster
         replacement: home-k8s
- 
+
     - job_name: 'kubernetes-service-endpoints'
       honor_labels: true
       scrape_interval: 15s
@@ -121,7 +121,7 @@ data:
         target_label: instance
       - target_label: cluster
         replacement: home-k8s
- 
+
     - job_name: 'kubernetes-pods'
       honor_labels: true
       kubernetes_sd_configs:
@@ -170,7 +170,7 @@ data:
         target_label: instance
       - target_label: cluster
         replacement: home-k8s
- 
+
     - job_name: 'kubernetes-apiservers'
       scrape_interval: 15s
       scrape_timeout: 10s
@@ -190,4 +190,3 @@ data:
         target_label: instance
       - target_label: cluster
         replacement: home-k8s
- 
