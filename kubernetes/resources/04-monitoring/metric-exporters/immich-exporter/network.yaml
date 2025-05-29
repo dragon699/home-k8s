@@ -1,0 +1,20 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: immich-exporter
+  namespace: monitoring
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/path: "/metrics"
+    prometheus.io/port: "3000"
+  labels:
+    env: home
+spec:
+  type: ClusterIP
+  ports:
+  - name: immich-exporter
+    port: 3000
+    targetPort: 3000
+  selector:
+    app: immich-exporter
