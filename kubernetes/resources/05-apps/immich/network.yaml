@@ -19,48 +19,6 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: immich-api-metrics
-  namespace: immich
-  annotations:
-    prometheus.io/scrape: "true"
-    prometheus.io/port: "8081"
-    prometheus.io/path: "/metrics"
-  labels:
-    env: home
-spec:
-  type: ClusterIP
-  ports:
-  - name: immich-api-metrics
-    port: 8081
-    targetPort: 8081
-  selector:
-    app: immich-server
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: immich-microservices-metrics
-  namespace: immich
-  annotations:
-    prometheus.io/scrape: "true"
-    prometheus.io/port: "8082"
-    prometheus.io/path: "/metrics"
-  labels:
-    env: home
-spec:
-  type: ClusterIP
-  ports:
-  - name: immich-microservices-metrics
-    port: 8082
-    targetPort: 8082
-  selector:
-    app: immich-server
-
----
-apiVersion: v1
-kind: Service
-metadata:
   name: immich-machine-learning
   namespace: immich
   labels:
