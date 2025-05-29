@@ -2,7 +2,26 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: generator-configmap
+  name: generator-configurations
+  namespace: flux-system
+spec:
+  suspend: false
+  interval: 10m0s
+  retryInterval: 15s
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  path: config
+  prune: true
+  wait: true
+  timeout: 35m
+
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: generator-helm
   namespace: flux-system
 spec:
   suspend: false
@@ -74,7 +93,8 @@ spec:
   wait: true
   timeout: 35m
   dependsOn:
-  - name: generator-configmap
+  - name: generator-configurations
+  - name: generator-helm
   - name: generator-dashboards
   - name: 00-base
 
@@ -97,7 +117,8 @@ spec:
   wait: true
   timeout: 35m
   dependsOn:
-  - name: generator-configmap
+  - name: generator-configurations
+  - name: generator-helm
   - name: generator-dashboards
   - name: 00-base
   - name: 01-prerequisites
@@ -121,7 +142,8 @@ spec:
   wait: true
   timeout: 35m
   dependsOn:
-  - name: generator-configmap
+  - name: generator-configurations
+  - name: generator-helm
   - name: generator-dashboards
   - name: 00-base
   - name: 01-prerequisites
@@ -146,7 +168,8 @@ spec:
   wait: true
   timeout: 35m
   dependsOn:
-  - name: generator-configmap
+  - name: generator-configurations
+  - name: generator-helm
   - name: generator-dashboards
   - name: 00-base
   - name: 01-prerequisites
@@ -172,7 +195,8 @@ spec:
   wait: true
   timeout: 35m
   dependsOn:
-  - name: generator-configmap
+  - name: generator-configurations
+  - name: generator-helm
   - name: generator-dashboards
   - name: 00-base
   - name: 01-prerequisites
