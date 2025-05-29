@@ -32,7 +32,7 @@ alloy:
 
   configMap:
     create: false
-    name: pipelines-grafana-alloy
+    name: config-grafana-alloy-pipelines
     key: alloy.yaml
 
   envFrom:

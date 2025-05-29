@@ -7,5 +7,5 @@ generatorOptions:
 configMapGenerator:
 - name: config-grafana-alloy
   envs: ['config.env']
-- name: pipelines-grafana-alloy
+- name: config-grafana-alloy-pipelines
   files: ['alloy.yaml']
