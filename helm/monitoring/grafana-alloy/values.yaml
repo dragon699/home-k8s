@@ -8,7 +8,8 @@ controller:
   volumes:
     extra:
     - name: cgroup
-      hostPath: /sys/fs/cgroup
+      hostPath:
+        path: /sys/fs/cgroup
 
 alloy:
   resources:
