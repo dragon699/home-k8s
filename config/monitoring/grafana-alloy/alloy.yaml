@@ -156,7 +156,33 @@ beyla.ebpf "home_discovery" {
 // Batch traces
 otelcol.processor.batch "home_traces" {
   output {
-    traces                     = [otelcol.exporter.otlphttp.home_traces.input]
+    traces                     = [otelcol.processor.attributes.home_traces.input]
+  }
+}
+
+// Aggregate traces
+otelcol.processor.attributes "home_traces" {
+  include {
+    match_type                 = "strict"
+
+    attribute {
+      key                      = "http.response.status_code"
+    }
+  }
+
+  action {
+    action                     = "insert"
+    key                        = "http.status_code"
+    from_attribute             = "http.response.status_code"
+  }
+
+  action {
+    action                     = "delete"
+    key                        = "http.response.status_code"
+  }
+
+  output {
+    traces                    = [otelcol.exporter.otlphttp.home_traces.input]
   }
 }
 
