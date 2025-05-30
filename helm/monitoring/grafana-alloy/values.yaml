@@ -1,7 +1,14 @@
 controller:
   replicas: 1
   type: deployment
+
   hostPID: true
+  hostNetwork: true
+
+  volumes:
+    extra:
+    - name: cgroup
+      hostPath: /sys/fs/cgroup
 
 alloy:
   resources:
@@ -29,6 +36,11 @@ alloy:
     targetPort: 4318
 
   stabilityLevel: "experimental"
+
+  mounts:
+    extra:
+    - name: cgroup
+      mountPath: /sys/fs/cgroup
 
   configMap:
     create: false
