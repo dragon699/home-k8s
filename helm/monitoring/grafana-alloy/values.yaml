@@ -3,7 +3,7 @@ controller:
   type: deployment
 
   hostPID: true
-  hostNetwork: true
+  hostNetwork: false
 
   volumes:
     extra:
