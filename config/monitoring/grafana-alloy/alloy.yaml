@@ -127,7 +127,7 @@ beyla.ebpf "home_discovery" {
 
     select {
       attr                     = "*"
-      include                  = ["*"]
+      include                  = "*"
       exclude                  = ["nothing"]
     }
   }
