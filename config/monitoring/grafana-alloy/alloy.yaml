@@ -127,7 +127,7 @@ beyla.ebpf "home_discovery" {
 
     select {
       attr                     = "*"
-      include                  = "*"
+      include                  = ["*"]
       exclude                  = ["nothing"]
     }
   }
@@ -144,7 +144,7 @@ beyla.ebpf "home_discovery" {
   filters {
     application {
       attr                     = "*"
-      match                    = ["*"]
+      match                    = "*"
     }
   }
 
