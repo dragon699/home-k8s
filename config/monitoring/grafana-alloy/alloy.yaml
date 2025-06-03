@@ -134,11 +134,13 @@ beyla.ebpf "home_discovery" {
     select {
       attr                     = "sql_*"
       include                  = ["*"]
+      exclude                  = ["nothing"]
     }
 
     select {
       attr                     = "db_*"
       include                  = ["*"]
+      exclude                  = ["nothing"]
     }
   }
 
