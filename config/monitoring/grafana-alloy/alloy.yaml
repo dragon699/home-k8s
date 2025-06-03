@@ -141,13 +141,6 @@ beyla.ebpf "home_discovery" {
     ]
   }
 
-  filters {
-    application {
-      attr                     = ".*"
-      match                    = "*"
-    }
-  }
-
   ebpf {
     track_request_headers      = true
     enable_context_propagation = true
