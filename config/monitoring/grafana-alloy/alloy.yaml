@@ -11,6 +11,67 @@ livedebugging {
 
 // Data pipelines
 
+
+//////////////////////////////////////////////
+// Collect logs and metrics from external OTLP
+//////////////////////////////////////////////
+
+// External OTLP receiver authentication handler
+otelcol.auth.bearer "home_external_auth" {
+  token              = sys.env("OTLP_TOKEN")
+}
+
+// Create external OTLP receiver
+otelcol.receiver.otlp "home_external" {
+  http {
+    endpoint         = "0.0.0.0:4318"
+    auth             = otelcol.auth.bearer.home_external_auth.handler
+
+    logs_url_path    = "/v1/logs"
+    metrics_url_path = "/v1/metrics"
+  }
+
+  output {
+    logs             = [otelcol.processor.batch.home_external.input]
+    metrics          = [otelcol.processor.batch.home_external.input]
+  }
+}
+
+// Batch external logs and metrics
+otelcol.processor.batch "home_external" {
+  output {
+    logs             = [otelcol.exporter.loki.home_external.input]
+    metrics          = [otelcol.exporter.prometheus.home_external.input]
+  }
+}
+
+// Convert logs to Loki-based format
+otelcol.exporter.loki "home_external" {
+  forward_to         = [loki.write.home_external.receiver]
+}
+
+// Convert metrics to Prometheus-based format
+otelcol.exporter.prometheus "home_external" {
+  forward_to         = [prometheus.remote_write.home_external.receiver]
+}
+
+// Write logs to Loki
+loki.write "home_external" {
+  endpoint {
+    url              = sys.env("ENDPOINT_LOKI")
+  }
+}
+
+// Write metrics to VictoriaMetrics
+prometheus.remote_write "home_external" {
+  endpoint {
+    url              = sys.env("ENDPOINT_VICTORIAMETRICS")
+  }
+}
+
+//////////////////////////////////////////////
+
+
 //////////////////////////////////////////////
 // Collect logs from kubernetes pods
 //////////////////////////////////////////////

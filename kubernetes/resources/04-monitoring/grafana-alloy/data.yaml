@@ -9,3 +9,13 @@ metadata:
 type: Opaque
 data:
   auth: c3lzOiRhcHIxJDFyNWZ1c3h0JExqOTlyTUNQR0c2SmM2VUozRXBRdTA=
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: grafana-alloy-otlp-token
+  namespace: monitoring
+type: Opaque
+data:
+  OTLP_TOKEN: bDNVSmVWMVFZRnhBV0NEbHdkTGRIZzZUM1A3RQ==

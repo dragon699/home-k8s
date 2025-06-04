@@ -51,3 +51,5 @@ alloy:
   envFrom:
   - configMapRef:
       name: config-grafana-alloy
+  - secretRef:
+      name: grafana-alloy-otlp-token
