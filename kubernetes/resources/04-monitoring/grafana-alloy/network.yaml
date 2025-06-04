@@ -29,3 +29,32 @@ spec:
             name: grafana-alloy
             port:
               number: 12345
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: grafana-alloy-otlp
+  namespace: monitoring
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-home
+    kubernetes.io/ingress.class: nginx
+  labels:
+    app: grafana-alloy
+    env: home
+spec:
+  tls:
+  - hosts:
+    - otlp.k8s.iaminyourpc.xyz
+    secretName: tls-otlp-k8s-iaminyourpc-xyz
+  rules:
+  - host: otlp.k8s.iaminyourpc.xyz
+    http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: grafana-alloy
+            port:
+              number: 4318
