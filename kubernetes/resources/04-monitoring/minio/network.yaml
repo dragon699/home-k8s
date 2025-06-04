@@ -25,3 +25,31 @@ spec:
             name: minio
             port:
               number: 9001
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: minio-api
+  namespace: monitoring
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-home
+    kubernetes.io/ingress.class: nginx
+  labels:
+    app: minio
+spec:
+  tls:
+  - hosts:
+    - api.minio.k8s.iaminyourpc.xyz
+    secretName: tls-api-minio-k8s-iaminyourpc-xyz
+  rules:
+  - host: api.minio.k8s.iaminyourpc.xyz
+    http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: minio
+            port:
+              number: 9000
