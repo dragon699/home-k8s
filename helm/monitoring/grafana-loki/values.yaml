@@ -92,7 +92,7 @@ write:
       memory: 64Mi
     limits:
       cpu: 4
-      memory: 1Gi
+      memory: 2Gi
 
 gateway:
   extraArgs:
