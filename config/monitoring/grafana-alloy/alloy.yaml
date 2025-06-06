@@ -181,8 +181,8 @@ beyla.ebpf "home_discovery" {
   }
 
   ebpf {
+    context_propagation        = "all"
     track_request_headers      = true
-    enable_context_propagation = true
     high_request_volume        = true
     heuristic_sql_detect       = true
   }
