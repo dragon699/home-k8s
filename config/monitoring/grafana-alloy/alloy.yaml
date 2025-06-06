@@ -171,6 +171,22 @@ loki.write "home_logs" {
 
 // Auto-instrument collection of metrics and traces using Beyla
 beyla.ebpf "home_discovery" {
+  metrics {
+    features = [
+      "application",
+      "application_process",
+      "application_service_graph",
+      "application_span",
+    ]
+  }
+
+  ebpf {
+    track_request_headers      = true
+    enable_context_propagation = true
+    high_request_volume        = true
+    heuristic_sql_detect       = true
+  }
+
   discovery {
     services {
       kubernetes {
@@ -193,21 +209,29 @@ beyla.ebpf "home_discovery" {
     }
   }
 
-  metrics {
-    features = [
-      "application",
-      "application_process",
-      "application_service_graph",
-      "application_span",
-    ]
-  }
+  // routes {
+  //   ignore_mode                = "all"
 
-  ebpf {
-    track_request_headers      = true
-    enable_context_propagation = true
-    high_request_volume        = true
-    heuristic_sql_detect       = true
-  }
+  //   ignore_patterns            = [
+  //     "/metrics",
+  //     "/*/metrics",
+  //     "/healthz",
+  //     "/*/healthz",
+  //     "/health",
+  //     "/*/health",
+  //     "/readyz",
+  //     "/*/readyz",
+  //     "/ready",
+  //     "/*/ready",
+  //     "/livez",
+  //     "/*/livez",
+  //     "_______internal_router_healthz",
+  //     "/v1/logs",
+  //     "/v1/metrics",
+  //     "/v1/traces",
+  //     "/_next/*",
+  //   ]
+  // }
 
   output {
     traces                     = [otelcol.processor.batch.home_traces.input]

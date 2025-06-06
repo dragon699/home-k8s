@@ -3,7 +3,8 @@ controller:
   type: deployment
 
   hostPID: true
-  hostNetwork: false
+  hostNetwork: true
+  dnsPolicy: ClusterFirstWithHostNet
 
   volumes:
     extra:
