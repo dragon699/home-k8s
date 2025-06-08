@@ -42,6 +42,7 @@ loki:
       endpoint: "${MINIO_SERVER_HOST}:${MINIO_SERVICE_PORT}"
       accessKeyId: "${MINIO_SERVER_ROOT_USER}"
       secretAccessKey: "${MINIO_SERVER_ROOT_PASSWORD}"
+      region: test
 
 resultsCache:
   allocatedMemory: 512   # Defaults to 1024
