@@ -9,6 +9,8 @@ resources:
 persistence:
   enabled: true
   size: 96Gi
+  annotations:
+    kustomize.toolkit.fluxcd.io/prune: "false"
 
 mode: standalone
 
