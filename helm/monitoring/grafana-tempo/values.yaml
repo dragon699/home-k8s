@@ -30,7 +30,6 @@ storage:
       endpoint: "${MINIO_SERVER_HOST}:${MINIO_SERVICE_PORT}"
       bucket: tempo
       insecure: true
-      region: test
 
 metricsGenerator:
   enabled: false

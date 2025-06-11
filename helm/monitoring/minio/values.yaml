@@ -8,7 +8,7 @@ resources:
 
 persistence:
   enabled: true
-  size: 64Gi
+  size: 96Gi
 
 mode: standalone
 
