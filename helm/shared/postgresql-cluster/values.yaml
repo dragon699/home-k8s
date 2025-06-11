@@ -17,6 +17,8 @@ instances:
     resources:
       requests:
         storage: 20Gi
+    annotations:
+      helm.sh/resource-policy: keep
 
 users:
 - name: teslamate-teslamate
