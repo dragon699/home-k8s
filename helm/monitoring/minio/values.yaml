@@ -8,7 +8,7 @@ resources:
 
 persistence:
   enabled: true
-  size: 96Gi
+  size: 128Gi
   annotations:
     helm.sh/resource-policy: keep
 
