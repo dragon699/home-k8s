@@ -10,7 +10,7 @@ persistence:
   enabled: true
   size: 96Gi
   annotations:
-    kustomize.toolkit.fluxcd.io/prune: "disabled"
+    helm.sh/resource-policy: keep
 
 mode: standalone
 
