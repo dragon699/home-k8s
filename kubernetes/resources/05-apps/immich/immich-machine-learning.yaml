@@ -33,7 +33,7 @@ spec:
           claimName: immich-machine-learning
       containers:
       - name: immich-server
-        image: ghcr.io/immich-app/immich-machine-learning:v1.132.3
+        image: ghcr.io/immich-app/immich-machine-learning:v2.1.0
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
