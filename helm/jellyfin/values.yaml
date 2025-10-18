@@ -5,3 +5,12 @@ resources:
   limits:
     memory: 4Gi
     cpu: 4
+
+jellyfin:
+  mediaVolumes:
+    - name: windows-data
+      readOnly: false
+      volumeSpec:
+        hostPath:
+          path: "/media/martin/Windows Data"
+          type: Directory
