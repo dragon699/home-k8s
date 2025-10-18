@@ -2,10 +2,10 @@
 apiVersion: source.toolkit.fluxcd.io/v1beta2
 kind: HelmRepository
 metadata:
-  name: loeken-at-home
+  name: djjudas21
   namespace: jellyfin
   labels:
     env: home
 spec:
   interval: 12h
-  url: https://loeken.github.io/helm-charts
+  url: https://djjudas21.github.io/charts/
