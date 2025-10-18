@@ -97,3 +97,13 @@ metadata:
     app.kubernetes.io/name: teslamate
     app.kubernetes.io/instance: teslamate
     app.kubernetes.io/env: home
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: jellyfin
+  labels:
+    app.kubernetes.io/name: jellyfin
+    app.kubernetes.io/instance: jellyfin
+    app.kubernetes.io/env: home
