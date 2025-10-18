@@ -10,7 +10,4 @@ jellyfin:
   mediaVolumes:
     - name: windows-data
       readOnly: false
-      volumeSpec:
-        hostPath:
-          path: "/media/martin/Windows Data"
-          type: Directory
+      existingClaim: "jellyfin-media-windows-data"
