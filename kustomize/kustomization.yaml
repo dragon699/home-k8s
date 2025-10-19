@@ -3,3 +3,4 @@ resources:
 - metallb
 - longhorn
 - portainer-agent
+- cert-manager
