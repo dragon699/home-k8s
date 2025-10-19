@@ -1,5 +1,0 @@
----
-resources:
-- rbac.yaml
-- portainer-agent.yaml
-- network.yaml
