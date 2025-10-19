@@ -1,0 +1,20 @@
+vault:
+  server:
+    auditStorage:
+      enabled: true
+      size: 12Gi
+    ha:
+      enabled: false
+      raft:
+        enabled: false
+    route:
+      enabled: true
+      host: "vault"
+      tls:
+        termination: "edge"
+    logLevel: "info"
+    logFormat: "json"
+  csi:
+    enabled: false
+  ui:
+    enabled: true
