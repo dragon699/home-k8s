@@ -1,0 +1,10 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: auth-immich
+  namespace: monitoring
+type: Opaque
+data:
+  IMMICH_HOST: aW1taWNoLXNlcnZlci5pbW1pY2guc3ZjOjIyODM=
+  IMMICH_API_KEY: NnBvdEczSHZVeUIzRzBIM1BaWjJrbnBMblNaVlUwRk1sMlJVZGtiZUVB

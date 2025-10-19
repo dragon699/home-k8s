@@ -2,7 +2,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: grafana
+  name: immich-exporter
   namespace: argocd
   finalizers:
   - resources-finalizer.argocd.argoproj.io
@@ -13,17 +13,7 @@ spec:
   sources:
   - repoURL: git@github.com:dragon699/home-k8s.git
     targetRevision: main
-    ref: values
-  - repoURL: https://grafana.github.io/helm-charts
-    targetRevision: 9.0.0
-    chart: grafana
-    helm:
-      skipCrds: false
-      valueFiles:
-      - '$values/helm/monitoring/grafana/values.yaml'
-  - repoURL: git@github.com:dragon699/home-k8s.git
-    targetRevision: main
-    path: manifests/monitoring/grafana
+    path: manifests/monitoring/metrics-providers/immich-exporter
     directory:
       recurse: true
   destination:
