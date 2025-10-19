@@ -1,7 +1,0 @@
----
-resources:
-- data.yaml
-- network.yaml
-
-# Longhorn jobs
-- jobs/trim-volumes.yaml
