@@ -24,6 +24,8 @@ spec:
   - repoURL: git@github.com:dragon699/home-k8s.git
     targetRevision: main
     path: manifests/infra/longhorn
+    directory:
+      recurse: true
   destination:
     server: https://kubernetes.default.svc
     namespace: longhorn
