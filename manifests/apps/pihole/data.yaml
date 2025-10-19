@@ -6,4 +6,4 @@ metadata:
   namespace: pihole
 type: Opaque
 data:
-  PIHOLE_PASSWORD: Y21GVGdXdHZkUUZSM1g3aFhpSUUK
+  PIHOLE_PASSWORD: Y21GVGdXdHZkUUZSM1g3aFhpSUU=
