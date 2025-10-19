@@ -13,7 +13,7 @@ spec:
   sources:
   - repoURL: git@github.com:dragon699/home-k8s.git
     targetRevision: main
-    path: manifests/monitoring/metrics-providers/immich-exporter
+    path: manifests/monitoring/metric-providers/immich-exporter
     directory:
       recurse: true
   destination:
