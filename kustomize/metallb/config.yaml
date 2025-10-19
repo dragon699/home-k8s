@@ -1,0 +1,24 @@
+---
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: default
+  namespace: metallb-system
+  labels:
+    app.kubernetes.io/env: home
+spec:
+  addresses:
+  - 192.168.1.171-192.168.1.180
+  autoAssign: true
+
+---
+apiVersion: metallb.io/v1beta1
+kind: L2Advertisement
+metadata:
+  name: default
+  namespace: metallb-system
+  labels:
+    app.kubernetes.io/env: home
+spec:
+  ipAddressPools:
+  - default
