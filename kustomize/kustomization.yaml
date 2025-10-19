@@ -1,6 +1,5 @@
 ---
 resources:
-- metallb
 - longhorn
 
 - secret-mirrors
