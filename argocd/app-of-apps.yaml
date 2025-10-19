@@ -12,6 +12,8 @@ spec:
     repoURL: git@github.com:dragon699/home-k8s.git
     path: argocd/apps
     targetRevision: main
+    directory:
+      recurse: true
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd
