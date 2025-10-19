@@ -4,3 +4,5 @@ resources:
 - longhorn
 - portainer-agent
 - cert-manager
+
+- secret-mirrors

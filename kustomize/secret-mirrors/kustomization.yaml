@@ -1,0 +1,4 @@
+---
+resources:
+- data-postgresql-shared-monitoring-grafana.yaml
+- data-postgresql-shared-teslamate-teslamate.yaml
