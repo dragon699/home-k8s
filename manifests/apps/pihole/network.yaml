@@ -23,6 +23,6 @@ spec:
         path: /
         backend:
           service:
-            name: pihole
+            name: pihole-web
             port:
               number: 80
