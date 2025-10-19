@@ -1,0 +1,28 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: pihole
+  namespace: pihole
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-home
+    kubernetes.io/ingress.class: nginx
+  labels:
+    app: pihole
+    env: home
+spec:
+  tls:
+  - hosts:
+    - pihole.k8s.iaminyourpc.xyz
+    secretName: tls-pihole-k8s-iaminyourpc-xyz
+  rules:
+  - host: pihole.k8s.iaminyourpc.xyz
+    http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: pihole
+            port:
+              number: 80
