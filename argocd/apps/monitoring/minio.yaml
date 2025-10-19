@@ -1,0 +1,45 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: minio
+  namespace: argocd
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+  annotations:
+    env: home
+spec:
+  project: home
+  sources:
+  - repoURL: git@github.com:dragon699/home-k8s.git
+    targetRevision: main
+    ref: values
+  - repoURL: https://charts.bitnami.com/bitnami
+    targetRevision: 14.7.0
+    chart: minio
+    helm:
+      skipCrds: false
+      valueFiles:
+      - '$values/helm/monitoring/minio/values.yaml'
+  - repoURL: git@github.com:dragon699/home-k8s.git
+    targetRevision: main
+    path: manifests/monitoring/minio
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
+    - Validate=true
+    - PrunePropagationPolicy=foreground
+    - PruneLast=true
+    - ServerSideApply=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 1m
