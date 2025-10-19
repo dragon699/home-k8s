@@ -9,3 +9,7 @@ serviceDns:
   annotations:
     metallb.universe.tf/allow-shared-ip: pihole-svc
   type: LoadBalancer
+
+admin:
+  existingSecret: auth-pihole
+  passwordKey: PIHOLE_PASSWORD
