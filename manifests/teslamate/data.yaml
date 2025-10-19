@@ -1,0 +1,25 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: data-teslamate
+  namespace: teslamate
+  labels:
+    app: teslamate
+    env: home
+type: Opaque
+data:
+  encryption_key: NXZ+KDc7KykhV2RWNFVFMTFPWlRCJQ==
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: auth-teslamate
+  namespace: teslamate
+  labels:
+    env: home
+    htpasswd: teslamate
+type: Opaque
+data:
+  auth: c3lzOiRhcHIxJHdhamt0ZGN4JHNEckNBaFVmY2s3T0l5dHFSUkI0VDA=
