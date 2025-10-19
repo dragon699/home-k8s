@@ -2,7 +2,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: cert-manager
+  name: postgresql-shared
   namespace: argocd
   finalizers:
   - resources-finalizer.argocd.argoproj.io
@@ -14,18 +14,15 @@ spec:
   - repoURL: git@github.com:dragon699/home-k8s.git
     targetRevision: main
     ref: values
-  - repoURL: https://charts.jetstack.io
-    targetRevision: 1.17.0
-    chart: cert-manager
+  - repoURL: https://percona.github.io/percona-helm-charts/
+    targetRevision: 2.6.0
+    chart: pg-db
     helm:
       valueFiles:
-      - '$values/helm/cert-manager/values.yaml'
-  - repoURL: git@github.com:dragon699/home-k8s.git
-    targetRevision: main
-    path: manifests/cert-manager
+      - '$values/helm/apps/postgresql-shared/values.yaml'
   destination:
     server: https://kubernetes.default.svc
-    namespace: cert-manager
+    namespace: shared
   syncPolicy:
     automated:
       prune: true

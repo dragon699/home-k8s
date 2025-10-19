@@ -2,7 +2,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: secret-mirrors
+  name: teslamate
   namespace: argocd
   finalizers:
   - resources-finalizer.argocd.argoproj.io
@@ -11,15 +11,12 @@ metadata:
 spec:
   project: home
   sources:
-  - repoURL: https://charts.kts.studio
-    targetRevision: 0.1.9
-    chart: mirrors
   - repoURL: git@github.com:dragon699/home-k8s.git
     targetRevision: main
-    path: manifests/secret-mirrors
+    path: manifests/apps/teslamate
   destination:
     server: https://kubernetes.default.svc
-    namespace: shared
+    namespace: teslamate
   syncPolicy:
     automated:
       prune: true

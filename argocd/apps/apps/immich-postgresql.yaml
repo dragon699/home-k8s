@@ -2,7 +2,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: ingress-nginx
+  name: immich-postgresql
   namespace: argocd
   finalizers:
   - resources-finalizer.argocd.argoproj.io
@@ -13,16 +13,10 @@ spec:
   sources:
   - repoURL: git@github.com:dragon699/home-k8s.git
     targetRevision: main
-    ref: values
-  - repoURL: https://kubernetes.github.io/ingress-nginx
-    targetRevision: 4.11.3
-    chart: ingress-nginx
-    helm:
-      valueFiles:
-      - '$values/helm/ingress-nginx/values.yaml'
+    path: manifests/apps/immich-postgresql
   destination:
     server: https://kubernetes.default.svc
-    namespace: ingress-nginx
+    namespace: immich
   syncPolicy:
     automated:
       prune: true

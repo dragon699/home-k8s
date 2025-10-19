@@ -2,7 +2,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: immich-postgresql
+  name: longhorn
   namespace: argocd
   finalizers:
   - resources-finalizer.argocd.argoproj.io
@@ -13,10 +13,20 @@ spec:
   sources:
   - repoURL: git@github.com:dragon699/home-k8s.git
     targetRevision: main
-    path: manifests/immich-postgresql
+    ref: values
+  - repoURL: https://charts.longhorn.io
+    targetRevision: 1.8.1
+    chart: longhorn
+    helm:
+      skipCrds: false
+      valueFiles:
+      - '$values/helm/infra/longhorn/values.yaml'
+  - repoURL: git@github.com:dragon699/home-k8s.git
+    targetRevision: main
+    path: manifests/infra/longhorn
   destination:
     server: https://kubernetes.default.svc
-    namespace: immich
+    namespace: longhorn
   syncPolicy:
     automated:
       prune: true

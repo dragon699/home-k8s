@@ -2,7 +2,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: metallb
+  name: immich
   namespace: argocd
   finalizers:
   - resources-finalizer.argocd.argoproj.io
@@ -11,15 +11,12 @@ metadata:
 spec:
   project: home
   sources:
-  - repoURL: https://metallb.github.io/metallb
-    targetRevision: 0.14.9
-    chart: metallb
   - repoURL: git@github.com:dragon699/home-k8s.git
     targetRevision: main
-    path: manifests/metallb
+    path: manifests/apps/immich
   destination:
     server: https://kubernetes.default.svc
-    namespace: metallb-system
+    namespace: immich
   syncPolicy:
     automated:
       prune: true

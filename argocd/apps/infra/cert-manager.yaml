@@ -2,7 +2,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: jellyfin
+  name: cert-manager
   namespace: argocd
   finalizers:
   - resources-finalizer.argocd.argoproj.io
@@ -14,19 +14,18 @@ spec:
   - repoURL: git@github.com:dragon699/home-k8s.git
     targetRevision: main
     ref: values
-  - repoURL: https://djjudas21.github.io/charts/
-    targetRevision: 3.2.7
-    chart: jellyfin
+  - repoURL: https://charts.jetstack.io
+    targetRevision: 1.17.0
+    chart: cert-manager
     helm:
-      skipCrds: false
       valueFiles:
-      - '$values/helm/jellyfin/values.yaml'
+      - '$values/helm/infra/cert-manager/values.yaml'
   - repoURL: git@github.com:dragon699/home-k8s.git
     targetRevision: main
-    path: manifests/jellyfin
+    path: manifests/infra/cert-manager
   destination:
     server: https://kubernetes.default.svc
-    namespace: jellyfin
+    namespace: cert-manager
   syncPolicy:
     automated:
       prune: true

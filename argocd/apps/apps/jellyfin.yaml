@@ -2,7 +2,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: longhorn
+  name: jellyfin
   namespace: argocd
   finalizers:
   - resources-finalizer.argocd.argoproj.io
@@ -14,19 +14,19 @@ spec:
   - repoURL: git@github.com:dragon699/home-k8s.git
     targetRevision: main
     ref: values
-  - repoURL: https://charts.longhorn.io
-    targetRevision: 1.8.1
-    chart: longhorn
+  - repoURL: https://djjudas21.github.io/charts/
+    targetRevision: 3.2.7
+    chart: jellyfin
     helm:
       skipCrds: false
       valueFiles:
-      - '$values/helm/longhorn/values.yaml'
+      - '$values/helm/apps/jellyfin/values.yaml'
   - repoURL: git@github.com:dragon699/home-k8s.git
     targetRevision: main
-    path: manifests/longhorn
+    path: manifests/apps/jellyfin
   destination:
     server: https://kubernetes.default.svc
-    namespace: longhorn
+    namespace: jellyfin
   syncPolicy:
     automated:
       prune: true

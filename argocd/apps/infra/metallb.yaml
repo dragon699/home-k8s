@@ -2,7 +2,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: postgresql-shared
+  name: metallb
   namespace: argocd
   finalizers:
   - resources-finalizer.argocd.argoproj.io
@@ -11,18 +11,15 @@ metadata:
 spec:
   project: home
   sources:
+  - repoURL: https://metallb.github.io/metallb
+    targetRevision: 0.14.9
+    chart: metallb
   - repoURL: git@github.com:dragon699/home-k8s.git
     targetRevision: main
-    ref: values
-  - repoURL: https://percona.github.io/percona-helm-charts/
-    targetRevision: 2.6.0
-    chart: pg-db
-    helm:
-      valueFiles:
-      - '$values/helm/postgresql-shared/values.yaml'
+    path: manifests/infra/metallb
   destination:
     server: https://kubernetes.default.svc
-    namespace: shared
+    namespace: metallb-system
   syncPolicy:
     automated:
       prune: true
