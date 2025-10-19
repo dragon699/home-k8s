@@ -14,9 +14,8 @@ spec:
   - repoURL: git@github.com:dragon699/home-k8s.git
     targetRevision: main
     ref: values
-  - repoURL: oci://registry-1.docker.io/bitnamicharts
+  - repoURL: oci://registry-1.docker.io/bitnamicharts/victoriametrics
     targetRevision: 0.x.x
-    chart: victoriametrics
     helm:
       skipCrds: false
       valueFiles:
