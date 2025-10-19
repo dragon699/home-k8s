@@ -20,6 +20,9 @@ spec:
     helm:
       valueFiles:
       - '$values/helm/cert-manager/values.yaml'
+  - repoURL: git@github.com:dragon699/home-k8s.git
+    targetRevision: main
+    path: manifests/cert-manager
   destination:
     server: https://kubernetes.default.svc
     namespace: cert-manager
