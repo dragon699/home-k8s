@@ -20,6 +20,11 @@ spec:
     helm:
       valueFiles:
       - '$values/helm/infra/vault/values.yaml'
+  - repoURL: git@github.com:dragon699/home-k8s.git
+    targetRevision: main
+    path: manifests/infra/vault
+    directory:
+      recurse: true
   destination:
     server: https://kubernetes.default.svc
     namespace: vault

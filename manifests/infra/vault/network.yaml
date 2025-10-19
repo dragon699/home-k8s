@@ -1,0 +1,28 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: vault
+  namespace: vault
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-home
+    kubernetes.io/ingress.class: nginx
+  labels:
+    app: vault
+    env: home
+spec:
+  tls:
+  - hosts:
+    - vault.k8s.iaminyourpc.xyz
+    secretName: tls-vault-k8s-iaminyourpc-xyz
+  rules:
+  - host: vault.k8s.iaminyourpc.xyz
+    http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: vault
+            port:
+              number: 8200
