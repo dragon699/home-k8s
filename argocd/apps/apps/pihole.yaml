@@ -21,11 +21,6 @@ spec:
       skipCrds: false
       valueFiles:
       - '$values/helm/apps/pihole/values.yaml'
-  - repoURL: git@github.com:dragon699/home-k8s.git
-    targetRevision: main
-    path: manifests/apps/pihole
-    directory:
-      recurse: true
   destination:
     server: https://kubernetes.default.svc
     namespace: pihole
