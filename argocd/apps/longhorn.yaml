@@ -18,6 +18,7 @@ spec:
     targetRevision: 1.8.1
     chart: longhorn
     helm:
+      skipCrds: false
       valueFiles:
       - '$values/helm/longhorn/values.yaml'
   - repoURL: git@github.com:dragon699/home-k8s.git
