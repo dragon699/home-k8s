@@ -11,9 +11,16 @@ metadata:
 spec:
   project: home
   sources:
+  - repoURL: git@github.com:dragon699/home-k8s.git
+    targetRevision: main
+    ref: values
   - repoURL: oci://ghcr.io/kubewall/charts/kubewall
     targetRevision: 0.0.14
     chart: kubewall
+    helm:
+      skipCrds: false
+      valueFiles:
+      - '$values/helm/apps/kubewall/values.yaml'
   - repoURL: git@github.com:dragon699/home-k8s.git
     targetRevision: main
     path: manifests/apps/kubewall
