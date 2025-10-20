@@ -7,3 +7,14 @@ metadata:
 type: Opaque
 data:
   credentials: W2RlZmF1bHRdCmF3c19hY2Nlc3Nfa2V5X2lkID0gc3lzCmF3c19zZWNyZXRfYWNjZXNzX2tleSA9IFhXUkVxb1NpZUowazhCWU10SlMzNXVhbFBB
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: auth-velero-ui
+  namespace: velero
+type: Opaque
+data:
+  BASIC_AUTH_USERNAME: c3lz
+  BASIC_AUTH_PASSWORD: SVc0RW05UlNIUDlyS3MxVTdW

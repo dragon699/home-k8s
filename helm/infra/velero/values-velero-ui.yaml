@@ -1,0 +1,3 @@
+envFrom:
+- secretRef:
+    name: auth-velero-ui
