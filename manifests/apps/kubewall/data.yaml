@@ -1,0 +1,12 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: auth-kubewall
+  namespace: kubewall
+  labels:
+    env: home
+    htpasswd: kubewall
+type: Opaque
+data:
+  auth: c3lzOiRhcHIxJHk0dHU3ZmlxJHJWdWcuSVZ0bC5VYnAvTVpqdGMzdi4=
