@@ -9,95 +9,95 @@ configMapGenerator:
 # Kubernetes Dashboards
 - name: config-grafana-dashboard-kubernetes-cluster
   files:
-  - 'dashboards/Kubernetes/cluster.json'
+  - 'Kubernetes/cluster.json'
 - name: config-grafana-dashboard-kubernetes-view-by-nodes
   files:
-  - 'dashboards/Kubernetes/view-by-nodes.json'
+  - 'Kubernetes/view-by-nodes.json'
 - name: config-grafana-dashboard-kubernetes-view-by-apiservers
   files:
-  - 'dashboards/Kubernetes/view-by-apiservers.json'
+  - 'Kubernetes/view-by-apiservers.json'
 - name: config-grafana-dashboard-kubernetes-view-by-namespace
   files:
-  - 'dashboards/Kubernetes/view-by-namespace.json'
+  - 'Kubernetes/view-by-namespace.json'
 - name: config-grafana-dashboard-kubernetes-view-by-pods
   files:
-  - 'dashboards/Kubernetes/view-by-pods.json'
+  - 'Kubernetes/view-by-pods.json'
 - name: config-grafana-dashboard-kubernetes-flux
   files:
-  - 'dashboards/Kubernetes/flux.json'
+  - 'Kubernetes/flux.json'
 - name: config-grafana-dashboard-kubernetes-longhorn
   files:
-  - 'dashboards/Kubernetes/longhorn.json'
+  - 'Kubernetes/longhorn.json'
 
 # Machines Dashboards
 - name: config-grafana-dashboard-machines-view-by-node
   files:
-  - 'dashboards/Machines/view-by-node.json'
+  - 'Machines/view-by-node.json'
 
 # Teslamate Dashboards
 - name: config-grafana-dashboard-teslamate-battery-health
   files:
-  - 'dashboards/Teslamate/battery-health.json'
+  - 'Teslamate/battery-health.json'
 - name: config-grafana-dashboard-teslamate-charging-level
   files:
-  - 'dashboards/Teslamate/charging-level.json'
+  - 'Teslamate/charging-level.json'
 - name: config-grafana-dashboard-teslamate-charging-history
   files:
-  - 'dashboards/Teslamate/charging-history.json'
+  - 'Teslamate/charging-history.json'
 - name: config-grafana-dashboard-teslamate-charging-stats
   files:
-  - 'dashboards/Teslamate/charging-stats.json'
+  - 'Teslamate/charging-stats.json'
 - name: config-grafana-dashboard-teslamate-system-database
   files:
-  - 'dashboards/Teslamate/system-database.json'
+  - 'Teslamate/system-database.json'
 - name: config-grafana-dashboard-teslamate-driving-stats
   files:
-  - 'dashboards/Teslamate/driving-stats.json'
+  - 'Teslamate/driving-stats.json'
 - name: config-grafana-dashboard-teslamate-driving-history
   files:
-  - 'dashboards/Teslamate/driving-history.json'
+  - 'Teslamate/driving-history.json'
 - name: config-grafana-dashboard-teslamate-driving-efficiency
   files:
-  - 'dashboards/Teslamate/driving-efficiency.json'
+  - 'Teslamate/driving-efficiency.json'
 - name: config-grafana-dashboard-teslamate-places-locations
   files:
-  - 'dashboards/Teslamate/places-locations.json'
+  - 'Teslamate/places-locations.json'
 - name: config-grafana-dashboard-teslamate-mileage-total
   files:
-  - 'dashboards/Teslamate/mileage-total.json'
+  - 'Teslamate/mileage-total.json'
 - name: config-grafana-dashboard-teslamate-overview
   files:
-  - 'dashboards/Teslamate/overview.json'
+  - 'Teslamate/overview.json'
 - name: config-grafana-dashboard-teslamate-mileage-projected-range
   files:
-  - 'dashboards/Teslamate/mileage-projected-range.json'
+  - 'Teslamate/mileage-projected-range.json'
 - name: config-grafana-dashboard-teslamate-lifecycle-states
   files:
-  - 'dashboards/Teslamate/lifecycle-states.json'
+  - 'Teslamate/lifecycle-states.json'
 - name: config-grafana-dashboard-teslamate-lifecycle-stats
   files:
-  - 'dashboards/Teslamate/lifecycle-stats.json'
+  - 'Teslamate/lifecycle-stats.json'
 - name: config-grafana-dashboard-teslamate-lifecycle-timeline
   files:
-  - 'dashboards/Teslamate/lifecycle-timeline.json'
+  - 'Teslamate/lifecycle-timeline.json'
 - name: config-grafana-dashboard-teslamate-places-trip
   files:
-  - 'dashboards/Teslamate/places-trip.json'
+  - 'Teslamate/places-trip.json'
 - name: config-grafana-dashboard-teslamate-system-software-updates
   files:
-  - 'dashboards/Teslamate/system-software-updates.json'
+  - 'Teslamate/system-software-updates.json'
 - name: config-grafana-dashboard-teslamate-lifecycle-vampire-drain
   files:
-  - 'dashboards/Teslamate/lifecycle-vampire-drain.json'
+  - 'Teslamate/lifecycle-vampire-drain.json'
 - name: config-grafana-dashboard-teslamate-places-visits
   files:
-  - 'dashboards/Teslamate/places-visits.json'
+  - 'Teslamate/places-visits.json'
 - name: config-grafana-dashboard-teslamate-driving-dutch-tax
   files:
-  - 'dashboards/Teslamate/driving-dutch-tax.json'
+  - 'Teslamate/driving-dutch-tax.json'
 - name: config-grafana-dashboard-teslamate-charging-details
   files:
-  - 'dashboards/Teslamate/charging-details.json'
+  - 'Teslamate/charging-details.json'
 - name: config-grafana-dashboard-teslamate-driving-details
   files:
-  - 'dashboards/Teslamate/driving-details.json'
+  - 'Teslamate/driving-details.json'

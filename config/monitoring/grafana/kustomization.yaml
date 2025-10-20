@@ -9,3 +9,5 @@ configMapGenerator:
   files: ['datasources.yaml']
 - name: config-grafana-dashboards
   files: ['dashboards.yaml']
+resources:
+- dashboards
