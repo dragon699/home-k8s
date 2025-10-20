@@ -32,6 +32,11 @@ spec:
     path: manifests/monitoring/metric-providers/immich-exporter
     directory:
       recurse: true
+  - repoURL: git@github.com:dragon699/home-k8s.git
+    targetRevision: main
+    path: manifests/monitoring/metric-providers/pihole-exporter
+    directory:
+      recurse: true
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring

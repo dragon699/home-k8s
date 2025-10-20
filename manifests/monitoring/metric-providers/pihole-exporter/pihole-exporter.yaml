@@ -1,0 +1,40 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pihole-exporter
+  namespace: monitoring
+  labels:
+    app: pihole-exporter
+    env: home
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: pihole-exporter
+  template:
+    metadata:
+      labels:
+        app: pihole-exporter
+        env: home
+    spec:
+      restartPolicy: Always
+      containers:
+      - name: pihole-exporter
+        image: ekofr/pihole-exporter:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 9617
+        env:
+        - name: PIHOLE_HOSTNAME
+          valueFrom:
+            secretKeyRef:
+              name: auth-pihole
+              key: PIHOLE_HOSTNAME
+        - name: PIHOLE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: auth-pihole
+              key: PIHOLE_PASSWORD
