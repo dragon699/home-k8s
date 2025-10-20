@@ -3,8 +3,8 @@ initContainers:
   image: velero/velero-plugin-for-aws:v1.13.0
   imagePullPolicy: IfNotPresent
   volumeMounts:
-    - mountPath: /target
-      name: plugins
+  - mountPath: /target
+    name: plugins
 
 credentials:
   useSecret: true
