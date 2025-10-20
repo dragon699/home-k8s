@@ -1,29 +1,29 @@
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: kubewall
-  namespace: kubewall
-  annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-home
-    kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
-  labels:
-    app: kubewall
-    env: home
-spec:
-  tls:
-  - hosts:
-    - kube.k8s.iaminyourpc.xyz
-    secretName: tls-kube-k8s-iaminyourpc-xyz
-  rules:
-  - host: kube.k8s.iaminyourpc.xyz
-    http:
-      paths:
-      - pathType: Prefix
-        path: /
-        backend:
-          service:
-            name: kubewall
-            port:
-              number: 8443
+# ---
+# apiVersion: networking.k8s.io/v1
+# kind: Ingress
+# metadata:
+#   name: kubewall
+#   namespace: kubewall
+#   annotations:
+#     cert-manager.io/cluster-issuer: letsencrypt-home
+#     kubernetes.io/ingress.class: nginx
+#     nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+#   labels:
+#     app: kubewall
+#     env: home
+# spec:
+#   tls:
+#   - hosts:
+#     - kube.k8s.iaminyourpc.xyz
+#     secretName: tls-kube-k8s-iaminyourpc-xyz
+#   rules:
+#   - host: kube.k8s.iaminyourpc.xyz
+#     http:
+#       paths:
+#       - pathType: Prefix
+#         path: /
+#         backend:
+#           service:
+#             name: kubewall
+#             port:
+#               number: 8443
