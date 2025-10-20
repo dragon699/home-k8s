@@ -18,12 +18,15 @@ spec:
     targetRevision: 4.46.0
     chart: prometheus-node-exporter
     helm:
+      releaseName: prometheus-node-exporter
       skipCrds: false
       valueFiles:
       - '$values/helm/monitoring/metric-providers/prometheus-node-exporter/values.yaml'
   - repoURL: oci://registry-1.docker.io/bitnamicharts/kube-state-metrics
     targetRevision: '*'
     chart: kube-state-metrics
+    helm:
+      releaseName: kube-state-metrics
   - repoURL: git@github.com:dragon699/home-k8s.git
     targetRevision: main
     path: manifests/monitoring/metric-providers/immich-exporter
