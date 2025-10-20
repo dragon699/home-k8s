@@ -1,3 +1,26 @@
 credentials:
   useSecret: true
   name: velero-password
+
+configuration:
+  backupStorageLocation:
+  - name: default
+    provider: aws
+    bucket: velero
+    default: true
+    credential:
+      name: auth-minio
+      key: credentials
+    config:
+      region: minio
+      s3ForcePathStyle: "true"
+      s3Url: http://minio.monitoring.svc:9000
+
+  volumeSnapshotLocation:
+  - name: default
+    provider: aws
+    credential:
+      name: auth-minio
+      key: credentials
+    config:
+      region: minio
