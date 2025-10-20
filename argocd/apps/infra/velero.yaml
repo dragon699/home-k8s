@@ -19,7 +19,13 @@ spec:
     chart: velero
     helm:
       valueFiles:
-      - '$values/helm/infra/velero/values.yaml'
+      - '$values/helm/infra/velero/values-velero.yaml'
+  - repoURL: https://helm.otwld.com
+    targetRevision: 0.14.0
+    chart: velero-ui
+    helm:
+      valueFiles:
+      - '$values/helm/infra/velero/values-velero-ui.yaml'
   - repoURL: git@github.com:dragon699/home-k8s.git
     targetRevision: main
     path: manifests/infra/velero
