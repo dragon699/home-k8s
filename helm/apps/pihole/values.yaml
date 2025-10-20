@@ -13,3 +13,9 @@ serviceDns:
 admin:
   existingSecret: auth-pihole
   passwordKey: PIHOLE_PASSWORD
+
+adlists:
+- https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts
+- https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/pro.txt
+- https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/wildcard/popupads-onlydomains.txt
+- https://raw.githubusercontent.com/PolishFiltersTeam/KADhosts/master/KADhosts.txt
