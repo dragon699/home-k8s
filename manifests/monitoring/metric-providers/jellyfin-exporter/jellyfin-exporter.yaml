@@ -1,0 +1,43 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jellyfin-exporter
+  namespace: monitoring
+  labels:
+    app: jellyfin-exporter
+    env: home
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: jellyfin-exporter
+  template:
+    metadata:
+      labels:
+        app: jellyfin-exporter
+        env: home
+    spec:
+      restartPolicy: Always
+      containers:
+      - name: jellyfin-exporter
+        image: rebelcore/jellyfin-exporter:latest
+        imagePullPolicy: IfNotPresent
+        command:
+          - "--jellyfin.address=$(JELLYFIN_HOST)"
+          - "--jellyfin.token=$(JELLYFIN_API_KEY)"
+        ports:
+        - containerPort: 9594
+        env:
+        - name: JELLYFIN_HOST
+          valueFrom:
+            secretKeyRef:
+              name: auth-jellyfin
+              key: JELLYFIN_HOST
+        - name: JELLYFIN_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: auth-jellyfin
+              key: JELLYFIN_API_KEY

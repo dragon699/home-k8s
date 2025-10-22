@@ -1,0 +1,10 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: auth-jellyfin
+  namespace: monitoring
+type: Opaque
+data:
+  JELLYFIN_HOST: amVsbHlmaW4uamVsbHlmaW4uc3ZjOjgwOTY=
+  JELLYFIN_API_KEY: NGE1MzMwYjI3MGY5NGY4YmFhMmNkNWI3MGYyYmNlYzQ=
