@@ -42,6 +42,11 @@ spec:
               key: VAULT_ROOT_TOKEN
         - name: VAULT_USER_EXTERNAL_SECRETS_NAME
           value: "external-secrets"
+        - name: VAULT_USER_EXTERNAL_SECRETS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: data-vault-sensitive
+              key: VAULT_USER_EXTERNAL_SECRETS_PASSWORD
         - name: VAULT_POLICY_EXTERNAL_SECRETS_NAME
           value: "external-secrets"
         - name: VAULT_POLICY_EXTERNAL_SECRETS_FILE

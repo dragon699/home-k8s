@@ -93,6 +93,8 @@ function vault_setup_external_secrets() {
     echo "${VAULT_ADDRESS}: Updated!"
     echo "${VAULT_ADDRESS}: Creating user ${VAULT_USER_EXTERNAL_SECRETS_NAME}.."
 
+    echo "${VAULT_USER_EXTERNAL_SECRETS_PASSWORD}"
+
     vault write auth/userpass/users/"${VAULT_USER_EXTERNAL_SECRETS_NAME}" \
         password="${VAULT_USER_EXTERNAL_SECRETS_PASSWORD}" \
         policies="default"
