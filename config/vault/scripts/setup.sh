@@ -72,6 +72,18 @@ function vault_setup_external_secrets() {
     }
 
     echo "${VAULT_ADDRESS}: Enabled!"
+    echo "${VAULT_ADDRESS}: Updating UI visibility settings for userpass.."
+
+    vault auth tune \
+        -listing-visibility=unauth \
+        userpass > /dev/null 2>&1
+
+    [ $? -ne 0 ] && {
+        echo "${VAULT_ADDRESS}: Failed!"
+        exit 1
+    }
+
+    echo "${VAULT_ADDRESS}: Updated!"
     echo "${VAULT_ADDRESS}: Creating user ${VAULT_USER_EXTERNAL_SECRETS_NAME}.."
 
     vault write auth/userpass/users/"${VAULT_USER_EXTERNAL_SECRETS_NAME}" \
@@ -83,7 +95,7 @@ function vault_setup_external_secrets() {
         exit 1
     }
 
-    echo "${VAULT_ADDRESS}: Created!"
+    echo "${VAULT_ADDRESS}: Created user ${VAULT_USER_EXTERNAL_SECRETS_NAME} with password ${VAULT_USER_EXTERNAL_SECRETS_PASSWORD}!"
 }
 
 function main() {
