@@ -6,6 +6,8 @@ metadata:
   namespace: vault
 spec:
   schedule: "*/3 * * * *"
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
   jobTemplate:
     spec:
       template:
