@@ -6,4 +6,4 @@ generatorOptions:
   disableNameSuffixHash: true
 configMapGenerator:
 - name: script-vault-auto-unseal
-  files: ['unseal.sh=../../scripts/vault/unseal.sh']
+  files: ['unseal.sh']
