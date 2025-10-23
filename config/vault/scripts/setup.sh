@@ -8,6 +8,7 @@
 
 # // Variables for initial vault setup
 # VAULT_USER_EXTERNAL_SECRETS_NAME => <String> Name of the user to create which will be used by External Secrets
+# VAULT_USER_EXTERNAL_SECRETS_PASSWORD => <String> Password of the user to create which will be used by External Secrets
 # VAULT_POLICY_EXTERNAL_SECRETS_NAME => <String> Name of the policy to create for External Secrets
 # VAULT_POLICY_EXTERNAL_SECRETS_FILE => <String> Path to the policy file for External Secrets
 # VAULT_KV_NAME => <String> Name of the KV to create (i.e. 'home')
@@ -40,24 +41,28 @@ function vault_setup_external_secrets() {
 
     vault secrets enable -path="${VAULT_KV_NAME}" kv-v2 > /dev/null 2>&1
 
-    [ $? -ne 0 ] && {
-        echo "${VAULT_ADDRESS}: Failed!"
-        exit 1
-    }
+    if [ $? -ne 0 ]; then
+        echo "${VAULT_ADDRESS}: Failed or already exists!"
 
-    echo "${VAULT_ADDRESS}: Created!"
+    else
+        echo "${VAULT_ADDRESS}: Created!"
+
+    fi
+
     echo "${VAULT_ADDRESS}: Creating policy ${VAULT_POLICY_EXTERNAL_SECRETS_NAME}.."
 
     echo "${VAULT_POLICY_EXTERNAL_SECRETS_CONTENT}" | {
         vault policy write "${VAULT_POLICY_EXTERNAL_SECRETS_NAME}" - > /dev/null 2>&1
     }
 
-    [ $? -ne 0 ] && {
+    if [ $? -ne 0 ]; then
         echo "${VAULT_ADDRESS}: Failed or already exists!"
-        exit 1
-    }
 
-    echo "${VAULT_ADDRESS}: Created!"
+    else
+        echo "${VAULT_ADDRESS}: Created!"
+
+    fi
+
     echo "${VAULT_ADDRESS}: Enabling authentication method userpass.."
 
     vault auth enable \
@@ -66,10 +71,13 @@ function vault_setup_external_secrets() {
         -max-lease-ttl=8760h \
         userpass > /dev/null 2>&1
 
-    [ $? -ne 0 ] && {
+    if [ $? -ne 0 ]; then
         echo "${VAULT_ADDRESS}: Failed or already enabled!"
-        exit 1
-    }
+
+    else
+        echo "${VAULT_ADDRESS}: Enabled!"
+
+    fi
 
     echo "${VAULT_ADDRESS}: Enabled!"
     echo "${VAULT_ADDRESS}: Updating UI visibility settings for userpass.."
@@ -90,12 +98,15 @@ function vault_setup_external_secrets() {
         password="${VAULT_USER_EXTERNAL_SECRETS_PASSWORD}" \
         policies="default" > /dev/null 2>&1
 
-    [ $? -ne 0 ] && {
+    if [ $? -ne 0 ]; then
         echo "${VAULT_ADDRESS}: Failed or already exists!"
-        exit 1
-    }
+    
+    else
+        echo "${VAULT_ADDRESS}: Created!"
 
-    echo "${VAULT_ADDRESS}: Created user ${VAULT_USER_EXTERNAL_SECRETS_NAME} with password ${VAULT_USER_EXTERNAL_SECRETS_PASSWORD}!"
+    fi
+
+    echo "${VAULT_ADDRESS}: Created user ${VAULT_USER_EXTERNAL_SECRETS_NAME}!"
 }
 
 function main() {
@@ -103,11 +114,13 @@ function main() {
     export VAULT_TOKEN="${VAULT_ROOT_TOKEN}"
 
     export VAULT_POLICY_EXTERNAL_SECRETS_CONTENT="$(cat ${VAULT_POLICY_EXTERNAL_SECRETS_FILE})"
-    export VAULT_USER_EXTERNAL_SECRETS_PASSWORD="$(head -c 32 /dev/urandom)"
-    export VAULT_USER_EXTERNAL_SECRETS_PASSWORD_ENCODED="$(echo -n "${VAULT_USER_EXTERNAL_SECRETS_PASSWORD}" | base64 -w 0)"
+
+    echo "${VAULT_ADDRESS}: Beginning initial setup.."
 
     vault_connect
     vault_setup_external_secrets
+
+    echo "${VAULT_ADDRESS}: Initial setup completed!"
 }
 
 main
