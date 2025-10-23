@@ -1,8 +1,9 @@
 #!/bin/bash
 
 
-VAULT_ADDRESSES=()
-VAULT_UNSEAL_KEYS=()
+# Required variables
+# VAULT_ADDRESSES => Array of Vault addresses to check
+# VAULT_UNSEAL_KEYS => Array of unseal keys
 
 
 function vault_check_seal_status() {

@@ -1,0 +1,9 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: vault
+generatorOptions:
+  disableNameSuffixHash: true
+configMapGenerator:
+- name: script-vault-auto-unseal
+  files: ['unseal.sh=../../scripts/vault/unseal.sh']

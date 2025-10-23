@@ -1,0 +1,36 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: vault-auto-unseal
+  namespace: vault
+spec:
+  schedule: "*/3 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          volumes:
+          - name: script-vault-auto-unseal
+            configMap:
+              name: script-vault-auto-unseal
+              defaultMode: 0755
+          containers:
+          - name: unseal
+            image: hashicorp/vault:latest
+            volumeMounts:
+            - name: script-vault-auto-unseal
+              mountPath: /scripts
+            command: ["/bin/sh", "/scripts/unseal.sh"]
+            env:
+            - name: VAULT_ADDRESSES
+              valueFrom:
+                secretKeyRef:
+                  name: config-vault-unseal
+                  key: VAULT_ADDRESSES
+            - name: VAULT_UNSEAL_KEYS
+              valueFrom:
+                secretKeyRef:
+                  name: config-vault-unseal
+                  key: VAULT_UNSEAL_KEYS
