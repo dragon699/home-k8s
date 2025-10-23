@@ -2,21 +2,25 @@
 
 
 # Required variables
-# VAULT_ADDRESSES => Array of Vault addresses to check
-# VAULT_UNSEAL_KEYS => Array of unseal keys
+# VAULT_ADDRESSES => String with space-separated Vault addresses
+# VAULT_UNSEAL_KEYS => String with space-separated unseal keys
 
 
 function vault_check_seal_status() {
     echo "${VAULT_ADDR}: Checking seal status.."
 
-    SEAL_STATUS=$(vault status | grep 'Sealed' | awk '{print $2}')
+    SEAL_STATUS="$(vault status | grep 'Sealed' | awk '{print $2}')"
 
     if [ "$SEAL_STATUS" = "true" ]; then
         echo "${VAULT_ADDR}: Sealed!"
         vault_unseal
 
-    else
+    elif [ "$SEAL_STATUS" = "false" ]; then
         echo "${VAULT_ADDR}: Unsealed - no action needed!"
+
+    else
+        echo "${VAULT_ADDR}: Unable to determine seal status!"
+        exit 1
 
     fi
 }
@@ -24,7 +28,7 @@ function vault_check_seal_status() {
 function vault_unseal(){
     echo "${VAULT_ADDR}: Unsealing.."
 
-    for KEY in "${VAULT_UNSEAL_KEYS[@]}"; do
+    for KEY in "${VAULT_UNSEAL_KEYS}"; do
         echo "${VAULT_ADDR}: Submitting unseal key -> $(echo "$KEY" | cut -c1-3)*****"
 
         vault operator unseal "${KEY}"
@@ -40,8 +44,8 @@ function vault_unseal(){
 }
 
 function main() {
-    for ADDR in "${VAULT_ADDRESSES[@]}"; do
-        export VAULT_ADDR=${ADDR}
+    for ADDR in "${VAULT_ADDRESSES}"; do
+        export VAULT_ADDR="${ADDR}"
 
         vault_check_seal_status
     done
