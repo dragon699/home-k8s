@@ -3,8 +3,8 @@
 
 # Required variables
 # VAULT_SCHEME => http/https
-# VAULT_ADDRESSES => String with space-separated Vault addresses
-# VAULT_UNSEAL_KEYS => String with space-separated unseal keys
+# VAULT_ADDRESSES => <String> with space-separated Vault addresses
+# VAULT_UNSEAL_KEYS => <String> with space-separated unseal keys
 
 
 function vault_check_seal_status() {
@@ -31,8 +31,6 @@ function vault_unseal(){
 
     for KEY in ${VAULT_UNSEAL_KEYS}; do
         echo "${VAULT_ADDR}: Submitting unseal key -> $(echo "$KEY" | cut -c1-3)*****"
-        echo "$KEY"
-        echo -n "$KEY"
 
         vault operator unseal "${KEY}"
 
