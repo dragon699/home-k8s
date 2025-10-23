@@ -25,12 +25,12 @@ function vault_unseal(){
     echo "${VAULT_ADDR}: Unsealing.."
 
     for KEY in "${VAULT_UNSEAL_KEYS[@]}"; do
-        echo "${VAULT_ADDR}: Submitting unseal key -> ${KEY:0:3}*****"
+        echo "${VAULT_ADDR}: Submitting unseal key -> $(echo "$KEY" | cut -c1-3)*****"
 
         vault operator unseal "${KEY}"
 
         if [ $? -ne 0 ]; then
-            echo "${VAULT_ADDR}: Vault declined the key -> ${KEY:0:3}*****"
+            echo "${VAULT_ADDR}: Vault declined the key -> $(echo "$KEY" | cut -c1-3)*****"
 
             exit 1
         fi
