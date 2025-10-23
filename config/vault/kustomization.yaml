@@ -7,5 +7,7 @@ generatorOptions:
 configMapGenerator:
 - name: script-vault-auto-unseal
   files: ['unseal.sh=scripts/unseal.sh']
+- name: script-vault-setup
+  files: ['setup.sh=scripts/setup.sh']
 - name: data-vault-policy-external-secrets
   files: ['external-secrets.hcl=policies/external-secrets.hcl']
