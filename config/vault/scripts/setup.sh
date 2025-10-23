@@ -95,7 +95,7 @@ function vault_setup_external_secrets() {
 
     vault write auth/userpass/users/"${VAULT_USER_EXTERNAL_SECRETS_NAME}" \
         password="${VAULT_USER_EXTERNAL_SECRETS_PASSWORD}" \
-        policies="default" > /dev/null 2>&1
+        policies="default"
 
     if [ $? -ne 0 ]; then
         echo "${VAULT_ADDRESS}: Failed or already exists!"
