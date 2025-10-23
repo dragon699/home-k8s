@@ -94,7 +94,7 @@ function vault_setup_external_secrets() {
     echo "${VAULT_ADDRESS}: Creating user ${VAULT_USER_EXTERNAL_SECRETS_NAME}.."
 
     vault write auth/userpass/users/"${VAULT_USER_EXTERNAL_SECRETS_NAME}" \
-        password=$(printf '%q' "$VAULT_USER_EXTERNAL_SECRETS_PASSWORD") \
+        password="${VAULT_USER_EXTERNAL_SECRETS_PASSWORD}" \
         policies="default" > /dev/null 2>&1
 
     if [ $? -ne 0 ]; then
