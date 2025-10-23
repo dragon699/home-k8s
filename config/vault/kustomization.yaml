@@ -6,4 +6,6 @@ generatorOptions:
   disableNameSuffixHash: true
 configMapGenerator:
 - name: script-vault-auto-unseal
-  files: ['unseal.sh']
+  files: ['unseal.sh=scripts/unseal.sh']
+- name: data-vault-policy-external-secrets
+  files: ['external-secrets.hcl=policies/external-secrets.hcl']
