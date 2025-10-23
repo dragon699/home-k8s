@@ -46,7 +46,7 @@ function vault_unseal(){
 
 function main() {
     for ADDR in "${VAULT_ADDRESSES}"; do
-        export VAULT_ADDR="${ADDR}"
+        export VAULT_ADDR="${VAULT_SCHEME}://${ADDR}"
 
         vault_check_seal_status
     done
