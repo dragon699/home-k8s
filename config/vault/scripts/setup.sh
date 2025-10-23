@@ -15,7 +15,7 @@
 
 
 function vault_connect() {
-    echo "${VAULT_ADDRESS}: Waiting to start up.."
+    echo "${VAULT_ADDRESS}: Attempting to connect.."
 
     until vault status &>/dev/null; do
         echo "${VAULT_ADDRESS}: Still not available, retrying in 5 seconds.."
