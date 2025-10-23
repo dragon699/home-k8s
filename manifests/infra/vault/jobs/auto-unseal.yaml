@@ -24,6 +24,8 @@ spec:
               mountPath: /scripts
             command: ["/bin/sh", "/scripts/unseal.sh"]
             env:
+            - name: VAULT_SCHEME
+              value: "http"
             - name: VAULT_ADDRESSES
               valueFrom:
                 secretKeyRef:
