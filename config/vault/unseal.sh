@@ -31,6 +31,7 @@ function vault_unseal(){
 
     for KEY in "${VAULT_UNSEAL_KEYS}"; do
         echo "${VAULT_ADDR}: Submitting unseal key -> $(echo "$KEY" | cut -c1-3)*****"
+        echo "$KEY"
 
         vault operator unseal "${KEY}"
 
