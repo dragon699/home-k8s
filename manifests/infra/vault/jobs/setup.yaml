@@ -26,7 +26,6 @@ spec:
           mountPath: /scripts
         - name: data-vault-policy-external-secrets
           mountPath: /policies
-          subPath: external-secrets.hcl
         command: ["/bin/sh", "/scripts/setup.sh"]
         env:
         - name: VAULT_SCHEME
