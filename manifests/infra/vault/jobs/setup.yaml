@@ -1,0 +1,51 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: vault-setup
+  namespace: vault
+  annotations:
+    argocd.argoproj.io/hook: PostSync
+spec:
+  template:
+    spec:
+      restartPolicy: OnFailure
+      volumes:
+      - name: script-vault-setup
+        configMap:
+          name: script-vault-setup
+          defaultMode: 0755
+      - name: data-vault-policy-external-secrets
+        configMap:
+          name: data-vault-policy-external-secrets
+      containers:
+      - name: setup
+        image: hashicorp/vault:latest
+        volumeMounts:
+        - name: script-vault-setup
+          mountPath: /scripts
+        - name: data-vault-policy-external-secrets
+          mountPath: /policies
+          subPath: external-secrets.hcl
+        command: ["/bin/sh", "/scripts/setup.sh"]
+        env:
+        - name: VAULT_SCHEME
+          value: "http"
+        - name: VAULT_ADDRESS
+          valueFrom:
+            secretKeyRef:
+              name: data-vault-sensitive
+              key: VAULT_ADDRESS
+        - name: VAULT_ROOT_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: data-vault-sensitive
+              key: VAULT_ROOT_TOKEN
+        - name: VAULT_USER_EXTERNAL_SECRETS_NAME
+          value: "external-secrets"
+        - name: VAULT_POLICY_EXTERNAL_SECRETS_NAME
+          value: "external-secrets"
+        - name: VAULT_POLICY_EXTERNAL_SECRETS_FILE
+          value: "/policies/external-secrets.hcl"
+        - name: VAULT_KV_NAME
+          value: "home"

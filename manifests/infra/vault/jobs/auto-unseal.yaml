@@ -31,10 +31,10 @@ spec:
             - name: VAULT_ADDRESSES
               valueFrom:
                 secretKeyRef:
-                  name: config-vault-unseal
+                  name: data-vault-sensitive
                   key: VAULT_ADDRESSES
             - name: VAULT_UNSEAL_KEYS
               valueFrom:
                 secretKeyRef:
-                  name: config-vault-unseal
+                  name: data-vault-sensitive
                   key: VAULT_UNSEAL_KEYS
