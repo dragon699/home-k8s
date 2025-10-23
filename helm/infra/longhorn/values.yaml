@@ -13,6 +13,9 @@ defaultSettings:
   defaultReplicaCount: 1
   storageReservedPercentageForDefaultDisk: 10
 
+longhornUI:
+  replicas: 1
+
 service:
   ui:
     type: ClusterIP
