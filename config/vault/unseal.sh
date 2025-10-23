@@ -2,6 +2,7 @@
 
 
 # Required variables
+# VAULT_SCHEME => http/https
 # VAULT_ADDRESSES => String with space-separated Vault addresses
 # VAULT_UNSEAL_KEYS => String with space-separated unseal keys
 
