@@ -49,7 +49,7 @@ function vault_setup_external_secrets() {
 
     fi
 
-    echo "${VAULT_ADDRESS}: Creating policy ${VAULT_POLICY_EXTERNAL_SECRETS_NAME}.."
+    echo "${VAULT_ADDRESS}: Importing policy ${VAULT_POLICY_EXTERNAL_SECRETS_NAME}.."
 
     echo "${VAULT_POLICY_EXTERNAL_SECRETS_CONTENT}" | {
         vault policy write "${VAULT_POLICY_EXTERNAL_SECRETS_NAME}" - > /dev/null 2>&1
@@ -59,7 +59,7 @@ function vault_setup_external_secrets() {
         echo "${VAULT_ADDRESS}: Failed or already exists!"
 
     else
-        echo "${VAULT_ADDRESS}: Created!"
+        echo "${VAULT_ADDRESS}: Imported!"
 
     fi
 
@@ -79,7 +79,7 @@ function vault_setup_external_secrets() {
 
     fi
 
-    echo "${VAULT_ADDRESS}: Updating UI visibility settings for userpass.."
+    echo "${VAULT_ADDRESS}: Updating UI visibility settings for method userpass.."
 
     vault auth tune \
         -listing-visibility=unauth \
@@ -102,7 +102,7 @@ function vault_setup_external_secrets() {
         echo "${VAULT_ADDRESS}: Failed or already exists!"
     
     else
-        echo "${VAULT_ADDRESS}: Created!"
+        echo "${VAULT_ADDRESS}: Created or updated!"
 
     fi
 }
@@ -113,12 +113,12 @@ function main() {
 
     export VAULT_POLICY_EXTERNAL_SECRETS_CONTENT="$(cat ${VAULT_POLICY_EXTERNAL_SECRETS_FILE})"
 
-    echo "${VAULT_ADDRESS}: Beginning initial setup.."
+    echo "${VAULT_ADDRESS}: Beginning initial setup checks.."
 
     vault_connect
     vault_setup_external_secrets
 
-    echo "${VAULT_ADDRESS}: Initial setup completed!"
+    echo "${VAULT_ADDRESS}: Initial checks setup completed!"
 }
 
 main
