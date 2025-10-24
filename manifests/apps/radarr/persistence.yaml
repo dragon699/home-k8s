@@ -14,7 +14,7 @@ spec:
     requests:
       storage: 1Ti
   storageClassName: manual
-  volumeName: radarr-media-windows-data
+  volumeName: media-windows-data
 
 ---
 apiVersion: v1
