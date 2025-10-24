@@ -28,8 +28,11 @@ spec:
         configMap:
           name: assets-glance
       - name: config-glance-glance
-        configMap:
-          name: config-glance-glance
+        # configMap:
+        #   name: config-glance-glance
+        hostPath:
+          path: /home/martin/stuff/home-k8s/config/glance/config/glance.yml
+          type: File
       - name: config-glance-home
         configMap:
           name: config-glance-home
@@ -45,8 +48,11 @@ spec:
         - name: assets-glance
           mountPath: /app/assets
         - name: config-glance-glance
+          # mountPath: /app/config/glance.yml
+          # subPath: glance.yml
           mountPath: /app/config/glance.yml
           subPath: glance.yml
+          readOnly: true
         - name: config-glance-home
           mountPath: /app/config/home.yml
           subPath: home.yml
