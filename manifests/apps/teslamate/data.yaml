@@ -1,25 +1,41 @@
 ---
-apiVersion: v1
-kind: Secret
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
 metadata:
   name: data-teslamate
   namespace: teslamate
-  labels:
-    app: teslamate
-    env: home
-type: Opaque
-data:
-  encryption_key: NXZ+KDc7KykhV2RWNFVFMTFPWlRCJQ==
+spec:
+  refreshInterval: 5m
+  secretStoreRef:
+    name: home-vault
+    kind: ClusterSecretStore
+  target:
+    name: data-teslamate
+    creationPolicy: Owner
+  dataFrom:
+  - extract:
+      key: home/teslamate/data-teslamate
+      conversionStrategy: Default
+      decodingStrategy: None
+      metadataPolicy: None
 
 ---
-apiVersion: v1
-kind: Secret
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
 metadata:
   name: auth-teslamate
   namespace: teslamate
-  labels:
-    env: home
-    htpasswd: teslamate
-type: Opaque
-data:
-  auth: c3lzOiRhcHIxJHdhamt0ZGN4JHNEckNBaFVmY2s3T0l5dHFSUkI0VDA=
+spec:
+  refreshInterval: 5m
+  secretStoreRef:
+    name: home-vault
+    kind: ClusterSecretStore
+  target:
+    name: auth-teslamate
+    creationPolicy: Owner
+  dataFrom:
+  - extract:
+      key: home/teslamate/auth-teslamate
+      conversionStrategy: Default
+      decodingStrategy: None
+      metadataPolicy: None
