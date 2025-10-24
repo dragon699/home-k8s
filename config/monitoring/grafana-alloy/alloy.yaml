@@ -194,11 +194,14 @@ beyla.ebpf "home_discovery" {
       exports                  = ["metrics", "traces"]
     }
 
-    exclude_instrument {
-      kubernetes {
-        namespace              = "cert-manager|default|k0s-autopilot|kube-node-lease|kube-public|kube-system|kubewall|longhorn|monitoring|speedtest"
-      }
-    }
+    exclude_instrument         { kubernetes { namespace = "cert-manager" } }
+    exclude_instrument         { kubernetes { namespace = "default" } }
+    exclude_instrument         { kubernetes { namespace = "k0s-autopilot" } }
+    exclude_instrument         { kubernetes { namespace = "kube-*" } }
+    exclude_instrument         { kubernetes { namespace = "kubewall" } }
+    exclude_instrument         { kubernetes { namespace = "longhorn" } }
+    exclude_instrument         { kubernetes { namespace = "monitoring" } }
+    exclude_instrument         { kubernetes { namespace = "speedtest" } }
   }
 
   ebpf {
