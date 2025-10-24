@@ -4,48 +4,28 @@
   slug: home
   width: default
   head-widgets:
-    - type: monitor
-      hide-header: true
-      sites:
-        - title: Jellyfin
-          url: https://watch.k8s.iaminyourpc.xyz
-          icon: di:jellyfin
-          timeout: 10s
-        - title: Immich
-          url: https://photos.k8s.iaminyourpc.xyz
-          icon: di:immich
-          timeout: 10s
-        - title: PiHole
-          url: http://pihole.k8s.iaminyourpc.xyz/admin
-          icon: https://upload.wikimedia.org/wikipedia/commons/0/00/Pi-hole_Logo.png
-          timeout: 10s
-        - title: Teslamate
-          url: http://car.k8s.iaminyourpc.xyz
-          icon: https://www.pngplay.com/wp-content/uploads/13/Tesla-Logo-PNG-Photo-Image.png
-          timeout: 10s
-          basic-auth:
-            username: ${TESLAMATE_USER}
-            password: ${TESLAMATE_PASSWORD}
+  - type: search
+    hide-header: true
+    search-engine: google
+    placeholder: "Dankata nqma sredno"
+    bangs:
+      - title: YouTube
+        shortcut: ".yt"
+        url: https://www.youtube.com/results?search_query={QUERY}
   columns:
     - size: small
       widgets:
+        - type: repository
+          repository: dragon699/home-k8s
+          pull-requests-limit: 1
+          issues-limit: 1
+          commits-limit: 3
+          token: ${GITHUB_PAT}
         - type: calendar
           first-day-of-week: monday
-        - type: rss
-          limit: 10
-          collapse-after: 3
-          cache: 12h
-          feeds:
-            - url: https://selfh.st/rss/
-              title: selfh.st
-            - url: https://ciechanow.ski/atom.xml
-            - url: https://www.joshwcomeau.com/rss.xml
-              title: Josh Comeau
-            - url: https://samwho.dev/rss.xml
-            - url: https://ishadeed.com/feed.xml
-              title: Ahmad Shadeed
         - type: twitch-channels
           channels:
+            - chiefgyk3d
             - theprimeagen
             - j_blow
             - giantwaffle
@@ -54,15 +34,6 @@
             - EJ_SA
     - size: full
       widgets:
-        - type: group
-          widgets:
-            - type: hacker-news
-            - type: lobsters
-            - type: twitch-channels
-              channels:
-                - theprimeagen
-                - j_blow
-                - giantwaffle
         - type: videos
           channels:
             - UCXuqSBlHAE6Xw-yeJA0Tunw
@@ -84,22 +55,28 @@
           location: Sofia, Bulgaria
           units: metric
           hour-format: 24h
-        - type: markets
-          markets:
-            - symbol: SPY
-              name: S&P 500
-            - symbol: BTC-USD
-              name: Bitcoin
-            - symbol: NVDA
-              name: NVIDIA
-            - symbol: AAPL
-              name: Apple
-            - symbol: MSFT
-              name: Microsoft
-        - type: releases
-          cache: 1d
-          repositories:
-            - glanceapp/glance
-            - go-gitea/gitea
-            - immich-app/immich
-            - syncthing/syncthing
+        - type: monitor
+          sites:
+            - title: Jellyfin
+              url: https://watch.k8s.iaminyourpc.xyz
+              icon: di:jellyfin
+              timeout: 10s
+            - title: Immich
+              url: https://photos.k8s.iaminyourpc.xyz
+              icon: di:immich
+              timeout: 10s
+            - title: PiHole
+              url: http://pihole.k8s.iaminyourpc.xyz/admin
+              icon: https://upload.wikimedia.org/wikipedia/commons/0/00/Pi-hole_Logo.png
+              timeout: 10s
+            - title: Teslamate
+              url: http://car.k8s.iaminyourpc.xyz
+              icon: https://www.pngplay.com/wp-content/uploads/13/Tesla-Logo-PNG-Photo-Image.png
+              timeout: 10s
+              basic-auth:
+                username: ${TESLAMATE_USER}
+                password: ${TESLAMATE_PASSWORD}
+            - title: Kubewall
+              url: http://kube.k8s.iaminyourpc.xyz
+              icon: https://img.icons8.com/color/200/kubernetes.png
+              timeout: 10s
