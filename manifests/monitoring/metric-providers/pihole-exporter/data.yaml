@@ -1,10 +1,20 @@
 ---
-apiVersion: v1
-kind: Secret
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
 metadata:
   name: auth-pihole
   namespace: monitoring
-type: Opaque
-data:
-  PIHOLE_HOSTNAME: cGlob2xlLXdlYi5waWhvbGUuc3Zj
-  PIHOLE_PASSWORD: Y21GVGdXdHZkUUZSM1g3aFhpSUU=
+spec:
+  refreshInterval: 5m
+  secretStoreRef:
+    name: home-vault
+    kind: ClusterSecretStore
+  target:
+    name: auth-pihole
+    creationPolicy: Owner
+  dataFrom:
+  - extract:
+      key: home/monitoring/auth-pihole
+      conversionStrategy: Default
+      decodingStrategy: None
+      metadataPolicy: None
