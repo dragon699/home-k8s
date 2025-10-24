@@ -1,0 +1,5 @@
+env:
+  TZ: Europe/Sofia
+
+metrics:
+  enabled: true
