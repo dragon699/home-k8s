@@ -1,0 +1,39 @@
+# Temporary persistence manifests
+# for Glance to ease local development of dashboard
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: glance-home
+  labels:
+    app: glance
+    env: home
+spec:
+  capacity:
+    storage: 10Mi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/home/martin/stuff/home-k8s/config/glance/config/home.yml"
+    type: File
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: manual
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: glance-home
+  namespace: glance
+  labels:
+    app: glance
+    env: home
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Mi
+  storageClassName: manual
+  volumeName: glance-home

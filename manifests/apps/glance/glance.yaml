@@ -28,14 +28,14 @@ spec:
         configMap:
           name: assets-glance
       - name: config-glance-glance
-        # configMap:
-        #   name: config-glance-glance
-        hostPath:
-          path: /home/martin/stuff/home-k8s/config/glance/config/glance.yml
-          type: File
-      - name: config-glance-home
         configMap:
-          name: config-glance-home
+          name: config-glance-glance
+      # - name: config-glance-home
+      #   configMap:
+      #     name: config-glance-home
+      - name: glance-home
+        persistentVolumeClaim:
+          claimName: glance-home
       containers:
       - name: glance
         image: glanceapp/glance:latest
@@ -46,15 +46,16 @@ spec:
           mountPath: /etc/localtime
           readOnly: true
         - name: assets-glance
-          mountPath: /app/assets
+          mountPath: /app/assets/user.css
+          subPath: user.css
         - name: config-glance-glance
-          # mountPath: /app/config/glance.yml
-          # subPath: glance.yml
           mountPath: /app/config/glance.yml
           subPath: glance.yml
-          readOnly: true
-        - name: config-glance-home
-          mountPath: /app/config/home.yml
+        # - name: config-glance-home
+        #   mountPath: /app/config/home.yml
+        #   subPath: home.yml
+        - name: glance-home
+          mountPath: /app/data/home.yml
           subPath: home.yml
         env:
         - name: MY_SECRET_TOKEN
