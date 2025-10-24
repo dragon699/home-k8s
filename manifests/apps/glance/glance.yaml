@@ -55,7 +55,7 @@ spec:
         #   mountPath: /app/config/home.yml
         #   subPath: home.yml
         - name: glance-home
-          mountPath: /app/data/home.yml
+          mountPath: /app/config/home.yml
           subPath: home.yml
         env:
         - name: MY_SECRET_TOKEN
