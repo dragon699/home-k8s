@@ -6,7 +6,7 @@ generatorOptions:
   disableNameSuffixHash: true
 configMapGenerator:
 - name: assets-glance
-  files: ['user.css=config/user.css']
+  files: ['user.css=assets/user.css']
 - name: config-glance-glance
   files: ['glance.yml=config/glance.yml']
 - name: config-glance-home
