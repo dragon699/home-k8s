@@ -1,0 +1,33 @@
+# ---
+# apiVersion: mirrors.kts.studio/v1alpha2
+# kind: SecretMirror
+# metadata:
+#   name: data-postgresql-shared-monitoring-grafana
+#   namespace: shared
+# spec:
+#   source:
+#     name: data-postgresql-shared-monitoring-grafana
+#   destination:
+#     namespaces:
+#     - monitoring
+
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: test-secret
+  namespace: jellyfin
+spec:
+  refreshInterval: 5m
+  secretStoreRef:
+    name: in-cluster-shared
+    kind: ClusterSecretStore
+  target:
+    name: test-secret
+    creationPolicy: Owner
+  dataFrom:
+  - extract:
+      key: data-postgresql-shared-monitoring-grafana
+      conversionStrategy: Default
+      decodingStrategy: None
+      metadataPolicy: None

@@ -1,0 +1,13 @@
+# ---
+# apiVersion: mirrors.kts.studio/v1alpha2
+# kind: SecretMirror
+# metadata:
+#   name: data-postgresql-shared-teslamate-teslamate
+#   namespace: shared
+# spec:
+#   source:
+#     name: data-postgresql-shared-teslamate-teslamate
+#   destination:
+#     namespaces:
+#     - teslamate
+#     - monitoring
