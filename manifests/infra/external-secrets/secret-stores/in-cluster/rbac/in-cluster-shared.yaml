@@ -13,7 +13,6 @@ metadata:
   namespace: shared
 rules:
 - apiGroups: [""]
-  resourceNames: ["*"]
   resources: ["secrets"]
   verbs: ["get", "list", "watch"]
 - apiGroups: ["authorization.k8s.io"]
