@@ -189,10 +189,40 @@ beyla.ebpf "home_discovery" {
   discovery {
     instrument {
       kubernetes {
-        namespace              = "argocd|external-secrets|immich|ingress-nginx|jellyfin|metallb-system|pihole|shared|teslamate|vault"
+        namespace              = "."
+        deployment_name        = "."
       }
-
       exports                  = ["metrics", "traces"]
+    }
+
+    instrument {
+      kubernetes {
+        namespace              = "."
+        daemonset_name         = "."
+      }
+      exports                  = ["metrics", "traces"]
+    }
+
+    instrument {
+      kubernetes {
+        namespace              = "."
+        statefulset_name       = "."
+      }
+      exports                  = ["metrics", "traces"]
+    }
+
+    instrument {
+      kubernetes {
+        namespace              = "."
+        replicaset_name        = "."
+      }
+      exports                  = ["metrics", "traces"]
+    }
+
+    exclude_instrument {
+      kubernetes {
+        namespace              = "cert-manager|default|k0s-autopilot|kube-node-lease|kube-public|kube-system|kubewall|longhorn|monitoring|speedtest"
+      }
     }
   }
 
