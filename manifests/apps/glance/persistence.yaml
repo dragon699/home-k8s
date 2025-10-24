@@ -15,8 +15,8 @@ spec:
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: "/home/martin/stuff/home-k8s/config/glance/config/home.yml"
-    type: File
+    path: "/home/martin/stuff/home-k8s/config/glance/config"
+    type: Directory
   persistentVolumeReclaimPolicy: Retain
   storageClassName: manual
 
