@@ -14,12 +14,6 @@ spec:
   - repoURL: git@github.com:dragon699/home-k8s.git
     targetRevision: main
     ref: values
-  - repoURL: https://charts.pree.dev
-    targetRevision: 1.24.1
-    chart: radarr
-    helm:
-      valueFiles:
-      - '$values/helm/apps/radarr/values.yaml'
   - repoURL: git@github.com:dragon699/home-k8s.git
     targetRevision: main
     path: manifests/apps/radarr

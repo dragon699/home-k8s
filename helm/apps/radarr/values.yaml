@@ -1,6 +1,0 @@
-env:
-  TZ: Europe/Sofia
-
-persistence:
-  config:
-    enabled: true

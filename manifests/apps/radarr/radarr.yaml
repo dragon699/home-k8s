@@ -1,0 +1,47 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: radarr
+  namespace: radarr
+  labels:
+    app: radarr
+    env: home
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: radarr
+  template:
+    metadata:
+      labels:
+        app: radarr
+        env: home
+    spec:
+      volumes:
+      - name: windows-data
+        persistentVolumeClaim:
+          claimName: radarr-media-windows-data
+      - name: config
+        persistentVolumeClaim:
+          claimName: radarr-config
+      containers:
+      - name: radarr
+        image: ghcr.io/hotio/radarr:release-5.28.0.10274
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 7878
+        volumeMounts:
+        - name: windows-data
+          mountPath: /data
+        - name: config
+          mountPath: /config
+        env:
+        - name: PUID
+          value: "1000"
+        - name: PGID
+          value: "1000"
+        - name: UMASK
+          value: "022"
+        - name: TZ
+          value: Europe/Sofia
