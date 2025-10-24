@@ -6,5 +6,8 @@ server:
 theme:
   custom-css-file: /assets/user.css
 
+branding:
+  custom-footer: "DGRDRGDR"
+
 pages:
   - $include: home.yml

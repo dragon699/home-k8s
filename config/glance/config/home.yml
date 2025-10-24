@@ -1,5 +1,6 @@
+
+
 - name: Home
-  # hide-desktop-navigation: true
   columns:
     - size: small
       widgets:

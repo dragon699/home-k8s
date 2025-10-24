@@ -27,9 +27,9 @@ spec:
       - name: assets-glance
         configMap:
           name: assets-glance
-      - name: config-glance-glance
-        configMap:
-          name: config-glance-glance
+      # - name: config-glance-glance
+      #   configMap:
+      #     name: config-glance-glance
       # - name: config-glance-home
       #   configMap:
       #     name: config-glance-home
@@ -48,9 +48,9 @@ spec:
         - name: assets-glance
           mountPath: /app/assets/user.css
           subPath: user.css
-        - name: config-glance-glance
-          mountPath: /app/config/glance.yml
-          subPath: glance.yml
+        # - name: config-glance-glance
+        #   mountPath: /app/config/glance.yml
+        #   subPath: glance.yml
         # - name: config-glance-home
         #   mountPath: /app/config/home.yml
         #   subPath: home.yml
