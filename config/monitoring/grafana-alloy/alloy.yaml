@@ -192,8 +192,26 @@ beyla.ebpf "home_discovery" {
       kubernetes {
         namespace              = "argocd|external-secrets|immich|ingress-nginx|jellyfin|metallb-system|pihole|shared|teslamate|vault"
         deployment_name        = "."
+      }
+    }
+
+    services {
+      kubernetes {
+        namespace              = "argocd|external-secrets|immich|ingress-nginx|jellyfin|metallb-system|pihole|shared|teslamate|vault"
         daemonset_name         = "."
+      }
+    }
+
+    services {
+      kubernetes {
+        namespace              = "argocd|external-secrets|immich|ingress-nginx|jellyfin|metallb-system|pihole|shared|teslamate|vault"
         statefulset_name       = "."
+      }
+    }
+
+    services {
+      kubernetes {
+        namespace              = "argocd|external-secrets|immich|ingress-nginx|jellyfin|metallb-system|pihole|shared|teslamate|vault"
         replicaset_name        = "."
       }
     }
