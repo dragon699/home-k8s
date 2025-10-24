@@ -213,13 +213,13 @@ beyla.ebpf "home_discovery" {
   }
 
   metrics {
+    instrumentations           = ["*"]
     features = [
       "application",
       "application_process",
       "application_service_graph",
       "application_span",
     ]
-    instrumentations           = ["*"]
   }
 
   output {
