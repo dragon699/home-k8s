@@ -16,7 +16,7 @@ cluster_is_default: true
 ## Uncomment this and set your proxy URL, if you'd like to use a proxy for
 ## containerd to download images, inside the k8s nodes;
 ## This will be passed to HTTP_POXY and HTTPS_PROXY environment vars;
-# proxy_address: http://webgateway.procreditbank.bg:9090
+# proxy_address:
 
 
 ## k8s nodes SSH definitions;
@@ -75,7 +75,7 @@ install_fluxcd: false
 install_fluxcd_image_automation: false
 
 ## k8s SSH url that FluxCD will keep track of;
-repository_ssh_url: ssh://git@bitbucket.procreditbank.bg:7999/msy/monitoring-system.git
+repository_ssh_url: 
 
 ## Path to private key file to provide FluxCD with access to the repository;
 repository_ssh_private_key_path: /root/.ssh/id_rsa
