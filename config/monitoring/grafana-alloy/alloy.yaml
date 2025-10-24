@@ -190,8 +190,11 @@ beyla.ebpf "home_discovery" {
   discovery {
     services {
       kubernetes {
-        namespace              = "ingress-nginx|metallb-system|shared|immich|teslamate|hostfabtech|monitoring|portainer"
+        namespace              = "argocd|external-secrets|immich|ingress-nginx|jellyfin|metallb-system|pihole|shared|teslamate|vault"
         deployment_name        = "."
+        daemonset_name         = "*"
+        statefulset_name       = "*"
+        replicaset_name        = "*"
       }
     }
   }
@@ -208,30 +211,6 @@ beyla.ebpf "home_discovery" {
       exclude                  = ["nothing"]
     }
   }
-
-  // routes {
-  //   ignore_mode                = "all"
-
-  //   ignore_patterns            = [
-  //     "/metrics",
-  //     "/*/metrics",
-  //     "/healthz",
-  //     "/*/healthz",
-  //     "/health",
-  //     "/*/health",
-  //     "/readyz",
-  //     "/*/readyz",
-  //     "/ready",
-  //     "/*/ready",
-  //     "/livez",
-  //     "/*/livez",
-  //     "_______internal_router_healthz",
-  //     "/v1/logs",
-  //     "/v1/metrics",
-  //     "/v1/traces",
-  //     "/_next/*",
-  //   ]
-  // }
 
   output {
     traces                     = [otelcol.processor.batch.home_traces.input]
