@@ -85,10 +85,11 @@ function vault_setup_external_secrets() {
         -listing-visibility=unauth \
         userpass > /dev/null 2>&1
 
-    [ $? -ne 0 ] && {
+    if [ $? -ne 0 ]; then
         echo "${VAULT_ADDRESS}: Failed!"
         exit 1
-    }
+
+    fi
 
     echo "${VAULT_ADDRESS}: Updated!"
     echo "${VAULT_ADDRESS}: Creating user ${VAULT_USER_EXTERNAL_SECRETS_NAME}.."
