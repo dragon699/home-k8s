@@ -189,32 +189,32 @@ beyla.ebpf "home_discovery" {
   discovery {
     instrument {
       kubernetes {
-        namespace              = "."
-        deployment_name        = "."
+        namespace              = "*"
+        deployment_name        = "*"
       }
       exports                  = ["metrics", "traces"]
     }
 
     instrument {
       kubernetes {
-        namespace              = "."
-        daemonset_name         = "."
+        namespace              = "*"
+        daemonset_name         = "*"
       }
       exports                  = ["metrics", "traces"]
     }
 
     instrument {
       kubernetes {
-        namespace              = "."
-        statefulset_name       = "."
+        namespace              = "*"
+        statefulset_name       = "*"
       }
       exports                  = ["metrics", "traces"]
     }
 
     instrument {
       kubernetes {
-        namespace              = "."
-        replicaset_name        = "."
+        namespace              = "*"
+        replicaset_name        = "*"
       }
       exports                  = ["metrics", "traces"]
     }
