@@ -192,9 +192,9 @@ beyla.ebpf "home_discovery" {
       kubernetes {
         namespace              = "argocd|external-secrets|immich|ingress-nginx|jellyfin|metallb-system|pihole|shared|teslamate|vault"
         deployment_name        = "."
-        daemonset_name         = "*"
-        statefulset_name       = "*"
-        replicaset_name        = "*"
+        daemonset_name         = "."
+        statefulset_name       = "."
+        replicaset_name        = "."
       }
     }
   }
