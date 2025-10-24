@@ -1,14 +1,20 @@
 ---
-apiVersion: v1
-kind: Secret
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
 metadata:
   name: data-postgresql
   namespace: immich
-  labels:
-    app: postgresql
-    env: home
-type: Opaque
-data:
-  dbname: aW1taWNo
-  user: aW1taWNo
-  password: fkhlZFszIVZ4azk1Tj0xdndA
+spec:
+  refreshInterval: 5m
+  secretStoreRef:
+    name: home-vault
+    kind: ClusterSecretStore
+  target:
+    name: data-postgresql
+    creationPolicy: Owner
+  dataFrom:
+  - extract:
+      key: home/immich/data-postgresql
+      conversionStrategy: Default
+      decodingStrategy: None
+      metadataPolicy: None
