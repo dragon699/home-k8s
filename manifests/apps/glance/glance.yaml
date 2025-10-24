@@ -18,7 +18,7 @@ spec:
         app: glance
         env: home
     spec:
-      restartPolicy: UnlessStopped
+      restartPolicy: Always
       volumes:
       - name: localtime
         hostPath:
