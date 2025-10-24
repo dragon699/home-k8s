@@ -1,0 +1,56 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: glance
+  namespace: glance
+  labels:
+    app: glance
+    env: home
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: glance
+  template:
+    metadata:
+      labels:
+        app: glance
+        env: home
+    spec:
+      restartPolicy: UnlessStopped
+      volumes:
+      - name: localtime
+        hostPath:
+          path: /etc/localtime
+          type: File
+      - name: assets-glance
+        configMap:
+          name: assets-glance
+      - name: config-glance-glance
+        configMap:
+          name: config-glance-glance
+      - name: config-glance-home
+        configMap:
+          name: config-glance-home
+      containers:
+      - name: glance
+        image: glanceapp/glance:latest
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - name: localtime
+          mountPath: /etc/localtime
+          readOnly: true
+        - name: assets-glance
+          mountPath: /app/assets
+        - name: config-glance-glance
+          mountPath: /app/config
+        - name: config-glance-home
+          mountPath: /app/config
+        env:
+        - name: MY_SECRET_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: data-glance
+              key: MY_SECRET_TOKEN
