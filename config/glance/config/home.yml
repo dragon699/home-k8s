@@ -1,6 +1,31 @@
 
 
 - name: Home
+  slug: home
+  width: default
+  head-widgets:
+    - type: monitor
+      hide-header: true
+      sites:
+        - title: Jellyfin
+          url: https://watch.k8s.iaminyourpc.xyz
+          icon: di:jellyfin
+          timeout: 10s
+        - title: Immich
+          url: https://photos.k8s.iaminyourpc.xyz
+          icon: di:immich
+          timeout: 10s
+        - title: PiHole
+          url: http://pihole.k8s.iaminyourpc.xyz/admin
+          icon: https://upload.wikimedia.org/wikipedia/commons/0/00/Pi-hole_Logo.png
+          timeout: 10s
+        - title: Teslamate
+          url: http://car.k8s.iaminyourpc.xyz
+          icon: https://www.pngplay.com/wp-content/uploads/13/Tesla-Logo-PNG-Photo-Image.png
+          timeout: 10s
+          basic-auth:
+            username: ${TESLAMATE_USER}
+            password: ${TESLAMATE_PASSWORD}
   columns:
     - size: small
       widgets:
@@ -33,6 +58,11 @@
           widgets:
             - type: hacker-news
             - type: lobsters
+            - type: twitch-channels
+              channels:
+                - theprimeagen
+                - j_blow
+                - giantwaffle
         - type: videos
           channels:
             - UCXuqSBlHAE6Xw-yeJA0Tunw

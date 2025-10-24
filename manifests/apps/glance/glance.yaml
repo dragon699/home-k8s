@@ -56,9 +56,14 @@ spec:
         #   subPath: home.yml
         - name: glance-home
           mountPath: /app/config
-        env:
-        - name: MY_SECRET_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: data-glance
-              key: MY_SECRET_TOKEN
+        envFrom:
+        - secretRef:
+            name: data-glance
+        - secretRef:
+            name: auth-glance-services
+        # env:
+        # - name: MY_SECRET_TOKEN
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: data-glance
+        #       key: MY_SECRET_TOKEN

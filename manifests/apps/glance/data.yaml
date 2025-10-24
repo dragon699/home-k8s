@@ -18,3 +18,24 @@ spec:
       conversionStrategy: Default
       decodingStrategy: None
       metadataPolicy: None
+
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: auth-glance-services
+  namespace: glance
+spec:
+  refreshInterval: 5m
+  secretStoreRef:
+    name: home-vault
+    kind: ClusterSecretStore
+  target:
+    name: auth-glance-services
+    creationPolicy: Owner
+  dataFrom:
+  - extract:
+      key: home/glance/auth-glance-services
+      conversionStrategy: Default
+      decodingStrategy: None
+      metadataPolicy: None

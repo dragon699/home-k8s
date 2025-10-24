@@ -7,7 +7,8 @@ theme:
   custom-css-file: /assets/user.css
 
 branding:
-  custom-footer: "DGRDRGDR"
+  app-name: "Home"
+  custom-footer: "/ this is my home"
 
 pages:
   - $include: home.yml
