@@ -237,7 +237,7 @@ otelcol.receiver.otlp "home_traces_otlpgrpc" {
   }
 
   output {
-    traces                     = [otelcol.processor.span.home_spans_fail_otlphttp.input]
+    traces                     = [otelcol.processor.batch.home_traces_otlpgrpc.input]
   }
 }
 
