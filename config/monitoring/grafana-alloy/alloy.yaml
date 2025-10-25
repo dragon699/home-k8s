@@ -12,16 +12,16 @@ livedebugging {
 // Data pipelines
 
 
-//////////////////////////////////////////////
-// Collect logs and metrics from external OTLP
-//////////////////////////////////////////////
+//////////////////////////////////////////////////
+// Collect logs and metrics from external OTLPHTTP
+//////////////////////////////////////////////////
 
-// External OTLP receiver authentication handler
+// External OTLPHTTP receiver authentication handler
 otelcol.auth.bearer "home_external_auth" {
   token              = sys.env("OTLP_TOKEN")
 }
 
-// Create external OTLP receiver
+// Create external OTLPHTTP receiver
 otelcol.receiver.otlp "home_external" {
   http {
     endpoint         = "0.0.0.0:4318"
@@ -226,19 +226,37 @@ beyla.ebpf "home_discovery" {
   }
 
   output {
-    traces                     = [otelcol.processor.batch.home_traces.input]
+    traces                     = [otelcol.processor.batch.home_traces_otlphttp.input]
   }
 }
 
-// Batch traces
-otelcol.processor.batch "home_traces" {
+// Create internal OTLP receiver for traces
+otelcol.receiver.otlp "home_traces_otlpgrpc" {
+  grpc {
+    endpoint                   = "0.0.0.0:4317"
+  }
+
   output {
-    traces                     = [otelcol.processor.span.home_spans_success.input]
+    traces                     = [otelcol.processor.span.home_spans_fail_otlphttp.input]
+  }
+}
+
+// Batch OTLP traces
+otelcol.processor.batch "home_traces_otlpgrpc" {
+  output {
+    traces                     = [otelcol.exporter.otlp.home_traces_otlpgrpc.input]
+  }
+}
+
+// Batch OTLPHTTP traces
+otelcol.processor.batch "home_traces_otlphttp" {
+  output {
+    traces                     = [otelcol.processor.span.home_spans_success_otlphttp.input]
   }
 }
 
 // Detect successful spans
-otelcol.processor.span "home_spans_success" {
+otelcol.processor.span "home_spans_success_otlphttp" {
   include {
     match_type                 = "regexp"
 
@@ -253,12 +271,12 @@ otelcol.processor.span "home_spans_success" {
   }
 
   output {
-    traces                     = [otelcol.processor.span.home_spans_fail.input]
+    traces                     = [otelcol.processor.span.home_spans_fail_otlphttp.input]
   }
 }
 
 // Detect failed spans
-otelcol.processor.span "home_spans_fail" {
+otelcol.processor.span "home_spans_fail_otlphttp" {
   include {
     match_type                 = "regexp"
 
@@ -273,14 +291,26 @@ otelcol.processor.span "home_spans_fail" {
   }
 
   output {
-    traces                     = [otelcol.exporter.otlphttp.home_traces.input]
+    traces                     = [otelcol.exporter.otlphttp.home_traces_otlphttp.input]
   }
 }
 
-// Write traces to Tempo
-otelcol.exporter.otlphttp "home_traces" {
+// Write traces to Tempo using gRPC
+otelcol.exporter.otlp "home_traces_otlpgrpc" {
   client {
-    endpoint                   = sys.env("ENDPOINT_TEMPO")
+    endpoint                   = sys.env("ENDPOINT_TEMPO_GRPC")
+
+    tls {
+      insecure                 = true
+      insecure_skip_verify     = true
+    }
+  }
+}
+
+// Write traces to Tempo using OTLPHTTP
+otelcol.exporter.otlphttp "home_traces_otlphttp" {
+  client {
+    endpoint                   = sys.env("ENDPOINT_TEMPO_OTLPHTTP")
 
     tls {
       insecure                 = true
