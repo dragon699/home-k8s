@@ -19,6 +19,7 @@ spec:
         env: home
     spec:
       restartPolicy: Always
+      imagePullPolicy: Always
       imagePullSecrets:
       - name: registry-fetch-api
       containers:
