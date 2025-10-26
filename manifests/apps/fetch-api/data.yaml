@@ -2,6 +2,41 @@
 apiVersion: external-secrets.io/v1
 kind: ExternalSecret
 metadata:
+  name: registry-fetch-api
+  namespace: fetch-api
+spec:
+  refreshInterval: 5m
+  secretStoreRef:
+    name: home-vault
+    kind: ClusterSecretStore
+  target:
+    name: registry-fetch-api
+    creationPolicy: Owner
+    template:
+      type: kubernetes.io/dockerconfigjson
+      data:
+        .dockerconfigjson: |
+          {
+            "auths": {
+              "https://index.docker.io/v1/": {
+                "username": "{{ .username }}",
+                "password": "{{ .password }}",
+                "email": "{{ .email }}",
+                "auth": "{{ printf "%s:%s" .username .password | b64enc }}"
+              }
+            }
+          }
+  dataFrom:
+  - extract:
+      key: home/fetch-api/registry-fetch-api
+      conversionStrategy: Default
+      decodingStrategy: None
+      metadataPolicy: None
+
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
   name: data-fetch-api
   namespace: fetch-api
 spec:
