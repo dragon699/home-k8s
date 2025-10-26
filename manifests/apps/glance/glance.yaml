@@ -61,9 +61,3 @@ spec:
             name: data-glance
         - secretRef:
             name: auth-glance-services
-        # env:
-        # - name: MY_SECRET_TOKEN
-        #   valueFrom:
-        #     secretKeyRef:
-        #       name: data-glance
-        #       key: MY_SECRET_TOKEN

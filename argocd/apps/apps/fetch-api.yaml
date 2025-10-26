@@ -2,7 +2,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: postgresql-operator
+  name: fetch-api
   namespace: argocd
   finalizers:
   - resources-finalizer.argocd.argoproj.io
@@ -11,12 +11,17 @@ metadata:
 spec:
   project: home
   sources:
-  - repoURL: https://percona.github.io/percona-helm-charts/
-    targetRevision: 2.7.0
-    chart: pg-operator
+  - repoURL: git@github.com:dragon699/home-k8s.git
+    targetRevision: main
+    ref: values
+  - repoURL: git@github.com:dragon699/home-k8s.git
+    targetRevision: main
+    path: manifests/apps/fetch-api
+    directory:
+      recurse: true
   destination:
     server: https://kubernetes.default.svc
-    namespace: shared
+    namespace: fetch-api
   syncPolicy:
     automated:
       prune: true
