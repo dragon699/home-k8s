@@ -1,0 +1,8 @@
+{
+    "prometheus": {
+        "argocd-apps": {
+            "query": "sum(argocd_app_info{}) by (name, namespace, health_status)",
+            "exported_fields": ["name", "health_status"]
+        }
+    }
+}

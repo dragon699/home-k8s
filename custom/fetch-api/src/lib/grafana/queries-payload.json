@@ -1,0 +1,23 @@
+{
+    "prometheus": {
+        "argocd-apps": {
+            "queries": [
+                {
+                    "datasource": {
+                        "type": "prometheus",
+                        "uid": null
+                    },
+                    "expr": null,
+                    "legendFormat": "{{name}} {{health_status}}",
+                    "refId": "query",
+                    "range": true,
+                    "instant": false,
+                    "intervalMs": 60000,
+                    "maxDataPoints": 43200
+                }
+            ],
+            "from": "now-5s",
+            "to": "now"
+        }
+    }
+}
