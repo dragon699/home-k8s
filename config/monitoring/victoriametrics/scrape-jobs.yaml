@@ -1,22 +1,10 @@
-scrape_configs:
-
-## vmagent self-monitoring job
-- job_name: vmagent
-  static_configs:
-  - targets:
-    - localhost:8429
-
-- job_name: 'dankata-metrics'
-  static_configs:
-  - targets:
-    - metrics.hostfabtech.xyz
-  metrics_path: /metrics
+global:
   scrape_interval: 10s
   scrape_timeout: 10s
-  relabel_configs:
-  - target_label: cluster
-    replacement: hostfabtech
 
+scrape_configs:
+
+## Longhorn job
 - job_name: 'longhorn'
   scrape_interval: 15s
   scrape_timeout: 10s
@@ -42,6 +30,8 @@ scrape_configs:
 ## Kubernetes-related jobs
 - job_name: 'kubernetes-nodes'
   scheme: https
+  scrape_interval: 15s
+  scrape_timeout: 10s
   tls_config:
     ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
     insecure_skip_verify: true
@@ -127,6 +117,8 @@ scrape_configs:
 
 - job_name: 'kubernetes-pods'
   honor_labels: true
+  scrape_interval: 15s
+  scrape_timeout: 10s
   kubernetes_sd_configs:
   - role: pod
   relabel_configs:
