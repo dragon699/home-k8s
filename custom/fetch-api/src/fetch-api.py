@@ -88,14 +88,14 @@ class FetchAPI:
 
     def grafana(self, item):
         def argocd_apps(self):
-            s_grafana.add_event('build service request')
+            s_grafana.add_event('build request')
 
             request_url = f'{self.grafana_url}/api/ds/query'
             request_payload = self.grafana_queries_payload['prometheus']['argocd-apps']
             request_payload['queries'][0]['datasource']['uid'] = self.grafana_datasources['prometheus']
             request_payload['queries'][0]['expr'] = self.grafana_queries['prometheus']['argocd-apps']['query']
 
-            s_grafana.add_event('send service request', {
+            s_grafana.add_event('send request', {
                 'http.url': request_url,
                 'http.method': 'POST',
                 'http.payload': json.dumps(request_payload, indent=2)[:512],
@@ -110,22 +110,22 @@ class FetchAPI:
             )
 
             if request_response.status_code != 200:
-                s_grafana.add_event('error receiving service response', {
+                s_grafana.add_event('error: send request', {
                     'http.status_code': request_response.status_code,
-                    'http.response': json.dumps(request_response.text, indent=2)[:512]
+                    'http.response': json.dumps(json.loads(request_response.text), indent=2)[:512]
                 })
                 s_grafana.set_status(StatusCode.ERROR)
 
                 return [f'ERROR from fetch-api: FetchAPI.grafana.argocd_apps Grafana request failed!']
 
-            s_grafana.add_event('receive service response', {
+            s_grafana.add_event('receive response', {
                 'http.status_code': request_response.status_code,
-                'http.response': json.dumps(request_response.text, indent=2)[:512]
+                'http.response': json.dumps(json.loads(request_response.text), indent=2)[:512]
             })
 
             listener_response = []
 
-            s_grafana.add_event('extract data')
+            s_grafana.add_event('start extract data')
 
             try:
                 for item in request_response.json()['results']['query']['frames']:
@@ -145,14 +145,14 @@ class FetchAPI:
                     )
                 )
 
-                s_grafana.add_event('finalize', {
+                s_grafana.add_event('finish extract data', {
                     'fetch-api.grafana.argocd_apps.count': len(listener_response),
                     'fetch-api.grafana.argocd_apps.list': json.dumps(listener_response, indent=2)[:512]
                 })
 
             except:
                 listener_response = ['ERROR from fetch-api: FetchAPI.grafana.argocd_apps is unable to parse response from Grafana API!']
-                s_grafana.add_event('error extracting data', {
+                s_grafana.add_event('error: extract data', {
                     'fetch-api.grafana.argocd_apps.error': json.dumps(listener_response, indent=2)[:512]
                 })
                 s_grafana.set_status(StatusCode.ERROR)
@@ -161,14 +161,14 @@ class FetchAPI:
 
 
         def car_battery(self):
-            s_grafana.add_event('build service request')
+            s_grafana.add_event('build request')
 
             request_url = f'{self.grafana_url}/api/ds/query'
             request_payload = self.grafana_queries_payload['postgresql']['car-battery']
             request_payload['queries'][0]['datasource']['uid'] = self.grafana_datasources['teslamate']
             request_payload['queries'][0]['rawSql'] = self.grafana_queries['postgresql']['car-battery']['query']
 
-            s_grafana.add_event('send service request', {
+            s_grafana.add_event('send request', {
                 'http.url': request_url,
                 'http.method': 'POST',
                 'http.payload': json.dumps(request_payload, indent=2)[:512],
@@ -183,35 +183,35 @@ class FetchAPI:
             )
 
             if request_response.status_code != 200:
-                s_grafana.add_event('error receiving service response', {
+                s_grafana.add_event('error: send request', {
                     'http.status_code': request_response.status_code,
-                    'http.response': json.dumps(request_response.text, indent=2)[:512]
+                    'http.response': json.dumps(json.loads(request_response.text), indent=2)[:512]
                 })
                 s_grafana.set_status(StatusCode.ERROR)
 
                 return ['ERROR from fetch-api: FetchAPI.grafana.car_battery Grafana request failed!']
 
-            s_grafana.add_event('receive service response', {
+            s_grafana.add_event('receive response', {
                 'http.status_code': request_response.status_code,
-                'http.response': json.dumps(request_response.text, indent=2)[:512]
+                'http.response': json.dumps(json.loads(request_response.text), indent=2)[:512]
             })
 
             listener_response = []
 
-            s_grafana.add_event('extract data')
+            s_grafana.add_event('start extract data')
 
             try:
                 listener_response += [{
                     'usable_battery_percentage': request_response.json()['results']['query']['frames'][0]['data']['values'][0][0]
                 }]
 
-                s_grafana.add_event('finalize', {
+                s_grafana.add_event('finish extract data', {
                     'fetch-api.grafana.car_battery.usable_battery_percentage': listener_response[0]['usable_battery_percentage']
                 })
 
             except:
                 listener_response = ['ERROR from fetch-api: FetchAPI.grafana.car_battery is unable to parse response from Grafana API!']
-                s_grafana.add_event('error extracting data', {
+                s_grafana.add_event('error: extract data', {
                     'fetch-api.grafana.car_battery.error': json.dumps(listener_response, indent=2)[:512]
                 })
                 s_grafana.set_status(StatusCode.ERROR)
