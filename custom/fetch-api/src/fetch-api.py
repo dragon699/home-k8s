@@ -1,7 +1,14 @@
-import requests, json
+from lib.instrumentation import *
+
+instrumentation = FetchAPIInstrumentation(**otel_meta)
+tracer = instrumentation.get_tracer()
+
+from lib.common import *
 from os import getenv
 from sys import argv
 from flask import Flask, request, jsonify
+import json
+
 
 
 class FetchAPI:
@@ -58,15 +65,15 @@ class FetchAPI:
                     'Content-Type': 'application/json'
                 }
 
-                self.grafana_queries_payload = self.read_file('lib/grafana/queries-payload.json')
-                self.grafana_queries = self.read_file('lib/grafana/queries.json')
+                self.grafana_queries_payload = read_file('lib/grafana/queries-payload.json')
+                self.grafana_queries = read_file('lib/grafana/queries.json')
 
             self.verify_connection(service)
 
 
     def verify_connection(self, service):
         if service == 'grafana':
-            connection = self.request(
+            connection = make_request(
                 f'{self.grafana_url}/api/health',
                 method='GET',
                 headers=self.grafana_headers
@@ -79,34 +86,6 @@ class FetchAPI:
                 print(f'{service}: Connection successful.')
 
 
-    def read_file(self, file, as_json=True):
-        with open(file, 'r') as f:
-            contents = f.read()
-
-        if as_json:
-            return json.loads(contents)
-
-        return contents
-
-
-    def request(self, url, method='GET', headers={}, data=None):
-        response = None
-
-        if method == 'GET':
-            response = requests.get(url, headers=headers)
-
-        elif method == 'POST':
-            response = requests.post(url, headers=headers, data=data)
-
-        elif method == 'PUT':
-            response = requests.put(url, headers=headers, data=data)
-
-        elif method == 'DELETE':
-            response = requests.delete(url, headers=headers)
-
-        return response
-
-
     def grafana(self, item):
         def argocd_apps(self):
             request_url = f'{self.grafana_url}/api/ds/query'
@@ -114,7 +93,7 @@ class FetchAPI:
             request_payload['queries'][0]['datasource']['uid'] = self.grafana_datasources['prometheus']
             request_payload['queries'][0]['expr'] = self.grafana_queries['prometheus']['argocd-apps']['query']
 
-            request_response = self.request(
+            request_response = make_request(
                 url = request_url,
                 headers = self.grafana_headers,
                 method = 'POST',
@@ -154,7 +133,7 @@ class FetchAPI:
             request_payload['queries'][0]['datasource']['uid'] = self.grafana_datasources['teslamate']
             request_payload['queries'][0]['rawSql'] = self.grafana_queries['postgresql']['car-battery']['query']
 
-            request_response = self.request(
+            request_response = make_request(
                 url=request_url,
                 headers=self.grafana_headers,
                 method='POST',
@@ -188,6 +167,8 @@ class FetchAPI:
 class FetchAPIListener:
     def __init__(self):
         self.app = Flask('fetch-api')
+
+        instrumentation.instrument_requests(self.app)
         self.routes()
 
 
