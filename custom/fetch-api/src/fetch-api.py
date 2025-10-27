@@ -9,7 +9,12 @@ class FetchAPI:
         self.services = services
         self.supported_services = {
             'grafana': {
-                'required_vars': ['GRAFANA_URL', 'GRAFANA_SAT', 'GRAFANA_METRICS_DATASOURCE_UID']
+                'required_vars': [
+                    'GRAFANA_URL',
+                    'GRAFANA_SAT',
+                    'GRAFANA_METRICS_DATASOURCE_UID',
+                    'GRAFANA_TESLAMATE_DATASOURCE_UID'
+                ]
             }
         }
         self.disabled_services = []
@@ -44,7 +49,8 @@ class FetchAPI:
                 self.grafana_url = getenv('GRAFANA_URL')
                 self.grafana_token = getenv('GRAFANA_SAT')
                 self.grafana_datasources = {
-                    'prometheus': getenv('GRAFANA_METRICS_DATASOURCE_UID')
+                    'prometheus': getenv('GRAFANA_METRICS_DATASOURCE_UID'),
+                    'teslamate': getenv('GRAFANA_TESLAMATE_DATASOURCE_UID')
                 }
                 self.grafana_headers = {
                     'Authorization': f'Bearer {self.grafana_token}',
@@ -119,8 +125,12 @@ class FetchAPI:
 
             try:
                 for item in request_response['results']['query']['frames']:
+                    labels = item['schema']['fields'][1]['labels']
+
                     listener_response += [{
-                        **item['schema']['fields'][1]['labels']
+                        label: labels[label]
+                        for label in labels
+                        if label in self.grafana_queries['prometheus']['argocd-apps']['exported_fields']
                     }]
 
                 listener_response = sorted(
@@ -132,13 +142,47 @@ class FetchAPI:
                 )
             except:
                 listener_response = [
-                    'ERROR from fetch-api: grafana > argocd-apps is unable to parse response from Grafana API'
+                    'ERROR from fetch-api: FetchAPI.grafana.argocd_apps is unable to parse response from Grafana API!'
                 ]
 
             return listener_response
 
-        if item == 'argocd-apps':
-            return argocd_apps(self)
+
+        def car_battery(self):
+            request_url = f'{self.grafana_url}/api/ds/query'
+            request_payload = self.grafana_queries_payload['postgresql']['car-battery']
+            request_payload['queries'][0]['datasource']['uid'] = self.grafana_datasources['teslamate']
+            request_payload['queries'][0]['rawSql'] = self.grafana_queries['postgresql']['car-battery']['query']
+
+            request_response = self.request(
+                url=request_url,
+                headers=self.grafana_headers,
+                method='POST',
+                data=json.dumps(request_payload)
+            ).json()
+
+            listener_response = []
+
+            try:
+                listener_response += [{
+                    'usable_battery_percentage': request_response['results']['query']['frames'][0]['data']['values'][0][0]
+                }]
+
+            except:
+                listener_response = [
+                    'ERROR from fetch-api: FetchAPI.grafana.car_battery is unable to parse response from Grafana API!'
+                ]
+
+            return listener_response
+
+
+        executor = {
+            'argocd-apps': lambda self: argocd_apps(self),
+            'car-battery': lambda self: car_battery(self)
+        }
+
+        return executor[item](self)
+
 
 
 class FetchAPIListener:
@@ -156,6 +200,12 @@ class FetchAPIListener:
         def fetch_grafana_argocd_apps():
             return jsonify(
                 fetch_api.grafana('argocd-apps')
+            )
+
+        @self.app.route('/grafana/car-battery', methods=['GET'])
+        def fetch_grafana_car_battery():
+            return jsonify(
+                fetch_api.grafana('car-battery')
             )
 
 
