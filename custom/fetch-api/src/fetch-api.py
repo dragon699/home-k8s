@@ -95,11 +95,14 @@ class FetchAPI:
             request_payload['queries'][0]['datasource']['uid'] = self.grafana_datasources['prometheus']
             request_payload['queries'][0]['expr'] = self.grafana_queries['prometheus']['argocd-apps']['query']
 
+            s_grafana.set_attributes({
+                'grafana.query': request_payload['queries'][0]['expr'],
+                'grafana.datasource': self.grafana_datasources['prometheus']
+            })
             s_grafana.add_event('send request', {
                 'http.url': request_url,
                 'http.method': 'POST',
-                'http.payload': json.dumps(request_payload, indent=2)[:512],
-                'fetch-api.grafana.argocd_apps.query': request_payload['queries'][0]['expr']
+                'http.payload': json.dumps(request_payload, indent=2)[:512]
             })
 
             request_response = make_request(
@@ -168,11 +171,14 @@ class FetchAPI:
             request_payload['queries'][0]['datasource']['uid'] = self.grafana_datasources['teslamate']
             request_payload['queries'][0]['rawSql'] = self.grafana_queries['postgresql']['car-battery']['query']
 
+            s_grafana.set_attributes({
+                'grafana.query': request_payload['queries'][0]['rawSql'],
+                'grafana.datasource': self.grafana_datasources['teslamate']
+            })
             s_grafana.add_event('send request', {
                 'http.url': request_url,
                 'http.method': 'POST',
-                'http.payload': json.dumps(request_payload, indent=2)[:512],
-                'fetch-api.grafana.car_battery.query': request_payload['queries'][0]['rawSql']
+                'http.payload': json.dumps(request_payload, indent=2)[:512]
             })
 
             request_response = make_request(
