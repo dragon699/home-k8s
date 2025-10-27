@@ -15,7 +15,7 @@ from opentelemetry.instrumentation.requests import RequestsInstrumentor
 otel_meta = {
     'service_name': getenv('OTEL_SERVICE_NAME', 'fetch-api'),
     'service_namespace': getenv('OTEL_SERVICE_NAMESPACE', 'fetch-api'),
-    'service_version': getenv('OTEL_SERVICE_VERSION', '0.2.4'),
+    'service_version': getenv('OTEL_SERVICE_VERSION', '0.2.5'),
     'otlp_endpoint': getenv('OTLP_ENDPOINT', 'grafana-alloy.monitoring.svc:4317')
 }
 

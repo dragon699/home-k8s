@@ -1,6 +1,13 @@
 import json, requests
 
 
+def log(msg, service=None, level=None):
+    level = f'[{level}]' if level else '[INFO]'
+    service = f' [{service}]' if service else ''
+
+    print(f'{level}{service} {msg}')
+
+
 def read_file(file, as_json=True):
     with open(file, 'r') as f:
         contents = f.read()

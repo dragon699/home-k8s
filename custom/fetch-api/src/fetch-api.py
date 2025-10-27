@@ -25,23 +25,26 @@ class FetchAPI:
             }
         }
         self.disabled_services = []
-
         self.verify_config()
 
 
     def verify_config(self):
         if len(self.services) == 0:
-            raise ValueError(f'At least one service must be specified. Supported services are {list(self.supported_services.keys())}')
+            log(
+                f'FetchAPI must be started with one or more services from this list {json.dumps(list(self.supported_services))}.',
+                level='ERROR'
+            )
 
-        print('Provided services:')
-        print(self.services)
+        log(f'FetchAPI is initializing with {json.dumps(self.services)}..')
 
         for service in self.services:
             if not service in self.supported_services:
-                raise ValueError(f'{service}: Unsupported service, supported services are {list(self.supported_services.keys())}')
+                log(
+                    f'Unsupported service: {service}, supported services are {list(self.supported_services.keys())}.',
+                    level='ERROR'
+                )
 
-            print(f'{service}: Establishing connection..')
-
+            log('Verifying API connection..', service=service)
             required_vars = []
 
             if 'required_vars' in self.supported_services[service]:
@@ -50,7 +53,10 @@ class FetchAPI:
                 if len(required_vars) > 0:
                     for var in required_vars:
                         if getenv(var) is None:
-                            raise ValueError(f'{service}: Missing required environment variable: {var}')
+                            log(
+                                f'Missing required environment variable: {var}.',
+                                service=service, level='ERROR'
+                            )
 
             if service == 'grafana':
                 self.grafana_url = getenv('GRAFANA_URL')
@@ -70,25 +76,35 @@ class FetchAPI:
 
             self.verify_connection(service)
 
+        log('FetchAPI is now listening for incoming connections *smiley face*')
+
 
     def verify_connection(self, service):
         if service == 'grafana':
+            health_url =  f'{self.grafana_url}/api/health'
             connection = make_request(
-                f'{self.grafana_url}/api/health',
+                health_url,
                 method='GET',
                 headers=self.grafana_headers
             )
 
             if connection.status_code != 200:
-                raise ConnectionError(f'{service}: [{connection.status_code}] Connection failed.')
-            
+                log(
+                    f'{health_url} - Health check failed, expected 200, but got {connection.status_code}!',
+                    service=service,
+                    level='ERROR'
+                )
+
             else:
-                print(f'{service}: Connection successful.')
+                log(
+                    f'Connection successful.',
+                    service=service
+                )
 
 
     def grafana(self, item):
         def argocd_apps(self):
-            s_grafana.add_event('build request')
+            s_grafana.add_event('create request')
 
             request_url = f'{self.grafana_url}/api/ds/query'
             request_payload = self.grafana_queries_payload['prometheus']['argocd-apps']
@@ -115,11 +131,14 @@ class FetchAPI:
             if request_response.status_code != 200:
                 s_grafana.add_event('error: send request', {
                     'http.status_code': request_response.status_code,
-                    'http.response': json.dumps(json.loads(request_response.text), indent=2)[:512]
+                    'http.response': request_response.text
                 })
                 s_grafana.set_status(StatusCode.ERROR)
-
-                return [f'ERROR from fetch-api: FetchAPI.grafana.argocd_apps Grafana request failed!']
+                log(
+                    f'FetchAPI.grafana.argocd_apps: Request failed! trace_id={s_grafana.get_span_context().trace_id}',
+                    service='grafana', level='ERROR'
+                )
+                return ['FetchAPI.grafana.argocd_apps: Request failed!'], request_response.status_code
 
             s_grafana.add_event('receive response', {
                 'http.status_code': request_response.status_code,
@@ -127,7 +146,6 @@ class FetchAPI:
             })
 
             listener_response = []
-
             s_grafana.add_event('start extract data')
 
             try:
@@ -146,25 +164,29 @@ class FetchAPI:
                         x['health_status'] == 'Healthy',
                         x['name'].lower()
                     )
-                )
+                ), 200
 
                 s_grafana.add_event('finish extract data', {
-                    'fetch-api.grafana.argocd_apps.count': len(listener_response),
-                    'fetch-api.grafana.argocd_apps.list': json.dumps(listener_response, indent=2)[:512]
+                    'argocd_apps.count': len(listener_response),
+                    'argocd_apps.list': json.dumps(listener_response, indent=2)[:512]
                 })
 
             except:
-                listener_response = ['ERROR from fetch-api: FetchAPI.grafana.argocd_apps is unable to parse response from Grafana API!']
                 s_grafana.add_event('error: extract data', {
-                    'fetch-api.grafana.argocd_apps.error': json.dumps(listener_response, indent=2)[:512]
+                    'argocd_apps.error': listener_response
                 })
                 s_grafana.set_status(StatusCode.ERROR)
+                log(
+                    f'FetchAPI.grafana.argocd_apps: Unable to parse request response! trace_id={s_grafana.get_span_context().trace_id}',
+                    service='grafana', level='ERROR'
+                )
+                listener_response = ['FetchAPI.grafana.argocd_apps: Unable to parse request response!'], 502
 
             return listener_response
 
 
         def car_battery(self):
-            s_grafana.add_event('build request')
+            s_grafana.add_event('create request')
 
             request_url = f'{self.grafana_url}/api/ds/query'
             request_payload = self.grafana_queries_payload['postgresql']['car-battery']
@@ -191,11 +213,14 @@ class FetchAPI:
             if request_response.status_code != 200:
                 s_grafana.add_event('error: send request', {
                     'http.status_code': request_response.status_code,
-                    'http.response': json.dumps(json.loads(request_response.text), indent=2)[:512]
+                    'http.response': request_response.text
                 })
                 s_grafana.set_status(StatusCode.ERROR)
-
-                return ['ERROR from fetch-api: FetchAPI.grafana.car_battery Grafana request failed!']
+                log(
+                    f'FetchAPI.grafana.car_battery: Request failed! trace_id={s_grafana.get_span_context().trace_id}.',
+                    service='grafana', level='ERROR'
+                )
+                return ['FetchAPI.grafana.car_battery: Request failed!'], request_response.status_code
 
             s_grafana.add_event('receive response', {
                 'http.status_code': request_response.status_code,
@@ -203,24 +228,27 @@ class FetchAPI:
             })
 
             listener_response = []
-
             s_grafana.add_event('start extract data')
 
             try:
                 listener_response += [{
                     'usable_battery_percentage': request_response.json()['results']['query']['frames'][0]['data']['values'][0][0]
-                }]
+                }], 200
 
                 s_grafana.add_event('finish extract data', {
-                    'fetch-api.grafana.car_battery.usable_battery_percentage': listener_response[0]['usable_battery_percentage']
+                    'car_battery.usable_battery_percentage': json.dumps(listener_response, indent=2)
                 })
 
             except:
-                listener_response = ['ERROR from fetch-api: FetchAPI.grafana.car_battery is unable to parse response from Grafana API!']
                 s_grafana.add_event('error: extract data', {
-                    'fetch-api.grafana.car_battery.error': json.dumps(listener_response, indent=2)[:512]
+                    'car_battery.error': json.dumps(listener_response, indent=2)[:512]
                 })
                 s_grafana.set_status(StatusCode.ERROR)
+                log(
+                    f'FetchAPI.grafana.car_battery: Unable to parse request response! trace_id={s_grafana.get_span_context().trace_id}.',
+                    service='grafana', level='ERROR'
+                )
+                listener_response = ['FetchAPI.grafana.car_battery: Unable to parse request response!'], 502
 
             return listener_response
 
@@ -255,15 +283,13 @@ class FetchAPIListener:
     def routes(self):
         @self.app.route('/grafana/argocd-apps', methods=['GET'])
         def fetch_grafana_argocd_apps():
-            return jsonify(
-                fetch_api.grafana('argocd-apps')
-            )
+            data, status = fetch_api.grafana('argocd-apps')
+            return jsonify(data), status
 
         @self.app.route('/grafana/car-battery', methods=['GET'])
         def fetch_grafana_car_battery():
-            return jsonify(
-                fetch_api.grafana('car-battery')
-            )
+            data, status = fetch_api.grafana('car-battery')
+            return jsonify(data), status
 
 
 def verify_args():
