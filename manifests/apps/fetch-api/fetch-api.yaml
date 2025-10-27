@@ -23,7 +23,7 @@ spec:
       - name: registry-fetch-api
       containers:
       - name: fetch-api
-        image: skullfighter6/fetch-api:0.2.2
+        image: skullfighter6/fetch-api:0.2.3
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
