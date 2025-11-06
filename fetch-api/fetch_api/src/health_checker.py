@@ -159,8 +159,10 @@ class HealthChecker:
 
         span.set_attributes({
             'next_check': self.connector.health_next_check,
-            'last_check': self.connector.health_last_check,
-            'interval_seconds': interval_seconds
+            'interval_seconds': interval_seconds,
+            **(
+                {'last_check': self.connector.health_last_check} if self.connector.health_last_check else {}
+            )
         })
 
 
