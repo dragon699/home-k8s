@@ -1,15 +1,19 @@
 name: fetch-api
 run-name: Deploy fetch-api
 
-on: [push]
+on:
+  push:
+    paths:
+    - '.github/workflows/fetch-api.yaml'
+    - 'fetch-api/fetch_api/**'
+    - 'fetch-api/common/**'
 
 permissions:
-  contents: read
+  contents: write
   packages: write
 
 env:
   REGISTRY: ghcr.io
-  PROJECT_NAME: fetch-api
   COMPONENT_NAME: fetch-api
   COMPONENT_PATH: fetch-api/fetch_api
   IMAGE_NAME: dragon699/home-k8s/fetch-api
@@ -17,11 +21,11 @@ env:
 
 jobs:
 
-  create_container_image:
+  package:
     runs-on: gha-runner-home
 
     steps:
-    - name: Checkout Repository
+    - name: Checkout
       uses: actions/checkout@v5
 
     - name: Authenticate to Container Registry
@@ -38,9 +42,27 @@ jobs:
     - name: Build and Push Image
       uses: docker/build-push-action@v6
       with:
-        context: ./${{ env.PROJECT_NAME }}
+        context: ./${{ env.COMPONENT_NAME }}
         file: ./${{ env.COMPONENT_PATH }}/Dockerfile
         push: true
         tags: |
           ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.image_version.outputs.VERSION }}
           ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+
+
+  deploy:
+    runs-on: gha-runner-home
+    needs: package
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v5
+
+    - name: Check for yq
+      run: |
+        echo "Checking for yq installation..."
+        which yq || echo "yq not found"
+        yq --version || echo "yq command failed"
+
+    # - name: Update ${{ env.COMPONENT_NAME }} manifests
+    #   run: 
