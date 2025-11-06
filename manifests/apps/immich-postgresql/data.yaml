@@ -5,7 +5,7 @@ metadata:
   name: data-postgresql
   namespace: immich
 spec:
-  refreshInterval: 5m
+  refreshInterval: 5m0s
   secretStoreRef:
     name: home-vault
     kind: ClusterSecretStore

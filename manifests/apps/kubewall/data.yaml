@@ -5,7 +5,7 @@ metadata:
   name: auth-kubewall
   namespace: kubewall
 spec:
-  refreshInterval: 5m
+  refreshInterval: 5m0s
   secretStoreRef:
     name: home-vault
     kind: ClusterSecretStore

@@ -5,7 +5,7 @@ metadata:
   name: data-postgresql-shared-monitoring-grafana
   namespace: monitoring
 spec:
-  refreshInterval: 5m
+  refreshInterval: 5m0s
   secretStoreRef:
     name: in-cluster-shared
     kind: ClusterSecretStore

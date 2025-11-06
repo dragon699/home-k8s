@@ -5,7 +5,7 @@ metadata:
   name: registry-fetch-api
   namespace: fetch-api
 spec:
-  refreshInterval: 5m
+  refreshInterval: 5m0s
   secretStoreRef:
     name: home-vault
     kind: ClusterSecretStore
@@ -40,7 +40,7 @@ metadata:
   name: data-fetch-api
   namespace: fetch-api
 spec:
-  refreshInterval: 5m
+  refreshInterval: 5m0s
   secretStoreRef:
     name: home-vault
     kind: ClusterSecretStore

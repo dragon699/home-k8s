@@ -5,7 +5,7 @@ metadata:
   name: data-teslamate
   namespace: teslamate
 spec:
-  refreshInterval: 5m
+  refreshInterval: 5m0s
   secretStoreRef:
     name: home-vault
     kind: ClusterSecretStore
@@ -26,7 +26,7 @@ metadata:
   name: auth-teslamate
   namespace: teslamate
 spec:
-  refreshInterval: 5m
+  refreshInterval: 5m0s
   secretStoreRef:
     name: home-vault
     kind: ClusterSecretStore
