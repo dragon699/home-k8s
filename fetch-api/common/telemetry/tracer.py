@@ -1,0 +1,47 @@
+import atexit
+
+from opentelemetry import trace
+from opentelemetry.sdk.resources import Resource
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
+from opentelemetry.instrumentation.requests import RequestsInstrumentor
+from opentelemetry.instrumentation.logging import LoggingInstrumentor
+
+from common.telemetry.src.tracing.exporters import StatusSettingSpanExporter
+
+
+
+class Tracer:
+    def __init__(self, otel_meta, logger):
+        self.resource = Resource.create({
+            'service.name': otel_meta['service_name'],
+            'service.namespace': otel_meta['service_namespace'],
+            'service.version': otel_meta['service_version']
+        })
+
+        self.span_exporter = StatusSettingSpanExporter(
+            endpoint = otel_meta['otlp_endpoint_grpc'],
+            insecure = True
+        )
+
+        self.provider = TracerProvider(resource=self.resource)
+        self.provider.add_span_processor(
+            BatchSpanProcessor(self.span_exporter)
+        )
+
+        trace.set_tracer_provider(self.provider)
+        self.tracer = trace.get_tracer(otel_meta['service_name'])
+
+        atexit.register(lambda: self.provider.shutdown())
+        logger.configure_otel()
+
+
+    def instrument(self, app):
+        FastAPIInstrumentor().instrument_app(app)
+        RequestsInstrumentor().instrument()
+        LoggingInstrumentor().instrument(set_logging_format=False)
+
+
+    def get_tracer(self):
+        return self.tracer

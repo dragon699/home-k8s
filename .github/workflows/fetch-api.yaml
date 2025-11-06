@@ -28,13 +28,6 @@ jobs:
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v5
-    - name: Debug - List workspace
-      run: |
-        echo "Current directory: $(pwd)"
-        echo "Workspace contents:"
-        ls -la
-        echo "Looking for fetch-api:"
-        ls -la fetch-api/ || echo "fetch-api not found"
     - name: Authenticate to Container Registry
       uses: docker/login-action@v3
       with:
