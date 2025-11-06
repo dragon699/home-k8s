@@ -31,30 +31,5 @@ spec:
           envFrom:
             - secretRef:
                 name: data-fetch-api
-          env:
-            - name: LISTEN_HOST
-              value: "0.0.0.0"
-            - name: LISTEN_PORT
-              value: "8069"
-            - name: LOG_FORMAT
-              value: "json"
-            - name: LOG_LEVEL
-              value: "debug"
-            - name: OTEL_SERVICE_NAME
-              value: "fetch-api"
-            - name: OTEL_SERVICE_NAMESPACE
-              value: "fetch-api"
-            - name: OTEL_SERVICE_VERSION
-              value: "0.5.1"
-            - name: OTLP_ENDPOINT_GRPC
-              value: "grafana-alloy.monitoring.svc:4317"
-            - name: CONNECTOR_HEALTH_CHECK_INTERVAL_SECONDS
-              value: "60"
-            - name: CONNECTOR_HEALTH_RETRY_INTERVAL_SECONDS
-              value: "15"
-            - name: CONNECTORS
-              value: "grafana"
-            - name: CONNECTOR_GRAFANA_HOST
-              value: "dummy"
-            - name: CONNECTOR_GRAFANA_PORT
-              value: "8080"
+            - configMapRef:
+                name: config-fetch-api

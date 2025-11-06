@@ -69,6 +69,6 @@ jobs:
     - name: Commit
       uses: stefanzweifel/git-auto-commit-action@v7
       with:
-        commit_message: Update fetch-api version to ${{ needs.package.outputs.version }}
+        commit_message: "fetch-api: Update to v${{ needs.package.outputs.version }}"
         commit_user_name: ActionsBot
         file_pattern: ${{ env.COMPONENT_DEPLOYMENT_FILE }}
