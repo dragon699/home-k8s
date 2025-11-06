@@ -54,3 +54,7 @@ spec:
               value: "15"
             - name: CONNECTORS
               value: "grafana"
+            - name: CONNECTOR_GRAFANA_HOST
+              value: "dummy"
+            - name: CONNECTOR_GRAFANA_PORT
+              value: "dummy"
