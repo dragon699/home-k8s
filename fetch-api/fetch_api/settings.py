@@ -46,7 +46,7 @@ class ConnectorSettings(BaseSettings):
             self.endpoint = f'{self.protocol}://{self.host}:{self.port}'
 
         if not self.health_endpoint:
-            self.health_endpoint = f'{self.endpoint}/api/health'
+            self.health_endpoint = f'{self.endpoint}/api/healthz'
 
 
 settings, connectors = SettingsLoader().load()
