@@ -10,7 +10,7 @@ spec:
   type: ClusterIP
   ports:
   - name: fetch-api
-    port: 8080
-    targetPort: 8080
+    port: 8069
+    targetPort: 8069
   selector:
     app: fetch-api
