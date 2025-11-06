@@ -16,10 +16,16 @@ template:
       volumeMounts:
       - name: work
         mountPath: /home/runner/_work
+      - name: docker-sock
+        mountPath: /var/run
     - name: dind
       image: docker:27-dind
       securityContext:
         privileged: true
+      args:
+      - --host=tcp://0.0.0.0:2375
+      - --host=unix:///var/run/docker.sock
+      - --tls=false
       env:
       - name: DOCKER_TLS_CERTDIR
         value: ""
@@ -28,8 +34,12 @@ template:
         mountPath: /home/runner/_work
       - name: dind-storage
         mountPath: /var/lib/docker
+      - name: docker-sock
+        mountPath: /var/run
     volumes:
     - name: work
       emptyDir: {}
     - name: dind-storage
+      emptyDir: {}
+    - name: docker-sock
       emptyDir: {}
