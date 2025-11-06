@@ -57,4 +57,4 @@ spec:
             - name: CONNECTOR_GRAFANA_HOST
               value: "dummy"
             - name: CONNECTOR_GRAFANA_PORT
-              value: "dummy"
+              value: "8080"
