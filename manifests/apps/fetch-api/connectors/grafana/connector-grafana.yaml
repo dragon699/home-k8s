@@ -23,7 +23,7 @@ spec:
         - name: registry-fetch-api
       containers:
         - name: connector-grafana
-          image: ghcr.io/dragon699/home-k8s/fetch-api/connector-grafana:0.1.0
+          image: ghcr.io/dragon699/home-k8s/fetch-api/connectors/grafana:0.1.0
           imagePullPolicy: Always
           ports:
             - containerPort: 9069
@@ -36,12 +36,12 @@ spec:
           livenessProbe:
             exec:
               command:
-              - python
-              - -c
-              - |
-                import urllib.request, json
-                response = json.loads(urllib.request.urlopen('http://localhost:8069/api/healthz').read())
-                assert response['healthy'] == True
+                - python
+                - -c
+                - |
+                  import urllib.request, json
+                  response = json.loads(urllib.request.urlopen('http://localhost:8069/api/healthz').read())
+                  assert response['healthy'] == True
             initialDelaySeconds: 5
             periodSeconds: 10
             timeoutSeconds: 3
