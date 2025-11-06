@@ -40,7 +40,7 @@ spec:
               - -c
               - |
                 import urllib.request, json
-                response = json.loads(urllib.request.urlopen('http://localhost:8069/healthz').read())
+                response = json.loads(urllib.request.urlopen('http://localhost:8069/api/healthz').read())
                 assert response['healthy'] == True
             initialDelaySeconds: 5
             periodSeconds: 10
