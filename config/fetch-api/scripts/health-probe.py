@@ -28,7 +28,7 @@ try:
         print(f'{HEALTHZ_ENDPOINT}: Unhealthy!')
         raise SystemExit(1)
 
-except:
+except (KeyError, TypeError):
     print(
         f'{HEALTHZ_ENDPOINT}: Unable to validate response!',
         f'Got: {status}',
