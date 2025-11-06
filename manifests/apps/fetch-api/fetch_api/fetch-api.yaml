@@ -20,15 +20,15 @@ spec:
     spec:
       restartPolicy: Always
       imagePullSecrets:
-      - name: registry-fetch-api
+        - name: registry-fetch-api
       containers:
-      - name: fetch-api
-        image: skullfighter6/fetch-api:0.2.5
-        imagePullPolicy: Always
-        ports:
-        - containerPort: 8080
-        command: ["python", "fetch-api.py"]
-        args: ["grafana"]
-        envFrom:
-        - secretRef:
-            name: data-fetch-api
+        - name: fetch-api
+          image: ghcr.io/dragon699/home-k8s/fetch-api:0.5.1
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          command: ["python", "fetch-api.py"]
+          args: ["grafana"]
+          envFrom:
+            - secretRef:
+                name: data-fetch-api
