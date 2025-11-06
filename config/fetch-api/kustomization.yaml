@@ -5,6 +5,8 @@ namespace: fetch-api
 generatorOptions:
   disableNameSuffixHash: true
 configMapGenerator:
+- name: script-health-probe
+  files: ['health-probe.py=scripts/health-probe.py']
 - name: config-fetch-api
   envs: ['fetch_api/config.env']
 - name: config-connector-grafana

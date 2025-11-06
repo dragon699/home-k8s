@@ -21,10 +21,19 @@ spec:
       restartPolicy: Always
       imagePullSecrets:
         - name: registry-fetch-api
+      volumes:
+        - name: script-health-probe
+          configMap:
+            name: script-health-probe
+            defaultMode: 0755
       containers:
         - name: connector-grafana
           image: ghcr.io/dragon699/home-k8s/fetch-api/connectors/grafana:0.1.0
           imagePullPolicy: Always
+          volumeMounts:
+            - name: script-health-probe
+              mountPath: /home/health-probe.py
+              subPath: health-probe.py
           ports:
             - containerPort: 9069
           command: ["python", "-m", "connectors.grafana.app"]
@@ -37,11 +46,7 @@ spec:
             exec:
               command:
                 - python
-                - -c
-                - |
-                  import urllib.request, json
-                  response = json.loads(urllib.request.urlopen('http://localhost:8069/api/healthz').read())
-                  assert response['healthy'] == True
+                - /home/health-probe.py
             initialDelaySeconds: 5
             periodSeconds: 10
             timeoutSeconds: 3
