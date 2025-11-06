@@ -1,82 +1,246 @@
 
 
-- name: Home
+- name: home
   slug: home
-  width: default
+  width: wide
   head-widgets:
-  - type: search
+  - type: monitor
     hide-header: true
-    search-engine: google
-    placeholder: "Dankata nqma sredno"
-    bangs:
-      - title: YouTube
-        shortcut: ".yt"
-        url: https://www.youtube.com/results?search_query={QUERY}
+    cache: 5s
+    sites:
+    - title: jellyfin
+      url: https://watch.k8s.iaminyourpc.xyz
+      icon: di:jellyfin
+      timeout: 10s
+    - title: immich
+      url: https://photos.k8s.iaminyourpc.xyz
+      icon: di:immich
+      timeout: 10s
+    - title: pihole
+      url: http://pihole.k8s.iaminyourpc.xyz/admin
+      icon: https://upload.wikimedia.org/wikipedia/commons/0/00/Pi-hole_Logo.png
+      timeout: 10s
+    - title: teslamate
+      url: http://car.k8s.iaminyourpc.xyz
+      icon: https://www.pngplay.com/wp-content/uploads/13/Tesla-Logo-PNG-Photo-Image.png
+      timeout: 10s
+      basic-auth:
+        username: ${TESLAMATE_USER}
+        password: ${TESLAMATE_PASSWORD}
+  - type: monitor
+    hide-header: true
+    cache: 5s
+    sites:
+    - title: jellyfin
+      url: https://watch.k8s.iaminyourpc.xyz
+      icon: di:jellyfin
+      timeout: 10s
+    - title: immich
+      url: https://photos.k8s.iaminyourpc.xyz
+      icon: di:immich
+      timeout: 10s
+    - title: pihole
+      url: http://pihole.k8s.iaminyourpc.xyz/admin
+      icon: https://upload.wikimedia.org/wikipedia/commons/0/00/Pi-hole_Logo.png
+      timeout: 10s
+    - title: teslamate
+      url: http://car.k8s.iaminyourpc.xyz
+      icon: https://www.pngplay.com/wp-content/uploads/13/Tesla-Logo-PNG-Photo-Image.png
+      timeout: 10s
+      basic-auth:
+        username: ${TESLAMATE_USER}
+        password: ${TESLAMATE_PASSWORD}
+  - type: group
+    widgets:
+    - type: monitor
+      title: c/infra
+      hide-header: true
+      cache: 5s
+      sites:
+      - title: argocd
+        url: https://argocd.k8s.iaminyourpc.xyz
+        icon: https://icon.icepanel.io/Technology/svg/Argo-CD.svg
+        timeout: 10s
+      - title: vault
+        url: https://vault.k8s.iaminyourpc.xyz
+        icon: https://docs.rconfig.com/images/logos/vault-hashicorp-logo-920x920-sue-v1.png
+        timeout: 10s
+      - title: kubewall
+        url: http://kube.k8s.iaminyourpc.xyz
+        icon: https://img.icons8.com/color/200/kubernetes.png
+        timeout: 10s
+      - title: longhorn
+        url: http://longhorn.k8s.iaminyourpc.xyz
+        icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/longhorn.svg
+        timeout: 10s
+        basic-auth:
+          username: ${LONGHORN_USER}
+          password: ${LONGHORN_PASSWORD}
+    - type: monitor
+      title: c/monitoring
+      hide-header: true
+      cache: 5s
+      sites:
+      - title: grafana
+        url: https://grafana.k8s.iaminyourpc.xyz
+        icon: di:grafana
+        timeout: 10s
+      - title: alloy
+        url: https://alloy.k8s.iaminyourpc.xyz
+        icon: di:alloy
+        timeout: 10s
+        basic-auth:
+          username: ${ALLOY_USER}
+          password: ${ALLOY_PASSWORD}
+      - title: loki
+        check-url: http://loki-backend.monitoring.svc:3100/ready
+        url: https://argocd.k8s.iaminyourpc.xyz/applications/argocd/grafana-loki?view=tree&resource=
+        icon: di:loki
+        timeout: 10s
+      - title: tempo
+        check-url: http://grafana-tempo-querier.monitoring.svc:3100/ready
+        url: https://argocd.k8s.iaminyourpc.xyz/applications/argocd/grafana-tempo?view=tree&resource=
+        icon: https://grafana.com/static/assets/img/blog/tempo.png
+        timeout: 10s
+      - title: victoriametrics
+        check-url: http://victoriametrics-vmselect.monitoring.svc:8481/health
+        url: https://argocd.k8s.iaminyourpc.xyz/applications/argocd/victoriametrics?view=tree&resource=
+        icon: https://i.imgur.com/176vBRC.png
+        timeout: 10s
+      - title: minio
+        url: https://minio.k8s.iadfaewminyourpc.xyz
+        icon: di:minio
+        timeout: 10s
   columns:
-    - size: small
+  - size: small
+    widgets:
+    - type: calendar
+      hide-header: true
+      first-day-of-week: monday
+    - type: calendar
+      hide-header: true
+      first-day-of-week: monday
+    - type: calendar
+      hide-header: true
+      first-day-of-week: monday
+    - type: calendar
+      hide-header: true
+      first-day-of-week: monday
+    - type: calendar
+      hide-header: true
+      first-day-of-week: monday
+    - type: calendar
+      hide-header: true
+      first-day-of-week: monday
+    - type: calendar
+      hide-header: true
+      first-day-of-week: monday
+    # - type: repository
+    #   repository: dragon699/home-k8s
+    #   pull-requests-limit: 1
+    #   issues-limit: 1
+    #   commits-limit: 3
+    #   token: ${GITHUB_PAT}
+    - type: custom-api
+      title: c/tesla
+      cache: 5s
+      url: http://fetch-api.fetch-api.svc:8080/grafana/car-battery
+      method: GET
+      template: |
+        <style>
+          .icon-status {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            top: 5px;
+            width: 17px;
+            height: 17px;
+          }
+          .icon-status.positive { fill: var(--color-positive); }
+          .icon-status.negative { fill: var(--color-negative); }
+          .icon-status.warning { fill: var(--color-warning); }
+        </style>
+
+        <ul class="list list-gap-14 collapsible-container" data-collapse-after="5">
+        <span>{{ .JSON.Array "" }}</span>
+        </ul>
+    - type: custom-api
+      title: c/argocd
+      cache: 5s
+      url: http://fetch-api.fetch-api.svc:8080/grafana/argocd-apps
+      method: GET
+      template: |
+        <style>
+          .icon-status {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            top: 5px;
+            width: 17px;
+            height: 17px;
+          }
+          .icon-status.positive { fill: var(--color-positive); }
+          .icon-status.negative { fill: var(--color-negative); }
+          .icon-status.warning { fill: var(--color-warning); }
+        </style>
+
+        <ul class="list list-gap-14 collapsible-container" data-collapse-after="5">
+        {{ range .JSON.Array "" }}
+          {{ $name := .String "name" }}
+          {{ $health_status := .String "health_status" }}
+
+          <li class="row row-justify-between row-gap-8">
+            <span>
+              <a href="https://argocd.k8s.iaminyourpc.xyz/applications/argocd/{{ $name }}"
+                target="_blank" rel="noopener">
+                {{ $name }}
+              </a>
+            </span>
+
+            {{ if eq $health_status "Healthy" }}
+            <span class="icon-status positive">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4.5-5.5Z" clip-rule="evenodd"/>
+              </svg>
+            </span>
+
+            {{ else }}
+            <span class="icon-status negative">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495ZM10 5a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5A.75.75 0 0 1 10 5Zm0 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" clip-rule="evenodd"/>
+              </svg>
+            </span>
+
+            {{ end }}
+          </li>
+        {{ end }}
+        </ul>
+  - size: full
+    widgets:
+    - type: videos
+      channels:
+      - UCXuqSBlHAE6Xw-yeJA0Tunw
+      - UCR-DXc1voovS8nhAvccRZhg
+      - UCsBjURrPoezykLs9EqgamOA
+      - UCBJycsmduvYEL83R_U4JriQ
+      - UCHnyfMqiRRG1u-2MsSQLbXA
+      # - UC32IO5KC2hDjFoeHzlil3gA
+    - type: group
       widgets:
-        - type: repository
-          repository: dragon699/home-k8s
-          pull-requests-limit: 1
-          issues-limit: 1
-          commits-limit: 3
-          token: ${GITHUB_PAT}
-        - type: calendar
-          first-day-of-week: monday
-        - type: twitch-channels
-          channels:
-            - chiefgyk3d
-            - theprimeagen
-            - j_blow
-            - giantwaffle
-            - cohhcarnage
-            - christitustech
-            - EJ_SA
-    - size: full
-      widgets:
-        - type: videos
-          channels:
-            - UCXuqSBlHAE6Xw-yeJA0Tunw
-            - UCR-DXc1voovS8nhAvccRZhg
-            - UCsBjURrPoezykLs9EqgamOA
-            - UCBJycsmduvYEL83R_U4JriQ
-            - UCHnyfMqiRRG1u-2MsSQLbXA
-        - type: group
-          widgets:
-            - type: reddit
-              subreddit: technology
-              show-thumbnails: true
-            - type: reddit
-              subreddit: selfhosted
-              show-thumbnails: true
-    - size: small
-      widgets:
-        - type: weather
-          location: Sofia, Bulgaria
-          units: metric
-          hour-format: 24h
-        - type: monitor
-          sites:
-            - title: Jellyfin
-              url: https://watch.k8s.iaminyourpc.xyz
-              icon: di:jellyfin
-              timeout: 10s
-            - title: Immich
-              url: https://photos.k8s.iaminyourpc.xyz
-              icon: di:immich
-              timeout: 10s
-            - title: PiHole
-              url: http://pihole.k8s.iaminyourpc.xyz/admin
-              icon: https://upload.wikimedia.org/wikipedia/commons/0/00/Pi-hole_Logo.png
-              timeout: 10s
-            - title: Teslamate
-              url: http://car.k8s.iaminyourpc.xyz
-              icon: https://www.pngplay.com/wp-content/uploads/13/Tesla-Logo-PNG-Photo-Image.png
-              timeout: 10s
-              basic-auth:
-                username: ${TESLAMATE_USER}
-                password: ${TESLAMATE_PASSWORD}
-            - title: Kubewall
-              url: http://kube.k8s.iaminyourpc.xyz
-              icon: https://img.icons8.com/color/200/kubernetes.png
-              timeout: 10s
+      - type: reddit
+        subreddit: technology
+        show-thumbnails: true
+      - type: reddit
+        subreddit: selfhosted
+        show-thumbnails: true
+  - size: small
+    widgets:
+    - type: weather
+      hide-header: true
+      location: Sofia, Bulgaria
+      units: metric
+      hour-format: 24h
+
+

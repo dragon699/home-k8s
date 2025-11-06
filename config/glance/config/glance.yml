@@ -5,10 +5,12 @@ server:
 
 theme:
   custom-css-file: /assets/user.css
+  primary-color: 157 47 65
+  background-color: 6 6 6
 
 branding:
   app-name: "Home"
-  custom-footer: "/ this is my home"
+  custom-footer: " "
 
 pages:
   - $include: home.yml
