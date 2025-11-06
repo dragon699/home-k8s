@@ -7,22 +7,40 @@ permissions:
   contents: read
   packages: write
 
+env:
+  REGISTRY: ghcr.io
+  PROJECT_NAME: fetch-api
+  COMPONENT_NAME: fetch-api
+  COMPONENT_PATH: fetch-api/fetch_api
+  IMAGE_NAME: dragon699/home-k8s/fetch-api
+
+
 jobs:
+
   create_container_image:
     runs-on: gha-runner-home
+
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v5
+
     - name: Authenticate to Container Registry
       uses: docker/login-action@v3
       with:
-        registry: ghcr.io
+        registry: ${{ env.REGISTRY }}
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Determine Build Version
+      id: image_version
+      run: echo "VERSION=$(cat ${{ env.COMPONENT_PATH }}/VERSION)" >> $GITHUB_OUTPUT
+
     - name: Build and Push Image
       uses: docker/build-push-action@v6
       with:
-        context: ./fetch-api
-        file: ./fetch-api/fetch_api/Dockerfile
+        context: ./${{ env.PROJECT_NAME }}
+        file: ./${{ env.COMPONENT_PATH }}/Dockerfile
         push: true
-        tags: ghcr.io/dragon699/home-k8s/fetch-api/fetch-api:0.5.0
+        tags: |
+          ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.image_version.outputs.VERSION }}
+          ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
