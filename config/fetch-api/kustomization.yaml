@@ -6,4 +6,6 @@ generatorOptions:
   disableNameSuffixHash: true
 configMapGenerator:
 - name: config-fetch-api
-  envs: ['config.env']
+  envs: ['fetch_api/config.env']
+- name: config-connector-grafana
+  envs: ['connectors/grafana/config.env']

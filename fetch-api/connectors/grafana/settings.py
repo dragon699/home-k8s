@@ -8,8 +8,8 @@ class Settings(BaseSettings):
     listen_host: str = '0.0.0.0'
     listen_port: int = 8080
 
-    url: str = 'https://grafana.k8s.iaminyourpc.xyz'
-    sa_token: str = 'test_token'
+    url: str
+    sa_token: str
 
     otel_service_name: str = 'connector-grafana'
     otel_service_namespace: str = 'fetch-api'

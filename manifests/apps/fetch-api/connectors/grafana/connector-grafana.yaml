@@ -1,0 +1,48 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: connector-grafana
+  namespace: fetch-api
+  labels:
+    app: connector-grafana
+    env: home
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: connector-grafana
+  template:
+    metadata:
+      labels:
+        app: connector-grafana
+        env: home
+    spec:
+      restartPolicy: Always
+      imagePullSecrets:
+        - name: registry-fetch-api
+      containers:
+        - name: connector-grafana
+          image: ghcr.io/dragon699/home-k8s/fetch-api/connector-grafana:0.1.0
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 9069
+          command: ["python", "-m", "connectors.grafana.app"]
+          envFrom:
+            - secretRef:
+                name: data-connector-grafana
+            - configMapRef:
+                name: config-connector-grafana
+          livenessProbe:
+            exec:
+              command:
+              - python
+              - -c
+              - |
+                import urllib.request, json
+                response = json.loads(urllib.request.urlopen('http://localhost:8069/api/healthz').read())
+                assert response['healthy'] == True
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3

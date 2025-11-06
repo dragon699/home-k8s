@@ -1,11 +1,11 @@
-name: fetch-api
-run-name: Deploy fetch-api
+name: fetch-api-connector-grafana
+run-name: Deploy connector-grafana
 
 on:
   push:
     paths:
-    - '.github/workflows/fetch-api.yaml'
-    - 'fetch-api/fetch_api/**'
+    - '.github/workflows/fetch-api-connector-grafana.yaml'
+    - 'fetch-api/connectors/grafana/**'
     - 'fetch-api/common/**'
 
 permissions:
@@ -15,9 +15,9 @@ permissions:
 env:
   REGISTRY: ghcr.io
   APP_NAME: fetch-api
-  COMPONENT_PATH: fetch-api/fetch_api
-  COMPONENT_DEPLOYMENT_FILE: manifests/apps/fetch-api/fetch_api/fetch-api.yaml
-  IMAGE_NAME: dragon699/home-k8s/fetch-api/fetch-api
+  COMPONENT_PATH: fetch-api/connectors/grafana
+  COMPONENT_DEPLOYMENT_FILE: manifests/apps/fetch-api/connectors/grafana/connector-grafana.yaml
+  IMAGE_NAME: dragon699/home-k8s/fetch-api/connectors/grafana
 
 
 jobs:
@@ -69,6 +69,6 @@ jobs:
     - name: Commit
       uses: stefanzweifel/git-auto-commit-action@v7
       with:
-        commit_message: "fetch-api: Update to v${{ needs.package.outputs.version }}"
+        commit_message: "connector-grafana: Update to v${{ needs.package.outputs.version }}"
         commit_user_name: ActionsBot
         file_pattern: ${{ env.COMPONENT_DEPLOYMENT_FILE }}

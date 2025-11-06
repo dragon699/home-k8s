@@ -2,7 +2,7 @@
 apiVersion: external-secrets.io/v1
 kind: ExternalSecret
 metadata:
-  name: data-fetch-api
+  name: data-connector-grafana
   namespace: fetch-api
 spec:
   refreshInterval: 5m0s
@@ -10,11 +10,11 @@ spec:
     name: home-vault
     kind: ClusterSecretStore
   target:
-    name: data-fetch-api
+    name: data-connector-grafana
     creationPolicy: Owner
   dataFrom:
   - extract:
-      key: home/fetch-api/data-fetch-api
+      key: home/fetch-api/connectors/data-connector-grafana
       conversionStrategy: Default
       decodingStrategy: None
       metadataPolicy: None
