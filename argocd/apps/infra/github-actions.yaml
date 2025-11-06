@@ -26,6 +26,11 @@ spec:
       releaseName: gha-runner-home
       valueFiles:
       - '$values/helm/infra/github-actions/values.yaml'
+  - repoURL: git@github.com:dragon699/home-k8s.git
+    targetRevision: main
+    path: manifests/infra/github-actions
+    directory:
+      recurse: true
   destination:
     server: https://kubernetes.default.svc
     namespace: github
