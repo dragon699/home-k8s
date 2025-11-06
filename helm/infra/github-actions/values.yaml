@@ -3,3 +3,24 @@ githubConfigSecret: "data-github-actions"
 controllerServiceAccount:
   name: gha-runner-scale-set-controller-gha-rs-controller
   namespace: github
+
+template:
+  spec:
+    containers:
+    - name: runner
+      image: ghcr.io/actions/actions-runner:latest
+      command: ["/home/runner/run.sh"]
+    - name: dind
+      image: docker:dind
+      securityContext:
+        privileged: true
+      volumeMounts:
+      - name: work
+        mountPath: /home/runner/_work
+      - name: dind-storage
+        mountPath: /var/lib/docker
+    volumes:
+    - name: work
+      emptyDir: {}
+    - name: dind-storage
+      emptyDir: {}
