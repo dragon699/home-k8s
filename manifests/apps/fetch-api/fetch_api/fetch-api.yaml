@@ -33,3 +33,16 @@ spec:
                 name: data-fetch-api
             - configMapRef:
                 name: config-fetch-api
+          livenessProbe:
+            exec:
+              command:
+              - python
+              - -c
+              - |
+                import urllib.request, json
+                response = json.loads(urllib.request.urlopen('http://localhost:8069/healthz').read())
+                assert response['healthy'] == True
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
