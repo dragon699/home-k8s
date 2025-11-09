@@ -1,0 +1,7 @@
+ollama:
+  gpu:
+    enabled: true
+    draEnabled: true
+
+persistentVolume:
+  size: 256Gi

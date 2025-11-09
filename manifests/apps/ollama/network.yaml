@@ -1,0 +1,29 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ollama
+  namespace: ollama
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-home
+    kubernetes.io/ingress.class: nginx                  # home, # Dankata, # Marina / Zhelezhnitsa
+    nginx.ingress.kubernetes.io/whitelist-source-range: "92.247.208.224/32,87.243.107.94/32,151.237.55.238/32"
+  labels:
+    app: ollama
+    env: home
+spec:
+  tls:
+  - hosts:
+    - ollama.k8s.iaminyourpc.xyz
+    secretName: tls-ollama-k8s-iaminyourpc-xyz
+  rules:
+  - host: ollama.k8s.iaminyourpc.xyz
+    http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: ollama
+            port:
+              number: 11434
