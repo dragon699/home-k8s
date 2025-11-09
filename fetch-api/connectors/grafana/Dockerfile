@@ -15,6 +15,7 @@ WORKDIR /app
 COPY --from=builder /root/.local /root/.local
 
 COPY connectors/grafana/src /app/connectors/grafana/src
+COPY connectors/grafana/templates /app/connectors/grafana/templates
 COPY connectors/grafana/*.py /app/connectors/grafana/
 COPY common /app/common
 
