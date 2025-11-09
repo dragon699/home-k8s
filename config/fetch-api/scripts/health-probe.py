@@ -3,20 +3,20 @@ from os import getenv
 
 
 URL = f'http://localhost:{getenv("LISTEN_PORT")}'
-ENDPOINT = 'api/healthz'
+ENDPOINT = 'api/health'
 
-HEALTHZ_ENDPOINT = f'{URL}/{ENDPOINT}'
+HEALTH_ENDPOINT = f'{URL}/{ENDPOINT}'
 
 
 try:
     status = json.loads(
         urllib.request.urlopen(
-            HEALTHZ_ENDPOINT
+            HEALTH_ENDPOINT
         ).read()
     )
 
 except:
-    print(f'{HEALTHZ_ENDPOINT}: Unreachable!')
+    print(f'{HEALTH_ENDPOINT}: Unreachable!')
     raise SystemExit(1)
 
 
@@ -25,12 +25,12 @@ try:
         raise SystemExit(0)
     
     else:
-        print(f'{HEALTHZ_ENDPOINT}: Unhealthy!')
+        print(f'{HEALTH_ENDPOINT}: Unhealthy!')
         raise SystemExit(1)
 
 except (KeyError, TypeError):
     print(
-        f'{HEALTHZ_ENDPOINT}: Unable to validate response!',
+        f'{HEALTH_ENDPOINT}: Unable to validate response!',
         f'Got: {status}',
         'Expected: {"healthy": true}'
     )
