@@ -2,7 +2,7 @@ import json
 import os
 
 
-def read_file(path: str, type = 'json'):
+def read_file(path: str, type='json'):
     if not os.path.exists(path):
         return None
 

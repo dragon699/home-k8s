@@ -3,7 +3,9 @@ from functools import wraps
 from os import getenv
 
 
-tracer = trace.get_tracer(getenv("OTEL_SERVICE_NAME", __name__))
+tracer = trace.get_tracer(
+    getenv("OTEL_SERVICE_NAME", __name__)
+)
 
 
 def traced(span_name=None, attributes=None, inject_span=True):
@@ -17,11 +19,13 @@ def traced(span_name=None, attributes=None, inject_span=True):
                 if args and hasattr(args[0].__class__, func.__name__):
                     name = f"{args[0].__class__.__name__}.{func.__name__}"
 
+                elif hasattr(func, '__qualname__') and '.' in func.__qualname__:
+                    name = func.__qualname__
+
                 else:
                     name = f"{func.__module__}.{func.__name__}"
 
             with tracer.start_as_current_span(name) as span:
-                span.set_attribute("func.name", func.__name__)
                 span.set_attribute("func.module", func.__module__)
 
                 if attributes:
@@ -33,11 +37,16 @@ def traced(span_name=None, attributes=None, inject_span=True):
                         kwargs['span'] = span
 
                     result = func(*args, **kwargs)
+                    span.set_status(
+                        trace.Status(trace.StatusCode.OK)
+                    )
 
                     return result
 
                 except Exception as e:
-                    span.set_status(trace.Status(trace.StatusCode.ERROR))
+                    span.set_status(
+                        trace.Status(trace.StatusCode.ERROR)
+                    )
                     span.record_exception(e)
 
                     raise

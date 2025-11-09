@@ -1,10 +1,10 @@
-from datetime import datetime, timedelta
+from datetime import (datetime, timedelta)
 from connectors.grafana.src.telemetry.logging import log
 from connectors.grafana.settings import settings
 
-from opentelemetry import trace
-from common.utils.web import create_session
-from common.telemetry.src.tracing.span_wrapper import traced
+from common.telemetry.src.tracing.wrappers import traced
+from common.telemetry.src.tracing.helpers import reword
+from connectors.grafana.src.grafana.client import GrafanaClient
 
 
 
@@ -12,97 +12,148 @@ class HealthChecker:
     def __init__(self, scheduler):
         self.scheduler = scheduler
 
-    
-    @traced()
-    def ping_grafana(self, span=None):
-        session = create_session(timeout=5)
-        response = session.get(settings.health_endpoint)
-        return response
-    
+
+    def get_next_interval(self):
+        return (
+            settings.health_check_interval_seconds
+            if settings.healthy is True
+            else settings.health_retry_interval_seconds
+        )
+
+
+    def get_next_check_time(self):
+        ts = datetime.now() + timedelta(seconds=self.get_next_interval())
+        return ts.isoformat().split('.')[0]
+
 
     @traced()
-    def get_grafana_health(self, span=None):
-        def get_next_interval():
-            if settings.healthy is True:
-                return settings.health_check_interval_seconds
-
-            else:
-                return settings.health_retry_interval_seconds
-
+    def get_status(self, span=None):
         was_healthy = settings.healthy
         settings.health_last_check = datetime.now().isoformat().split('.')[0]
 
-        get_next_check_time = lambda: (
-            datetime.now() + timedelta(seconds=get_next_interval())
-        ).isoformat().split('.')[0]
-
-        get_common_attr = lambda: {
-            'health_endpoint': settings.health_endpoint,
-            'last_check': settings.health_last_check,
-            'next_check': settings.health_next_check
-        }
-
         try:
-            response = self.ping_grafana()
-
-            if response.status_code == 200:
-                settings.healthy = True
-
-                if was_healthy is not True:
-                    self.schedule_grafana_check()
-
-                else:
-                    settings.health_next_check = get_next_check_time()
-
-                if was_healthy is not True:
-                    log.debug('Health check successful', extra={
-                        **get_common_attr(),
-                        'healthy': True,
-                        'status_code': response.status_code
-                    })
-
-            else:
-                span.set_attributes({
-                    'error.message': response.text,
-                    'error.status_code': response.status_code
-                })
-
-                settings.healthy = False
-
-                if was_healthy is not False:
-                    self.schedule_grafana_check()
-                
-                else:
-                    settings.health_next_check = get_next_check_time()
-
-                log.warning('Health check failed', extra={
-                    **get_common_attr(),
-                    'healthy': False,
-                    'status_code': response.status_code
-                })
+            response = GrafanaClient.ping()
 
         except Exception as err:
-            span.set_attributes({
-                "error.message": str(err)
-            })
-
             settings.healthy = None
 
             if was_healthy is not None:
-                self.schedule_grafana_check()
+                self.update_schedule()
 
             else:
-                settings.health_next_check = get_next_check_time()
+                settings.health_next_check = self.get_next_check_time()
 
-            log.error(f'Health check failed, Grafana unreachable', extra={
-                **get_common_attr(),
-                'healthy': None,
+            log.critical(f'Health check failed, Grafana is unreachable', extra={
+                'health_endpoint': settings.health_endpoint,
                 'error': str(err)
             })
+            span.set_attributes(
+                reword({
+                    'health.endpoint': settings.health_endpoint,
+                    'health.error.message': str(err),
+                    'health.error.type': type(err).__name__,
+                    'health.last_check': settings.health_last_check,
+                    'health.next_check': settings.health_next_check,
+                    'health.status.current': settings.healthy,
+                    'health.status.previous': was_healthy
+                })
+            )
+
+            return None
+
+        try:
+            is_healthy = response.json()['database'] == 'ok'
+
+        except Exception as err:
+            settings.healthy = None
+
+            if was_healthy is not None:
+                self.update_schedule()
+
+            else:
+                settings.health_next_check = self.get_next_check_time()
+
+            log.critical(f'Health check failed, got unexpected response', extra={
+                'health_endpoint': settings.health_endpoint,
+                'error': str(err)
+            })
+            span.set_attributes(
+                reword({
+                    'health.endpoint': settings.health_endpoint,
+                    'health.error.message': str(err),
+                    'health.error.type': type(err).__name__,
+                    'health.response.content': response.text,
+                    'health.response.status_code': response.status_code,
+                    'health.last_check': settings.health_last_check,
+                    'health.next_check': settings.health_next_check,
+                    'health.status.current': settings.healthy,
+                    'health.status.previous': was_healthy
+                })
+            )
+
+            return None
+
+        if (response.status_code == 200) and (is_healthy is True):
+            settings.healthy = True
+
+            if was_healthy is not True:
+                log.debug('Health check successful', extra={
+                    'health_endpoint': settings.health_endpoint
+                })
+                self.update_schedule()
+
+            else:
+                settings.health_next_check = self.get_next_check_time()
+
+            span.set_attributes(
+                reword({
+                    'health.endpoint': settings.health_endpoint,
+                    'health.last_check': settings.health_last_check,
+                    'health.next_check': settings.health_next_check,
+                    'health.status.current': settings.healthy,
+                    'health.status.previous': was_healthy
+                })
+            )
+
+        else:
+            settings.healthy = False
+
+            if was_healthy is not False:
+                self.update_schedule()
+            
+            else:
+                settings.health_next_check = self.get_next_check_time()
+
+            log.critical('Health check failed, Grafana is unhealthy', extra={
+                'health_endpoint': settings.health_endpoint,
+                'response_status_code': response.status_code
+            })
+            span.set_attributes(
+                reword({
+                    'health.endpoint': settings.health_endpoint,
+                    'health.response.content': response.text,
+                    'health.response.status_code': response.status_code,
+                    'health.last_check': settings.health_last_check,
+                    'health.next_check': settings.health_next_check,
+                    'health.status.current': settings.healthy,
+                    'health.status.previous': was_healthy
+                })
+            )
 
 
     @traced()
-    def schedule_grafana_check(self, span=None):
+    def create_schedule(self, span=None):
+        log.debug(f'Scheduling health checks')
+        self.get_status()
+
+        if settings.health_job_id is None:
+            self.update_schedule()
+
+        log.debug(f'Health checks scheduled')
+
+
+    @traced()
+    def update_schedule(self, span=None):
         if not settings.health_job_id is None:
             try:
                 self.scheduler.remove_job(settings.health_job_id)
@@ -110,18 +161,11 @@ class HealthChecker:
             except:
                 pass
 
-        if settings.healthy is True:
-            interval_seconds = settings.health_check_interval_seconds
-
-        else:
-            interval_seconds = settings.health_retry_interval_seconds
-
-        settings.health_next_check = (
-            datetime.now() + timedelta(seconds=interval_seconds)
-        ).isoformat().split('.')[0]
+        interval_seconds = self.get_next_interval()
+        settings.health_next_check = self.get_next_check_time()
 
         job = self.scheduler.add_job(
-            self.get_grafana_health,
+            self.get_status,
             'interval',
             seconds=interval_seconds,
             id=f'health_check_grafana'
@@ -129,15 +173,11 @@ class HealthChecker:
 
         settings.health_job_id = job.id
 
-        span.set_attributes({
-            'next_check': settings.health_next_check,
-            'last_check': settings.health_last_check,
-            'interval_seconds': interval_seconds
-        })
-
-
-def check_health(scheduler):
-    checker = HealthChecker(scheduler)
-
-    checker.schedule_grafana_check()
-    checker.get_grafana_health()
+        span.set_attributes(
+            reword({
+                'scheduler.interval.seconds': interval_seconds,
+                'scheduler.job.id': settings.health_job_id,
+                'health.last_check': settings.health_last_check,
+                'health.next_check': settings.health_next_check
+            })
+        )

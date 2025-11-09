@@ -6,7 +6,7 @@ from fetch_api.src.telemetry.logging import log
 class SettingsLoader:
     @staticmethod
     def load():
-        from fetch_api.settings import FetchAPISettings, ConnectorSettings
+        from fetch_api.settings import (FetchAPISettings, ConnectorSettings)
 
         try:
             settings = FetchAPISettings()

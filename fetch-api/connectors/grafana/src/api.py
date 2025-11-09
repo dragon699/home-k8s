@@ -2,28 +2,29 @@ from fastapi import FastAPI
 from apscheduler.schedulers.background import BackgroundScheduler
 from contextlib import asynccontextmanager
 
-from connectors.grafana.src.telemetry.logging import log
+from connectors.grafana.settings import settings
 from connectors.grafana.src.telemetry.tracing import instrumentor
-from connectors.grafana.src.health_checker import check_health
+from connectors.grafana.src.grafana.client import GrafanaClient
+from connectors.grafana.src.health_checker import HealthChecker
 from connectors.grafana.src.loaders import RoutesLoader
 
 
-scheduler = BackgroundScheduler()
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    log.debug(f'Scheduling Grafana health checks..')
     scheduler.start()
+    health_checker.create_schedule()
+    grafana_client.authenticate()
 
-    check_health(scheduler)
+    RoutesLoader.load(app, settings)
 
     yield
 
-    log.debug('Terminating Grafana health check schedule..')
     scheduler.shutdown()
 
 
+scheduler = BackgroundScheduler()
+health_checker = HealthChecker(scheduler)
+grafana_client = GrafanaClient()
+
 app = FastAPI(lifespan=lifespan)
 instrumentor.instrument(app)
-
-RoutesLoader.load(app)

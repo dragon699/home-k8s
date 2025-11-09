@@ -1,8 +1,8 @@
 from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
-from opentelemetry.sdk.trace import Status, StatusCode
+from opentelemetry.sdk.trace import (Status, StatusCode)
 
 
-class StatusSettingSpanExporter(OTLPSpanExporter):
+class StatusSpanExporter(OTLPSpanExporter):
     def export(self, spans):
         for span in spans:
             if span.status.status_code == StatusCode.UNSET:

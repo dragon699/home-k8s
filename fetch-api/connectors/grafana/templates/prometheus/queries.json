@@ -1,0 +1,9 @@
+[
+    {
+        "endpoint": "argocd-apps",
+        "query": {
+            "id": "argocd-apps",
+            "query": "ddsum(argocd_app_info{}) by (name, namespace, health_status)"
+        }
+    }
+]

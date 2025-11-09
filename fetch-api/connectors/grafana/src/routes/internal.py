@@ -1,16 +1,24 @@
-from fastapi import APIRouter
 from connectors.grafana.settings import settings
+from fastapi import APIRouter
 
 
 router = APIRouter()
 
 
-@router.get('/healthz')
-def healthz():
+@router.get('/health')
+def health():
     return {
         'connector_name': settings.name,
         'healthy': settings.healthy,
         'health_endpoint': settings.health_endpoint,
         'health_last_check': settings.health_last_check,
-        'health_next_check': settings.health_next_check
+        'health_next_check': settings.health_next_check,
+        'authenticated': settings.authenticated
+    }
+
+
+@router.get('/ready')
+def ready():
+    return {
+        'ready': (settings.healthy is True) and (settings.authenticated is True)
     }

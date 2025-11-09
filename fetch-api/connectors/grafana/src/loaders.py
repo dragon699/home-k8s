@@ -3,6 +3,7 @@ from pydantic import ValidationError
 from connectors.grafana.src.telemetry.logging import log
 
 
+
 class SettingsLoader:
     @staticmethod
     def load():
@@ -21,14 +22,19 @@ class SettingsLoader:
             raise SystemExit(1)
         
         return settings
-    
+
 
 class RoutesLoader:
     @staticmethod
-    def load(app):
-        from connectors.grafana.settings import settings
-        from connectors.grafana.src.routes import internal
+    def load(app, settings):
+        from connectors.grafana.src.routes import (internal, prometheus, postgresql)
 
         app.include_router(internal.router, prefix="/api")
 
-        log.info(f'Listening for incoming query requests on {settings.listen_host}:{settings.listen_port} and forwarding to Grafana at {settings.url}')
+        if settings.authenticated:
+            app.include_router(prometheus.router, prefix="/prometheus")
+            app.include_router(postgresql.router, prefix="/postgresql")
+
+            log.info(
+                f'Listening for incoming query requests on {settings.listen_host}:{settings.listen_port} and forwarding to Grafana at {settings.url}'
+            )

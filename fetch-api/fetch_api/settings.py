@@ -3,6 +3,7 @@ from fetch_api.src.loaders import SettingsLoader
 from pydantic_settings import BaseSettings
 
 
+
 class FetchAPISettings(BaseSettings):
     name: str = 'fetch-api'
     listen_host: str = '0.0.0.0'
@@ -20,6 +21,7 @@ class FetchAPISettings(BaseSettings):
 
     connector_health_check_interval_seconds: int = 20
     connector_health_retry_interval_seconds: int = 5
+
 
     def model_post_init(self, __context):
         logger.update_settings(
@@ -41,12 +43,13 @@ class ConnectorSettings(BaseSettings):
     health_last_check: str | None = None
     healthy: bool | None = None
 
+
     def model_post_init(self, __context):
         if not self.endpoint:
             self.endpoint = f'{self.protocol}://{self.host}:{self.port}'
 
         if not self.health_endpoint:
-            self.health_endpoint = f'{self.endpoint}/api/healthz'
+            self.health_endpoint = f'{self.endpoint}/api/health'
 
 
 settings, connectors = SettingsLoader().load()

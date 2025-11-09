@@ -1,0 +1,9 @@
+[
+    {
+        "endpoint": "car-battery",
+        "query": {
+            "id": "teslamate-usable-battery-level",
+            "query": "SELECT * FROM ((SELECT usable_battery_level, date FROM positions WHERE car_id = 1 AND usable_battery_level IS NOT NULL ORDER BY date DESC LIMIT 1) UNION (SELECT usable_battery_level, date FROM charges c JOIN charging_processes p ON p.id = c.charging_process_id WHERE p.car_id = 1 AND usable_battery_level IS NOT NULL ORDER BY date DESC LIMIT 1)) AS last_usable_battery_level LIMIT 1;"
+        }
+    }
+]

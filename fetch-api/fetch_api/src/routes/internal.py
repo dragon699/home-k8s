@@ -1,12 +1,12 @@
-from fastapi import APIRouter, Depends
-from fetch_api.settings import settings, connectors
+from fastapi import (APIRouter, Depends)
+from fetch_api.settings import (settings, connectors)
 
 
 router = APIRouter()
 
 
-@router.get('/healthz')
-def healthz():
+@router.get('/health')
+def health():
     return {
         'healthy': True,
         'connectors': [
@@ -38,7 +38,3 @@ def read_connector(conn_name: str):
 
     except:
         return {'error': 'Connector not found'}
-
-@router.get('/pnd/{putkaaaaaa}')
-def read_pnd(putkaaaaaa: str):
-    return {'Putkata na desi eee': putkaaaaaa}

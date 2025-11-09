@@ -4,18 +4,17 @@ from contextlib import asynccontextmanager
 
 from fetch_api.src.telemetry.logging import log
 from fetch_api.src.telemetry.tracing import instrumentor
-from fetch_api.src.health_checker import check_health
+from fetch_api.src.health_checker import HealthChecker
 from fetch_api.src.loaders import RoutesLoader
 
-
-scheduler = BackgroundScheduler()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     log.debug(f'Scheduling connector health checks..')
     scheduler.start()
 
-    check_health(scheduler)
+    HealthChecker.create_connector_schedules(scheduler)
+    RoutesLoader.load(app)
 
     yield
 
@@ -23,7 +22,7 @@ async def lifespan(app: FastAPI):
     scheduler.shutdown()
 
 
+scheduler = BackgroundScheduler()
+
 app = FastAPI(lifespan=lifespan)
 instrumentor.instrument(app)
-
-RoutesLoader.load(app)

@@ -8,7 +8,8 @@ from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from opentelemetry.instrumentation.requests import RequestsInstrumentor
 from opentelemetry.instrumentation.logging import LoggingInstrumentor
 
-from common.telemetry.src.tracing.exporters import StatusSettingSpanExporter
+from common.telemetry.src.tracing.processors import HttpSpanProcessor
+from common.telemetry.src.tracing.exporters import StatusSpanExporter
 
 
 
@@ -19,8 +20,7 @@ class Tracer:
             'service.namespace': otel_meta['service_namespace'],
             'service.version': otel_meta['service_version']
         })
-
-        self.span_exporter = StatusSettingSpanExporter(
+        self.span_exporter = StatusSpanExporter(
             endpoint = otel_meta['otlp_endpoint_grpc'],
             insecure = True
         )
@@ -28,6 +28,9 @@ class Tracer:
         self.provider = TracerProvider(resource=self.resource)
         self.provider.add_span_processor(
             BatchSpanProcessor(self.span_exporter)
+        )
+        self.provider.add_span_processor(
+            HttpSpanProcessor()
         )
 
         trace.set_tracer_provider(self.provider)
