@@ -1,5 +1,5 @@
-from fastapi import (APIRouter, Depends)
 from fetch_api.settings import (settings, connectors)
+from fastapi import APIRouter
 
 
 router = APIRouter()

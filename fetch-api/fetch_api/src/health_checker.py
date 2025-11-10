@@ -1,7 +1,7 @@
 from datetime import (datetime, timedelta)
 from fetch_api.src.telemetry.logging import log
 from fetch_api.settings import (settings, connectors)
-from fetch_api.src.connectors.client import ConnectorClient
+from fetch_api.src.client import ConnectorClient
 
 from common.telemetry.src.tracing.wrappers import traced
 from common.telemetry.src.tracing.helpers import reword

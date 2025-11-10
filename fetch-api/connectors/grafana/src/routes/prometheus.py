@@ -9,7 +9,7 @@ router = APIRouter()
 
 
 @router.get('/argocd-apps')
-def argocd_apps():
+def get_argocd_apps():
     try:
         result = querier.commit(
             query_ds_type='prometheus',

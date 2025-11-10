@@ -9,7 +9,7 @@ router = APIRouter()
 
 
 @router.get('/car-battery')
-def argocd_apps():
+def get_car_battery():
     try:
         result = querier.commit(
             query_ds_type='postgresql',

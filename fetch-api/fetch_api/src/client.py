@@ -9,7 +9,6 @@ class ConnectorClient:
     def __init__(self, connector_name: str):
         self.connector_name = connector_name
         self.url = connectors[connector_name].url
-        self.health_endpoint = connectors[connector_name].health_endpoint
 
 
     def set_headers(self):
