@@ -6,6 +6,8 @@ def reword(attributes: dict):
     reword_map = {
         'health.status.current': {True: 'healthy', False: 'unhealthy'},
         'health.status.previous': {True: 'healthy', False: 'unhealthy'},
+        'health.connector.status.current': {True: 'healthy', False: 'unhealthy'},
+        'health.connector.status.previous': {True: 'healthy', False: 'unhealthy'},
         'grafana.auth.status': {True: 'authenticated', False: 'unauthenticated'},
         '__query.payload': 'json',
         '__request.body': 'json',
