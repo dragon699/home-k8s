@@ -1,0 +1,42 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: nvidia-gpu-operator
+  namespace: argocd
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+  annotations:
+    env: home
+spec:
+  project: home
+  sources:
+  - repoURL: git@github.com:dragon699/home-k8s.git
+    targetRevision: main
+    ref: values
+  - repoURL: https://helm.ngc.nvidia.com/nvidia
+    targetRevision: '*'
+    chart: nvidia-gpu-operator
+    helm:
+      skipCrds: false
+      valueFiles:
+      - '$values/helm/apps/nvidia-gpu-operator/values.yaml'
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: nvidia
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
+    - Validate=true
+    - PrunePropagationPolicy=foreground
+    - PruneLast=true
+    - ServerSideApply=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 1m
