@@ -1,7 +1,7 @@
 ollama:
   gpu:
     enabled: true
-    draEnabled: false
+    draEnabled: true
 
 persistentVolume:
   size: 256Gi
