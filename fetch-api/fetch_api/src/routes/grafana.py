@@ -7,6 +7,7 @@ from fastapi.responses import JSONResponse
 
 
 router = APIRouter()
+client = ConnectorClient(connectors['grafana'].name)
 
 
 @router.get('/argocd-apps')
@@ -59,7 +60,3 @@ def get_car_battery():
         })
 
         return JSONResponse(content=client_responses['upstream-error'], status_code=502)
-
-
-
-client = ConnectorClient(connectors['grafana'].name)

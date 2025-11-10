@@ -1,5 +1,4 @@
 import uvicorn
-
 from connectors.grafana.settings import settings
 from connectors.grafana.src.api import app
 from connectors.grafana.src.telemetry.logging import logger
