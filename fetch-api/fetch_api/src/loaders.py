@@ -3,6 +3,7 @@ from pydantic import ValidationError
 from fetch_api.src.telemetry.logging import log
 
 
+
 class SettingsLoader:
     @staticmethod
     def load():
@@ -60,11 +61,9 @@ class SettingsLoader:
 
 class RoutesLoader:
     @staticmethod
-    def load(app):
-        log.debug('Loading API routes..')
-        from fetch_api.settings import settings
-        from fetch_api.src.routes import internal
+    def load(app, settings):
+        from fetch_api.src.routes import (internal)
 
         app.include_router(internal.router, prefix="/api")
 
-        log.info(f'Listening for incoming requests on {settings.listen_host}:{settings.listen_port}')
+        log.info(f'Listening for incoming query requests on {settings.listen_host}:{settings.listen_port} and forwarding to upstream connectors')

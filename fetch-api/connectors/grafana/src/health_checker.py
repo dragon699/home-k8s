@@ -149,8 +149,6 @@ class HealthChecker:
         if settings.health_job_id is None:
             self.update_schedule()
 
-        log.debug(f'Health checks scheduled')
-
 
     @traced()
     def update_schedule(self, span=None):

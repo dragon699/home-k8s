@@ -1,9 +1,10 @@
 from datetime import (datetime, timedelta)
 from fetch_api.src.telemetry.logging import log
 from fetch_api.settings import (settings, connectors)
+from fetch_api.src.connectors.client import ConnectorClient
 
-from common.utils.web import create_session
 from common.telemetry.src.tracing.wrappers import traced
+from common.telemetry.src.tracing.helpers import reword
 
 
 
@@ -14,24 +15,16 @@ class HealthChecker:
 
 
     def get_next_interval(self):
-        if self.connector.healthy is True:
-            return settings.connector_health_check_interval_seconds
-
-        else:
-            return settings.connector_health_retry_interval_seconds
+        return (
+            settings.connector_health_check_interval_seconds
+            if self.connector.healthy is True
+            else settings.connector_health_retry_interval_seconds
+        )
 
 
     def get_next_check_time(self):
-        return (
-            datetime.now() + timedelta(seconds=self.get_next_interval())
-        ).isoformat().split('.')[0]
-
-
-    @traced()
-    def ping_connector(self, span=None):
-        session = create_session(timeout=5)
-        response = session.get(self.connector.health_endpoint)
-        return response
+        ts = datetime.now() + timedelta(seconds=self.get_next_interval())
+        return ts.isoformat().split('.')[0]
 
 
     @traced()
@@ -39,22 +32,14 @@ class HealthChecker:
         was_healthy = self.connector.healthy
         self.connector.health_last_check = datetime.now().isoformat().split('.')[0]
 
-        get_common_attr = lambda: {
-            'connector': self.connector.name,
-            'health_endpoint': self.connector.health_endpoint,
-            'last_check': self.connector.health_last_check,
-            'next_check': self.connector.health_next_check
-        }
-
         try:
-            response = self.ping_connector()
+            response = ConnectorClient.ping(
+                connector_name=self.connector.name,
+                connector_url=self.connector.url,
+                health_endpoint=self.connector.health_endpoint
+            )
 
         except Exception as err:
-            span.set_attributes({
-                'error.connector': self.connector.name,
-                'error.message': str(err)
-            })
-
             self.connector.healthy = None
 
             if was_healthy is not None:
@@ -62,12 +47,24 @@ class HealthChecker:
 
             else:
                 self.connector.health_next_check = self.get_next_check_time()
-            
-            log.critical(f'Health check failed, connector unreachable', extra={
-                **get_common_attr(),
-                'healthy': None,
+
+            log.critical(f'Health check failed, connector is unreachable', extra={
+                'connector': self.connector.name,
+                'health_endpoint': self.connector.health_endpoint,
                 'error': str(err)
             })
+            span.set_attributes(
+                reword({
+                    'health.connector.name': self.connector.name,
+                    'health.connector.endpoint': self.connector.health_endpoint,
+                    'health.connector.error.message': str(err),
+                    'health.connector.error.type': type(err).__name__,
+                    'health.connector.last_check': self.connector.health_last_check,
+                    'health.connector.next_check': self.connector.health_next_check,
+                    'health.connector.status.current': self.connector.healthy,
+                    'health.connector.status.previous': was_healthy
+                })
+            )
 
             return None
         
@@ -75,11 +72,6 @@ class HealthChecker:
             is_healthy = response.json()['healthy']
 
         except Exception as err:
-            span.set_attributes({
-                'error.connector': self.connector.name,
-                'error.message': str(err)
-            })
-
             self.connector.healthy = None
 
             if was_healthy is not None:
@@ -88,12 +80,25 @@ class HealthChecker:
             else:
                 self.connector.health_next_check = self.get_next_check_time()
 
-            log.critical('Health check failed, connector reachable, but not functioning correctly', extra={
-                **get_common_attr(),
-                'healthy': None,
-                'status_code': response.status_code,
+            log.critical(f'Health check failed, got unexpected response', extra={
+                'connector': self.connector.name,
+                'health_endpoint': self.connector.health_endpoint,
                 'error': str(err)
             })
+            span.set_attributes(
+                reword({
+                    'health.connector.name': self.connector.name,
+                    'health.connector.endpoint': self.connector.health_endpoint,
+                    'health.connector.error.message': str(err),
+                    'health.connector.error.type': type(err).__name__,
+                    'health.connector.response.content': response.text,
+                    'health.connector.response.status_code': response.status_code,
+                    'health.connector.last_check': self.connector.health_last_check,
+                    'health.connector.next_check': self.connector.health_next_check,
+                    'health.connector.status.current': self.connector.healthy,
+                    'health.connector.status.previous': was_healthy
+                })
+            )
 
             return None
 
@@ -102,25 +107,27 @@ class HealthChecker:
                 self.connector.healthy = True
 
                 if was_healthy is not True:
+                    log.debug('Health check successful', extra={
+                        'connector': self.connector.name,
+                        'health_endpoint': self.connector.health_endpoint
+                    })
                     self.update_connector_schedule()
 
                 else:
                     self.connector.health_next_check = self.get_next_check_time()
                 
-                if was_healthy is not True:
-                    log.debug('Health check successful', extra={
-                        **get_common_attr(),
-                        'healthy': True,
-                        'status_code': response.status_code
+                span.set_attributes(
+                    reword({
+                        'health.connector.name': self.connector.name,
+                        'health.connector.endpoint': self.connector.health_endpoint,
+                        'health.connector.last_check': self.connector.health_last_check,
+                        'health.connector.next_check': self.connector.health_next_check,
+                        'health.connector.status.current': self.connector.healthy,
+                        'health.connector.status.previous': was_healthy
                     })
+                )
 
             else:
-                span.set_attributes({
-                    'error.connector': self.connector.name,
-                    'error.message': response.text,
-                    'error.status_code': response.status_code
-                })
-
                 self.connector.healthy = False
 
                 if was_healthy is not False:
@@ -130,17 +137,24 @@ class HealthChecker:
                     self.connector.health_next_check = self.get_next_check_time()
                 
                 log.critical('Health check failed', extra={
-                    **get_common_attr(),
-                    'healthy': False,
-                    'status_code': response.status_code
+                    'connector': self.connector.name,
+                    'health_endpoint': self.connector.health_endpoint,
+                    'response_status_code': response.status_code
                 })
+                span.set_attributes(
+                    reword({
+                        'health.connector.name': self.connector.name,
+                        'health.connector.endpoint': self.connector.health_endpoint,
+                        'health.connector.response.content': response.text,
+                        'health.connector.response.status_code': response.status_code,
+                        'health.connector.last_check': self.connector.health_last_check,
+                        'health.connector.next_check': self.connector.health_next_check,
+                        'health.connector.status.current': self.connector.healthy,
+                        'health.connector.status.previous': was_healthy
+                    })
+                )
 
         elif is_healthy is None:
-            span.set_attributes({
-                'error.connector': self.connector.name,
-                'error.message': response.text
-            })
-
             self.connector.healthy = None
 
             if was_healthy is not None:
@@ -149,20 +163,32 @@ class HealthChecker:
             else:
                 self.connector.health_next_check = self.get_next_check_time()
 
-            log.critical('Health check failed, connector reachable, but not functioning correctly', extra={
-                **get_common_attr(),
-                'healthy': None,
-                'status_code': response.status_code
+            log.critical(f'Health check failed, got unexpected response', extra={
+                'connector': self.connector.name,
+                'health_endpoint': self.connector.health_endpoint,
+                'response_status_code': response.status_code
             })
+            span.set_attributes(
+                reword({
+                    'health.connector.name': self.connector.name,
+                    'health.connector.endpoint': self.connector.health_endpoint,
+                    'health.connector.response.content': response.text,
+                    'health.connector.response.status_code': response.status_code,
+                    'health.connector.last_check': self.connector.health_last_check,
+                    'health.connector.next_check': self.connector.health_next_check,
+                    'health.connector.status.current': self.connector.healthy,
+                    'health.connector.status.previous': was_healthy
+                })
+            )
 
 
     @traced()
-    def create_connector_schedules(scheduler, span=None):
-        for conn_name in connectors:
-            checker = HealthChecker(scheduler, connectors[conn_name])
+    def create_connector_schedule(self, span=None):
+        log.debug(f'Scheduling health checks for {self.connector.name}')
+        self.get_connector_status()
 
-            checker.update_connector_schedule()
-            checker.get_connector_status()
+        if self.connector.health_job_id is None:
+            self.update_connector_schedule()
 
 
     @traced()
@@ -175,10 +201,7 @@ class HealthChecker:
                 pass
 
         interval_seconds = self.get_next_interval()
-
-        self.connector.health_next_check = (
-            datetime.now() + timedelta(seconds=interval_seconds)
-        ).isoformat().split('.')[0]
+        self.connector.health_next_check = self.get_next_check_time()
 
         job = self.scheduler.add_job(
             self.get_connector_status,
@@ -188,10 +211,13 @@ class HealthChecker:
         )
 
         self.connector.health_job_id = job.id
-        span.set_attributes({
-            'next_check': self.connector.health_next_check,
-            'interval_seconds': interval_seconds,
-            **(
-                {'last_check': self.connector.health_last_check} if self.connector.health_last_check else {}
-            )
-        })
+        
+        span.set_attributes(
+            reword({
+                'connector.name': self.connector.name,
+                'connector.scheduler.interval.seconds': interval_seconds,
+                'connector.scheduler.job.id': self.connector.health_job_id,
+                'health.connector.last_check': self.connector.health_last_check,
+                'health.connector.next_check': self.connector.health_next_check
+            })
+        )

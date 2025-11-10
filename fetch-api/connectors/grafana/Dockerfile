@@ -21,4 +21,4 @@ COPY common /app/common
 
 ENV PATH=/root/.local/bin:$PATH
 
-CMD ["python", "-m", "fetch_api.app"]
+CMD ["python", "-m", "connectors.grafana.app"]

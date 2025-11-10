@@ -35,7 +35,7 @@ class ConnectorSettings(BaseSettings):
     host: str
     port: int
     protocol: str = 'http'
-    endpoint: str | None = None
+    url: str | None = None
 
     health_endpoint: str | None = None
     health_job_id: str | None = None
@@ -45,11 +45,11 @@ class ConnectorSettings(BaseSettings):
 
 
     def model_post_init(self, __context):
-        if not self.endpoint:
-            self.endpoint = f'{self.protocol}://{self.host}:{self.port}'
+        if not self.url:
+            self.url = f'{self.protocol}://{self.host}:{self.port}'
 
         if not self.health_endpoint:
-            self.health_endpoint = f'{self.endpoint}/api/health'
+            self.health_endpoint = f'{self.url}/api/health'
 
 
 settings, connectors = SettingsLoader().load()
