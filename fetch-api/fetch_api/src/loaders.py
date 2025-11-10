@@ -62,8 +62,13 @@ class SettingsLoader:
 class RoutesLoader:
     @staticmethod
     def load(app, settings):
-        from fetch_api.src.routes import (internal)
+        from fetch_api.src.routes import internal
 
         app.include_router(internal.router, prefix="/api")
-
         log.info(f'Listening for incoming query requests on {settings.listen_host}:{settings.listen_port} and forwarding to upstream connectors')
+
+        if 'grafana' in settings.connectors:
+            from fetch_api.src.routes import grafana
+
+            app.include_router(grafana.router, prefix="/grafana")
+            log.info(f'Enabling Grafana routes at /grafana')
