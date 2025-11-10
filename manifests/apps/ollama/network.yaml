@@ -1,0 +1,28 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ollama
+  namespace: ollama
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-home
+    kubernetes.io/ingress.class: nginx
+  labels:
+    app: ollama
+    env: home
+spec:
+  tls:
+  - hosts:
+    - ai.k8s.iaminyourpc.xyz
+    secretName: tls-ai-k8s-iaminyourpc-xyz
+  rules:
+  - host: ai.k8s.iaminyourpc.xyz
+    http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: ollama
+            port:
+              number: 11434
