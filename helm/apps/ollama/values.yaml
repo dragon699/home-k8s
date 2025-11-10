@@ -4,4 +4,5 @@ ollama:
     draEnabled: false
 
 persistentVolume:
+  enabled: true
   size: 256Gi
