@@ -53,3 +53,4 @@ class ConnectorSettings(BaseSettings):
 
 
 settings, connectors = SettingsLoader().load()
+
