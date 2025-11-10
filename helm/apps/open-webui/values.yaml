@@ -1,0 +1,15 @@
+replicaCount: 1
+
+ollama:
+  enabled: false
+
+ollamaUrls:
+  - http://ollama.ollama.svc:11434
+
+pipelines:
+  enabled: false
+
+enableOpenaiApi: false
+
+persistence:
+  enabled: true
