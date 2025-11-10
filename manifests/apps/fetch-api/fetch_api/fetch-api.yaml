@@ -38,8 +38,6 @@ spec:
             - containerPort: 8069
           command: ["python", "-m", "fetch_api.app"]
           envFrom:
-            - secretRef:
-                name: data-fetch-api
             - configMapRef:
                 name: config-fetch-api
           livenessProbe:
