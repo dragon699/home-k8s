@@ -62,7 +62,4 @@ def get_car_battery():
 
 
 
-client = ConnectorClient(
-    connector_name=connectors['grafana'].name,
-    connector_url=connectors['grafana'].url
-)
+client = ConnectorClient(connectors['grafana'].name)
