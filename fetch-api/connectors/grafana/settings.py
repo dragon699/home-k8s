@@ -1,6 +1,6 @@
+from pydantic_settings import BaseSettings
 from connectors.grafana.src.telemetry.logging import logger
 from connectors.grafana.src.loaders import SettingsLoader
-from pydantic_settings import BaseSettings
 
 
 

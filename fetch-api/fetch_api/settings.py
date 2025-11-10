@@ -1,6 +1,6 @@
+from pydantic_settings import BaseSettings
 from fetch_api.src.telemetry.logging import logger
 from fetch_api.src.loaders import SettingsLoader
-from pydantic_settings import BaseSettings
 
 
 
