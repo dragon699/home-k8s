@@ -9,7 +9,7 @@ metadata:
     env: home
 spec:
   replicas: 1
-  revisionHistoryLimit: 1
+  revisionHistoryLimit: 0
   selector:
     matchLabels:
       app: fetch-api
