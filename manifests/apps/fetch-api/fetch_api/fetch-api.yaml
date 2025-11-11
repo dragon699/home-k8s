@@ -28,7 +28,7 @@ spec:
             defaultMode: 0755
       containers:
         - name: fetch-api
-          image: ghcr.io/dragon699/home-k8s/fetch-api/fetch-api:0.8.2
+          image: ghcr.io/dragon699/home-k8s/fetch-api/fetch-api:0.9.0
           imagePullPolicy: Always
           volumeMounts:
             - name: script-health-probe
