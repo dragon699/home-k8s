@@ -108,7 +108,7 @@ def fetch_car_battery(request: GrafanaRequest):
                         json={
                             'instructions_template': 'default',
                             'prompt': '{}\n\n{}'.format(
-                                'How much battery does my car have, do I need to charge soon?',
+                                'How much battery does my Tesla have, do I need to charge soon?',
                                 json.dumps(query_result['items'])
                             )
                         }
