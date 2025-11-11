@@ -14,8 +14,8 @@ class Processor:
 
         result += [{
             'answer': answer,
-            'duration_seconds': int(response.response_metadata['total_duration']) / 1_000_000_000,
-            'model_provider': response.response_metadata['model_provider'],
+            'duration_seconds': round((int(response.response_metadata['total_duration']) / 1_000_000_000), 1),
+            'provider': response.response_metadata['model_provider'],
             'model': response.response_metadata['model_name']
         }]
 
