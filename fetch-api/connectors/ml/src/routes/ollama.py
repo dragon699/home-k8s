@@ -3,6 +3,7 @@ from connectors.ml.src.ollama.querier import querier
 from connectors.ml.src.telemetry.logging import log
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
+
 from connectors.ml.src.schemas.ollama import RequestAsk
 
 

@@ -72,3 +72,9 @@ class RoutesLoader:
 
             app.include_router(grafana.router, prefix="/grafana")
             log.info(f'Enabling Grafana routes at /grafana')
+
+        if 'ml' in settings.connectors:
+            from fetch_api.src.routes import ml
+
+            app.include_router(ml.router, prefix="/ml")
+            log.info(f'Enabling ML/AI routes at /ml')
