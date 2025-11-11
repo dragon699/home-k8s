@@ -33,7 +33,7 @@ def fetch_argocd_apps(request: GrafanaRequest):
                 try:
                     session = create_session(timeout=180)
                     response = session.post(
-                        f'{settings.listen_host}:{settings.listen_port}/ml/ask',
+                        f'http://{settings.listen_host}:{settings.listen_port}/ml/ask',
                         headers={'Content-Type': 'application/json'},
                         json={
                             'instructions_template': 'default',
@@ -55,7 +55,7 @@ def fetch_argocd_apps(request: GrafanaRequest):
                     })
 
                 except Exception as ai_err:
-                    log.error('AI summary fetch failed', extra={
+                    log.warning('AI summary fetch failed', extra={
                         'connector': 'grafana',
                         'endpoint': '/grafana/argocd-apps',
                         'ai_endpoint': '/ml/ask',
