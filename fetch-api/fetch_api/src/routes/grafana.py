@@ -45,7 +45,7 @@ def fetch_argocd_apps(request: GrafanaRequest):
                     )
 
                     assert response.status_code == 200
-                    query_result['ai_summary'] = response.json()
+                    query_result['ai_summary'] = response.json()['items'][0]
 
                     log.debug('Fetched AI summary', extra={
                         'connector': 'grafana',
@@ -90,20 +90,64 @@ def fetch_car_battery(request: GrafanaRequest):
         result = client.get('postgresql/car-battery')
 
         assert result.status_code == 200
+        query_result = result.json()
 
         log.debug('Fetch completed', extra={
             'connector': 'grafana',
-            'endpoint': '/car-battery',
+            'endpoint': '/grafana/car-battery',
             'destination_endpoint': '/postgresql/car-battery'
         })
 
-        return JSONResponse(content=result.json(), status_code=200)
+        if request.ai:
+            if 'ml' in connectors:
+                try:
+                    session = create_session(timeout=180)
+                    response = session.post(
+                        f'http://{settings.listen_host}:{settings.listen_port}/ml/ask',
+                        headers={'Content-Type': 'application/json'},
+                        json={
+                            'instructions_template': 'default',
+                            'prompt': '{}\n\n{}'.format(
+                                'How much battery does my car have, do I need to charge soon?',
+                                json.dumps(query_result['items'])
+                            )
+                        }
+                    )
+
+                    assert response.status_code == 200
+                    query_result['ai_summary'] = response.json()['items'][0]
+
+                    log.debug('Fetched AI summary', extra={
+                        'connector': 'grafana',
+                        'endpoint': '/grafana/car-battery',
+                        'ai_endpoint': '/ml/ask',
+                        'destination_endpoint': '/postgresql/car-battery'
+                    })
+
+                except Exception as ai_err:
+                    log.warning('AI summary fetch failed', extra={
+                        'connector': 'grafana',
+                        'endpoint': '/grafana/car-battery',
+                        'ai_endpoint': '/ml/ask',
+                        'destination_endpoint': '/postgresql/car-battery',
+                        'error': str(ai_err)
+                    })
+
+            else:
+                log.warning('Skipping AI processing, as ML connector is not enabled', extra={
+                    'connector': 'grafana',
+                    'endpoint': '/grafana/car-battery',
+                    'ai_endpoint': '/ml/ask',
+                    'destination_endpoint': '/postgresql/car-battery'
+                })
+
+        return JSONResponse(content=query_result, status_code=200)
 
     except Exception as err:
         log.error('Fetch failed', extra={
             'connector': 'grafana',
-            'endpoint': '/argocd-apps',
-            'destination_endpoint': '/prometheus/argocd-apps',
+            'endpoint': '/grafana/car-battery',
+            'destination_endpoint': '/postgresql/car-battery',
             'error': str(err)
         })
 
