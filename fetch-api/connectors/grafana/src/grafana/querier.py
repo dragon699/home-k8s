@@ -111,7 +111,8 @@ class Querier:
         except Exception as err:
             span.set_attributes({
                 'querier.query.status': 'failed',
-                'querier.error.message': str(err)
+                'querier.error.message': str(err),
+                'querier.error.type': type(err).__name__
             })
 
 

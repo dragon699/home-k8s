@@ -1,0 +1,53 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: connector-ml
+  namespace: fetch-api
+  labels:
+    app: connector-ml
+    env: home
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: connector-ml
+  template:
+    metadata:
+      labels:
+        app: connector-ml
+        env: home
+    spec:
+      restartPolicy: Always
+      imagePullSecrets:
+        - name: registry-fetch-api
+      volumes:
+        - name: script-health-probe
+          configMap:
+            name: script-health-probe
+            defaultMode: 0755
+      containers:
+        - name: connector-ml
+          image: ghcr.io/dragon699/home-k8s/fetch-api/connectors/ml:0.0.0
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: script-health-probe
+              mountPath: /home/health-probe.py
+              subPath: health-probe.py
+          ports:
+            - containerPort: 9069
+          command: ["python", "-m", "connectors.ml.app"]
+          envFrom:
+            - secretRef:
+                name: data-connector-ml
+            - configMapRef:
+                name: config-connector-ml
+          livenessProbe:
+            exec:
+              command:
+                - python
+                - /home/health-probe.py
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3

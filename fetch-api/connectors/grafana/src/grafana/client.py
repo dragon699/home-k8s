@@ -118,6 +118,7 @@ class GrafanaClient:
         if self.authenticate():
             span.set_attributes(
                 reword({
+                    'grafana.operation': 'get_request',
                     'grafana.method': 'GET',
                     'grafana.request.body': data,
                     'grafana.url': settings.url,
@@ -148,6 +149,7 @@ class GrafanaClient:
         if self.authenticate():
             span.set_attributes(
                 reword({
+                    'grafana.operation': 'post_request',
                     'grafana.method': 'POST',
                     'grafana.request.body': data,
                     'grafana.url': settings.url,

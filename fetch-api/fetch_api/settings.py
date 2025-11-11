@@ -12,7 +12,7 @@ class FetchAPISettings(BaseSettings):
     otel_service_name: str = 'fetch-api'
     otel_service_namespace: str = 'fetch-api'
     otel_service_version: str = 'undefined'
-    otlp_endpoint_grpc: str = 'grpc.k8s.iaminyourpc.xyz:80'
+    otlp_endpoint_grpc: str = 'grafana-alloy.monitoring.svc:4317'
 
     log_level: str = 'info'
     log_format: str = 'json'

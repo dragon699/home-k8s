@@ -1,27 +1,23 @@
 from pydantic_settings import BaseSettings
-from connectors.grafana.src.telemetry.logging import logger
-from connectors.grafana.src.loaders import SettingsLoader
+from connectors.ml.src.telemetry.logging import logger
+from connectors.ml.src.loaders import SettingsLoader
 
 
 
 class Settings(BaseSettings):
-    name: str = 'connector-grafana'
+    name: str = 'connector-ml'
     listen_host: str = '0.0.0.0'
-    listen_port: int = 8080
+    listen_port: int = 8070
 
     url: str
-    sa_token: str
 
-    otel_service_name: str = 'connector-grafana'
+    otel_service_name: str = 'connector-ml'
     otel_service_namespace: str = 'fetch-api'
     otel_service_version: str = 'undefined'
     otlp_endpoint_grpc: str = 'grafana-alloy.monitoring.svc:4317'
 
     log_level: str = 'info'
     log_format: str = 'json'
-
-    auth_endpoint: str | None = None
-    authenticated: bool = False
 
     health_endpoint: str | None = None
     health_job_id: str | None = None
@@ -32,10 +28,10 @@ class Settings(BaseSettings):
     health_check_interval_seconds: int = 180
     health_retry_interval_seconds: int = 15
 
-    querier_templates_dir: str = 'connectors/grafana/templates'
-    querier_default_endpoint: str = 'api/ds/query'
-    querier_ds_uid_postgresql: str = 'internal-teslamate'
-    querier_ds_uid_prometheus: str = 'internal-victoriametrics'
+    instructions_template_path: str = 'connectors/ml/templates/instructions.yaml'
+
+    default_model: str = 'mistral:7b'
+    default_keep_alive_minutes: int = 15
 
 
     def model_post_init(self, __context):
@@ -48,11 +44,7 @@ class Settings(BaseSettings):
             self.url = self.url.rstrip('/')
 
         if not self.health_endpoint:
-            self.health_endpoint = f'{self.url}/api/health'
-
-        if not self.auth_endpoint:
-            self.auth_endpoint = f'{self.url}/api/org'
+            self.health_endpoint = self.url
 
 
 settings = SettingsLoader.load()
-

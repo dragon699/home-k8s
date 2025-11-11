@@ -1,3 +1,4 @@
+pyyaml
 python-json-logger
 opentelemetry-sdk
 opentelemetry-api
@@ -7,11 +8,8 @@ opentelemetry-instrumentation
 opentelemetry-instrumentation-fastapi
 opentelemetry-instrumentation-requests
 opentelemetry-instrumentation-logging
-
 pydantic-settings
 apscheduler
-
 requests
-
 uvicorn
 fastapi
