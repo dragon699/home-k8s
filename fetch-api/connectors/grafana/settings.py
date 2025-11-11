@@ -55,4 +55,3 @@ class Settings(BaseSettings):
 
 
 settings = SettingsLoader.load()
-
