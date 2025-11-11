@@ -5,7 +5,7 @@ from fetch_api.src.client import ConnectorClient
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 
-from fetch_api.src.schemas.ml import MLRequestAsk
+from fetch_api.src.schemas.ml import MLRequest
 
 
 router = APIRouter()
@@ -13,7 +13,7 @@ client = ConnectorClient(connectors['ml'].name)
 
 
 @router.post('/ask')
-def get_argocd_apps(request: MLRequestAsk):
+def ask_ml(request: MLRequest):
     try:
         result = client.post(
             endpoint='ask',
