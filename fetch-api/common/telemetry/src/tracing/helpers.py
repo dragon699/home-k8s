@@ -24,7 +24,7 @@ def reword(attributes: dict):
             reworded[a_k] = reword_map[a_k][a_v]
 
         for r_k, r_v in reword_map.items():
-            if (r_k.startswith('__')) and (r_k[2:] in a_k) and (r_v == 'json'):
+            if (r_k.startswith('__')) and (r_k[2:] in a_k or r_k[2:] == a_k) and (r_v == 'json'):
                 if isinstance(a_v, str):
                     try:
                         reworded[a_k] = json.dumps(json.loads(a_v), indent=4)

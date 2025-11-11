@@ -73,6 +73,13 @@ jobs:
       uses: actions/checkout@v5
       with:
         fetch-depth: 0
+        ref: main
+
+    - name: Ensure latest code
+      run: |
+        git config user.name "ActionsBot"
+        git fetch origin main
+        git pull --rebase origin main
 
     - name: Update ${{ env.APP_NAME }} manifests
       uses: mikefarah/yq@master
@@ -85,3 +92,4 @@ jobs:
         commit_message: "connector-ml: Update to v${{ needs.package.outputs.version }}"
         commit_user_name: ActionsBot
         file_pattern: ${{ env.COMPONENT_DEPLOYMENT_FILE }}
+        push_options: --force-with-lease
