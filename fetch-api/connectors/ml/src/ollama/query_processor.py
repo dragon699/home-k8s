@@ -19,6 +19,11 @@ class Processor:
             'model': response.response_metadata['model_name']
         }]
 
+        span.set_attributes({
+            'processor.result.total_items': len(result),
+            'processor.result.items': result
+        })
+
         return {
             'total_items': len(result),
             'items': result

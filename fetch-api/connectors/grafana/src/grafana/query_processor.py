@@ -26,6 +26,11 @@ class Processor:
                 'usable_battery_percentage': query_response['results']['query']['frames'][0]['data']['values'][0][0]
             }]
 
+        span.set_attributes({
+            'processor.result.total_items': len(result),
+            'processor.result.items': result
+        })
+
         return {
             'total_items': len(result),
             'items': result
