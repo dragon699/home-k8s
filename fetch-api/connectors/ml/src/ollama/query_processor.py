@@ -5,14 +5,19 @@ from common.telemetry.src.tracing.wrappers import traced
 class Processor:
     @staticmethod
     @traced()
-    def process(query_response: str, span=None):
+    def process(response, span=None):
         result = []
 
-        query_response = query_response.rstrip('"').lstrip('"')
-        if query_response.startswith(' '):
-            query_response = query_response[1:]
+        answer = response.content.rstrip('"').lstrip('"')
+        if answer.startswith(' '):
+            answer = answer[1:]
 
-        result += [{'answer': query_response}]
+        result += [{
+            'answer': answer,
+            'duration_seconds': int(response.response_metadata['total_duration']) / 1_000_000_000,
+            'model_provider': response.response_metadata['model_provider'],
+            'model': response.response_metadata['model_name']
+        }]
 
         return {
             'total_items': len(result),

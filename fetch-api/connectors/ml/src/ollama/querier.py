@@ -45,14 +45,14 @@ class Querier:
             full_instructions = self.fetch(instructions, instructions_template)
             payload_prompt, payload_model = self.render(prompt, model, full_instructions)
             response = self.send(payload_prompt, payload_model)
-            result = self.process(response.content)
+            result = self.process(response)
 
             span.set_attributes(
                 reword({
                     'querier.query.status': 'successful',
                     'querier.query.prompt': payload_prompt,
                     'querier.query.model': payload_model,
-                    'querier.query.response': result
+                    'querier.query.response': response.content
                 })
             )
 
@@ -153,8 +153,8 @@ class Querier:
         
 
     @traced()
-    def process(self, query_response: str, span=None):
-        return Processor.process(query_response)
+    def process(self, response: str, span=None):
+        return Processor.process(response)
 
 
 querier = Querier(ollama_client)
