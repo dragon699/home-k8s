@@ -65,7 +65,6 @@ class RoutesLoader:
         from fetch_api.src.routes import internal
 
         app.include_router(internal.router, prefix="/api")
-        log.info(f'Listening for incoming query requests on {settings.listen_host}:{settings.listen_port} and forwarding to upstream connectors')
 
         if 'grafana' in settings.connectors:
             from fetch_api.src.routes import grafana
@@ -77,4 +76,6 @@ class RoutesLoader:
             from fetch_api.src.routes import ml
 
             app.include_router(ml.router, prefix="/ml")
-            log.info(f'Enabling ML/AI routes at /ml')
+            log.info(f'Enabling AI routes at /ml')
+
+        log.info(f'Listening for incoming query requests on {settings.listen_host}:{settings.listen_port} and forwarding to upstream connectors')
