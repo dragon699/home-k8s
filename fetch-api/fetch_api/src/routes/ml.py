@@ -15,7 +15,10 @@ client = ConnectorClient(connectors['ml'].name)
 @router.post('/ask')
 def get_argocd_apps(request: MLRequestAsk):
     try:
-        result = client.post('ask')
+        result = client.post(
+            endpoint='ask',
+            data=request.model_dump()
+        )
 
         assert result.status_code == 200
 
