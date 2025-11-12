@@ -10,6 +10,7 @@ class FetchAPISettings(BaseSettings):
     name: str = 'fetch-api'
     listen_host: str = '0.0.0.0'
     listen_port: int = 8079
+    listen_url: str | None = None
 
     otel_service_name: str = 'fetch-api'
     otel_service_namespace: str = 'fetch-api'
@@ -26,6 +27,9 @@ class FetchAPISettings(BaseSettings):
 
 
     def model_post_init(self, __context):
+        if not self.listen_url:
+            self.listen_url = f'http://{self.listen_host}:{self.listen_port}'
+
         logger.update_settings(
             log_level=self.log_level,
             log_format=self.log_format

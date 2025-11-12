@@ -13,31 +13,34 @@ client = ConnectorClient(connectors['grafana'].name)
 @router.post('/argocd-apps')
 def fetch_argocd_apps(request: GrafanaRequest):
     return APIProcessor.process_request(
-        client=client,
         request=request,
-        endpoint='/grafana/argocd-apps',
+        client=client,
+        upstream_method='GET',
         upstream_endpoint='prometheus/argocd-apps',
-        ai_prompt='How are my ArgoCD apps doing?'
+        ai_prompt='How are my ArgoCD apps doing?',
+        ai_instructions_template='default'
     )
 
 
 @router.post('/car-battery')
 def fetch_car_battery(request: GrafanaRequest):
     return APIProcessor.process_request(
-        client=client,
         request=request,
-        endpoint='/grafana/car-battery',
+        client=client,
+        upstream_method='GET',
         upstream_endpoint='postgresql/car-battery',
-        ai_prompt='How much battery does my Tesla have, do I have to charge soon?'
+        ai_prompt='How much battery does my Tesla have, do I have to charge soon?',
+        ai_instructions_template='default'
     )
 
 
 @router.post('/car-last-location')
 def fetch_car_last_location(request: GrafanaRequest):
     return APIProcessor.process_request(
-        client=client,
         request=request,
-        endpoint='/grafana/car-last-location',
+        client=client,
+        upstream_method='GET',
         upstream_endpoint='postgresql/car-last-location',
-        ai_prompt='Where was my car seen last?'
+        ai_prompt='Where was my car seen last?',
+        ai_instructions_template='default'
     )

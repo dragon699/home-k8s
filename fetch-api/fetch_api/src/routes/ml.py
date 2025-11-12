@@ -2,8 +2,8 @@ from common.messages.api import client_responses
 from fetch_api.settings import connectors
 from fetch_api.src.telemetry.logging import log
 from fetch_api.src.client import ConnectorClient
+from fetch_api.src.api_processor import APIProcessor
 from fastapi import APIRouter
-from fastapi.responses import JSONResponse
 
 from fetch_api.src.schemas.ml import MLRequest
 
@@ -13,29 +13,10 @@ client = ConnectorClient(connectors['ml'].name)
 
 
 @router.post('/ask')
-def ask_ml(request: MLRequest):
-    try:
-        result = client.post(
-            endpoint='ask',
-            data=request.model_dump()
-        )
-
-        assert result.status_code == 200
-
-        log.debug('Fetch completed', extra={
-            'connector': 'ml',
-            'endpoint': '/ml/ask',
-            'upstream_endpoint': '/ask'
-        })
-
-        return JSONResponse(content=result.json(), status_code=200)
-
-    except Exception as err:
-        log.error('Fetch failed', extra={
-            'connector': 'ml',
-            'endpoint': '/ml/ask',
-            'upstream_endpoint': '/ask',
-            'error': str(err)
-        })
-
-        return JSONResponse(content=client_responses['upstream-error'], status_code=502)
+def fetch_ai_summary(request: MLRequest):
+    return APIProcessor.process_request(
+        request=request,
+        client=client,
+        upstream_method='POST',
+        upstream_endpoint='ask'
+    )

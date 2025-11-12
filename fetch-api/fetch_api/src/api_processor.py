@@ -2,7 +2,6 @@ import json
 from common.utils.web import create_session
 from common.messages.api import client_responses
 from common.telemetry.src.tracing.wrappers import traced
-from common.telemetry.src.tracing.helpers import reword
 from fetch_api.settings import (settings, connectors)
 from fetch_api.src.telemetry.logging import log
 from fetch_api.src.client import ConnectorClient
@@ -13,28 +12,46 @@ from fastapi.responses import JSONResponse
 class APIProcessor:
     @staticmethod
     @traced()
-    def process_request(client: ConnectorClient, request, endpoint: str, upstream_endpoint: str, ai_prompt: str, span=None):
+    def process_request(
+        request,
+        client: ConnectorClient,
+        upstream_method: str,
+        upstream_endpoint: str,
+        ai_prompt: str=None,
+        ai_instructions_template: str='default',
+        span=None
+    ):
+        common_log_attributes = {
+            'connector': client.connector_name,
+            'endpoint': request.scope['path'],
+            'upstream_endpoint': upstream_endpoint
+        }
+
         try:
-            result = client.get(upstream_endpoint)
-            
-            assert result.status_code == 200
+            if upstream_method == 'GET':
+                result = client.get(upstream_endpoint)
+
+            elif upstream_method == 'POST':
+                result = client.post(
+                    endpoint=upstream_endpoint,
+                    data=request.model_dump()
+                )
+
+            assert result.status_code in (200, 201)
             query_result = result.json()
 
-            log.debug('Fetch completed', extra={
-                'connector': 'grafana',
-                'endpoint': endpoint,
-                'upstream_endpoint': upstream_endpoint
-            })
+            log.debug('Fetch completed', extra=common_log_attributes)
 
-            if request.ai:
+            if client.connector_name != 'ml' and request.ai:
                 if 'ml' in connectors:
+                    from fetch_api.src.routes.ml import client as ml_client
+                    upstream_ml_endpoint = 'ask'
+
                     try:
-                        session = create_session(timeout=180)
-                        response = session.post(
-                            f'http://{settings.listen_host}:{settings.listen_port}/ml/ask',
-                            headers={'Content-Type': 'application/json'},
-                            json={
-                                'instructions_template': 'default',
+                        response = ml_client.post(
+                            endpoint=upstream_ml_endpoint,
+                            data={
+                                'instructions_template': ai_instructions_template,
                                 'prompt': '{}\n\n{}'.format(
                                     ai_prompt,
                                     json.dumps(query_result['items'])
@@ -46,36 +63,28 @@ class APIProcessor:
                         query_result['ai_summary'] = response.json()['items'][0]
 
                         log.debug('Fetched AI summary', extra={
-                            'connector': 'grafana',
-                            'endpoint': endpoint,
-                            'ml_endpoint': '/ml/ask',
-                            'upstream_endpoint': upstream_endpoint
+                            **common_log_attributes,
+                            'upstream_ml_endpoint': upstream_ml_endpoint
                         })
 
                     except Exception as ai_err:
                         log.warning('AI summary fetch failed', extra={
-                            'connector': 'grafana',
-                            'endpoint': endpoint,
-                            'ml_endpoint': '/ml/ask',
-                            'upstream_endpoint': upstream_endpoint,
+                            **common_log_attributes,
+                            'upstream_ml_endpoint': upstream_ml_endpoint,
                             'error': str(ai_err)
                         })
 
                 else:
                     log.warning('Skipping AI processing, as ML connector is not enabled', extra={
-                        'connector': 'grafana',
-                        'endpoint': endpoint,
-                        'ml_endpoint': '/ml/ask',
-                        'upstream_endpoint': upstream_endpoint
+                        **common_log_attributes,
+                        'upstream_ml_endpoint': upstream_ml_endpoint
                     })
 
             return JSONResponse(content=query_result, status_code=200)
 
         except Exception as err:
             log.error('Fetch failed', extra={
-                'connector': 'grafana',
-                'endpoint': endpoint,
-                'upstream_endpoint': upstream_endpoint,
+                **common_log_attributes,
                 'error': str(err)
             })
 
