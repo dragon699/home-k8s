@@ -2,5 +2,5 @@ from pydantic import BaseModel
 
 
 
-class GrafanaRequest(BaseModel):
+class GrafanaBody(BaseModel):
     ai: bool = False

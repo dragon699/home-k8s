@@ -14,6 +14,7 @@ class APIProcessor:
     @traced()
     def process_request(
         request,
+        body,
         client: ConnectorClient,
         upstream_method: str,
         upstream_endpoint: str,
@@ -34,7 +35,7 @@ class APIProcessor:
             elif upstream_method == 'POST':
                 result = client.post(
                     endpoint=upstream_endpoint,
-                    data=request.model_dump()
+                    data=body.model_dump()
                 )
 
             assert result.status_code in (200, 201)
@@ -42,7 +43,7 @@ class APIProcessor:
 
             log.debug('Fetch completed', extra=common_log_attributes)
 
-            if client.connector_name != 'ml' and request.ai:
+            if client.connector_name != 'ml' and body.ai:
                 if 'ml' in connectors:
                     from fetch_api.src.routes.ml import client as ml_client
                     upstream_ml_endpoint = 'ask'

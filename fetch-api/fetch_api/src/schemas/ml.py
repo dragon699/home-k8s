@@ -2,7 +2,7 @@ from pydantic import BaseModel
 
 
 
-class MLRequest(BaseModel):
+class MLBody(BaseModel):
     prompt: str
     model: str | None = None
     instructions: str | None = None
