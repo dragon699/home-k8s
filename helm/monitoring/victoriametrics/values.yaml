@@ -47,11 +47,9 @@ vmagent:
       memory: 4Gi
   extraArgs:
   - '--maxLabelsPerTimeseries=200'
-  - '--promscrape.maxScrapeSize=32MB'
-  - '--promscrape.maxScrapeBodySize=32MB'
   - '--promscrape.dropOriginalLabels=true'
-  - '--promscrape.suppressScrapeErrors=false'
-  - '--promscrape.configCheckInterval=5m'
+  - '--memory.allowedPercent=60'
+  - '--promscrape.seriesLimitPerTarget=50000'
   existingScrapeConfigMap: config-victoriametrics-jobs
 
 vmauth:
