@@ -14,10 +14,10 @@ WORKDIR /app
 
 COPY --from=builder /root/.local /root/.local
 
+COPY common /app/common
 COPY connectors/grafana/src /app/connectors/grafana/src
 COPY connectors/grafana/templates /app/connectors/grafana/templates
-COPY connectors/grafana/*.py /app/connectors/grafana/
-COPY common /app/common
+COPY connectors/grafana/*.py connectors/grafana/VERSION /app/connectors/grafana/
 
 ENV PATH=/root/.local/bin:$PATH
 

@@ -17,10 +17,10 @@ WORKDIR /app
 
 COPY --from=builder /root/.local /root/.local
 
+COPY common /app/common
 COPY connectors/ml/src /app/connectors/ml/src
 COPY connectors/ml/templates /app/connectors/ml/templates
-COPY connectors/ml/*.py /app/connectors/ml/
-COPY common /app/common
+COPY connectors/ml/*.py connectors/ml/VERSION /app/connectors/ml/
 
 ENV PATH=/root/.local/bin:$PATH
 

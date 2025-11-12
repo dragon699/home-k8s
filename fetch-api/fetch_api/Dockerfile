@@ -14,9 +14,9 @@ WORKDIR /app
 
 COPY --from=builder /root/.local /root/.local
 
-COPY fetch_api/src /app/fetch_api/src
-COPY fetch_api/*.py /app/fetch_api/
 COPY common /app/common
+COPY fetch_api/src /app/fetch_api/src
+COPY fetch_api/*.py fetch_api/VERSION /app/fetch_api/
 
 ENV PATH=/root/.local/bin:$PATH
 
