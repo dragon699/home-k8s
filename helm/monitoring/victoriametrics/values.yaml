@@ -17,6 +17,8 @@ vminsert:
       memory: 1Gi
   extraArgs:
   - '--maxLabelsPerTimeseries=200'
+  - '--insert.maxQueueDuration=1s'
+  - '--maxConcurrentInserts=8'
 
 vmstorage:
   resources:
@@ -29,6 +31,11 @@ vmstorage:
   persistence:
     enabled: true
     size: 20Gi
+  extraArgs:
+  - '--retentionPeriod=30d'
+  - '--search.maxUniqueTimeseries=300000'
+  - '--storage.cacheSizeIndexDBDataBlocks=64MB'
+  - '--storage.cacheSizeIndexDBTagFilters=32MB'
 
 vmagent:
   resources:
@@ -40,6 +47,9 @@ vmagent:
       memory: 4Gi
   extraArgs:
   - '--maxLabelsPerTimeseries=200'
+  - '--promscrape.maxScrapeSize=32MB'
+  - '--promscrape.maxScrapeInterval=30s'
+  - '--promscrape.dropOriginalLabels=true'
   existingScrapeConfigMap: config-victoriametrics-jobs
 
 vmauth:
