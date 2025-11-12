@@ -47,6 +47,8 @@ scrape_configs:
     regex: (.+)
     target_label: __metrics_path__
     replacement: /api/v1/nodes/$1/proxy/metrics
+  - action: labeldrop
+    regex: "feature_node_kubernetes_io_.*|nvidia_com_.*"
   - target_label: cluster
     replacement: home-k8s
 
@@ -69,6 +71,8 @@ scrape_configs:
     regex: (.+)
     target_label: __metrics_path__
     replacement: /api/v1/nodes/$1/proxy/metrics/cadvisor
+  - action: labeldrop
+    regex: "feature_node_kubernetes_io_.*|nvidia_com_.*"
   - target_label: cluster
     replacement: home-k8s
 
@@ -160,6 +164,9 @@ scrape_configs:
   - source_labels: [__meta_kubernetes_pod_phase]
     regex: Pending|Succeeded|Failed|Completed
     action: drop
+  - source_labels: [__meta_kubernetes_pod_container_port_name]
+    regex: metrics|http-metrics
+    action: keep
   - source_labels: [__meta_kubernetes_pod_node_name]
     action: replace
     target_label: instance
