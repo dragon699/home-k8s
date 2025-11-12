@@ -5,5 +5,12 @@
             "id": "teslamate-usable-battery-level",
             "query": "SELECT * FROM ((SELECT usable_battery_level, date FROM positions WHERE car_id = 1 AND usable_battery_level IS NOT NULL ORDER BY date DESC LIMIT 1) UNION (SELECT usable_battery_level, date FROM charges c JOIN charging_processes p ON p.id = c.charging_process_id WHERE p.car_id = 1 AND usable_battery_level IS NOT NULL ORDER BY date DESC LIMIT 1)) AS last_usable_battery_level LIMIT 1;"
         }
+    },
+    {
+        "endpoint": "car-last-location",
+        "query": {
+            "id": "teslamate-last-seen-location",
+            "query": "SELECT COALESCE(a.city, a.neighbourhood, '') AS city, COALESCE(g.name, array_to_string(((string_to_array(a.display_name, ', ', ''))[0:2]), ', ')) AS address, l.end_date AS \"time\" FROM (SELECT address_id, geofence_id, start_date AS end_date FROM charging_processes WHERE car_id = 1 AND end_date IS NOT NULL UNION SELECT end_address_id AS address_id, end_geofence_id AS geofence_id, end_date FROM drives WHERE car_id = 1 AND end_date IS NOT NULL) l INNER JOIN addresses a ON l.address_id = a.id LEFT JOIN geofences g ON l.geofence_id = g.id ORDER BY l.end_date DESC LIMIT 1;"
+        }
     }
 ]

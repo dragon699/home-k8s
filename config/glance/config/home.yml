@@ -27,29 +27,6 @@
       basic-auth:
         username: ${TESLAMATE_USER}
         password: ${TESLAMATE_PASSWORD}
-  - type: monitor
-    hide-header: true
-    cache: 5s
-    sites:
-    - title: jellyfin
-      url: https://watch.k8s.iaminyourpc.xyz
-      icon: di:jellyfin
-      timeout: 10s
-    - title: immich
-      url: https://photos.k8s.iaminyourpc.xyz
-      icon: di:immich
-      timeout: 10s
-    - title: pihole
-      url: http://pihole.k8s.iaminyourpc.xyz/admin
-      icon: https://upload.wikimedia.org/wikipedia/commons/0/00/Pi-hole_Logo.png
-      timeout: 10s
-    - title: teslamate
-      url: http://car.k8s.iaminyourpc.xyz
-      icon: https://www.pngplay.com/wp-content/uploads/13/Tesla-Logo-PNG-Photo-Image.png
-      timeout: 10s
-      basic-auth:
-        username: ${TESLAMATE_USER}
-        password: ${TESLAMATE_PASSWORD}
   - type: group
     widgets:
     - type: monitor
@@ -117,106 +94,137 @@
     - type: calendar
       hide-header: true
       first-day-of-week: monday
-    - type: calendar
-      hide-header: true
-      first-day-of-week: monday
-    - type: calendar
-      hide-header: true
-      first-day-of-week: monday
-    - type: calendar
-      hide-header: true
-      first-day-of-week: monday
-    - type: calendar
-      hide-header: true
-      first-day-of-week: monday
-    - type: calendar
-      hide-header: true
-      first-day-of-week: monday
-    - type: calendar
-      hide-header: true
-      first-day-of-week: monday
-    # - type: repository
-    #   repository: dragon699/home-k8s
-    #   pull-requests-limit: 1
-    #   issues-limit: 1
-    #   commits-limit: 3
-    #   token: ${GITHUB_PAT}
     - type: custom-api
-      title: c/tesla
+      hide-header: true
+      title: car
       cache: 5s
-      url: http://fetch-api.fetch-api.svc:8080/grafana/car-battery
-      method: GET
+      url: http://fetch-api.fetch-api.svc:8069/grafana/car-battery
+      method: POST
+      body: {"ai": true}
       template: |
         <style>
-          .icon-status {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            top: 5px;
-            width: 17px;
-            height: 17px;
+          :host {
+            display: block;
+            height: 30px !important;
+            min-height: 0 !important;
+            padding: 0 !important;
           }
-          .icon-status.positive { fill: var(--color-positive); }
-          .icon-status.negative { fill: var(--color-negative); }
-          .icon-status.warning { fill: var(--color-warning); }
+
+          .tesla-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 2px 0;
+          }
+
+          .tesla-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+          }
+
+          .tesla-icon img {
+            width: 65px;
+            height: 65px;
+            object-fit: contain;
+            border-radius: 6px;
+            opacity: 0.95;
+          }
+
+          .tesla-title {
+            font-weight: 600;
+            color: rgba(230,230,230,0.75);
+            letter-spacing: 0.2px;
+          }
+
+          .tesla-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            color: var(--color-positive);
+          }
+
+          .tesla-battery {
+            width: 20px;
+            height: 20px;
+            -webkit-mask: url("https://i.imgur.com/xMUsMaq.png") no-repeat center;
+            mask: url("https://i.imgur.com/xMUsMaq.png") no-repeat center;
+            -webkit-mask-size: contain;
+            mask-size: contain;
+            background-color: var(--color-positive);
+            transition: background-color 0.2s ease;
+            position: relative;
+            top: 0px;
+          }
+
+          .tesla-summary {
+            margin-top: 8px;
+            color: rgba(200,200,200,0.55);
+            font-size: 13px;
+            line-height: 20px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+          }
         </style>
 
-        <ul class="list list-gap-14 collapsible-container" data-collapse-after="5">
-        <span>{{ .JSON.Array "" }}</span>
-        </ul>
-    - type: custom-api
-      title: c/argocd
+        {{ $items := .JSON.Array "items" }}
+        {{ $first := index $items 0 }}
+        {{ $battery := $first.Int "usable_battery_percentage" }}
+        {{ $summary := .JSON.String "ai_summary.answer" }}
+
+        {{ $color := "var(--color-positive)" }}
+        {{ if lt $battery 40 }}{{ $color = "var(--color-warning)" }}{{ end }}
+        {{ if lt $battery 15 }}{{ $color = "var(--color-negative)" }}{{ end }}
+
+        <div class="tesla-row">
+          <div class="tesla-left">
+            <div class="tesla-icon">
+              <img src="https://i.imgur.com/iKO7VSL.png" alt="Model 3"/>
+            </div>
+            <div class="tesla-title">Car Battery</div>
+          </div>
+
+          <div class="tesla-right">
+            <span>{{ $battery }}%</span>
+            <div class="tesla-battery" style="background-color: {{ $color }}"></div>
+          </div>
+        </div>
+
+        <div class="tesla-summary">{{ $summary }}</div>
+
+        
+
+
+
+
+    - type: monitor
+      hide-header: true
       cache: 5s
-      url: http://fetch-api.fetch-api.svc:8080/grafana/argocd-apps
-      method: GET
-      template: |
-        <style>
-          .icon-status {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            top: 5px;
-            width: 17px;
-            height: 17px;
-          }
-          .icon-status.positive { fill: var(--color-positive); }
-          .icon-status.negative { fill: var(--color-negative); }
-          .icon-status.warning { fill: var(--color-warning); }
-        </style>
-
-        <ul class="list list-gap-14 collapsible-container" data-collapse-after="5">
-        {{ range .JSON.Array "" }}
-          {{ $name := .String "name" }}
-          {{ $health_status := .String "health_status" }}
-
-          <li class="row row-justify-between row-gap-8">
-            <span>
-              <a href="https://argocd.k8s.iaminyourpc.xyz/applications/argocd/{{ $name }}"
-                target="_blank" rel="noopener">
-                {{ $name }}
-              </a>
-            </span>
-
-            {{ if eq $health_status "Healthy" }}
-            <span class="icon-status positive">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4.5-5.5Z" clip-rule="evenodd"/>
-              </svg>
-            </span>
-
-            {{ else }}
-            <span class="icon-status negative">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495ZM10 5a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5A.75.75 0 0 1 10 5Zm0 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" clip-rule="evenodd"/>
-              </svg>
-            </span>
-
-            {{ end }}
-          </li>
-        {{ end }}
-        </ul>
+      sites:
+      - title: jellyfin
+        url: https://watch.k8s.iaminyourpc.xyz
+        icon: di:jellyfin
+        timeout: 10s
+      - title: immich
+        url: https://photos.k8s.iaminyourpc.xyz
+        icon: di:immich
+        timeout: 10s
+      - title: pihole
+        url: http://pihole.k8s.iaminyourpc.xyz/admin
+        icon: https://upload.wikimedia.org/wikipedia/commons/0/00/Pi-hole_Logo.png
+        timeout: 10s
+      - title: teslamate
+        url: http://car.k8s.iaminyourpc.xyz
+        icon: https://www.pngplay.com/wp-content/uploads/13/Tesla-Logo-PNG-Photo-Image.png
+        timeout: 10s
+        basic-auth:
+          username: ${TESLAMATE_USER}
+          password: ${TESLAMATE_PASSWORD}
   - size: full
     widgets:
     - type: videos
@@ -242,5 +250,3 @@
       location: Sofia, Bulgaria
       units: metric
       hour-format: 24h
-
-

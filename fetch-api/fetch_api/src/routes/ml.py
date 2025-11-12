@@ -25,7 +25,7 @@ def ask_ml(request: MLRequest):
         log.debug('Fetch completed', extra={
             'connector': 'ml',
             'endpoint': '/ml/ask',
-            'destination_endpoint': '/ask'
+            'upstream_endpoint': '/ask'
         })
 
         return JSONResponse(content=result.json(), status_code=200)
@@ -34,7 +34,7 @@ def ask_ml(request: MLRequest):
         log.error('Fetch failed', extra={
             'connector': 'ml',
             'endpoint': '/ml/ask',
-            'destination_endpoint': '/ask',
+            'upstream_endpoint': '/ask',
             'error': str(err)
         })
 

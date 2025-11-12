@@ -13,7 +13,7 @@ from fastapi.responses import JSONResponse
 class APIProcessor:
     @staticmethod
     @traced()
-    def process_response(client: ConnectorClient, request, endpoint: str, upstream_endpoint: str, ai_prompt: str, span=None):
+    def process_request(client: ConnectorClient, request, endpoint: str, upstream_endpoint: str, ai_prompt: str, span=None):
         try:
             result = client.get(upstream_endpoint)
             

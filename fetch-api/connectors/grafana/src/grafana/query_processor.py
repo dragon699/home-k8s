@@ -1,3 +1,4 @@
+from common.utils.system import beautify_ms
 from common.telemetry.src.tracing.wrappers import traced
 
 
@@ -24,6 +25,13 @@ class Processor:
         elif query_id == 'teslamate-usable-battery-level':
             result += [{
                 'usable_battery_percentage': query_response['results']['query']['frames'][0]['data']['values'][0][0]
+            }]
+
+        elif query_id == 'teslamate-last-seen-location':
+            result += [{
+                'city': query_response['results']['query']['frames'][0]['data']['values'][0][0],
+                'address': query_response['results']['query']['frames'][0]['data']['values'][1][0],
+                'time': beautify_ms(query_response['results']['query']['frames'][0]['data']['values'][2][0])
             }]
 
         span.set_attributes({

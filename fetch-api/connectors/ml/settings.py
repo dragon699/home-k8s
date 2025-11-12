@@ -1,4 +1,6 @@
+import os
 from pydantic_settings import BaseSettings
+from common.utils.helpers import get_app_version
 from connectors.ml.src.telemetry.logging import logger
 from connectors.ml.src.loaders import SettingsLoader
 
@@ -13,7 +15,7 @@ class Settings(BaseSettings):
 
     otel_service_name: str = 'connector-ml'
     otel_service_namespace: str = 'fetch-api'
-    otel_service_version: str = 'undefined'
+    otel_service_version: str = get_app_version(f'{os.path.dirname(__file__)}/VERSION')
     otlp_endpoint_grpc: str = 'grafana-alloy.monitoring.svc:4317'
 
     log_level: str = 'info'
