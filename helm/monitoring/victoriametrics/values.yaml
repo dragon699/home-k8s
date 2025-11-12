@@ -15,6 +15,8 @@ vminsert:
     limits:
       cpu: 2
       memory: 1Gi
+  extraArgs:
+  - '--maxLabelsPerTimeseries=200'
 
 vmstorage:
   resources:
@@ -36,6 +38,8 @@ vmagent:
     limits:
       cpu: 4
       memory: 4Gi
+  extraArgs:
+  - '--maxLabelsPerTimeseries=200'
   existingScrapeConfigMap: config-victoriametrics-jobs
 
 vmauth:
