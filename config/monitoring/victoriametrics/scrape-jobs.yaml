@@ -61,6 +61,8 @@ scrape_configs:
   kubernetes_sd_configs:
   - role: node
   relabel_configs:
+  - target_label: scrape_type
+    replacement: cadvisor
   - action: labelmap
     regex: __meta_kubernetes_node_label_(.+)
   - target_label: __address__
