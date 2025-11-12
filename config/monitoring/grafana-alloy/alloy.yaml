@@ -39,6 +39,10 @@ otelcol.receiver.otlp "home_external" {
 
 // Batch external logs and metrics
 otelcol.processor.batch "home_external" {
+  timeout             = "10s"
+  send_batch_size     = 512
+  send_batch_max_size = 1024
+
   output {
     logs             = [otelcol.exporter.loki.home_external.input]
     metrics          = [otelcol.exporter.prometheus.home_external.input]
@@ -244,6 +248,9 @@ otelcol.receiver.otlp "home_traces_otlpgrpc" {
 
 // Batch OTLP traces
 otelcol.processor.batch "home_traces_otlpgrpc" {
+  timeout                      = "10s"
+  send_batch_size              = 512
+
   output {
     traces                     = [otelcol.exporter.otlp.home_traces_otlpgrpc.input]
   }
@@ -251,6 +258,9 @@ otelcol.processor.batch "home_traces_otlpgrpc" {
 
 // Batch OTLPHTTP traces
 otelcol.processor.batch "home_traces_otlphttp" {
+  timeout                      = "10s"
+  send_batch_size              = 512
+
   output {
     traces                     = [otelcol.processor.span.home_spans_success_otlphttp.input]
   }
