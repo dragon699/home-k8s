@@ -11,6 +11,8 @@ persistence:
 
 defaultSettings:
   defaultReplicaCount: 1
+  logLevel: Warn
+  dataEngineLogLevel: Warning
   storageReservedPercentageForDefaultDisk: 10
 
 longhornUI:
