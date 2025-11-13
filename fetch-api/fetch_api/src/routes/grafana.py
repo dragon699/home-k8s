@@ -14,7 +14,7 @@ client = ConnectorClient(connectors['grafana'].name)
 def fetch_argocd_apps(request: Request, body: GrafanaBody):
     return APIProcessor.process_request(
         request=request,
-        body=body.model_dump(),
+        body=body,
         client=client,
         upstreams=[{
             'method': 'GET',
@@ -29,7 +29,7 @@ def fetch_argocd_apps(request: Request, body: GrafanaBody):
 def fetch_car_info(request: Request, body: GrafanaBody):
     return APIProcessor.process_request(
         request=request,
-        body=body.model_dump(),
+        body=body,
         client=client,
         upstreams=[
             {

@@ -44,7 +44,7 @@ class APIProcessor:
                 elif upstream_method == 'POST':
                     response = client.post(
                         endpoint=upstream_endpoint,
-                        data=body
+                        data=body.model_dump()
                     )
 
                 assert response.status_code in (200, 201)
