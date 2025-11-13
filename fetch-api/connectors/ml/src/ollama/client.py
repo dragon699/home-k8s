@@ -41,7 +41,10 @@ class OllamaClient:
         model = ChatOllama(
             base_url=self.url,
             model=model,
-            keep_alive=f'{settings.default_keep_alive_minutes}m'
+            keep_alive=f'{settings.default_keep_alive_minutes}m',
+            temperature=0.5,
+            num_ctx=3072,
+            num_thread=8
         )
 
         response = model.invoke(prompt)

@@ -32,8 +32,8 @@ class Settings(BaseSettings):
 
     instructions_template_path: str = 'connectors/ml/templates/instructions.yaml'
 
-    default_model: str = 'mistral:7b'
-    default_keep_alive_minutes: int = 15
+    default_model: str = 'mistral:7b-instruct'
+    default_keep_alive_minutes: int = 10
 
 
     def model_post_init(self, __context):
