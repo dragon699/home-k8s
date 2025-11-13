@@ -34,7 +34,8 @@ class OllamaClient:
                 'ollama.url': self.url,
                 'ollama.model': model,
                 'ollama.prompt': prompt,
-                'ollama.keep_alive': f'{settings.default_keep_alive_minutes}m'
+                'ollama.keep_alive': f'{settings.default_keep_alive_minutes}m',
+                'ollama.temperature': settings.default_temperature
             })
         )
 
@@ -42,7 +43,7 @@ class OllamaClient:
             base_url=self.url,
             model=model,
             keep_alive=f'{settings.default_keep_alive_minutes}m',
-            temperature=0.5,
+            temperature=settings.default_temperature,
             num_ctx=3072,
             num_thread=8
         )

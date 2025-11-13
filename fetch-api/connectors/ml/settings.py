@@ -34,6 +34,7 @@ class Settings(BaseSettings):
 
     default_model: str = 'mistral:7b-instruct'
     default_keep_alive_minutes: int = 10
+    default_temperature: float = 0.6
 
 
     def model_post_init(self, __context):
