@@ -1,7 +1,5 @@
 import json
-from xmlrpc import client
 from fastapi.responses import JSONResponse
-from common.messages.api import client_responses
 from common.telemetry.src.tracing.wrappers import traced
 from fetch_api.settings import connectors
 from fetch_api.src.telemetry.logging import log
