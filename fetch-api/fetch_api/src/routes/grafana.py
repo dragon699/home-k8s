@@ -38,7 +38,8 @@ def fetch_car_info(request: Request, body: GrafanaBody):
             } for endpoint in [
                 'postgresql/car-battery',
                 'postgresql/car-last-location',
-                'postgresql/car-state'
+                'postgresql/car-state',
+                'postgresql/car-average-consumption'
             ]
         ],
         ai_prompt='Give me a summary for my Tesla.',

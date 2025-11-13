@@ -40,6 +40,11 @@ class Processor:
                 'state': query_response['results']['query']['frames'][0]['data']['values'][0][0]
             }]
 
+        elif query_id == 'teslamate-average-consumption':
+            result += [{
+                'average_consumption_wh_per_km': query_response['results']['query']['frames'][0]['data']['values'][0][0]
+            }]
+
         span.set_attributes(
             reword({
                 'processor.result.total_items': len(result),
