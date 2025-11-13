@@ -1,5 +1,6 @@
 from common.utils.system import beautify_ms
 from common.telemetry.src.tracing.wrappers import traced
+from common.telemetry.src.tracing.helpers import reword
 
 
 
@@ -39,10 +40,12 @@ class Processor:
                 'state': query_response['results']['query']['frames'][0]['data']['values'][0][0]
             }]
 
-        span.set_attributes({
-            'processor.result.total_items': len(result),
-            'processor.result.items': result
-        })
+        span.set_attributes(
+            reword({
+                'processor.result.total_items': len(result),
+                'processor.result.items': result
+            })
+        )
 
         return {
             'total_items': len(result),
