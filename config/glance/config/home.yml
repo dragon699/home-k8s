@@ -98,7 +98,7 @@
       hide-header: true
       title: car
       cache: 5s
-      url: http://fetch-api.fetch-api.svc:8069/grafana/car-battery
+      url: http://fetch-api.fetch-api.svc:8069/grafana/car-info
       method: POST
       body: {"ai": true}
       template: |
