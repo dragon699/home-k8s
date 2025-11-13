@@ -32,7 +32,7 @@ class Settings(BaseSettings):
 
     instructions_template_path: str = 'connectors/ml/templates/instructions.yaml'
 
-    default_model: str = 'mistral:7b-instruct'
+    default_model: str = 'phi3:3.8b'
     default_keep_alive_minutes: int = 10
     default_temperature: float = 0.6
 
