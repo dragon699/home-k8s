@@ -32,12 +32,14 @@ class Processor:
             result += [{
                 'city': query_response['results']['query']['frames'][0]['data']['values'][0][0],
                 'address': query_response['results']['query']['frames'][0]['data']['values'][1][0],
-                'time': beautify_ms(query_response['results']['query']['frames'][0]['data']['values'][2][0])
+                'last_seen_at': beautify_ms(query_response['results']['query']['frames'][0]['data']['values'][2][0])
             }]
 
         elif query_id == 'teslamate-car-state':
+            print(query_response)
             result += [{
-                'state': query_response['results']['query']['frames'][0]['data']['values'][0][0]
+                'state': query_response['results']['query']['frames'][0]['data']['values'][0][0],
+                'state_since': beautify_ms(query_response['results']['query']['frames'][0]['data']['values'][1][0])
             }]
 
         elif query_id == 'teslamate-average-consumption':

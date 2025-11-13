@@ -17,7 +17,7 @@
         "endpoint": "car-state",
         "query": {
             "id": "teslamate-car-state",
-            "query": "SELECT state FROM (SELECT start_date,'driving'::text AS state FROM drives WHERE car_id = 1 UNION ALL SELECT start_date,'charging'::text AS state FROM charging_processes WHERE car_id = 1 UNION ALL SELECT start_date,'updating'::text AS state FROM updates WHERE car_id = 1 UNION ALL SELECT start_date,state::text FROM states WHERE car_id = 1) AS all_states ORDER BY start_date DESC LIMIT 1;"
+            "query": "SELECT state, start_date AS since FROM (SELECT start_date,'driving'::text AS state FROM drives WHERE car_id = 1 UNION ALL SELECT start_date,'charging'::text AS state FROM charging_processes WHERE car_id = 1 UNION ALL SELECT start_date,'updating'::text AS state FROM updates WHERE car_id = 1 UNION ALL SELECT start_date,state::text FROM states WHERE car_id = 1) AS all_states ORDER BY start_date DESC LIMIT 1;"
         }
     },
     {
