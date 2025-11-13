@@ -16,6 +16,8 @@ def fetch_ai_summary(request: Request, body: MLBody):
         request=request,
         body=body,
         client=client,
-        upstream_method='POST',
-        upstream_endpoint='ask'
+        upstreams=[{
+            'method': 'POST',
+            'endpoint':'ask'
+        }]
     )
