@@ -11,7 +11,8 @@ class APIProcessor:
     @traced()
     def process_request(
         query_ds_type: str,
-        query_id: str
+        query_id: str,
+        span=None
     ):
         try:
             result = querier.commit(

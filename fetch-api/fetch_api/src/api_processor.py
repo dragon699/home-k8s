@@ -60,7 +60,11 @@ class APIProcessor:
                     'error': str(err)
                 })
 
-        if client.connector_name != 'ml' and body.ai:
+        if (
+            (body.ai) and
+            (client.connector_name != 'ml') and
+            len(results['items']) > 0
+        ):
             if 'ml' in connectors:
                 from fetch_api.src.routes.ml import client as ml_client
                 
