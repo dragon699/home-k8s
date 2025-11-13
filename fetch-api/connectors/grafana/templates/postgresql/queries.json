@@ -12,5 +12,12 @@
             "id": "teslamate-last-seen-location",
             "query": "SELECT COALESCE(a.city, a.neighbourhood, '') AS city, COALESCE(g.name, array_to_string(((string_to_array(a.display_name, ', ', ''))[0:2]), ', ')) AS address, l.end_date AS \"time\" FROM (SELECT address_id, geofence_id, start_date AS end_date FROM charging_processes WHERE car_id = 1 AND end_date IS NOT NULL UNION SELECT end_address_id AS address_id, end_geofence_id AS geofence_id, end_date FROM drives WHERE car_id = 1 AND end_date IS NOT NULL) l INNER JOIN addresses a ON l.address_id = a.id LEFT JOIN geofences g ON l.geofence_id = g.id ORDER BY l.end_date DESC LIMIT 1;"
         }
+    },
+    {
+        "endpoint": "car-state",
+        "query": {
+            "id": "teslamate-car-state",
+            "query": "SELECT state FROM (SELECT start_date,'driving'::text AS state FROM drives WHERE car_id = 1 UNION ALL SELECT start_date,'charging'::text AS state FROM charging_processes WHERE car_id = 1 UNION ALL SELECT start_date,'updating'::text AS state FROM updates WHERE car_id = 1 UNION ALL SELECT start_date,state::text FROM states WHERE car_id = 1) AS all_states ORDER BY start_date DESC LIMIT 1;"
+        }
     }
 ]

@@ -34,12 +34,12 @@ def fetch_car_info(request: Request, body: GrafanaBody):
         upstreams=[
             {
                 'method': 'GET',
-                'endpoint':'postgresql/car-battery'
-            },
-            {
-                'method': 'GET',
-                'endpoint':'postgresql/car-last-location'
-            }
+                'endpoint': endpoint
+            } for endpoint in [
+                'postgresql/car-battery',
+                'postgresql/car-last-location',
+                'postgresql/car-state'
+            ]
         ],
         ai_prompt='Give me a summary for my Tesla.',
         ai_instructions_template='default'

@@ -60,3 +60,30 @@ def get_car_last_location():
         })
 
         return JSONResponse(content=client_responses['server-error'], status_code=500)
+
+
+@router.get('/car-state')
+def get_car_last_location():
+    try:
+        result = querier.commit(
+            query_ds_type='postgresql',
+            query_id='teslamate-car-state'
+        )
+
+        assert not result is None
+
+        log.info('Query executed successfully', extra={
+            'query_ds_type': 'postgresql',
+            'query_id': 'teslamate-car-state'
+        })
+
+        return JSONResponse(content=result, status_code=200)
+
+    except Exception as err:
+        log.error('Query execution failed', extra={
+            'query_ds_type': 'postgresql',
+            'query_id': 'teslamate-car-state',
+            'error': str(err)
+        })
+
+        return JSONResponse(content=client_responses['server-error'], status_code=500)

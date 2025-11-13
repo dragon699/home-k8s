@@ -34,6 +34,11 @@ class Processor:
                 'time': beautify_ms(query_response['results']['query']['frames'][0]['data']['values'][2][0])
             }]
 
+        elif query_id == 'teslamate-car-state':
+            result += [{
+                'state': query_response['results']['query']['frames'][0]['data']['values'][0][0]
+            }]
+
         span.set_attributes({
             'processor.result.total_items': len(result),
             'processor.result.items': result
