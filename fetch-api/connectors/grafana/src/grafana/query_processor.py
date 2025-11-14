@@ -27,12 +27,13 @@ class Processor:
         result = {}
         reword_map = {
             'teslamate-usable-battery-level': {
-                'usable_battery_level': 'usable_battery_percentage'
+                'usable_battery_level': 'usable_battery_percentage',
+                'kwh': 'usable_battery_kwh'
             },
             'teslamate-last-charge-info': {
                 'date': 'last_charge',
                 'type': 'charge_type',
-                'energy_added': 'charge_energy_added_kWh',
+                'energy_added': 'charge_energy_added_kwh',
                 'start_percent': 'charge_start_percentage',
                 'end_percent': 'charge_end_percentage'
             },
@@ -65,31 +66,34 @@ class Processor:
         result = []
 
         if query_id.startswith('teslamate-'):
+            print(query_response)
             data = Processor.map(query_response)
             data = Processor.rename(query_id, data)
 
-            if query_id == 'teslamate-usable-battery-level':
-                result += [data]
+            if len(data) > 0:
+                if query_id == 'teslamate-usable-battery-level':
+                    data['usable_battery_kwh'] = round(data['usable_battery_kwh'], 2)
+                    result += [data]
 
-            elif query_id == 'teslamate-last-charge-info':
-                data['last_charge'] = time_beautify_ms(data['last_charge'])
-                data['last_charge_since'] = time_since_now(data['last_charge'])
-                data['charge_energy_added_percentage'] = data['charge_end_percentage'] - data['charge_start_percentage']
-                result += [data]
+                elif query_id == 'teslamate-last-charge-info':
+                    data['last_charge'] = time_beautify_ms(data['last_charge'])
+                    data['last_charge_since'] = time_since_now(data['last_charge'])
+                    data['charge_energy_added_percentage'] = data['charge_end_percentage'] - data['charge_start_percentage']
+                    result += [data]
 
-            elif query_id == 'teslamate-last-seen-location':
-                data['last_seen'] = time_beautify_ms(data['last_seen'])
-                data['last_seen_since'] = time_since_now(data['last_seen'])
-                result += [data]
-                
+                elif query_id == 'teslamate-last-seen-location':
+                    data['last_seen'] = time_beautify_ms(data['last_seen'])
+                    data['last_seen_since'] = time_since_now(data['last_seen'])
+                    result += [data]
+                    
 
-            elif query_id == 'teslamate-car-state':
-                data['last_updated'] = time_beautify_ms(data['last_updated'])
-                data['last_state_since'] = time_since_now(data['last_updated'])
-                result += [data]
+                elif query_id == 'teslamate-car-state':
+                    data['last_updated'] = time_beautify_ms(data['last_updated'])
+                    data['last_state_since'] = time_since_now(data['last_updated'])
+                    result += [data]
 
-            elif query_id == 'teslamate-average-consumption':
-                result += [data]
+                elif query_id == 'teslamate-average-consumption':
+                    result += [data]
 
 
         else:
