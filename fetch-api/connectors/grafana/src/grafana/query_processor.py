@@ -33,7 +33,7 @@ class Processor:
             last_changed = time_beautify_ms(query_response['results']['query']['frames'][0]['data']['values'][2][0])
             last_seen_since = time_since(
                 past=last_changed,
-                now=time_beautify_ms(datetime.now().strftime('%Y-%m-%dT%H:%M:%S'))
+                now=datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
             )
 
             result += [{
@@ -47,7 +47,7 @@ class Processor:
             last_changed = time_beautify_ms(query_response['results']['query']['frames'][0]['data']['values'][1][0])
             state_since = time_since(
                 past=last_changed,
-                now=time_beautify_ms(datetime.now().strftime('%Y-%m-%dT%H:%M:%S'))
+                now=datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
             )
 
             result += [{
