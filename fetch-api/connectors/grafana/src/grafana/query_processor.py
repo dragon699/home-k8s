@@ -22,6 +22,7 @@ class Processor:
     
 
     @staticmethod
+    @traced()
     def rename(query_id: str, data: dict, span=None):
         result = {}
         reword_map = {
