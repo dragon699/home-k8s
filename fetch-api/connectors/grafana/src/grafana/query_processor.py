@@ -26,10 +26,6 @@ class Processor:
     def rename(query_id: str, data: dict, span=None):
         result = {}
         reword_map = {
-            'teslamate-usable-battery-level': {
-                'usable_battery_level': 'usable_battery_percentage',
-                'kwh': 'usable_battery_kwh'
-            },
             'teslamate-last-charge-info': {
                 'date': 'last_charge',
                 'type': 'charge_type',
@@ -43,8 +39,11 @@ class Processor:
             'teslamate-car-state': {
                 'since': 'last_updated'
             },
-            'teslamate-average-consumption': {
-                'wh_per_km': 'average_consumption_wh_per_km'
+            'teslamate-car-efficiency': {
+                'wh_per_km': 'average_consumption_wh_per_km',
+                'driving_efficiency_pct': 'average_driving_efficiency_percentage',
+                'usable_kwh': 'full_charge_usable_battery_kwh',
+                'real_world_range_km': 'full_charge_usable_range_km'
             }
         }
 
@@ -66,35 +65,28 @@ class Processor:
         result = []
 
         if query_id.startswith('teslamate-'):
-            print(query_response)
             data = Processor.map(query_response)
             data = Processor.rename(query_id, data)
 
             if len(data) > 0:
                 if query_id == 'teslamate-usable-battery-level':
                     data['usable_battery_kwh'] = round(data['usable_battery_kwh'], 2)
-                    result += [data]
 
                 elif query_id == 'teslamate-last-charge-info':
                     data['last_charge'] = time_beautify_ms(data['last_charge'])
                     data['last_charge_since'] = time_since_now(data['last_charge'])
                     data['charge_energy_added_percentage'] = data['charge_end_percentage'] - data['charge_start_percentage']
-                    result += [data]
 
                 elif query_id == 'teslamate-last-seen-location':
                     data['last_seen'] = time_beautify_ms(data['last_seen'])
                     data['last_seen_since'] = time_since_now(data['last_seen'])
-                    result += [data]
                     
 
                 elif query_id == 'teslamate-car-state':
                     data['last_updated'] = time_beautify_ms(data['last_updated'])
                     data['last_state_since'] = time_since_now(data['last_updated'])
-                    result += [data]
 
-                elif query_id == 'teslamate-average-consumption':
-                    result += [data]
-
+                result += [data]
 
         else:
             if query_id == 'argocd-apps':

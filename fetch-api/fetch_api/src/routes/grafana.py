@@ -40,7 +40,7 @@ def fetch_car_info(request: Request, body: GrafanaBody):
                 'postgresql/car-last-charge',
                 'postgresql/car-last-location',
                 'postgresql/car-state',
-                'postgresql/car-average-consumption'
+                'postgresql/car-efficiency'
             ]
         ],
         ai_prompt='Give me a summary for my Tesla.',

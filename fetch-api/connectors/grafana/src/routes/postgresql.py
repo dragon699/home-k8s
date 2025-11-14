@@ -37,9 +37,9 @@ def get_car_state():
     )
 
 
-@router.get('/car-average-consumption')
+@router.get('/car-efficiency')
 def get_car_average_consumption():
     return APIProcessor.process_request(
         query_ds_type='postgresql',
-        query_id='teslamate-average-consumption'
+        query_id='teslamate-car-efficiency'
     )

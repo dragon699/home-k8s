@@ -102,6 +102,48 @@
       method: POST
       body: {"ai": false}
       template: |
+        {{/* --- API data extraction --- */}}
+        {{ $items := .JSON.Array "items" }}
+
+        {{ $batteryObj := (index $items 0) }}
+        {{ $battery_usable_battery_percentage := ($batteryObj.Int "usable_battery_percentage") }}
+        {{ $battery_usable_battery_kwh := ($batteryObj.String "usable_battery_kwh") }}
+
+        {{ $last_chargeObj := (index $items 1) }}
+        {{ $last_charge_location := ($last_chargeObj.String "location") }}
+        {{ $last_charge_charge_type := ($last_chargeObj.String "charge_type") }}
+        {{ $last_charge_charge_energy_added_kwh := ($last_chargeObj.String "charge_energy_added_kwh") }}
+        {{ $last_charge_last_charge_since := ($last_chargeObj.String "last_charge_since") }}
+        {{ $last_charge_charge_energy_added_percentage := ($last_chargeObj.String "charge_energy_added_percentage") }}
+
+        {{ $last_locationObj := (index $items 2) }}
+        {{ $last_location_city := ($last_locationObj.String "city") }}
+        {{ $last_location_address := ($last_locationObj.String "address") }}
+        {{ $last_location_last_seen_since := ($last_locationObj.String "last_seen_since") }}
+
+        {{ $stateObj := (index $items 3) }}
+        {{ $state_state := ($stateObj.String "state") }}
+        {{ $state_last_state_since := ($stateObj.String "last_state_since") }}
+
+        {{ $consumptionObj := (index $items 4) }}
+        {{ $consumption_average_consumption_wh_per_km := ($consumptionObj.String "average_consumption_wh_per_km") }}
+        {{/* --- API data extraction ends --- */}}
+
+
+
+        {{/* --- Extra vars --- */}}
+        {{ $grafana_url := "https://grafana.k8s.iaminyourpc.xyz" }}
+        {{ $grafana_dashboard_overview_url := printf "%s/d/kOuP_Fggz/overview" $grafana_url }}
+        {{ $grafana_dashboard_battery_health_url := printf "%s/d/jchmRiqUfXgTM/battery-health" $grafana_url }}
+        {{ $grafana_dashboard_charging_history_url := printf "%s/d/TSmNYvRRk/charging-history" $grafana_url }}
+
+        {{ $color := "var(--color-positive)" }}
+        {{ if lt $battery_usable_battery_percentage 40 }}{{ $color = "var(--color-warning)" }}{{ end }}
+        {{ if lt $battery_usable_battery_percentage 15 }}{{ $color = "var(--color-negative)" }}{{ end }}
+        {{/* --- Extra vars ends --- */}}
+
+
+
         <style>
           :host {
             display: block;
@@ -148,14 +190,14 @@
             font-weight: 600;
           }
 
-          .title-header {
-            font-size: 17px;
-            font-weight: 600;
+          .header-title {
+            font-size: 20px;
+            font-weight: 400;
             color: rgba(230,230,230,0.9);
             text-transform: capitalize;
           }
 
-          .title-text {
+          .header-text {
             font-size: 15px;
             color: rgba(200,200,200,0.55);
             white-space: nowrap;
@@ -164,8 +206,8 @@
           }
 
           .title {
-            font-size: 15.5px;
-            font-weight: 550;
+            font-size: 14px;
+            font-weight: 100;
             color: rgba(230,230,230,0.9);
             text-transform: capitalize;
           }
@@ -178,18 +220,54 @@
             text-overflow: ellipsis;
           }
 
-          .title-right-icon img {
+          .title-right-icon-car img {
             width: 65px;
             height: 65px;
             object-fit: contain;
             opacity: 0.9;
           }
 
-          .text-right-icon {
-            width: 22px;
-            height: 22px;
+          .text-right-icon-battery {
+            width: 21px;
+            height: 21px;
             -webkit-mask: url("https://i.imgur.com/xMUsMaq.png") no-repeat center;
             mask: url("https://i.imgur.com/xMUsMaq.png") no-repeat center;
+            -webkit-mask-size: contain;
+            mask-size: contain;
+            background-color: var(--color-positive);
+            position: relative;
+            left: 7px;
+          }
+
+          .text-right-icon-last-car-location {
+            width: 24px;
+            height: 24px;
+            -webkit-mask: url("https://i.imgur.com/u74QULU.png") no-repeat center;
+            mask: url("https://i.imgur.com/u74QULU.png") no-repeat center;
+            -webkit-mask-size: contain;
+            mask-size: contain;
+            background-color: var(--color-positive);
+            position: relative;
+            left: 7px;
+          }
+
+          .text-right-icon-last-charge-location {
+            width: 35px;
+            height: 35px;
+            -webkit-mask: url("https://i.imgur.com/7p89Jhp.png") no-repeat center;
+            mask: url("https://i.imgur.com/7p89Jhp.png") no-repeat center;
+            -webkit-mask-size: contain;
+            mask-size: contain;
+            background-color: var(--color-positive);
+            position: relative;
+            left: 7px;
+          }
+
+          .text-right-icon-average-consumption {
+            width: 19px;
+            height: 19px;
+            -webkit-mask: url("https://i.imgur.com/aPv3bvg.png") no-repeat center;
+            mask: url("https://i.imgur.com/aPv3bvg.png") no-repeat center;
             -webkit-mask-size: contain;
             mask-size: contain;
             background-color: var(--color-positive);
@@ -200,50 +278,23 @@
 
 
 
-        {{/* --- Vars --- */}}
-        {{ $items := .JSON.Array "items" }}
 
-        {{ $batteryObj := (index $items 0) }}
-        {{ $battery_battery := ($batteryObj.Int "usable_battery_percentage") }}
-
-        {{ $last_chargeObj := (index $items 1) }}
-        {{ $last_charge_location := ($last_chargeObj.String "location") }}
-        {{ $last_charge_charge_type := ($last_chargeObj.String "charge_type") }}
-        {{ $last_charge_charge_energy_added_kwh := ($last_chargeObj.String "charge_energy_added_kwh") }}
-        {{ $last_charge_last_charge_since := ($last_chargeObj.String "last_charge_since") }}
-        {{ $last_charge_charge_energy_added_percentage := ($last_chargeObj.String "charge_energy_added_percentage") }}
-
-        {{ $last_locationObj := (index $items 2) }}
-        {{ $last_location_city := ($last_locationObj.String "city") }}
-        {{ $last_location_address := ($last_locationObj.String "address") }}
-        {{ $last_location_last_seen_since := ($last_locationObj.String "last_seen_since") }}
-
-        {{ $stateObj := (index $items 3) }}
-        {{ $state_state := ($stateObj.String "state") }}
-        {{ $state_last_state_since := ($stateObj.String "last_state_since") }}
-
-        {{ $consumptionObj := (index $items 4) }}
-        {{ $consumption_average_consumption_wh_per_km := ($consumptionObj.String "average_consumption_wh_per_km") }}
-
-
-        {{ $color := "var(--color-positive)" }}
-        {{ if lt $battery_battery 40 }}{{ $color = "var(--color-warning)" }}{{ end }}
-        {{ if lt $battery_battery 15 }}{{ $color = "var(--color-negative)" }}{{ end }}
-        {{/* --- End Vars --- */}}
-
-
-
-
-
+        {{/* # Car state */}}
         <div class="root-row">
           <div class="left-side">
-            <div class="title-header">{{ $state_state }}</div>
-            <div class="title-text">{{ $state_last_state_since }}</div>
+            <div class="header-title">
+              <a href="{{ $grafana_dashboard_overview_url }}" 
+                target="_blank" 
+                style="color:inherit;text-decoration:none;">
+                {{ $state_state }}
+              </a>
+            </div>
+            <div class="header-text">since {{ $state_last_state_since }}</div>
           </div>
 
           <div class="right-side">
             <div class="row" style="color: {{ $color }}">
-              <div class="title-right-icon">
+              <div class="title-right-icon-car">
                 <img src="https://i.imgur.com/oLmdiWK.png" alt="Model 3" />
               </div>
             </div>
@@ -254,17 +305,90 @@
         <div class="divider"></div>
 
 
+        {{/* # Battery */}}
         <div class="root-row">
           <div class="left-side">
-            <div class="title">{{ $battery_battery }}%</div>
+            <div class="title">
+              <a href="{{ $grafana_dashboard_battery_health_url }}" 
+                target="_blank" 
+                style="color:inherit;text-decoration:none;">
+                {{ $battery_usable_battery_percentage }}%
+              </a>
+            </div>
+            <div class="text">{{ $battery_usable_battery_kwh }}kWh</div>
           </div>
 
           <div class="right-side">
             <div class="row" style="color: {{ $color }}">
-              <div class="text-right-icon" style="background-color: {{ $color }}"></div>
+              <div class="text-right-icon-battery" style="background-color: {{ $color }}"></div>
             </div>
           </div>
         </div>
+
+
+        {{/* # Average consumption */}}
+        <div class="root-row">
+          <div class="left-side">
+            <div class="title">
+              <a href="{{ $grafana_dashboard_charging_history_url }}" 
+                target="_blank" 
+                style="color:inherit;text-decoration:none;">
+                {{ $consumption_average_consumption_wh_per_km }}kWh/km
+              </a>
+            </div>
+            <div class="text">{{ $battery_usable_battery_kwh }}kWh</div>
+          </div>
+
+          <div class="right-side">
+            <div class="row" style="color: {{ $color }}">
+              <div class="text-right-icon-average-consumption" style="background-color: {{ $color }}"></div>
+            </div>
+          </div>
+        </div>
+
+
+        {{/* # Last car location */}}
+        <div class="root-row">
+          <div class="left-side">
+            <div class="title">
+              <a href="https://www.google.com/maps/search/?api=1&query={{ urlquery (printf "%s %s" $last_location_city $last_location_address) }}" 
+                target="_blank" 
+                style="color:inherit;text-decoration:none;">
+                {{ $last_location_city }} {{ $last_location_address }}
+              </a>
+            </div>
+            <div class="text">{{ $last_location_last_seen_since }} ago</div>
+          </div>
+
+          <div class="right-side">
+            <div class="row" style="color: {{ $color }}">
+              <div class="text-right-icon-last-car-location" style="background-color: {{ $color }}"></div>
+            </div>
+          </div>
+        </div>
+
+
+        {{/* # Last charge info */}}
+        <div class="root-row">
+          <div class="left-side">
+            <div class="title">
+              <a href="{{ $grafana_dashboard_charging_history_url }}" 
+                target="_blank" 
+                style="color:inherit;text-decoration:none;">
+                {{ $last_charge_location }}
+              </a>
+            </div>
+            <div class="text">{{ $last_charge_last_charge_since }} ago • {{ $last_charge_charge_type }}</div>
+            <div class="text">+{{ $last_charge_charge_energy_added_percentage }}% • +{{ $last_charge_charge_energy_added_kwh }}kWh</div>
+          </div>
+
+          <div class="right-side">
+            <div class="row" style="color: {{ $color }}">
+              <div class="text-right-icon-last-charge-location" style="background-color: {{ $color }}"></div>
+            </div>
+          </div>
+        </div>
+
         
 
 
