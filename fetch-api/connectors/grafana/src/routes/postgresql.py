@@ -13,6 +13,14 @@ def get_car_battery():
     )
 
 
+@router.get('/car-last-charge')
+def get_car_last_charge():
+    return APIProcessor.process_request(
+        query_ds_type='postgresql',
+        query_id='teslamate-last-charge-info'
+    )
+
+
 @router.get('/car-last-location')
 def get_car_last_location():
     return APIProcessor.process_request(

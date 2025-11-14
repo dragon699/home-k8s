@@ -3,7 +3,14 @@
         "endpoint": "car-battery",
         "query": {
             "id": "teslamate-usable-battery-level",
-            "query": "SELECT * FROM ((SELECT usable_battery_level, date FROM positions WHERE car_id = 1 AND usable_battery_level IS NOT NULL ORDER BY date DESC LIMIT 1) UNION (SELECT usable_battery_level, date FROM charges c JOIN charging_processes p ON p.id = c.charging_process_id WHERE p.car_id = 1 AND usable_battery_level IS NOT NULL ORDER BY date DESC LIMIT 1)) AS last_usable_battery_level LIMIT 1;"
+            "query": "SELECT usable_battery_level FROM ((SELECT usable_battery_level,date FROM positions WHERE car_id=1 AND usable_battery_level IS NOT NULL ORDER BY date DESC LIMIT 1) UNION ALL (SELECT c.usable_battery_level,c.date FROM charges c JOIN charging_processes p ON p.id=c.charging_process_id WHERE p.car_id=1 AND c.usable_battery_level IS NOT NULL ORDER BY c.date DESC LIMIT 1)) AS t ORDER BY date DESC LIMIT 1;"
+        }
+    },
+    {
+        "endpoint": "car-last-charge",
+        "query": {
+            "id": "teslamate-last-charge-info",
+            "query": "WITH data AS (SELECT start_date,end_date,COALESCE(g.name,CONCAT_WS(', ',COALESCE(addresses.name,nullif(CONCAT_WS(' ',addresses.road,addresses.house_number),'')),addresses.city)) AS location,CASE WHEN NULLIF(mode() within group (order by charger_phases),0) IS NULL THEN 'DC' ELSE 'AC' END AS type,cp.charge_energy_added AS energy_added,start_battery_level AS start_percent,end_battery_level AS end_percent FROM charging_processes cp LEFT JOIN charges c ON cp.id=c.charging_process_id LEFT JOIN positions p ON p.id=cp.position_id LEFT JOIN addresses ON addresses.id=cp.address_id LEFT JOIN geofences g ON g.id=geofence_id WHERE cp.car_id=1 AND (cp.charge_energy_added IS NULL OR cp.charge_energy_added>0) GROUP BY cp.id,p.id,g.id,addresses.id ORDER BY start_date DESC) SELECT start_date AS date,location,type,energy_added,start_percent,end_percent FROM data LIMIT 1;"
         }
     },
     {
