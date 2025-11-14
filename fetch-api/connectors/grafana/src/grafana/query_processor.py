@@ -1,4 +1,5 @@
-from common.utils.system import beautify_ms
+from datetime import datetime
+from common.utils.helpers import time_beautify_ms, time_since
 from common.telemetry.src.tracing.wrappers import traced
 from common.telemetry.src.tracing.helpers import reword
 
@@ -29,17 +30,30 @@ class Processor:
             }]
 
         elif query_id == 'teslamate-last-seen-location':
+            last_changed = time_beautify_ms(query_response['results']['query']['frames'][0]['data']['values'][2][0])
+            last_seen_since = time_since(
+                past=last_changed,
+                now=time_beautify_ms(datetime.now().strftime('%Y-%m-%dT%H:%M:%S'))
+            )
+
             result += [{
                 'city': query_response['results']['query']['frames'][0]['data']['values'][0][0],
                 'address': query_response['results']['query']['frames'][0]['data']['values'][1][0],
-                'last_seen_at': beautify_ms(query_response['results']['query']['frames'][0]['data']['values'][2][0])
+                'last_changed': last_changed,
+                'last_seen_since': last_seen_since
             }]
 
         elif query_id == 'teslamate-car-state':
-            print(query_response)
+            last_changed = time_beautify_ms(query_response['results']['query']['frames'][0]['data']['values'][1][0])
+            state_since = time_since(
+                past=last_changed,
+                now=time_beautify_ms(datetime.now().strftime('%Y-%m-%dT%H:%M:%S'))
+            )
+
             result += [{
                 'state': query_response['results']['query']['frames'][0]['data']['values'][0][0],
-                'state_since': beautify_ms(query_response['results']['query']['frames'][0]['data']['values'][1][0])
+                'last_changed': last_changed,
+                'state_since': state_since
             }]
 
         elif query_id == 'teslamate-average-consumption':

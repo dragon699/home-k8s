@@ -4,6 +4,7 @@ from requests.adapters import HTTPAdapter
 
 TIMEOUT = 10
 
+
 class Request(HTTPAdapter):
     def __init__(self, *args, **kwargs):
         self.timeout = kwargs.pop('timeout', TIMEOUT)
