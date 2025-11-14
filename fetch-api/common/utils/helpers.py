@@ -23,11 +23,16 @@ def time_beautify_ms(milliseconds: int, target_tz: str = 'Europe/Sofia'):
     return dt_sofia.strftime('%Y-%m-%dT%H:%M:%S')
 
 
-def time_since_now(past: str):
-    past = datetime.fromisoformat(past)
-    now = datetime.now(tz=past.tzinfo)
+def time_since_now(past: str, past_tz: str = 'Europe/Sofia'):
+    tz = zoneinfo.ZoneInfo(past_tz)
+    past_dt = datetime.fromisoformat(past)
 
-    diff = now - past
+    if past_dt.tzinfo is None:
+        past_dt = past_dt.replace(tzinfo=tz)
+
+    now = datetime.now(tz)
+
+    diff = now - past_dt
     seconds = diff.total_seconds()
 
     days = int(seconds // 86400)
@@ -45,9 +50,9 @@ def time_since_now(past: str):
             return f'{hours}h{minutes}m'
         else:
             return f'{hours}h'
-    
+
     elif minutes > 0:
         return f'{minutes}m'
-    
+
     else:
         return 'just now'
