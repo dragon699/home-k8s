@@ -37,6 +37,7 @@ def fetch_car_info(request: Request, body: GrafanaBody):
                 'endpoint': endpoint
             } for endpoint in [
                 'postgresql/car-battery',
+                'postgresql/car-last-charge',
                 'postgresql/car-last-location',
                 'postgresql/car-state',
                 'postgresql/car-average-consumption'
