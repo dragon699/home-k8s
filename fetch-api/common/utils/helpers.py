@@ -40,13 +40,13 @@ def time_since_now(past: str, past_tz: str = 'Europe/Sofia'):
     minutes = int((seconds % 3600) // 60)
 
     if days > 0:
-        if days < 3:
+        if days < 5:
             return f'{days}d{hours}h'
         else:
             return f'{days}d'
 
     elif hours > 0:
-        if hours < 3:
+        if hours < 12:
             return f'{hours}h{minutes}m'
         else:
             return f'{hours}h'
