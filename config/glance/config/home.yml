@@ -219,11 +219,16 @@
             text-overflow: ellipsis;
           }
 
-          .title-right-icon-car img {
+          .header-right-icon-car {
             width: 65px;
             height: 65px;
-            object-fit: contain;
-            opacity: 0.9;
+            -webkit-mask: url("https://i.imgur.com/oLmdiWK.png") no-repeat center;
+            mask: url("https://i.imgur.com/oLmdiWK.png") no-repeat center;
+            -webkit-mask-size: contain;
+            mask-size: contain;
+            background-color: var(--color-positive);
+            position: relative;
+            left: 7px;
           }
 
           .text-right-icon-battery {
@@ -292,9 +297,7 @@
 
           <div class="right-side">
             <div class="row">
-              <div class="title-right-icon-car">
-                <img src="https://i.imgur.com/oLmdiWK.png" alt="Model 3" />
-              </div>
+              <div class="header-right-icon-car"></div>
             </div>
           </div>
         </div>
@@ -396,12 +399,6 @@
             </div>
           </div>
         </div>
-
-        
-
-
-
-
 
     - type: monitor
       hide-header: true

@@ -7,7 +7,10 @@ from fetch_api.src.schemas.grafana import GrafanaBody
 
 
 router = APIRouter()
-client = ConnectorClient(connectors['grafana'].name)
+client = ConnectorClient(
+    connectors['grafana'].name,
+    cache=False
+)
 
 
 @router.post('/argocd-apps')

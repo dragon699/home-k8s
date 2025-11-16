@@ -17,6 +17,12 @@ class FetchAPISettings(BaseSettings):
     otel_service_version: str = get_app_version(f'{os.path.dirname(__file__)}/VERSION')
     otlp_endpoint_grpc: str = 'grafana-alloy.monitoring.svc:4317'
 
+    redis_host: str = 'redis'
+    redis_port: int = 6379
+    redis_db: int = 0
+    redis_password: str | None = None
+    redis_cache_ttl: int = 86400
+
     log_level: str = 'info'
     log_format: str = 'json'
 
