@@ -1,0 +1,41 @@
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: data-redis-shared
+  namespace: fetch-api
+spec:
+  refreshInterval: 5m0s
+  secretStoreRef:
+    name: in-cluster-shared
+    kind: ClusterSecretStore
+  target:
+    name: data-redis-shared
+    creationPolicy: Owner
+  dataFrom:
+  - extract:
+      key: redis-shared
+      conversionStrategy: Default
+      decodingStrategy: None
+      metadataPolicy: None
+
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: data-redis-shared
+  namespace: immich
+spec:
+  refreshInterval: 5m0s
+  secretStoreRef:
+    name: in-cluster-shared
+    kind: ClusterSecretStore
+  target:
+    name: data-redis-shared
+    creationPolicy: Owner
+  dataFrom:
+  - extract:
+      key: redis-shared
+      conversionStrategy: Default
+      decodingStrategy: None
+      metadataPolicy: None
