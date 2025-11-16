@@ -67,45 +67,42 @@ class APIProcessor:
                     'error': str(err)
                 })
 
-        if (
-            (body.ai) and
-            (client.connector_name != 'ml') and
-            len(results['items']) > 0
-        ):
-            if 'ml' in connectors:
-                from fetch_api.src.routes.ml import client as ml_client
-                
-                upstream_ml_endpoint = 'ask'
-                commong_ml_log_attributes = {
-                    **common_log_attributes,
-                    'upstream_ml_endpoint': upstream_ml_endpoint
-                }
+        if client.connector_name != 'ml':
+            if body.ai and len(results['items']) > 0:
+                if 'ml' in connectors:
+                    from fetch_api.src.routes.ml import client as ml_client
+                    
+                    upstream_ml_endpoint = 'ask'
+                    commong_ml_log_attributes = {
+                        **common_log_attributes,
+                        'upstream_ml_endpoint': upstream_ml_endpoint
+                    }
 
-                try:
-                    response = ml_client.post(
-                        endpoint=upstream_ml_endpoint,
-                        data={
-                            'instructions_template': ai_instructions_template,
-                            'prompt': '{}\n\n{}'.format(
-                                ai_prompt,
-                                json.dumps(results['items'])
-                            )
-                        }
-                    )
+                    try:
+                        response = ml_client.post(
+                            endpoint=upstream_ml_endpoint,
+                            data={
+                                'instructions_template': ai_instructions_template,
+                                'prompt': '{}\n\n{}'.format(
+                                    ai_prompt,
+                                    json.dumps(results['items'])
+                                )
+                            }
+                        )
 
-                    assert response.status_code == 200
+                        assert response.status_code == 200
 
-                    results['ai_summary'] = response.json()['items'][0]
-                    log.debug('Fetched AI summary for upstreams response', extra=commong_ml_log_attributes)
+                        results['ai_summary'] = response.json()['items'][0]
+                        log.debug('Fetched AI summary for upstreams response', extra=commong_ml_log_attributes)
 
-                except Exception as err:
-                    log.warning('AI summary fetch failed', extra={
-                        **commong_ml_log_attributes,
-                        'error': str(err)
-                    })
+                    except Exception as err:
+                        log.warning('AI summary fetch failed', extra={
+                            **commong_ml_log_attributes,
+                            'error': str(err)
+                        })
 
-            else:
-                log.warning('Skipping AI processing, as ML connector is not enabled', extra=common_log_attributes)
+                else:
+                    log.warning('Skipping AI processing, as ML connector is not enabled', extra=common_log_attributes)
 
         results['total_items'] = len(results['items'])
 
