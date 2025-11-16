@@ -10,6 +10,9 @@ spec:
     image: quay.io/opstree/redis:v7.0.15
     imagePullPolicy: IfNotPresent
     updateStrategy: {}
+  podSecurityContext:
+    fsGroup: 1000
+    runAsUser: 1000
   redisExporter:
     image: quay.io/opstree/redis-exporter:v1.44.0
     imagePullPolicy: IfNotPresent
@@ -23,3 +26,4 @@ spec:
         resources:
           requests:
             storage: 10Gi
+    volumeMount: {}
