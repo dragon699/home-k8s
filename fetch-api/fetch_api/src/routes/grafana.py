@@ -9,6 +9,7 @@ from fetch_api.src.schemas.grafana import GrafanaBody
 router = APIRouter()
 client = ConnectorClient(
     connectors['grafana'].name,
+    requests_timeout=5,
     cache=False
 )
 

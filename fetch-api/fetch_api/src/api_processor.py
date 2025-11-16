@@ -70,8 +70,14 @@ class APIProcessor:
         if client.connector_name != 'ml':
             if body.ai and len(results['items']) > 0:
                 if 'ml' in connectors:
-                    from fetch_api.src.routes.ml import client as ml_client
-                    
+                    from fetch_api.src.client import ConnectorClient
+
+                    ml_client = ConnectorClient(
+                        connectors['ml'].name,
+                        requests_timeout=3,
+                        cache=True
+                    )
+
                     upstream_ml_endpoint = 'ask'
                     commong_ml_log_attributes = {
                         **common_log_attributes,

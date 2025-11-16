@@ -131,6 +131,10 @@ class ConnectorClient:
                     'connector.error.type': type(err).__name__
                 })
 
+                return {
+                    'error': 'Connector request timed out and cached response is not available.'
+                }
+
         except Exception as err:
             span.set_attributes(
                 reword({

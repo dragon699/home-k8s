@@ -9,7 +9,7 @@ from fetch_api.src.schemas.ml import MLBody
 router = APIRouter()
 client = ConnectorClient(
     connectors['ml'].name,
-    requests_timeout=3,
+    requests_timeout=20,
     cache=True
 )
 
