@@ -60,6 +60,8 @@ class ConnectorClient:
             })
         )
 
+        cached_value = None
+
         if self.cache:
             cache_key = (
                 f'connector:{self.connector_name}:GET:{endpoint}:'
@@ -67,12 +69,6 @@ class ConnectorClient:
                 f'{hash(frozenset(data.items()))}'
             )
             cached_value = self.redis.get(cache_key)
-
-            if not cached_value is None:
-                return CachedResponse(
-                    json_data=cached_value['json'],
-                    status_code=cached_value['status_code']
-                )
 
         try:
             session = create_session(timeout=self.requests_timeout)
@@ -125,6 +121,8 @@ class ConnectorClient:
             })
         )
 
+        cached_value = None
+
         if self.cache:
             cache_key = (
                 f'connector:{self.connector_name}:POST:{endpoint}:'
@@ -132,12 +130,6 @@ class ConnectorClient:
                 f'{hash(frozenset(data.items()))}'
             )
             cached_value = self.redis.get(cache_key)
-
-            if not cached_value is None:
-                return CachedResponse(
-                    json_data=cached_value['json'],
-                    status_code=cached_value['status_code']
-                )
 
         try:
             session = create_session(timeout=self.requests_timeout)
