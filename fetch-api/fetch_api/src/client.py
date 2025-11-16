@@ -154,7 +154,7 @@ class ConnectorClient:
 
             return response
         
-        except Timeout as err:
+        except ReqTimeout as err:
             if self.cache and not cached_value is None:
                 return CachedResponse(
                     json_data=cached_value['json'],
