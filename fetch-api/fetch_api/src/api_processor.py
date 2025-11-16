@@ -93,6 +93,15 @@ class APIProcessor:
                         assert response.status_code == 200
 
                         results['ai_summary'] = response.json()['items'][0]
+
+                        if response.json().get('cached') and response.json()['cached'] is True:
+                            commong_ml_log_attributes['cache_status'] = 'hit'
+                            results['ai_summary']['cached'] = True
+                            results['ai_summary']['cached_at'] = response.json()['cached_at']
+
+                        else:
+                            commong_ml_log_attributes['cache_status'] = 'miss'
+
                         log.debug('Fetched AI summary for upstreams response', extra=commong_ml_log_attributes)
 
                     except Exception as err:

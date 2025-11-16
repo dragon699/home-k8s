@@ -25,6 +25,13 @@ def get_maps_url(path: str):
     
     except:
         return path
+    
+
+def time_now(target_tz: str = 'Europe/Sofia'):
+    tz = zoneinfo.ZoneInfo(target_tz)
+    now = datetime.now(tz)
+
+    return now.strftime('%Y-%m-%dT%H:%M:%S')
 
 
 def time_beautify_ms(milliseconds: int, target_tz: str = 'Europe/Sofia'):

@@ -9,6 +9,7 @@ def reword(attributes: dict):
         'health.connector.status.current': {True: 'healthy', False: 'unhealthy'},
         'health.connector.status.previous': {True: 'healthy', False: 'unhealthy'},
         'grafana.auth.status': {True: 'authenticated', False: 'unauthenticated'},
+        'redis.cache.value': 'json',
         '__processor.result.items': 'json',
         '__query.params': 'json',
         '__query.payload': 'json',
