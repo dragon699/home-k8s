@@ -120,7 +120,7 @@ class ConnectorClient:
                 return CachedResponse(
                     cached_at=cached_value['cached_at'],
                     status_code=cached_value['status_code'],
-                    json_data=cached_value['json'],
+                    json_data=cached_value['json']
                 )
             
             else:
@@ -207,8 +207,9 @@ class ConnectorClient:
                 })
 
                 return CachedResponse(
-                    json_data=cached_value['json'],
-                    status_code=cached_value['status_code']
+                    cached_at=cached_value['cached_at'],
+                    status_code=cached_value['status_code'],
+                    json_data=cached_value['json']
                 )
             
             else:
