@@ -53,7 +53,7 @@ class ConnectorClient:
             response = session.get(
                 f'{self.url}/{endpoint}',
                 headers=self.headers,
-                params=data,
+                params=params,
                 json=data
             )
 
