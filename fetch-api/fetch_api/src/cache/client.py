@@ -40,12 +40,14 @@ class RedisClient:
             return json_value
 
         except Exception as err:
-            span.set_attributes({
-                'redis.cache.status': 'error',
-                'redis.cache.value': value,
-                'redis.cache.error.message': str(err),
-                'redis.cache.error.type': type(err).__name__
-            })
+            span.set_attributes(
+                reword({
+                    'redis.cache.status': 'error',
+                    'redis.cache.value': value,
+                    'redis.cache.error.message': str(err),
+                    'redis.cache.error.type': type(err).__name__
+                })
+            )
             return value
 
 
