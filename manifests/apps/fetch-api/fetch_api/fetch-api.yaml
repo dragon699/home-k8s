@@ -41,6 +41,12 @@ spec:
           envFrom:
             - configMapRef:
                 name: config-fetch-api
+          env:
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: data-redis-shared
+                  key: password
           livenessProbe:
             exec:
               command:
