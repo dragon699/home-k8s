@@ -13,3 +13,4 @@ apscheduler
 requests
 uvicorn
 fastapi
+jinja2

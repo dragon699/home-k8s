@@ -108,6 +108,7 @@
         {{ $batteryObj := (index $items 0) }}
         {{ $battery_usable_battery_percentage := ($batteryObj.Int "usable_battery_percentage") }}
         {{ $battery_usable_battery_kwh := ($batteryObj.String "usable_battery_kwh") }}
+        {{ $battery_usable_battery_km := ($batteryObj.String "usable_battery_km") }}
 
         {{ $last_chargeObj := (index $items 1) }}
         {{ $last_charge_location := ($last_chargeObj.String "location") }}
@@ -125,8 +126,11 @@
         {{ $state_state := ($stateObj.String "state") }}
         {{ $state_last_state_since := ($stateObj.String "last_state_since") }}
 
-        {{ $consumptionObj := (index $items 4) }}
-        {{ $consumption_average_consumption_wh_per_km := ($consumptionObj.String "average_consumption_wh_per_km") }}
+        {{ $efficiencyObj := (index $items 4) }}
+        {{ $efficiency_average_consumption_wh_per_km := ($efficiencyObj.String "average_consumption_wh_per_km") }}
+        {{ $efficiency_average_driving_efficiency_percentage := ($efficiencyObj.String "average_driving_efficiency_percentage") }}
+        {{ $efficiency_full_charge_usable_battery_kwh := ($efficiencyObj.String "full_charge_usable_battery_kwh") }}
+        {{ $efficiency_full_charge_usable_range_km := ($efficiencyObj.String "full_charge_usable_range_km") }}
         {{/* --- API data extraction ends --- */}}
 
 
@@ -136,12 +140,7 @@
         {{ $grafana_dashboard_overview_url := printf "%s/d/kOuP_Fggz/overview" $grafana_url }}
         {{ $grafana_dashboard_battery_health_url := printf "%s/d/jchmRiqUfXgTM/battery-health" $grafana_url }}
         {{ $grafana_dashboard_charging_history_url := printf "%s/d/TSmNYvRRk/charging-history" $grafana_url }}
-
-        {{ $color := "var(--color-positive)" }}
-        {{ if lt $battery_usable_battery_percentage 40 }}{{ $color = "var(--color-warning)" }}{{ end }}
-        {{ if lt $battery_usable_battery_percentage 15 }}{{ $color = "var(--color-negative)" }}{{ end }}
         {{/* --- Extra vars ends --- */}}
-
 
 
         <style>
@@ -240,10 +239,10 @@
           }
 
           .text-right-icon-last-car-location {
-            width: 24px;
-            height: 24px;
-            -webkit-mask: url("https://i.imgur.com/u74QULU.png") no-repeat center;
-            mask: url("https://i.imgur.com/u74QULU.png") no-repeat center;
+            width: 21px;
+            height: 21px;
+            -webkit-mask: url("https://i.imgur.com/oaUvINa.png") no-repeat center;
+            mask: url("https://i.imgur.com/oaUvINa.png") no-repeat center;
             -webkit-mask-size: contain;
             mask-size: contain;
             background-color: var(--color-positive);
@@ -263,7 +262,7 @@
             left: 7px;
           }
 
-          .text-right-icon-average-consumption {
+          .text-right-icon-efficiency {
             width: 19px;
             height: 19px;
             -webkit-mask: url("https://i.imgur.com/aPv3bvg.png") no-repeat center;
@@ -275,8 +274,7 @@
             left: 7px;
           }
         </style>
-
-
+        
 
 
         {{/* # Car state */}}
@@ -293,7 +291,7 @@
           </div>
 
           <div class="right-side">
-            <div class="row" style="color: {{ $color }}">
+            <div class="row">
               <div class="title-right-icon-car">
                 <img src="https://i.imgur.com/oLmdiWK.png" alt="Model 3" />
               </div>
@@ -311,37 +309,40 @@
             <div class="title">
               <a href="{{ $grafana_dashboard_battery_health_url }}" 
                 target="_blank" 
-                style="color:inherit;text-decoration:none;">
+                style="color:inherit;text-decoration:none; {{ if lt $battery_usable_battery_percentage 20 }}color: var(--color-negative){{ end }}">
                 {{ $battery_usable_battery_percentage }}%
               </a>
             </div>
-            <div class="text">{{ $battery_usable_battery_kwh }}kWh</div>
+            <div class="text">
+            {{ $battery_usable_battery_kwh }}kWh • {{ $battery_usable_battery_km }}km
+            </div>
           </div>
 
           <div class="right-side">
-            <div class="row" style="color: {{ $color }}">
-              <div class="text-right-icon-battery" style="background-color: {{ $color }}"></div>
+            <div class="row">
+              <div class="text-right-icon-battery" {{ if lt $battery_usable_battery_percentage 20 }}style="background-color: var(--color-negative)"{{ end }}></div>
             </div>
           </div>
         </div>
 
 
-        {{/* # Average consumption */}}
+        {{/* # Car efficiency */}}
         <div class="root-row">
           <div class="left-side">
             <div class="title">
               <a href="{{ $grafana_dashboard_charging_history_url }}" 
                 target="_blank" 
                 style="color:inherit;text-decoration:none;">
-                {{ $consumption_average_consumption_wh_per_km }}kWh/km
+                {{ $efficiency_average_driving_efficiency_percentage }}%
               </a>
             </div>
-            <div class="text">{{ $battery_usable_battery_kwh }}kWh</div>
+            <div class="text">{{ $efficiency_average_consumption_wh_per_km }}Wh/km</div>
+            <div class="text">{{ $efficiency_full_charge_usable_battery_kwh }}kWh • {{ $efficiency_full_charge_usable_range_km }}km</div>
           </div>
 
           <div class="right-side">
-            <div class="row" style="color: {{ $color }}">
-              <div class="text-right-icon-average-consumption" style="background-color: {{ $color }}"></div>
+            <div class="row">
+              <div class="text-right-icon-efficiency"></div>
             </div>
           </div>
         </div>
@@ -354,15 +355,22 @@
               <a href="https://www.google.com/maps/search/?api=1&query={{ urlquery (printf "%s %s" $last_location_city $last_location_address) }}" 
                 target="_blank" 
                 style="color:inherit;text-decoration:none;">
-                {{ $last_location_city }} {{ $last_location_address }}
+                {{ $last_location_city }}
+              </a>
+            </div>
+            <div class="title">
+              <a href="https://www.google.com/maps/search/?api=1&query={{ urlquery (printf "%s %s" $last_location_city $last_location_address) }}" 
+                target="_blank" 
+                style="color:inherit;text-decoration:none;">
+                {{ $last_location_address }}
               </a>
             </div>
             <div class="text">{{ $last_location_last_seen_since }} ago</div>
           </div>
 
           <div class="right-side">
-            <div class="row" style="color: {{ $color }}">
-              <div class="text-right-icon-last-car-location" style="background-color: {{ $color }}"></div>
+            <div class="row">
+              <div class="text-right-icon-last-car-location"></div>
             </div>
           </div>
         </div>
@@ -383,8 +391,8 @@
           </div>
 
           <div class="right-side">
-            <div class="row" style="color: {{ $color }}">
-              <div class="text-right-icon-last-charge-location" style="background-color: {{ $color }}"></div>
+            <div class="row">
+              <div class="text-right-icon-last-charge-location"></div>
             </div>
           </div>
         </div>

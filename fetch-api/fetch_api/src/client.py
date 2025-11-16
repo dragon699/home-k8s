@@ -36,11 +36,12 @@ class ConnectorClient:
 
 
     @traced()
-    def get(self, endpoint: str, data: dict = {}, span=None):
+    def get(self, endpoint: str, params: dict = {}, data: dict = {}, span=None):
         span.set_attributes(
             reword({
                 'connector.name': self.connector_name,
                 'connector.method': 'GET',
+                'connector.request.params': params,
                 'connector.request.body': data,
                 'connector.url': self.url,
                 'connector.endpoint': endpoint
@@ -52,6 +53,7 @@ class ConnectorClient:
             response = session.get(
                 f'{self.url}/{endpoint}',
                 headers=self.headers,
+                params=data,
                 json=data
             )
 
@@ -67,11 +69,12 @@ class ConnectorClient:
 
 
     @traced()
-    def post(self, endpoint: str, data: dict = {}, span=None):
+    def post(self, endpoint: str, params: dict = {}, data: dict = {}, span=None):
         span.set_attributes(
             reword({
                 'connector.name': self.connector_name,
                 'connector.method': 'POST',
+                'connector.request.params': params,
                 'connector.request.body': data,
                 'connector.url': self.url,
                 'connector.endpoint': endpoint
@@ -83,6 +86,7 @@ class ConnectorClient:
             response = session.post(
                 f'{self.url}/{endpoint}',
                 headers=self.headers,
+                params=params,
                 json=data
             )
 

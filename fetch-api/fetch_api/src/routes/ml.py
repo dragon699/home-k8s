@@ -11,7 +11,10 @@ client = ConnectorClient(connectors['ml'].name)
 
 
 @router.post('/ask')
-def fetch_ai_summary(request: Request, body: MLBody):
+def fetch_ai_summary(
+    request: Request,
+    body: MLBody
+):
     return APIProcessor.process_request(
         request=request,
         body=body,

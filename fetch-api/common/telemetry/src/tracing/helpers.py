@@ -10,8 +10,10 @@ def reword(attributes: dict):
         'health.connector.status.previous': {True: 'healthy', False: 'unhealthy'},
         'grafana.auth.status': {True: 'authenticated', False: 'unauthenticated'},
         '__processor.result.items': 'json',
+        '__query.params': 'json',
         '__query.payload': 'json',
         '__query.response': 'json',
+        '__request.params': 'json',
         '__request.body': 'json',
         '__response.content': 'json'
     }

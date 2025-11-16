@@ -1,5 +1,5 @@
 from connectors.grafana.src.api_processor import APIProcessor
-from fastapi import APIRouter
+from fastapi import APIRouter, Query
 
 
 router = APIRouter()
@@ -42,4 +42,15 @@ def get_car_average_consumption():
     return APIProcessor.process_request(
         query_ds_type='postgresql',
         query_id='teslamate-car-efficiency'
+    )
+
+
+@router.get('/car-drives-history')
+def get_car_drives(number_of_drives: int = Query(5, ge=1, le=1000)):
+    return APIProcessor.process_request(
+        query_ds_type='postgresql',
+        query_id='teslamate-car-drives-info',
+        query_params={
+            'number_of_drives': number_of_drives
+        }
     )

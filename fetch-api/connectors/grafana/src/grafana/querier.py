@@ -1,5 +1,5 @@
 import os, copy
-from common.utils.system import read_file
+from common.utils.system import read_file, render_template
 from common.telemetry.src.tracing.wrappers import traced
 from common.telemetry.src.tracing.helpers import reword
 from connectors.grafana.settings import settings
@@ -88,16 +88,19 @@ class Querier:
 
 
     @traced()
-    def commit(self, query_ds_type: str, query_id: str, span=None):
-        span.set_attributes({
-            'querier.templates_dir': self.templates_dir,
-            'querier.query.id': query_id,
-            'querier.query.datasource.type': query_ds_type,
-            'querier.query.datasource.uid': self.templates_struct[query_ds_type]['ds_uid']
-        })
+    def commit(self, query_ds_type: str, query_id: str, query_params: dict = {}, span=None):
+        span.set_attributes(
+            reword({
+                'querier.templates_dir': self.templates_dir,
+                'querier.query.id': query_id,
+                'querier.query.params': query_params,
+                'querier.query.datasource.type': query_ds_type,
+                'querier.query.datasource.uid': self.templates_struct[query_ds_type]['ds_uid']
+            })
+        )
 
         try:
-            expression = self.fetch(query_ds_type, query_id)
+            expression = self.fetch(query_ds_type, query_id, query_params)
             payload = self.render(query_ds_type, expression)
             response = self.send(payload)
             result = self.process(query_id, response.json())
@@ -117,7 +120,7 @@ class Querier:
 
 
     @traced()
-    def fetch(self, query_ds_type: str, query_id: str, span=None):
+    def fetch(self, query_ds_type: str, query_id: str, query_params: dict = {}, span=None):
         span.set_attributes({
             'querier.query.id': query_id,
             'querier.query.datasource.type': query_ds_type,
@@ -140,9 +143,23 @@ class Querier:
                     'querier.queries.template.path': f'{self.templates_dir}/{query_ds_type}/queries.json',
                     'querier.query.expression': query['query']['query']
                 })
-                span.set_attributes({
-                    'querier.query.expression': query['query']['query']
-                })
+
+                if len(query_params) > 0:
+                    query['query']['query'] = render_template(
+                        content=query['query']['query'],
+                        vars=query_params
+                    )
+
+                    span.set_attributes({
+                        'querier.query.expression.templated': True,
+                        'querier.query.expression': query['query']['query']
+                    })
+
+                else:
+                    span.set_attributes({
+                        'querier.query.expression.templated': False,
+                        'querier.query.expression': query['query']['query']
+                    })
 
                 return query['query']['query']
 
@@ -153,7 +170,7 @@ class Querier:
 
 
     @traced()
-    def render(self, query_ds_type: str, expression: str, span=None):
+    def render(self, query_ds_type: str, expression: str,  span=None):
         payload = copy.deepcopy(self.templates[query_ds_type]['payload'])
         expression_key = 'rawSql' if query_ds_type == 'postgresql' else 'expr'
         payload['queries'][0][expression_key] = expression

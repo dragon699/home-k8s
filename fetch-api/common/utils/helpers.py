@@ -11,6 +11,20 @@ def get_app_version(version_file: str):
     except:
         print(f'{version_file} not found, traces will not have version info.')
         return 'unknown'
+    
+
+def get_maps_url(path: str):
+    if not path.startswith('new?lat='):
+        return path
+    
+    try:
+        lat = path.split('lat=')[1].split('&')[0]
+        lng = path.split('lng=')[1]
+
+        return f'https://google.com/maps/search/?api=1&query={lat},{lng}'
+    
+    except:
+        return path
 
 
 def time_beautify_ms(milliseconds: int, target_tz: str = 'Europe/Sofia'):

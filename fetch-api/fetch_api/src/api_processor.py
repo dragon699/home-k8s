@@ -35,14 +35,21 @@ class APIProcessor:
             try:
                 upstream_method = upstream['method']
                 upstream_endpoint = upstream['endpoint']
+                params = upstream.get('params', {})
 
                 if upstream_method == 'GET':
-                    response = client.get(upstream_endpoint)
+                    response = client.get(
+                        endpoint=upstream_endpoint,
+                        params=params
+                    )
 
                 elif upstream_method == 'POST':
                     response = client.post(
                         endpoint=upstream_endpoint,
-                        data=body.model_dump()
+                        params=params,
+                        data=body.model_dump(
+                            exclude={'ai'}
+                        )
                     )
 
                 assert response.status_code in (200, 201)

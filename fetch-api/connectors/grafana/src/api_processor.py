@@ -12,12 +12,14 @@ class APIProcessor:
     def process_request(
         query_ds_type: str,
         query_id: str,
+        query_params: dict = {},
         span=None
     ):
         try:
             result = querier.commit(
                 query_ds_type=query_ds_type,
-                query_id=query_id
+                query_id=query_id,
+                query_params=query_params
             )
 
             assert not result is None

@@ -1,4 +1,4 @@
-import os, json, yaml
+import os, json, yaml, jinja2
 
 
 
@@ -16,3 +16,11 @@ def read_file(path: str, type='json'):
         else:
             return file.read()
 
+
+def render_template(content, vars={}):
+    template = jinja2.Template(
+        content,
+        undefined=jinja2.StrictUndefined
+    )
+
+    return template.render(vars)
