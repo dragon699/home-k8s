@@ -1,7 +1,7 @@
-from requests.exceptions import Timeout
+import common.utils.requests as req
+from requests import Timeout as ReqTimeout
 from fetch_api.src.cache import RedisClient, CachedResponse
 from fetch_api.settings import settings, connectors
-from common.utils.web import create_session
 from common.telemetry.src.tracing.wrappers import traced
 from common.telemetry.src.tracing.helpers import reword
 
@@ -41,8 +41,10 @@ class ConnectorClient:
             'connector.operation': 'ping'
         })
 
-        session = create_session(timeout=5)
-        response = session.get(health_endpoint)
+        response = req.get(
+            health_endpoint,
+            timeout=5
+        )
 
         return response
 
@@ -71,12 +73,12 @@ class ConnectorClient:
             cached_value = self.redis.get(cache_key)
 
         try:
-            session = create_session(timeout=self.requests_timeout)
-            response = session.get(
+            response = req.get(
                 f'{self.url}/{endpoint}',
                 headers=self.headers,
                 params=params,
-                json=data
+                json=data,
+                timeout=self.requests_timeout
             )
 
             if self.cache and response.status_code in [200, 201]:
@@ -91,7 +93,7 @@ class ConnectorClient:
 
             return response
         
-        except Timeout as err:
+        except ReqTimeout as err:
             if self.cache and not cached_value is None:
                 print('CACHE HIT CUZ OF TIMEOUT')
                 return CachedResponse(
@@ -132,12 +134,12 @@ class ConnectorClient:
             cached_value = self.redis.get(cache_key)
 
         try:
-            session = create_session(timeout=self.requests_timeout)
-            response = session.post(
+            response = req.post(
                 f'{self.url}/{endpoint}',
                 headers=self.headers,
                 params=params,
-                json=data
+                json=data,
+                timeout=self.requests_timeout
             )
 
             if self.cache and response.status_code in [200, 201]:

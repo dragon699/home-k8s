@@ -1,6 +1,6 @@
+import common.utils.requests as req
 from langchain_ollama import ChatOllama
 from connectors.ml.settings import settings
-from common.utils.web import create_session
 from common.telemetry.src.tracing.wrappers import traced
 from common.telemetry.src.tracing.helpers import reword
 
@@ -20,8 +20,10 @@ class OllamaClient:
             'ollama.endpoint': settings.health_endpoint
         })
 
-        session = create_session(timeout=5)
-        response = session.get(settings.health_endpoint)
+        response = req.get(
+            settings.health_endpoint,
+            timeout=5
+        )
 
         return response
 

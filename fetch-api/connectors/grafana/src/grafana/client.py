@@ -1,5 +1,5 @@
+import common.utils.requests as req
 from connectors.grafana.settings import settings
-from common.utils.web import create_session
 from common.telemetry.src.tracing.wrappers import traced
 from common.telemetry.src.tracing.helpers import reword
 from connectors.grafana.src.telemetry.logging import log
@@ -30,8 +30,10 @@ class GrafanaClient:
             'grafana.endpoint': settings.health_endpoint
         })
 
-        session = create_session(timeout=5)
-        response = session.get(settings.health_endpoint)
+        response = req.get(
+            settings.health_endpoint,
+            timeout=5
+        )
         
         return response
 
@@ -43,8 +45,7 @@ class GrafanaClient:
             return False
 
         try:
-            session = create_session(timeout=5)
-            response = session.get(
+            response = req.get(
                 settings.auth_endpoint,
                 headers=self.headers
             )
@@ -127,8 +128,7 @@ class GrafanaClient:
                 })
             )
 
-            session = create_session(timeout=5)
-            response = session.get(
+            response = req.get(
                 f'{self.url}/{endpoint}',
                 headers=self.headers,
                 json=data
@@ -158,8 +158,7 @@ class GrafanaClient:
                 })
             )
 
-            session = create_session(timeout=5)
-            response = session.post(
+            response = req.post(
                 f'{self.url}/{endpoint}',
                 headers=self.headers,
                 json=data
