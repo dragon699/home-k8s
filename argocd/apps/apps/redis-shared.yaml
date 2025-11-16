@@ -17,13 +17,11 @@ spec:
   - repoURL: https://ot-container-kit.github.io/helm-charts
     targetRevision: 0.22.2
     chart: redis-operator
-  - repoURL: https://ot-container-kit.github.io/helm-charts
-    targetRevision: 0.16.8
-    chart: redis
-    helm:
-      releaseName: redis-shared
-      valueFiles:
-      - '$values/helm/apps/redis-shared/values.yaml'
+  - repoURL: git@github.com:dragon699/home-k8s.git
+    targetRevision: main
+    path: manifests/apps/redis-shared
+    directory:
+      recurse: true
   destination:
     server: https://kubernetes.default.svc
     namespace: shared
