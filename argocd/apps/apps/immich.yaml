@@ -16,6 +16,16 @@ spec:
     path: manifests/apps/immich
     directory:
       recurse: true
+  - repoURL: git@github.com:dragon699/home-k8s.git
+    targetRevision: main
+    path: manifests/apps/immich-postgresql
+    directory:
+      recurse: true
+  - repoURL: git@github.com:dragon699/home-k8s.git
+    targetRevision: main
+    path: manifests/apps/immich-redis
+    directory:
+      recurse: true
   destination:
     server: https://kubernetes.default.svc
     namespace: immich
