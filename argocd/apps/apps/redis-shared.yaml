@@ -22,6 +22,8 @@ spec:
     chart: redis
     helm:
       releaseName: redis-shared
+      valueFiles:
+      - '$values/helm/apps/redis-shared/values.yaml'
   destination:
     server: https://kubernetes.default.svc
     namespace: shared
