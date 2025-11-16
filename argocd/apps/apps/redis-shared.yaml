@@ -14,12 +14,12 @@ spec:
   - repoURL: git@github.com:dragon699/home-k8s.git
     targetRevision: main
     ref: values
-  - repoURL: oci://registry-1.docker.io/cloudpirates/redis
-    targetRevision: 0.14.1
+  - repoURL: https://ot-container-kit.github.io/helm-charts
+    targetRevision: 0.22.2
+    chart: redis-operator
+  - repoURL: https://ot-container-kit.github.io/helm-charts
+    targetRevision: 0.16.8
     chart: redis
-    helm:
-      valueFiles:
-      - '$values/helm/apps/redis-shared/values.yaml'
   destination:
     server: https://kubernetes.default.svc
     namespace: shared
