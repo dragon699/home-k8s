@@ -139,29 +139,30 @@ class Querier:
 
         for query in self.templates[query_ds_type]['queries']:
             if query['query']['id'] == query_id:
+                expression = copy.deepcopy(query['query']['query'])
+
                 span.add_event('search_completed', attributes={
-                    'querier.queries.template.path': f'{self.templates_dir}/{query_ds_type}/queries.json',
-                    'querier.query.expression': query['query']['query']
+                    'querier.queries.template.path': f'{self.templates_dir}/{query_ds_type}/queries.json'
                 })
 
                 if len(query_params) > 0:
-                    query['query']['query'] = render_template(
-                        content=query['query']['query'],
+                    expression = render_template(
+                        content=expression,
                         vars=query_params
                     )
 
                     span.set_attributes({
                         'querier.query.expression.templated': True,
-                        'querier.query.expression': query['query']['query']
+                        'querier.query.expression': expression
                     })
 
                 else:
                     span.set_attributes({
                         'querier.query.expression.templated': False,
-                        'querier.query.expression': query['query']['query']
+                        'querier.query.expression': expression
                     })
 
-                return query['query']['query']
+                return expression
 
         span.set_attributes({
             'querier.error.message': f'No query found for id {query_id} in datasource type {query_ds_type}'
