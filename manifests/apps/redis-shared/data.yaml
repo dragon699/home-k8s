@@ -1,0 +1,29 @@
+---
+apiVersion: generators.external-secrets.io/v1alpha1
+kind: Password
+metadata:
+  name: data-redis-shared
+  namespace: shared
+spec:
+  length: 16
+  noUpper: false
+  allowRepeat: true
+
+
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: data-redis-shared
+  namespace: shared
+spec:
+  refreshInterval: 0m0s
+  target:
+    name: data-redis-shared
+    creationPolicy: Owner
+  dataFrom:
+  - sourceRef:
+      generatorRef:
+        apiVersion: generators.external-secrets.io/v1alpha1
+        kind: Password
+        name: data-redis-shared

@@ -7,23 +7,22 @@ metadata:
     env: home
 spec:
   kubernetesConfig:
-    image: quay.io/opstree/redis:v7.0.15
+    image: quay.io/opstree/redis:latest
     imagePullPolicy: IfNotPresent
-    updateStrategy: {}
+    redisSecret:
+      name: data-redis-shared
+      key: data-redis-shared
+  redisExporter:
+    enabled: false
+    image: quay.io/opstree/redis-exporter:latest
+    imagePullPolicy: IfNotPresent
   podSecurityContext:
     fsGroup: 1000
     runAsUser: 1000
-  redisExporter:
-    image: quay.io/opstree/redis-exporter:v1.44.0
-    imagePullPolicy: IfNotPresent
-    port: 9121
   storage:
     volumeClaimTemplate:
-      metadata: {}
       spec:
-        accessModes:
-        - ReadWriteOnce
+        accessModes: ['ReadWriteOnce']
         resources:
           requests:
             storage: 10Gi
-    volumeMount: {}
