@@ -1,0 +1,29 @@
+## Create before deploying nvidia's gpu-operator
+## Lives in /etc/k0s/containerd.d/nvidia.toml
+
+
+version = 2
+
+[plugins."io.containerd.grpc.v1.cri".containerd.runtimes.nvidia]
+  privileged_without_host_devices = false
+  runtime_engine = ""
+  runtime_root = ""
+  runtime_type = "io.containerd.runc.v2"
+  [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.nvidia.options]
+    BinaryName = "/usr/bin/nvidia-container-runtime"
+
+[plugins."io.containerd.grpc.v1.cri".containerd.runtimes.nvidia-cdi]
+  privileged_without_host_devices = false
+  runtime_engine = ""
+  runtime_root = ""
+  runtime_type = "io.containerd.runc.v2"
+  [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.nvidia-cdi.options]
+    BinaryName = "/usr/bin/nvidia-container-runtime-cdi"
+
+[plugins."io.containerd.grpc.v1.cri".containerd.runtimes.nvidia-legacy]
+  privileged_without_host_devices = false
+  runtime_engine = ""
+  runtime_root = ""
+  runtime_type = "io.containerd.runc.v2"
+  [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.nvidia-legacy.options]
+    BinaryName = "/usr/bin/nvidia-container-runtime"
