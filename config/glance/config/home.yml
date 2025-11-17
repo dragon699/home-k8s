@@ -411,8 +411,8 @@
       url: http://fetch-api.fetch-api.svc:8069/grafana/car-drives-history
       method: POST
       parameters:
-        number_of_drives: 100
-      body: {"ai": false}
+        number_of_drives: 3
+      body: {"ai": true}
       template: |
         <style>
           :root {
