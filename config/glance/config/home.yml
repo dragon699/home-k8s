@@ -160,7 +160,7 @@
             align-items: center;
             gap: 6px;
             white-space: nowrap;
-            font-weight: 600;
+            font-weight: 500;
           }
 
           .header-title {
@@ -415,6 +415,28 @@
       body: {"ai": false}
       template: |
         <style>
+          :root {
+            --c-primary: var(--color-primary);
+            --c-dim: rgba(200,200,200,0.55);
+            --c-light: rgba(230,230,230,0.9);
+            --border: 1px solid rgba(255,255,255,0.08);
+
+            --fs-top: 15px;
+            --fs-bottom: 12px;
+            --fs-mini: 14px;
+
+            --gap-row: 10px;
+            --gap-mini: 6px;
+            --gap-mini-pair: 12px;
+
+            --icon-size-sm: 14px;
+            --icon-size-md: 17px;
+            --icon-size-lg: 20px;
+            --icon-size-battery: 21px;
+            --icon-size-map: 21px;
+            --icon-size-map-r: 22px;
+          }
+
           :host {
             display: block;
             height: auto !important;
@@ -423,7 +445,7 @@
 
           .drive-item-box {
             background: transparent;
-            border: 1px solid rgba(255,255,255,0.08);
+            border: var(--border);
             border-radius: 1rem;
             padding: 1.2rem;
             margin: 0;
@@ -433,7 +455,6 @@
             margin-bottom: 1.2rem;
           }
 
-          /* HEADER */
           .drive-header-row {
             display: grid;
             grid-template-columns: 1fr auto 1fr;
@@ -441,41 +462,34 @@
             margin-bottom: 1rem;
           }
 
-          .drive-header-left,
-          .drive-header-right {
+          .header-side {
             display: flex;
             align-items: center;
             gap: 10px;
           }
 
-          .drive-header-right {
-            justify-content: flex-end;
-            text-align: right;
-          }
-
-          .drive-header-texts {
+          .header-texts {
             display: flex;
             flex-direction: column;
             white-space: nowrap;
           }
 
-          .drive-top-text {
-            font-size: 15px;
-            color: rgba(230,230,230,0.9);
+          .top-text {
+            font-size: var(--fs-top);
+            color: var(--c-light);
             margin-bottom: 0.25rem;
           }
 
-          .drive-bottom-text {
-            font-size: 12px;
-            color: rgba(200,200,200,0.55);
+          .bottom-text {
+            font-size: var(--fs-bottom);
+            color: var(--c-dim);
             overflow: hidden;
             text-overflow: ellipsis;
           }
 
-          /* ICON MASK COMMON */
           .icon-mask {
             display: inline-block;
-            background-color: var(--color-primary);
+            background-color: var(--c-primary);
             -webkit-mask-size: contain;
             mask-size: contain;
             -webkit-mask-repeat: no-repeat;
@@ -484,102 +498,41 @@
             mask-position: center;
           }
 
-          .drive-header-icon-left {
-            width: 21px;
-            height: 21px;
-            -webkit-mask-image: url("https://i.imgur.com/OjiGrcA.png");
-            mask-image: url("https://i.imgur.com/OjiGrcA.png");
-            transform: translateY(-2px);
-          }
+          .icon-map-l { width: var(--icon-size-map); height: var(--icon-size-map); -webkit-mask-image: url("https://i.imgur.com/OjiGrcA.png"); mask-image: url("https://i.imgur.com/OjiGrcA.png"); }
+          .icon-map-r { width: var(--icon-size-map-r); height: var(--icon-size-map-r); -webkit-mask-image: url("https://i.imgur.com/cvseR7H.png"); mask-image: url("https://i.imgur.com/cvseR7H.png"); }
+          .icon-battery { width: var(--icon-size-battery); height: var(--icon-size-battery); -webkit-mask-image: url("https://i.imgur.com/xMUsMaq.png"); mask-image: url("https://i.imgur.com/xMUsMaq.png"); }
 
-          .drive-header-icon-right {
-            width: 22px;
-            height: 22px;
-            -webkit-mask-image: url("https://i.imgur.com/cvseR7H.png");
-            mask-image: url("https://i.imgur.com/cvseR7H.png");
-            transform: translateY(-2px);
-          }
-
-          .drive-middle-icon {
-            width: 24px;
-            height: 24px;
-            -webkit-mask-image: url("https://i.imgur.com/UtRWI5d.png");
-            mask-image: url("https://i.imgur.com/UtRWI5d.png");
-            opacity: 0.95;
-          }
-
-          .drive-header-middle {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            white-space: nowrap;
-          }
-
-          .drive-middle-text {
-            font-size: 14px;
-            color: var(--color-primary);
-            font-weight: 500;
-          }
-
-          /* GRID — FIXED */
-          .drive-grid {
+          .grid {
             display: grid;
-            grid-template-columns: 1fr auto 1fr;  /* CENTER NOW PERFECTLY ALIGNED */
-            row-gap: 10px;
+            grid-template-columns: 1fr auto 1fr;
+            row-gap: var(--gap-row);
             column-gap: 16px;
           }
 
-          .drive-grid > :nth-child(1) { justify-self: start; }
-          .drive-grid > :nth-child(2) { justify-self: center; }
-          .drive-grid > :nth-child(3) { justify-self: end; }
+          .left  { justify-self: start; }
+          .mid   { justify-self: center; }
+          .right { justify-self: end; }
 
-          /* BASE ROW STYLE */
-          .drive-info-row {
+          .row {
             display: flex;
             align-items: center;
             gap: 6px;
-            font-size: 14px;
-            color: rgba(220,220,220,0.85);
+            font-size: var(--fs-mini);
             white-space: nowrap;
+            color: rgba(200,200,200,0.70);
           }
 
-          /* DEFAULT ICON (leaf) */
-          .drive-info-icon {
-            width: 16px;
-            height: 16px;
-            background-color: var(--color-primary);
-            -webkit-mask: url("https://i.imgur.com/UtRWI5d.png") no-repeat center;
-            mask: url("https://i.imgur.com/UtRWI5d.png") no-repeat center;
-            -webkit-mask-size: contain;
-            mask-size: contain;
+          .dot {
+            font-size: var(--fs-mini);
+            color: var(--c-dim);
           }
 
-          /* BATTERY ICONS—21px */
-          .drive-info-icon-battery {
-            width: 21px;
-            height: 21px;
-            background-color: var(--color-primary);
-            -webkit-mask: url("https://i.imgur.com/xMUsMaq.png") no-repeat center;
-            mask: url("https://i.imgur.com/xMUsMaq.png") no-repeat center;
-            -webkit-mask-size: contain;
-            mask-size: contain;
-          }
-
-          /* RIGHT COLUMN ICON AFTER TEXT */
-          .drive-grid > :nth-child(3) .drive-info-row span.drive-info-icon-battery {
-            order: 2;
-            margin-left: 6px;
-            margin-right: 0;
-          }
-
-          /* INNER BOX — SHRINK */
           .inner-box {
-            border: 1px solid rgba(255,255,255,0.08);
+            border: var(--border);
             border-radius: 0.6rem;
             padding: 6px 12px;
             display: inline-flex;
-            gap: 12px;
+            gap: var(--gap-mini-pair);
             align-items: center;
             justify-content: center;
             margin: 0 auto;
@@ -587,67 +540,22 @@
             width: auto;
           }
 
-          .mini-icon {
-            background-color: var(--color-primary);
-            -webkit-mask-size: contain;
-            mask-size: contain;
-            -webkit-mask-repeat: no-repeat;
-            mask-repeat: no-repeat;
-            -webkit-mask-position: center;
-            mask-position: center;
-          }
-
-          /* MINI ICON SETS */
-          .mini1 { -webkit-mask-image: url("https://i.imgur.com/aPv3bvg.png"); mask-image: url("https://i.imgur.com/aPv3bvg.png"); width:14px; height:14px; }
-
-          .mini2 {
-            -webkit-mask-image: url("https://i.imgur.com/mjQRIM0.png");
-            mask-image: url("https://i.imgur.com/mjQRIM0.png");
-            width: 17px;
-            height: 17px;
-          }
-
-          .mini3 {
-            -webkit-mask-image: url("https://i.imgur.com/fPqo2ku.png");
-            mask-image: url("https://i.imgur.com/fPqo2ku.png");
-            width: 20px;
-            height: 20px;
-          }
-
-          .mini4 { -webkit-mask-image: url("https://i.imgur.com/wdKEI6e.png"); mask-image: url("https://i.imgur.com/wdKEI6e.png"); width:14px; height:14px; }
-
-          .mini5 { -webkit-mask-image: url("https://i.imgur.com/f3huO5u.png"); mask-image: url("https://i.imgur.com/f3huO5u.png"); width:14px; height:14px; }
-
-          .mini6 { -webkit-mask-image: url("https://i.imgur.com/RtYdECy.png"); mask-image: url("https://i.imgur.com/RtYdECy.png"); width:14px; height:14px; }
-
-          .mini7 {
-            -webkit-mask-image: url("https://i.imgur.com/cd0BU9N.png");
-            mask-image: url("https://i.imgur.com/cd0BU9N.png");
-            width:18px;
-            height:18px;
-          }
-
-          .mini8 {
-            -webkit-mask-image: url("https://i.imgur.com/DhCug74.png");
-            mask-image: url("https://i.imgur.com/DhCug74.png");
-            width:18px;
-            height:18px;
-          }
-
-          .consumption-row {
-            display: inline-grid;
-            grid-template-columns: auto auto auto;
-            gap: 6px;
+          .mini-pair {
+            display: inline-flex;
             align-items: center;
-            justify-content: center;
+            gap: var(--gap-mini);
           }
 
-          .dot {
-            font-size: 14px;
-            margin: 0 2px;
-            color: rgba(200,200,200,0.55);
-          }
+          .mini1 { width: var(--icon-size-sm); height: var(--icon-size-sm); -webkit-mask-image: url("https://i.imgur.com/aPv3bvg.png"); mask-image: url("https://i.imgur.com/aPv3bvg.png"); }
+          .mini2 { width: var(--icon-size-md); height: var(--icon-size-md); -webkit-mask-image: url("https://i.imgur.com/mjQRIM0.png"); mask-image: url("https://i.imgur.com/mjQRIM0.png"); }
+          .mini3 { width: var(--icon-size-lg); height: var(--icon-size-lg); -webkit-mask-image: url("https://i.imgur.com/fPqo2ku.png"); mask-image: url("https://i.imgur.com/fPqo2ku.png"); }
+          .mini4 { width: var(--icon-size-sm); height: var(--icon-size-sm); -webkit-mask-image: url("https://i.imgur.com/wdKEI6e.png"); mask-image: url("https://i.imgur.com/wdKEI6e.png"); }
+          .mini5 { width: var(--icon-size-sm); height: var(--icon-size-sm); -webkit-mask-image: url("https://i.imgur.com/f3huO5u.png"); mask-image: url("https://i.imgur.com/f3huO5u.png"); }
+          .mini6 { width: var(--icon-size-sm); height: var(--icon-size-sm); -webkit-mask-image: url("https://i.imgur.com/RtYdECy.png"); mask-image: url("https://i.imgur.com/RtYdECy.png"); }
+          .mini7 { width: 18px; height: 18px; -webkit-mask-image: url("https://i.imgur.com/cd0BU9N.png"); mask-image: url("https://i.imgur.com/cd0BU9N.png"); }
+          .mini8 { width: 18px; height: 18px; -webkit-mask-image: url("https://i.imgur.com/DhCug74.png"); mask-image: url("https://i.imgur.com/DhCug74.png"); }
         </style>
+
 
         {{ $items := .JSON.Array "items" }}
 
@@ -655,74 +563,102 @@
           {{ range $items }}
             <li class="drive-item-box">
 
-              <!-- HEADER -->
               <div class="drive-header-row">
-                <div class="drive-header-left">
-                  <span class="icon-mask drive-header-icon-left"></span>
-                  <div class="drive-header-texts">
-                    <div class="drive-top-text">{{ .String "start_address" }}</div>
-                    <div class="drive-bottom-text">{{ .String "start_time_ordinal" }}</div>
+                <div class="header-side">
+                  <span class="icon-mask icon-map-l"></span>
+                  <div class="header-texts">
+                    <div class="top-text">{{ .String "start_address" }}</div>
+                    <div class="bottom-text">{{ .String "start_time_ordinal" }}</div>
                   </div>
                 </div>
 
                 <div class="drive-header-middle">
-                  <span class="drive-middle-text">{{ .String "duration_end_since_start" }}</span>
+                  <span class="top-text" style="color:var(--c-primary);">{{ .String "duration_end_since_start" }}</span>
                 </div>
 
-                <div class="drive-header-right">
-                  <div class="drive-header-texts">
-                    <div class="drive-top-text">{{ .String "end_address" }}</div>
-                    <div class="drive-bottom-text">{{ .String "end_time_ordinal" }}</div>
+                <div class="header-side" style="justify-content:flex-end;">
+                  <div class="header-texts" style="text-align:right;">
+                    <div class="top-text">{{ .String "end_address" }}</div>
+                    <div class="bottom-text">{{ .String "end_time_ordinal" }}</div>
                   </div>
-                  <span class="icon-mask drive-header-icon-right"></span>
+                  <span class="icon-mask icon-map-r"></span>
                 </div>
               </div>
 
-              <!-- GRID -->
-              <div class="drive-grid">
+              <div class="grid">
 
-                <div>
-                  <div class="drive-info-row">
-                    <span class="drive-info-icon-battery"></span>
+                <div class="left">
+                  <div class="row">
+                    <span class="icon-mask icon-battery"></span>
                     <span>{{ .String "start_battery_percentage" }}%</span>
                   </div>
                 </div>
 
-                <div>
-                  <div class="drive-info-row">
-                    <span class="consumption-row">
-                      <span>{{ .String "average_speed_kmh" }}km/h</span>
-                      {{ if ne (.String "average_consumption_wh_per_km") "N/A" }}
+                <div class="mid">
+                  <div class="row">
+                    <span>{{ .String "average_speed_kmh" }}km/h</span>
+                    {{ if ne (.String "average_consumption_wh_per_km") "N/A" }}
                       <span class="dot">•</span>
                       <span>{{ .String "average_consumption_wh_per_km" }}Wh/km</span>
-                      {{ end }}
-                    </span>
+                    {{ end }}
                   </div>
                 </div>
 
-                <div>
-                  <div class="drive-info-row">
+                <div class="right">
+                  <div class="row">
                     <span>{{ .String "end_battery_percentage" }}%</span>
-                    <span class="drive-info-icon-battery"></span>
+                    <span class="icon-mask icon-battery"></span>
                   </div>
                 </div>
 
-                <!-- EXPANDED MINI BOX -->
                 <div class="inner-box">
-                  <span class="mini-icon mini4"></span><span>-{{ .String "battery_used_percentage" }}%</span>
+
+                  <span class="mini-pair">
+                    <span class="icon-mask mini4"></span>
+                    <span>-{{ .String "battery_used_percentage" }}%</span>
+                  </span>
+
                   {{ if ne (.String "total_consumption_kwh") "N/A" }}
-                  <span class="mini-icon mini5"></span><span>-{{ .String "total_consumption_kwh" }}kWh</span>
+                    <span class="mini-pair">
+                      <span class="icon-mask mini5"></span>
+                      <span>-{{ .String "total_consumption_kwh" }}kWh</span>
+                    </span>
                   {{ end }}
+
                   {{ if ne (.String "average_driving_efficiency_percentage") "N/A" }}
-                  <span class="mini-icon mini1"></span><span>{{ .String "average_driving_efficiency_percentage" }}%</span>
+                    <span class="mini-pair">
+                      <span class="icon-mask mini1"></span>
+                      <span>{{ .String "average_driving_efficiency_percentage" }}%</span>
+                    </span>
                   {{ end }}
-                  <span class="mini-icon mini3"></span><span>{{ .String "distance_km" }}km</span>
-                  <span class="mini-icon mini7"></span><span>↑ {{ .String "max_speed_kmh" }}km/h</span>
-                  <span class="mini-icon mini8"></span><span>↑ {{ .String "max_power_kw" }}kW</span>
-                  <span class="mini-icon mini2"></span><span>{{ .String "outside_temperature_celsius" }}°C</span>
+
+                  <span class="mini-pair">
+                    <span class="icon-mask mini3"></span>
+                    <span>{{ .String "distance_km" }}km</span>
+                  </span>
+
+                  <span class="mini-pair">
+                    <span class="icon-mask mini7"></span>
+                    <span>↑ {{ .String "max_speed_kmh" }}km/h</span>
+                  </span>
+
+                  <span class="mini-pair">
+                    <span class="icon-mask mini8"></span>
+                    <span>↑ {{ .String "max_power_kw" }}kW</span>
+                  </span>
+
+                  <span class="mini-pair">
+                    <span class="icon-mask mini2"></span>
+                    <span>{{ .String "outside_temperature_celsius" }}°C</span>
+                  </span>
+
                   {{ if .Bool "reduced_range" }}
-                  <span class="mini-icon mini6"></span><span>Range reduced</span>
+                    <span class="mini-pair">
+                      <span class="icon-mask mini6"></span>
+                      <span>Reduced range</span>
+                    </span>
                   {{ end }}
+
                 </div>
 
               </div>
@@ -730,13 +666,6 @@
             </li>
           {{ end }}
         </ul>
-
-
-
-
-
-
-
 
 
 

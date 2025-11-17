@@ -65,7 +65,7 @@ def time_beautify_ordinal(dt_string: int, target_tz: str = 'Europe/Sofia'):
     day = get_ordinal_day(dt.day)
     month = dt.strftime('%B')
     year = dt.year
-    time = dt.strftime('%H:%M:%S')
+    time = dt.strftime('%H:%M')
 
     return f'{year} / {day} of {month} at {time}'
 
