@@ -46,7 +46,7 @@ spec:
           valueFrom:
             secretKeyRef:
               name: data-postgresql-shared-teslamate-teslamate
-              key: pgbouncer-host
+              key: host
         - name: DATABASE_NAME
           valueFrom:
             secretKeyRef:
