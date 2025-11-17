@@ -62,3 +62,7 @@ spec:
             secretKeyRef:
               name: data-postgresql-shared-teslamate-teslamate
               key: password
+        - name: DATABASE_SSL
+          value: "true"
+        - name: DATABASE_SSLMODE
+          value: require
