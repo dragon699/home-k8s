@@ -19,6 +19,9 @@ spec:
         env: home
     spec:
       volumes:
+      - name: pg-root-ca
+        secret:
+          secretName: postgresql-shared-pg-cluster-ca-cert
       - name: teslamate-data
         persistentVolumeClaim:
           claimName: teslamate
@@ -28,6 +31,10 @@ spec:
         ports:
         - containerPort: 4000
         volumeMounts:
+        - name: pg-root-ca
+          mountPath: /etc/postgres-ca/root.crt
+          subPath: root.crt
+          readOnly: true
         - name: teslamate-data
           mountPath: /opt/app/import
         securityContext:
@@ -66,3 +73,5 @@ spec:
           value: "true"
         - name: DATABASE_SSLMODE
           value: require
+        - name: DATABASE_SSL_CA_CERT_FILE
+          value: /etc/postgres-ca/root.crt
