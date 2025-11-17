@@ -1,4 +1,4 @@
-from common.utils.helpers import time_beautify_ms, time_since, get_maps_url
+from common.utils.helpers import time_beautify_ms, time_beautify_ordinal, time_since, get_maps_url
 from common.telemetry.src.tracing.wrappers import traced
 from common.telemetry.src.tracing.helpers import reword
 
@@ -177,6 +177,7 @@ class Processor:
                                     item[key] = 'N/A'
                                 else:
                                     item[key] = time_beautify_ms(item[key])
+                                    item[f'{key}_ordinal'] = time_beautify_ordinal(item[key])
 
                             for key in ['start_address_url', 'end_address_url']:
                                 if item[key] is None:

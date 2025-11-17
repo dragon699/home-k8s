@@ -493,7 +493,7 @@
             text-overflow: ellipsis;
           }
 
-          /* ICON MASKS */
+          /* ICON MASK COMMON */
           .icon-mask {
             display: inline-block;
             background-color: var(--color-primary);
@@ -543,31 +543,17 @@
             font-weight: 500;
           }
 
-          /* GRID */
+          /* GRID — FIXED */
           .drive-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-columns: 1fr auto 1fr;  /* CENTER NOW PERFECTLY ALIGNED */
             row-gap: 10px;
             column-gap: 16px;
           }
 
-          /* ALIGN COLUMNS */
-          .drive-grid > :nth-child(1),
-          .drive-grid > :nth-child(4) {
-            justify-self: start;
-            padding-left: 3px;
-          }
-
-          .drive-grid > :nth-child(2),
-          .drive-grid > :nth-child(5) {
-            justify-self: center;
-          }
-
-          .drive-grid > :nth-child(3),
-          .drive-grid > :nth-child(6) {
-            justify-self: end;
-            padding-right: 3px;
-          }
+          .drive-grid > :nth-child(1) { justify-self: start; }
+          .drive-grid > :nth-child(2) { justify-self: center; }
+          .drive-grid > :nth-child(3) { justify-self: end; }
 
           /* BASE ROW STYLE */
           .drive-info-row {
@@ -590,10 +576,10 @@
             mask-size: contain;
           }
 
-          /* BATTERY ICON — used ONLY for text_one and text_three */
+          /* BATTERY ICONS—21px */
           .drive-info-icon-battery {
-            width: 16px;
-            height: 16px;
+            width: 21px;
+            height: 21px;
             background-color: var(--color-primary);
             -webkit-mask: url("https://i.imgur.com/xMUsMaq.png") no-repeat center;
             mask: url("https://i.imgur.com/xMUsMaq.png") no-repeat center;
@@ -601,23 +587,88 @@
             mask-size: contain;
           }
 
-          /* RIGHT COLUMN ICONS GO AFTER TEXT */
-          .drive-grid > :nth-child(3) .drive-info-row,
-          .drive-grid > :nth-child(6) .drive-info-row {
-            justify-content: flex-end;
-          }
-
-          .drive-grid > :nth-child(3) .drive-info-row span.drive-info-icon,
-          .drive-grid > :nth-child(6) .drive-info-row span.drive-info-icon,
-          .drive-grid > :nth-child(3) .drive-info-row span.drive-info-icon-battery,
-          .drive-grid > :nth-child(6) .drive-info-row span.drive-info-icon-battery {
+          /* RIGHT COLUMN ICON AFTER TEXT */
+          .drive-grid > :nth-child(3) .drive-info-row span.drive-info-icon-battery {
             order: 2;
             margin-left: 6px;
             margin-right: 0;
           }
 
-        </style>
+          /* INNER BOX — SHRINK */
+          .inner-box {
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 0.6rem;
+            padding: 6px 12px;
+            display: inline-flex;
+            gap: 12px;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            grid-column: 2;
+            width: auto;
+          }
 
+          .mini-icon {
+            background-color: var(--color-primary);
+            -webkit-mask-size: contain;
+            mask-size: contain;
+            -webkit-mask-repeat: no-repeat;
+            mask-repeat: no-repeat;
+            -webkit-mask-position: center;
+            mask-position: center;
+          }
+
+          /* MINI ICON SETS */
+          .mini1 { -webkit-mask-image: url("https://i.imgur.com/aPv3bvg.png"); mask-image: url("https://i.imgur.com/aPv3bvg.png"); width:14px; height:14px; }
+
+          .mini2 {
+            -webkit-mask-image: url("https://i.imgur.com/mjQRIM0.png");
+            mask-image: url("https://i.imgur.com/mjQRIM0.png");
+            width: 17px;
+            height: 17px;
+          }
+
+          .mini3 {
+            -webkit-mask-image: url("https://i.imgur.com/fPqo2ku.png");
+            mask-image: url("https://i.imgur.com/fPqo2ku.png");
+            width: 20px;
+            height: 20px;
+          }
+
+          .mini4 { -webkit-mask-image: url("https://i.imgur.com/wdKEI6e.png"); mask-image: url("https://i.imgur.com/wdKEI6e.png"); width:14px; height:14px; }
+
+          .mini5 { -webkit-mask-image: url("https://i.imgur.com/f3huO5u.png"); mask-image: url("https://i.imgur.com/f3huO5u.png"); width:14px; height:14px; }
+
+          .mini6 { -webkit-mask-image: url("https://i.imgur.com/RtYdECy.png"); mask-image: url("https://i.imgur.com/RtYdECy.png"); width:14px; height:14px; }
+
+          .mini7 {
+            -webkit-mask-image: url("https://i.imgur.com/cd0BU9N.png");
+            mask-image: url("https://i.imgur.com/cd0BU9N.png");
+            width:18px;
+            height:18px;
+          }
+
+          .mini8 {
+            -webkit-mask-image: url("https://i.imgur.com/DhCug74.png");
+            mask-image: url("https://i.imgur.com/DhCug74.png");
+            width:18px;
+            height:18px;
+          }
+
+          .consumption-row {
+            display: inline-grid;
+            grid-template-columns: auto auto auto;
+            gap: 6px;
+            align-items: center;
+            justify-content: center;
+          }
+
+          .dot {
+            font-size: 14px;
+            margin: 0 2px;
+            color: rgba(200,200,200,0.55);
+          }
+        </style>
 
         {{ $items := .JSON.Array "items" }}
 
@@ -625,9 +676,8 @@
           {{ range $items }}
             <li class="drive-item-box">
 
+              <!-- HEADER -->
               <div class="drive-header-row">
-
-                <!-- LEFT -->
                 <div class="drive-header-left">
                   <span class="icon-mask drive-header-icon-left"></span>
                   <div class="drive-header-texts">
@@ -636,13 +686,10 @@
                   </div>
                 </div>
 
-                <!-- MIDDLE -->
                 <div class="drive-header-middle">
-                  <span class="drive-middle-text">{{ .String "duration" }}</span>
-                  <span class="icon-mask drive-middle-icon"></span>
+                  <span class="drive-middle-text">{{ .String "duration_end_since_start" }}</span>
                 </div>
 
-                <!-- RIGHT -->
                 <div class="drive-header-right">
                   <div class="drive-header-texts">
                     <div class="drive-top-text">{{ .String "end_address" }}</div>
@@ -650,13 +697,11 @@
                   </div>
                   <span class="icon-mask drive-header-icon-right"></span>
                 </div>
-
               </div>
 
               <!-- GRID -->
               <div class="drive-grid">
 
-                <!-- text_one (BATTERY ICON) -->
                 <div>
                   <div class="drive-info-row">
                     <span class="drive-info-icon-battery"></span>
@@ -664,15 +709,16 @@
                   </div>
                 </div>
 
-                <!-- text_two -->
                 <div>
                   <div class="drive-info-row">
-                    <span class="drive-info-icon"></span>
-                    <span>text_two</span>
+                    <span class="consumption-row">
+                      <span>{{ .String "average_speed_kmh" }}km/h</span>
+                      <span class="dot">•</span>
+                      <span>{{ .String "average_consumption_wh_per_km" }}Wh/km</span>
+                    </span>
                   </div>
                 </div>
 
-                <!-- text_three (BATTERY ICON, icon AFTER text) -->
                 <div>
                   <div class="drive-info-row">
                     <span>{{ .String "end_battery_percentage" }}%</span>
@@ -680,28 +726,18 @@
                   </div>
                 </div>
 
-                <!-- text_four -->
-                <div>
-                  <div class="drive-info-row">
-                    <span class="drive-info-icon"></span>
-                    <span>text_four</span>
-                  </div>
-                </div>
-
-                <!-- text_five -->
-                <div>
-                  <div class="drive-info-row">
-                    <span class="drive-info-icon"></span>
-                    <span>text_five</span>
-                  </div>
-                </div>
-
-                <!-- text_six (icon AFTER text) -->
-                <div>
-                  <div class="drive-info-row">
-                    <span>text_six</span>
-                    <span class="drive-info-icon"></span>
-                  </div>
+                <!-- EXPANDED MINI BOX -->
+                <div class="inner-box">
+                  <span class="mini-icon mini4"></span><span>-{{ .String "battery_used_percentage" }}%</span>
+                  <span class="mini-icon mini5"></span><span>-{{ .String "total_consumption_kwh" }}kWh</span>
+                  <span class="mini-icon mini1"></span><span>{{ .String "average_driving_efficiency_percentage" }}%</span>
+                  <span class="mini-icon mini3"></span><span>{{ .String "distance_km" }}km</span>
+                  <span class="mini-icon mini7"></span><span>↑ {{ .String "max_speed_kmh" }}km/h</span>
+                  <span class="mini-icon mini8"></span><span>↑ {{ .String "max_power_kw" }}kW</span>
+                  <span class="mini-icon mini2"></span><span>{{ .String "outside_temperature_celsius" }}°C</span>
+                  {{ if .Bool "reduced_range" }}
+                  <span class="mini-icon mini6"></span><span>Range reduced</span>
+                  {{ end }}
                 </div>
 
               </div>
@@ -709,6 +745,10 @@
             </li>
           {{ end }}
         </ul>
+
+
+
+
 
 
 

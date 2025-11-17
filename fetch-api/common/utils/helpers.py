@@ -25,13 +25,6 @@ def get_maps_url(path: str):
     
     except:
         return path
-    
-
-def time_now(target_tz: str = 'Europe/Sofia'):
-    tz = zoneinfo.ZoneInfo(target_tz)
-    now = datetime.now(tz)
-
-    return now.strftime('%Y-%m-%dT%H:%M:%S')
 
 
 def time_beautify_ms(milliseconds: int, target_tz: str = 'Europe/Sofia'):
@@ -42,6 +35,35 @@ def time_beautify_ms(milliseconds: int, target_tz: str = 'Europe/Sofia'):
     dt_sofia = dt_utc.astimezone(tz)
 
     return dt_sofia.strftime('%Y-%m-%dT%H:%M:%S')
+
+
+def time_beautify_ordinal(dt_string: int, target_tz: str = 'Europe/Sofia'):
+    def get_ordinal_day(n: int):
+        if 10 <= n % 100 <= 20:
+            suffix = 'th'
+        else:
+            suffix = {1: 'st', 2: 'nd', 3: 'rd'}.get(n % 10, 'th')
+        return f'{n}{suffix}'
+    
+    tz = zoneinfo.ZoneInfo(target_tz)
+    dt = datetime.fromisoformat(dt_string)
+
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=tz)
+
+    day = get_ordinal_day(dt.day)
+    month = dt.strftime('%B')
+    year = dt.year
+    time = dt.strftime('%H:%M:%S')
+
+    return f'{year} / {day} of {month} at {time}'
+
+
+def time_now(target_tz: str = 'Europe/Sofia'):
+    tz = zoneinfo.ZoneInfo(target_tz)
+    now = datetime.now(tz)
+
+    return now.strftime('%Y-%m-%dT%H:%M:%S')
 
 
 def time_since(past: str, future: str = None, tz: str = 'Europe/Sofia'):
