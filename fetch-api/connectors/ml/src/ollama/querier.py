@@ -1,5 +1,6 @@
 import os, copy
-from common.utils.system import read_file
+from common.utils.system import read_file, render_template
+from common.utils.helpers import time_now
 from common.telemetry.src.tracing.wrappers import traced
 from common.telemetry.src.tracing.helpers import reword
 from connectors.ml.settings import settings
@@ -79,13 +80,19 @@ class Querier:
                 span.set_attributes({
                     'querier.instructions.template.key.exists': False
                 })
-            
+
             else:
+                templated_instructions = render_template(
+                    content=self.instructions[instructions_template],
+                    vars={
+                        'current_time': time_now()
+                    }
+                )
                 span.set_attributes({
                     'querier.instructions.template.key.exists': True,
-                    'querier.query.instructions': self.instructions[instructions_template]
+                    'querier.query.instructions': templated_instructions
                 })
-                return self.instructions[instructions_template]
+                return templated_instructions
 
         if instructions:
             span.set_attributes({

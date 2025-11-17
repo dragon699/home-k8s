@@ -76,5 +76,5 @@ def fetch_car_drives_history(
             }
         }],
         ai_prompt=f'Provide an analysis of my last {number_of_drives} drives history with my Tesla.',
-        ai_instructions_template='default'
+        ai_instructions_template='car-drives-history'
     )

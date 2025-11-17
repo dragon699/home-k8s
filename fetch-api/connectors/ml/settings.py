@@ -32,9 +32,9 @@ class Settings(BaseSettings):
 
     instructions_template_path: str = 'connectors/ml/templates/instructions.yaml'
 
-    default_model: str = 'phi3:3.8b'
-    default_keep_alive_minutes: int = 10
-    default_temperature: float = 0.6
+    default_model: str
+    default_keep_alive_minutes: int = 15
+    default_temperature: float = 0.5
 
 
     def model_post_init(self, __context):
