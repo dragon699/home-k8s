@@ -28,19 +28,30 @@ def get_maps_url(path: str):
     
 
 def get_maps_directions_url(start_url: str, end_url: str):
-    extract = lambda q: q.split('query=')[1]
+    def extract_coords(u: str):
+        if 'new?lat=' in u:
+            try:
+                lat = u.split('lat=')[1].split('&')[0]
+                lng = u.split('lng=')[1]
+                return f'{lat},{lng}'
+            except:
+                return None
 
-    if not start_url.startswith('new?lat=') or not end_url.startswith('new?lat='):
-        return 'N/A'
-    
-    try:
-        start = extract(start_url)
-        end = extract(end_url)
+        if 'query=' in u:
+            try:
+                return u.split('query=')[1]
+            except:
+                return None
+        
+        return None
 
-        return f'https://www.google.com/maps/dir/?api=1&origin={start}&destination={end}'
-    
-    except:
+    start = extract_coords(start_url)
+    end = extract_coords(end_url)
+
+    if not start or not end:
         return 'N/A'
+
+    return f'https://www.google.com/maps/dir/?api=1&origin={start}&destination={end}'
     
 
 def get_teslamate_drive_grafana_url(drive_id: int, drive_start_time: str, drive_end_time: str):
