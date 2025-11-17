@@ -1,4 +1,4 @@
-from common.utils.helpers import time_beautify_ms, time_since_now, get_maps_url
+from common.utils.helpers import time_beautify_ms, time_since, get_maps_url
 from common.telemetry.src.tracing.wrappers import traced
 from common.telemetry.src.tracing.helpers import reword
 
@@ -156,16 +156,16 @@ class Processor:
 
                 elif query_id == 'teslamate-last-charge-info':
                     data['last_charge'] = time_beautify_ms(data['last_charge'])
-                    data['last_charge_since'] = time_since_now(data['last_charge'])
+                    data['last_charge_since'] = time_since(data['last_charge'])
                     data['charge_energy_added_percentage'] = (data['charge_end_percentage'] - data['charge_start_percentage'])
 
                 elif query_id == 'teslamate-last-seen-location':
                     data['last_seen'] = time_beautify_ms(data['last_seen'])
-                    data['last_seen_since'] = time_since_now(data['last_seen'])
+                    data['last_seen_since'] = time_since(data['last_seen'])
 
                 elif query_id == 'teslamate-car-state':
                     data['last_updated'] = time_beautify_ms(data['last_updated'])
-                    data['last_state_since'] = time_since_now(data['last_updated'])
+                    data['last_state_since'] = time_since(data['last_updated'])
 
                 if query_id in [
                     'teslamate-car-drives-info'
@@ -207,6 +207,11 @@ class Processor:
 
                             try:
                                 item['battery_used_percentage'] = (item['start_battery_percentage'] - item['end_battery_percentage'])
+                            except:
+                                pass
+
+                            try:
+                                item['duration_end_since_start'] = time_since(item['start_time'], item['end_time'])
                             except:
                                 pass
 

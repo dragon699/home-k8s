@@ -15,8 +15,8 @@ class APIProcessor:
         body,
         client: ConnectorClient,
         upstreams: list[dict[str, str]],
-        ai_prompt: str=None,
-        ai_instructions_template: str='default',
+        ai_prompt: str = None,
+        ai_instructions_template: str = 'default',
         span=None
     ):
         status_code = None
