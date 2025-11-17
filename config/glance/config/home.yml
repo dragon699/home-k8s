@@ -4,29 +4,6 @@
   slug: home
   width: wide
   head-widgets:
-  - type: monitor
-    hide-header: true
-    cache: 5s
-    sites:
-    - title: jellyfin
-      url: https://watch.k8s.iaminyourpc.xyz
-      icon: di:jellyfin
-      timeout: 10s
-    - title: immich
-      url: https://photos.k8s.iaminyourpc.xyz
-      icon: di:immich
-      timeout: 10s
-    - title: pihole
-      url: http://pihole.k8s.iaminyourpc.xyz/admin
-      icon: https://upload.wikimedia.org/wikipedia/commons/0/00/Pi-hole_Logo.png
-      timeout: 10s
-    - title: teslamate
-      url: http://car.k8s.iaminyourpc.xyz
-      icon: https://www.pngplay.com/wp-content/uploads/13/Tesla-Logo-PNG-Photo-Image.png
-      timeout: 10s
-      basic-auth:
-        username: ${TESLAMATE_USER}
-        password: ${TESLAMATE_PASSWORD}
   - type: group
     widgets:
     - type: monitor
@@ -91,11 +68,8 @@
   columns:
   - size: small
     widgets:
-    - type: calendar
-      hide-header: true
-      first-day-of-week: monday
     - type: custom-api
-      hide-header: true
+      hide-header: false
       title: car
       cache: 5s
       url: http://fetch-api.fetch-api.svc:8069/grafana/car-info
@@ -400,6 +374,11 @@
           </div>
         </div>
 
+
+
+    - type: calendar
+      hide-header: true
+      first-day-of-week: monday
     - type: monitor
       hide-header: true
       cache: 5s
@@ -432,7 +411,7 @@
       url: http://fetch-api.fetch-api.svc:8069/grafana/car-drives-history
       method: POST
       parameters:
-        number_of_drives: 5
+        number_of_drives: 100
       body: {"ai": false}
       template: |
         <style>
@@ -682,7 +661,7 @@
                   <span class="icon-mask drive-header-icon-left"></span>
                   <div class="drive-header-texts">
                     <div class="drive-top-text">{{ .String "start_address" }}</div>
-                    <div class="drive-bottom-text">{{ .String "start_time" }}</div>
+                    <div class="drive-bottom-text">{{ .String "start_time_ordinal" }}</div>
                   </div>
                 </div>
 
@@ -693,7 +672,7 @@
                 <div class="drive-header-right">
                   <div class="drive-header-texts">
                     <div class="drive-top-text">{{ .String "end_address" }}</div>
-                    <div class="drive-bottom-text">{{ .String "end_time" }}</div>
+                    <div class="drive-bottom-text">{{ .String "end_time_ordinal" }}</div>
                   </div>
                   <span class="icon-mask drive-header-icon-right"></span>
                 </div>
@@ -713,8 +692,10 @@
                   <div class="drive-info-row">
                     <span class="consumption-row">
                       <span>{{ .String "average_speed_kmh" }}km/h</span>
+                      {{ if ne (.String "average_consumption_wh_per_km") "N/A" }}
                       <span class="dot">•</span>
                       <span>{{ .String "average_consumption_wh_per_km" }}Wh/km</span>
+                      {{ end }}
                     </span>
                   </div>
                 </div>
@@ -729,8 +710,12 @@
                 <!-- EXPANDED MINI BOX -->
                 <div class="inner-box">
                   <span class="mini-icon mini4"></span><span>-{{ .String "battery_used_percentage" }}%</span>
+                  {{ if ne (.String "total_consumption_kwh") "N/A" }}
                   <span class="mini-icon mini5"></span><span>-{{ .String "total_consumption_kwh" }}kWh</span>
+                  {{ end }}
+                  {{ if ne (.String "average_driving_efficiency_percentage") "N/A" }}
                   <span class="mini-icon mini1"></span><span>{{ .String "average_driving_efficiency_percentage" }}%</span>
+                  {{ end }}
                   <span class="mini-icon mini3"></span><span>{{ .String "distance_km" }}km</span>
                   <span class="mini-icon mini7"></span><span>↑ {{ .String "max_speed_kmh" }}km/h</span>
                   <span class="mini-icon mini8"></span><span>↑ {{ .String "max_power_kw" }}kW</span>

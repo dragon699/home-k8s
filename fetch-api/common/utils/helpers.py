@@ -25,6 +25,13 @@ def get_maps_url(path: str):
     
     except:
         return path
+    
+
+def get_teslamate_drive_grafana_url(drive_id: int, drive_start_time: str, drive_end_time: str):
+    grafana_url = 'https://grafana.k8s.iaminyourpc.xyz'
+    grafana_dashboard_path = 'd/zm7wN6Zgz/driving-details'
+
+    return f'{grafana_url}/{grafana_dashboard_path}?from={drive_start_time}&to={drive_end_time}&var-drive_id={drive_id}&timezone=Europe%2FSofia&orgId=1&var-temp_unit=C&var-length_unit=km&var-alternative_length_unit=m&var-preferred_range=rated&var-base_url=https:%2F%2Fcar.k8s.iaminyourpc.xyz&var-pressure_unit=bar&var-speed_unit=km%2Fh'
 
 
 def time_beautify_ms(milliseconds: int, target_tz: str = 'Europe/Sofia'):
