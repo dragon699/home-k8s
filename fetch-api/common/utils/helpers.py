@@ -27,6 +27,22 @@ def get_maps_url(path: str):
         return path
     
 
+def get_maps_directions_url(start_url: str, end_url: str):
+    extract = lambda q: q.split('query=')[1]
+
+    if not start_url.startswith('new?lat=') or not end_url.startswith('new?lat='):
+        return 'N/A'
+    
+    try:
+        start = extract(start_url)
+        end = extract(end_url)
+
+        return f'https://www.google.com/maps/dir/?api=1&origin={start}&destination={end}'
+    
+    except:
+        return 'N/A'
+    
+
 def get_teslamate_drive_grafana_url(drive_id: int, drive_start_time: str, drive_end_time: str):
     grafana_url = 'https://grafana.k8s.iaminyourpc.xyz'
     grafana_dashboard_path = 'd/zm7wN6Zgz/driving-details'

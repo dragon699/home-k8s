@@ -5,6 +5,7 @@ from common.utils.helpers import (
     time_beautify_ordinal,
     time_since,
     get_maps_url,
+    get_maps_directions_url,
     get_teslamate_drive_grafana_url
 )
 
@@ -199,6 +200,14 @@ class Processor:
                                     item[key] = 'N/A'
                                 else:
                                     item[key] = get_maps_url(item[key])
+
+                            try:
+                                item['directions_url'] = get_maps_directions_url(
+                                    item['start_address_url'],
+                                    item['end_address_url']
+                                )
+                            except:
+                                pass
 
                             for key in ['total_consumption_kwh', 'average_consumption_wh_per_km']:
                                 if item[key] is None:

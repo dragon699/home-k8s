@@ -266,7 +266,7 @@
                 {{ $state_state }}
               </a>
             </div>
-            <div class="header-text">since {{ $state_last_state_since }}</div>
+            <div class="header-text">for {{ $state_last_state_since }}</div>
           </div>
 
           <div class="right-side">
@@ -455,6 +455,27 @@
             margin-bottom: 1.2rem;
           }
 
+          .drive-top-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 8px;
+          }
+
+          .inner-box-small {
+            border-radius: 0.5rem;
+            padding: 4px 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: opacity .15s ease;
+            margin-right: -4px;
+          }
+
+          .inner-box-small:hover {
+            opacity: .7;
+          }
+
           .drive-header-row {
             display: grid;
             grid-template-columns: 1fr auto 1fr;
@@ -554,8 +575,21 @@
           .mini6 { width: var(--icon-size-sm); height: var(--icon-size-sm); -webkit-mask-image: url("https://i.imgur.com/RtYdECy.png"); mask-image: url("https://i.imgur.com/RtYdECy.png"); }
           .mini7 { width: 18px; height: 18px; -webkit-mask-image: url("https://i.imgur.com/cd0BU9N.png"); mask-image: url("https://i.imgur.com/cd0BU9N.png"); }
           .mini8 { width: 18px; height: 18px; -webkit-mask-image: url("https://i.imgur.com/DhCug74.png"); mask-image: url("https://i.imgur.com/DhCug74.png"); }
-        </style>
 
+          .mini_grafana {
+            width: 17px;
+            height: 17px;
+            -webkit-mask-image: url("https://i.imgur.com/VIXZ4qg.png");
+            mask-image: url("https://i.imgur.com/VIXZ4qg.png");
+          }
+
+          .mini_maps {
+            width: 16px;
+            height: 16px;
+            -webkit-mask-image: url("https://i.imgur.com/Q6IVpBr.png");
+            mask-image: url("https://i.imgur.com/Q6IVpBr.png");
+          }
+        </style>
 
         {{ $items := .JSON.Array "items" }}
 
@@ -563,6 +597,17 @@
           {{ range $items }}
             <li class="drive-item-box">
 
+              <div class="drive-top-actions">
+                <a class="inner-box-small" href="{{ .String "grafana_drive_url" }}" target="_blank">
+                  <span class="icon-mask mini_grafana"></span>
+                </a>
+
+                <a class="inner-box-small" href="{{ .String "drive_url" }}" target="_blank">
+                  <span class="icon-mask mini_maps"></span>
+                </a>
+              </div>
+
+              <!-- HEADER -->
               <div class="drive-header-row">
                 <div class="header-side">
                   <span class="icon-mask icon-map-l"></span>
@@ -585,6 +630,7 @@
                 </div>
               </div>
 
+              <!-- GRID -->
               <div class="grid">
 
                 <div class="left">
@@ -611,6 +657,7 @@
                   </div>
                 </div>
 
+                <!-- BOTTOM INNER BOX -->
                 <div class="inner-box">
 
                   <span class="mini-pair">
@@ -666,6 +713,7 @@
             </li>
           {{ end }}
         </ul>
+
 
 
 
