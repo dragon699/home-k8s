@@ -75,6 +75,6 @@ def fetch_car_drives_history(
                 'number_of_drives': number_of_drives
             }
         }],
-        ai_prompt=f'Provide an analysis of my last {number_of_drives} drives history with my Tesla.',
+        ai_prompt=f'Now analyze the data below for these {number_of_drives} drives.',
         ai_instructions_template='car-drives-history'
     )

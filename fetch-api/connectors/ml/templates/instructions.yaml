@@ -28,5 +28,3 @@ car-drives-history: |
   - Compute worst_score for each drive with numeric Wh/km.
   - Select the drive with the highest score.
   - Produce ONLY 2, 3 or 4 sentences with a dark-humor roast.
-
-  Now analyze the following data and apply those rules we spoke about:
