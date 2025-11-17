@@ -227,7 +227,11 @@ class Processor:
                                 pass
 
                             try:
-                                item['duration_end_since_start'] = time_since(item['start_time'], item['end_time'])
+                                item['duration_end_since_start'] = time_since(
+                                    item['start_time'],
+                                    item['end_time'],
+                                    instant=False
+                                )
                             except:
                                 pass
 

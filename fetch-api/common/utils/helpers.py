@@ -77,7 +77,7 @@ def time_now(target_tz: str = 'Europe/Sofia'):
     return now.strftime('%Y-%m-%dT%H:%M:%S')
 
 
-def time_since(past: str, future: str = None, tz: str = 'Europe/Sofia'):
+def time_since(past: str, future: str = None, tz: str = 'Europe/Sofia', instant: bool = True):
     tz = zoneinfo.ZoneInfo(tz)
     past_dt = datetime.fromisoformat(past)
 
@@ -104,16 +104,25 @@ def time_since(past: str, future: str = None, tz: str = 'Europe/Sofia'):
         if days < 7:
             return f'{days}d{hours}h'
         else:
-            return f'{days}d+'
+            if instant:
+                return f'{days}d'
+            else:
+                return f'{days}d+'
 
     elif hours > 0:
         if hours < 24:
             return f'{hours}h{minutes}m'
         else:
-            return f'{hours}h+'
+            if instant:
+                return f'{hours}h'
+            else:
+                return f'{hours}h+'
 
     elif minutes > 0:
         return f'{minutes}m'
 
     else:
-        return 'just now'
+        if instant:
+            return 'just now'
+        else:
+            return '<1m'
