@@ -3,18 +3,29 @@ import os, json, yaml, jinja2
 
 
 def read_file(path: str, type='json'):
+    readers = {
+        'yaml': lambda f: yaml.safe_load(f),
+        'json': lambda f: json.load(f)
+    }
+
     if not os.path.exists(path):
         return None
 
     with open(path, 'r') as file:
-        if type == 'json':
-            return json.load(file)
+        file_type = path.split('.')[-1].lower()
 
-        elif type in ('yaml', 'yml'):
-            return yaml.safe_load(file)
+        if file_type in ['yaml', 'yml'] or type in ['yaml', 'yml']:
+            file_type = 'yaml'
 
-        else:
-            return file.read()
+        elif file_type in ['json'] or type in ['json']:
+            file_type = 'json'
+
+        with open(path, 'r') as f:
+            try:
+                return readers[file_type](f)
+
+            except:
+                return f.read()
 
 
 def render_template(content, vars={}):

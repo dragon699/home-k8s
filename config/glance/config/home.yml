@@ -543,6 +543,15 @@
             color: rgba(200,200,200,0.70);
           }
 
+          .left .row span,
+          .right .row span {
+            color: var(--c-light);
+          }
+
+          .mid .row span {
+            color: var(--c-light);
+          }
+
           .dot {
             font-size: var(--fs-mini);
             color: var(--c-dim);
@@ -602,12 +611,11 @@
                   <span class="icon-mask mini_grafana"></span>
                 </a>
 
-                <a class="inner-box-small" href="{{ .String "drive_url" }}" target="_blank">
+                <a class="inner-box-small" href="{{ .String "directions_url" }}" target="_blank">
                   <span class="icon-mask mini_maps"></span>
                 </a>
               </div>
 
-              <!-- HEADER -->
               <div class="drive-header-row">
                 <div class="header-side">
                   <span class="icon-mask icon-map-l"></span>
@@ -630,7 +638,6 @@
                 </div>
               </div>
 
-              <!-- GRID -->
               <div class="grid">
 
                 <div class="left">
@@ -657,7 +664,6 @@
                   </div>
                 </div>
 
-                <!-- BOTTOM INNER BOX -->
                 <div class="inner-box">
 
                   <span class="mini-pair">
@@ -713,10 +719,6 @@
             </li>
           {{ end }}
         </ul>
-
-
-
-
 
 
     - type: videos
