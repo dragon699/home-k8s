@@ -27,11 +27,11 @@ class Querier:
         self.templates_struct = {
             'prometheus': {
                 'ds_uid': self.ds_uid_prometheus,
-                'templates': ['payload.json', 'queries.json']
+                'templates': ['payload.json', 'queries.yaml']
             },
             'postgresql': {
                 'ds_uid': self.ds_uid_postgresql,
-                'templates': ['payload.json', 'queries.json']
+                'templates': ['payload.json', 'queries.yaml']
             }
         }
 
@@ -134,7 +134,7 @@ class Querier:
             return None
 
         span.add_event('search_started', attributes={
-            'querier.queries.template.path': f'{self.templates_dir}/{query_ds_type}/queries.json'
+            'querier.queries.template.path': f'{self.templates_dir}/{query_ds_type}/queries.yaml'
         })
 
         for query in self.templates[query_ds_type]['queries']:
@@ -142,7 +142,7 @@ class Querier:
                 expression = copy.deepcopy(query['query']['query'])
 
                 span.add_event('search_completed', attributes={
-                    'querier.queries.template.path': f'{self.templates_dir}/{query_ds_type}/queries.json'
+                    'querier.queries.template.path': f'{self.templates_dir}/{query_ds_type}/queries.yaml'
                 })
 
                 if len(query_params) > 0:
