@@ -600,6 +600,8 @@
           }
         </style>
 
+        <p>test</p>
+
         {{ $items := .JSON.Array "items" }}
 
         <ul class="list list-gap-10 collapsible-container" data-collapse-after="3">
