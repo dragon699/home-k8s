@@ -41,18 +41,19 @@ class Querier:
 
     
     @traced()
-    def commit(self, prompt: str, model: str=None, instructions: str=None, instructions_template: str=None, span=None):
+    def commit(self, prompt: str, model: str=None, instructions: str='', instructions_template: str=None, span=None):
         try:
             full_instructions = self.fetch(instructions, instructions_template)
-            payload_prompt, payload_model = self.render(prompt, model, full_instructions)
-            response = self.send(payload_prompt, payload_model)
+            payload = self.render(prompt, model, full_instructions)
+            response = self.send(*payload.values())
             result = self.process(response)
 
             span.set_attributes(
                 reword({
                     'querier.query.status': 'successful',
-                    'querier.query.prompt': payload_prompt,
-                    'querier.query.model': payload_model,
+                    'querier.query.prompt': payload['prompt'],
+                    'querier.query.model': payload['model'],
+                    'querier.query.instructions': payload['instructions'],
                     'querier.query.response': response.content
                 })
             )
@@ -100,47 +101,40 @@ class Querier:
             })
             return instructions
 
-        return None
+        return ''
 
 
     @traced()
     def render(self, prompt: str, model: str, instructions: str, span=None):
-        payload_prompt = prompt
-        payload_model = settings.default_model
-
-        if instructions:
-            payload_prompt = """
-            {}
-
-            {}
-            """.format(
-                instructions,
-                prompt
-            )
-        
-        if model:
-            payload_model = model
+        payload = {
+            'prompt': prompt,
+            'model': model or settings.default_model,
+            'instructions': instructions or ''
+        }
 
         span.set_attributes({
-            'querier.query.prompt': payload_prompt,
-            'querier.query.model': payload_model
+            'querier.query.prompt': prompt,
+            'querier.query.model': payload['model'],
+            'querier.query.instructions': instructions
         })
 
-        return payload_prompt, payload_model
+        return payload
 
 
     @traced()
-    def send(self, prompt: str, model: str=None, span=None):
+    def send(self, prompt: str, model: str=None, instructions: str='', span=None):
         try:
             response = self.client.ask(
                 prompt=prompt,
-                model=model
+                model=model,
+                instructions=instructions
             )
 
             span.set_attributes(
                 reword({
                     'querier.query.prompt': prompt,
                     'querier.query.model': model,
+                    'querier.query.instructions': instructions,
                     'querier.query.response': response.content
                 })
             )
@@ -153,7 +147,8 @@ class Querier:
                     'querier.error.message': f'Error occurred while sending query: {err}',
                     'querier.error.type': type(err).__name__,
                     'querier.query.prompt': prompt,
-                    'querier.query.model': model
+                    'querier.query.model': model,
+                    'querier.query.instructions': instructions
                 })
             )
             return None

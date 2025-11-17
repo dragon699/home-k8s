@@ -600,7 +600,9 @@
           }
         </style>
 
-        <p>test</p>
+        {{ if .JSON.Exists "ai_summary.answer" }}
+        <p>{{ .JSON.String "ai_summary.answer" }}</p>
+        {{ end }}
 
         {{ $items := .JSON.Array "items" }}
 

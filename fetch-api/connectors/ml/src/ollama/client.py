@@ -29,13 +29,14 @@ class OllamaClient:
 
 
     @traced()
-    def ask(self, prompt: str, model: str, span=None):
+    def ask(self, prompt: str, model: str, instructions: str='', span=None):
         span.set_attributes(
             reword({
                 'ollama.operation': 'ask',
                 'ollama.url': self.url,
                 'ollama.model': model,
                 'ollama.prompt': prompt,
+                'ollama.instructions': instructions,
                 'ollama.keep_alive': f'{settings.default_keep_alive_minutes}m',
                 'ollama.temperature': settings.default_temperature
             })
@@ -50,6 +51,17 @@ class OllamaClient:
             num_thread=8
         )
 
-        response = model.invoke(prompt)
+        response = model.invoke(
+            [
+                {
+                    'role': 'system',
+                    'content': instructions
+                },
+                {
+                    'role': 'user',
+                    'content': prompt
+                }
+            ]
+        )
 
         return response
