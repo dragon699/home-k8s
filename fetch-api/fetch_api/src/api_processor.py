@@ -74,7 +74,7 @@ class APIProcessor:
 
                     ml_client = ConnectorClient(
                         connectors['ml'].name,
-                        requests_timeout=3,
+                        requests_timeout=3.5,
                         cache=True
                     )
 
