@@ -34,14 +34,18 @@ def get_teslamate_drive_grafana_url(drive_id: int, drive_start_time: str, drive_
     return f'{grafana_url}/{grafana_dashboard_path}?from={drive_start_time}&to={drive_end_time}&var-drive_id={drive_id}&timezone=Europe%2FSofia&orgId=1&var-temp_unit=C&var-length_unit=km&var-alternative_length_unit=m&var-preferred_range=rated&var-base_url=https:%2F%2Fcar.k8s.iaminyourpc.xyz&var-pressure_unit=bar&var-speed_unit=km%2Fh'
 
 
-def time_beautify_ms(milliseconds: int, target_tz: str = 'Europe/Sofia'):
+def time_beautify_ms(milliseconds: int, target_tz: str = 'Europe/Sofia', convert_tz: bool = True):
     seconds = milliseconds / 1000
     tz = zoneinfo.ZoneInfo(target_tz)
     
     dt_utc = datetime.fromtimestamp(seconds, tz=timezone.utc)
-    dt_sofia = dt_utc.astimezone(tz)
 
-    return dt_sofia.strftime('%Y-%m-%dT%H:%M:%S')
+    if convert_tz:
+        dt = dt_utc.astimezone(tz)
+    else:
+        dt = dt_utc
+
+    return dt.strftime('%Y-%m-%dT%H:%M:%S')
 
 
 def time_beautify_ordinal(dt_string: int, target_tz: str = 'Europe/Sofia'):
