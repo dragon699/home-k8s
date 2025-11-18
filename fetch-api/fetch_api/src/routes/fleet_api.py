@@ -38,12 +38,6 @@ def tesla_callback(code: str):
 
     return {'status': 'ok'}
 
-@router.get('/.well-known/appspecific/com.tesla.3p.public-key.pem')
-def get_public_key():
-    with open('/app/fleet-api/public/public-key.pem', 'rb') as f:
-        key = f.read()
-    return Response(content=key, media_type='application/x-pem-file')
-
 def get_access_token():
     if os.path.exists(ACCESS_TOKEN_FILE):
         return open(ACCESS_TOKEN_FILE).read().strip()
