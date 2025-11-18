@@ -1,7 +1,7 @@
 import json
 from fastapi.responses import JSONResponse
 from common.telemetry.src.tracing.wrappers import traced
-from fetch_api.settings import connectors
+from fetch_api.settings import connectors, settings
 from fetch_api.src.telemetry.logging import log
 from fetch_api.src.client import ConnectorClient
 
@@ -74,8 +74,8 @@ class APIProcessor:
 
                     ml_client = ConnectorClient(
                         connectors['ml'].name,
-                        requests_timeout=60,
-                        cache=True
+                        cache=True,
+                        requests_timeout=settings.ai_summary_requests_timeout
                     )
 
                     upstream_ml_endpoint = 'ask'

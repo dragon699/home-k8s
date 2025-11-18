@@ -3,6 +3,7 @@ from requests import Timeout as ReqTimeout
 from fetch_api.src.cache.client import RedisClient
 from fetch_api.src.cache.data import CachedResponse
 from fetch_api.settings import settings, connectors
+from fetch_api.src.telemetry.logging import log
 from common.telemetry.src.tracing.wrappers import traced
 from common.telemetry.src.tracing.helpers import reword
 from common.utils.helpers import time_now
@@ -18,6 +19,17 @@ class ConnectorClient:
         self.set_headers()
 
         if self.cache:
+            if any(v is None for v in [
+                settings.redis_host,
+                settings.redis_port,
+                settings.redis_db
+            ]):
+                log.critical(
+                    f'{self.connector_name} requires caching configuration, but Redis settings are incomplete',
+                    connector=self.connector_name
+                )
+                raise SystemExit(1)
+
             self.redis = RedisClient(
                 host=settings.redis_host,
                 port=settings.redis_port,
