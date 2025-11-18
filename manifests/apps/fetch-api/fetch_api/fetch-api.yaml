@@ -59,6 +59,8 @@ spec:
           envFrom:
             - configMapRef:
                 name: config-fetch-api
+            - secretRef:
+                name: data-fleet-api
           env:
             - name: REDIS_PASSWORD
               valueFrom:
