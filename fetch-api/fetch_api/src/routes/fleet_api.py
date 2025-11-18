@@ -84,6 +84,31 @@ def refresh_access_token():
     return new_access
 
 
+@router.post("/car/register")
+def register_fleet():
+    access_token = get_access_token()
+
+    url = f"{FLEET_API_URL}/api/1/partners/registrations"
+
+    headers = {
+        "Authorization": f"Bearer {access_token}",
+        "X-Tesla-User-Agent": "fetch-api",
+        "Content-Type": "application/json"
+    }
+
+    data = {
+        "public_key": "https://fleet.car.k8s.iaminyourpc.xyz/car/.well-known/appspecific/com.tesla.3p.public-key.pem"
+    }
+
+    resp = requests.post(url, headers=headers, json=data)
+
+    if resp.status_code != 200:
+        raise HTTPException(resp.status_code, resp.text)
+
+    return resp.json()
+
+
+
 @router.get('/list/vehicles')
 def list_vehicles():
     access_token = get_access_token()
