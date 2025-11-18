@@ -47,7 +47,7 @@ class OllamaClient:
             model=model,
             keep_alive=f'{settings.default_keep_alive_minutes}m',
             temperature=settings.default_temperature,
-            num_ctx=3072,
+            num_ctx=10200,
             num_thread=8
         )
 
