@@ -78,8 +78,6 @@ class APIProcessor:
         if client.connector_name != 'ml':
             if body.ai and len(results['items']) > 0:
                 if 'ml' in connectors:
-                    from fetch_api.src.client import ConnectorClient
-
                     ml_client = ConnectorClient(
                         connectors['ml'].name,
                         cache=True,
@@ -97,7 +95,7 @@ class APIProcessor:
                             endpoint=upstream_ml_endpoint,
                             data={
                                 'instructions_template': ai_instructions_template,
-                                'prompt': '{}\n\n{}'.format(
+                                'prompt': '{}\n\n\nJSON_DATA{}'.format(
                                     ai_prompt,
                                     json.dumps(
                                         results['items'],
@@ -150,7 +148,7 @@ class APIProcessor:
             status_code = 200
 
         for upstream in upstreams:
-            if not upstream.get('cache') is None:
+            if 'cache' in upstream:
                 if 'cache' not in results:
                     results['cache'] = []
 
