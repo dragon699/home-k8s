@@ -1,6 +1,9 @@
 image: perconalab/percona-postgresql-operator:main-ppg17-postgres
 postgresVersion: 17
 
+backups:
+  enabled: false
+
 proxy:
   pgBouncer:
     replicas: 1
