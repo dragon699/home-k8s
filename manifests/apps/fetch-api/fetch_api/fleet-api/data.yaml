@@ -1,0 +1,20 @@
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: fleet-api-private-key
+  namespace: fetch-api
+spec:
+  refreshInterval: 5m0s
+  secretStoreRef:
+    name: home-vault
+    kind: ClusterSecretStore
+  target:
+    name: fleet-api-private-key
+    creationPolicy: Owner
+  dataFrom:
+  - extract:
+      key: home/fetch-api/fleet-api/private-key
+      conversionStrategy: Default
+      decodingStrategy: None
+      metadataPolicy: None

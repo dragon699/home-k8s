@@ -1,0 +1,28 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: fetch-api-fleet
+  namespace: fetch-api
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-home
+    kubernetes.io/ingress.class: nginx
+  labels:
+    app: fetch-api
+    env: home
+spec:
+  tls:
+  - hosts:
+    - fleet.car.k8s.iaminyourpc.xyz
+    secretName: tls-fleet-car-k8s-iaminyourpc-xyz
+  rules:
+  - host: fleet.car.k8s.iaminyourpc.xyz
+    http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: fetch-api
+            port:
+              number: 8069

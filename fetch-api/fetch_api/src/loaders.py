@@ -63,8 +63,10 @@ class RoutesLoader:
     @staticmethod
     def load(app, settings):
         from fetch_api.src.routes import internal
+        from fetch_api.src.routes import fleet_api
 
         app.include_router(internal.router, prefix="/api")
+        app.include_router(fleet_api.router, prefix="/car")
 
         if 'grafana' in settings.connectors:
             from fetch_api.src.routes import grafana

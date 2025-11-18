@@ -7,6 +7,8 @@ generatorOptions:
 configMapGenerator:
 - name: script-health-probe
   files: ['health-probe.py=scripts/health-probe.py']
+- name: data-fleet-api
+  files: ['public-key.pem=fleet_api/public-key.pem']
 - name: config-fetch-api
   envs: ['fetch_api/config.env']
 - name: config-connector-grafana

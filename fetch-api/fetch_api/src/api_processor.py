@@ -95,7 +95,7 @@ class APIProcessor:
                             endpoint=upstream_ml_endpoint,
                             data={
                                 'instructions_template': ai_instructions_template,
-                                'prompt': '{}\n\n\nJSON_DATA{}'.format(
+                                'prompt': '{}\n\n\nJSON_DATA: {}'.format(
                                     ai_prompt,
                                     json.dumps(
                                         results['items'],

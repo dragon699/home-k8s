@@ -27,6 +27,19 @@ spec:
           configMap:
             name: script-health-probe
             defaultMode: 0755
+        - name: fleet-api-private-key
+          secret:
+            secretName: fleet-api-private-key
+            items:
+            - key: private-key.pem
+              path: private-key.pem
+        - name: fleet-api-public-key
+          secret:
+            configMap:
+              name: data-fleet-api
+              items:
+              - key: public-key.pem
+                path: public-key.pem
       containers:
         - name: fetch-api
           image: ghcr.io/dragon699/home-k8s/fetch-api/fetch-api:0.17.12
@@ -35,6 +48,12 @@ spec:
             - name: script-health-probe
               mountPath: /home/health-probe.py
               subPath: health-probe.py
+            - name: fleet-api-private-key
+              mountPath: /app/fleet-api
+              readOnly: true
+            - name: fleet-api-public-key
+              mountPath: /app/fleet-api
+              readOnly: true
           ports:
             - containerPort: 8069
           command: ["python", "-m", "fetch_api.app"]
