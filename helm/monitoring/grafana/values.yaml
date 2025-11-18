@@ -46,7 +46,7 @@ grafana.ini:
     level: warn
 
   log.frontend:
-    instrumentations_tracing_enabled: true
+    instrumentations_tracing_enabled: false
 
   tracing.opentelemetry.otlp:
     address: grafana-alloy.monitoring.svc:4317
