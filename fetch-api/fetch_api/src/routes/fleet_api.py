@@ -1,4 +1,4 @@
-import requests
+import requests, os
 from fastapi import APIRouter, Response, HTTPException
 
 
@@ -62,12 +62,14 @@ def refresh_access_token():
 
     data = {
         'grant_type': 'refresh_token',
-        'client_id': '<YOUR CLIENT ID>',
-        'client_secret': '<YOUR CLIENT SECRET>',
+        'client_id': os.getenv('CLIENT_ID'),
+        'client_secret': os.getenv('CLIENT_SECRET'),
         'refresh_token': refresh_token
     }
 
     resp = requests.post(TOKEN_URL, data=data)
+    print(resp.text)
+
     tokens = resp.json()
 
     new_access = tokens.get('access_token')
