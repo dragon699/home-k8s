@@ -31,8 +31,8 @@ spec:
           secret:
             secretName: fleet-api-private-key
             items:
-              - key: private-key.pem
-                path: private-key.pem
+              - key: private-key
+                path: private-key
         - name: fleet-api-public-key
           configMap:
             name: data-fleet-api
