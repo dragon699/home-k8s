@@ -1,3 +1,4 @@
+import requests
 from requests import exceptions as ReqExceptions
 import common.utils.requests as req
 from fetch_api.src.cache.client import RedisClient
@@ -87,7 +88,7 @@ class ConnectorClient:
             cached_value = self.redis.get(cache_key)
 
         try:
-            response = req.get(
+            response = requests.get(
                 f'{self.url}/{endpoint}',
                 headers=self.headers,
                 params=params,
@@ -168,7 +169,7 @@ class ConnectorClient:
             cached_value = self.redis.get(cache_key)
 
         try:
-            response = req.post(
+            response = requests.post(
                 f'{self.url}/{endpoint}',
                 headers=self.headers,
                 params=params,
