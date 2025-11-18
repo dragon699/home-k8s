@@ -48,10 +48,6 @@ grafana.ini:
   log.frontend:
     instrumentations_tracing_enabled: false
 
-  tracing.opentelemetry.otlp:
-    address: grafana-alloy.monitoring.svc:4317
-    propagation: w3c
-
   unified_alerting.screenshots:
     capture: true
 
