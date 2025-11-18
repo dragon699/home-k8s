@@ -1,7 +1,19 @@
-import zoneinfo
+import re, zoneinfo, json, hashlib
 from datetime import datetime, timezone
 from common.utils.system import read_file
 
+
+VOLATILE_PATTERN = re.compile(
+    r'^('
+    r'(<\d+m)'
+    r'|(\d+d\d+h(\d+m)?)'
+    r'|(\d+h\d+m)'
+    r'|(\d+m)'
+    r'|(\d+h)'
+    r'|(just now)'
+    r')$',
+    re.IGNORECASE
+)
 
 
 def get_app_version(version_file: str):
@@ -153,3 +165,39 @@ def time_since(past: str, future: str = None, tz: str = 'Europe/Sofia', instant:
             return 'just now'
         else:
             return '<1m'
+
+
+def omit_volatile_data(data: dict):
+    if isinstance(data, dict):
+        return {k: omit_volatile_data(v) for k, v in data.items()}
+
+    if isinstance(data, list):
+        return [omit_volatile_data(item) for item in data]
+
+    if isinstance(data, str):
+        return '<volatile>' if VOLATILE_PATTERN.match(data.strip()) else data
+
+    return data
+
+
+def create_cache_key(connector_name: str, method: str, endpoint: str, params: dict, data: dict):
+    params_hash = hashlib.md5(
+        json.dumps(
+            params,
+            sort_keys=True
+        ).encode()
+    ).hexdigest()
+
+    data_hash = hashlib.md5(
+        json.dumps(
+            data,
+            sort_keys=True
+        ).encode()
+    ).hexdigest()
+
+    return (
+        f'connector:{connector_name}:',
+        f'{method}:{endpoint}:',
+        f'params:{params_hash}:',
+        f'data:{data_hash}'
+    )

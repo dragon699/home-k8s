@@ -1,6 +1,7 @@
 import json
 from fastapi.responses import JSONResponse
 from common.telemetry.src.tracing.wrappers import traced
+from common.utils.helpers import omit_volatile_data, create_cache_key
 from fetch_api.settings import connectors, settings
 from fetch_api.src.telemetry.logging import log
 from fetch_api.src.client import ConnectorClient
@@ -56,11 +57,11 @@ class APIProcessor:
                 
                 response_body = response.json()
                 results['items'] += response_body['items']
-                upstreams[upstreams.index(upstream)]['status'] = 'success'
+                upstreams[upstream]['status'] = 'success'
                 
                 if response_body.get('cached') and response_body['cached'] is True:
                     common_stream_log_attributes['cache_status'] = 'hit'
-                    upstreams[upstreams.index(upstream)]['cache'] = {
+                    upstreams[upstream]['cache'] = {
                         'cached': True,
                         'cached_at': response_body['cached_at']
                     }
@@ -68,7 +69,7 @@ class APIProcessor:
                 log.debug('Upstream fetch completed', extra=common_stream_log_attributes)
 
             except Exception as err:
-                upstreams[upstreams.index(upstream)]['status'] = 'failed'
+                upstreams[upstream]['status'] = 'failed'
                 log.warning('Upstream fetch failed', extra={
                     **common_stream_log_attributes,
                     'error': str(err)
@@ -100,7 +101,14 @@ class APIProcessor:
                                     ai_prompt,
                                     json.dumps(results['items'])
                                 )
-                            }
+                            },
+                            cache_key=create_cache_key(
+                                connector_name=ml_client.connector_name,
+                                method='POST',
+                                endpoint=upstream_ml_endpoint,
+                                params={},
+                                data=omit_volatile_data(results['items'])
+                            )
                         )
 
                         assert response.status_code == 200

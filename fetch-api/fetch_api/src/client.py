@@ -6,7 +6,7 @@ from fetch_api.settings import settings, connectors
 from fetch_api.src.telemetry.logging import log
 from common.telemetry.src.tracing.wrappers import traced
 from common.telemetry.src.tracing.helpers import reword
-from common.utils.helpers import time_now
+from common.utils.helpers import time_now, create_cache_key
 
 
 
@@ -64,7 +64,7 @@ class ConnectorClient:
 
 
     @traced()
-    def get(self, endpoint: str, params: dict = {}, data: dict = {}, span=None):
+    def get(self, endpoint: str, params: dict = {}, data: dict = {}, cache_key: tuple | None = None, span=None):
         span.set_attributes(
             reword({
                 'connector.name': self.connector_name,
@@ -80,11 +80,15 @@ class ConnectorClient:
         cached_value = None
 
         if self.cache:
-            cache_key = (
-                f'connector:{self.connector_name}:GET:{endpoint}:'
-                f'{hash(frozenset(params.items()))}:'
-                f'{hash(frozenset(data.items()))}'
-            )
+            if cache_key is None:
+                cache_key = create_cache_key(
+                    connector_name=self.connector_name,
+                    method='GET',
+                    endpoint=endpoint,
+                    params=params,
+                    data=data
+                )
+
             cached_value = self.redis.get(cache_key)
 
         try:
@@ -156,7 +160,7 @@ class ConnectorClient:
 
 
     @traced()
-    def post(self, endpoint: str, params: dict = {}, data: dict = {}, span=None):
+    def post(self, endpoint: str, params: dict = {}, data: dict = {}, cache_key: tuple | None = None, span=None):
         span.set_attributes(
             reword({
                 'connector.name': self.connector_name,
@@ -172,11 +176,15 @@ class ConnectorClient:
         cached_value = None
 
         if self.cache:
-            cache_key = (
-                f'connector:{self.connector_name}:POST:{endpoint}:'
-                f'{hash(frozenset(params.items()))}:'
-                f'{hash(frozenset(data.items()))}'
-            )
+            if cache_key is None:
+                cache_key = create_cache_key(
+                    connector_name=self.connector_name,
+                    method='POST',
+                    endpoint=endpoint,
+                    params=params,
+                    data=data
+                )
+
             cached_value = self.redis.get(cache_key)
 
         try:
