@@ -30,11 +30,10 @@ class RoutesLoader:
         from connectors.grafana.src.routes import (internal, prometheus, postgresql)
 
         app.include_router(internal.router, prefix="/api")
+        app.include_router(prometheus.router, prefix="/prometheus")
+        app.include_router(postgresql.router, prefix="/postgresql")
 
         if settings.authenticated:
-            app.include_router(prometheus.router, prefix="/prometheus")
-            app.include_router(postgresql.router, prefix="/postgresql")
-
             log.info(
                 f'Listening for incoming query requests on {settings.listen_host}:{settings.listen_port} and forwarding to Grafana at {settings.url}'
             )
