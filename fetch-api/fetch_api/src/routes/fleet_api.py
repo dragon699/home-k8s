@@ -20,7 +20,7 @@ def tesla_callback(code: str):
         'client_id': os.getenv('CLIENT_ID'),
         'client_secret': os.getenv('CLIENT_SECRET'),
         'code': code,
-        'redirect_uri': 'https://fleet.car.k8s.iaminyourpc.xyz/tesla/callback'
+        'redirect_uri': 'https://fleet.car.k8s.iaminyourpc.xyz/car/callback'
     }
 
     response = requests.post(TOKEN_URL, data=data)
