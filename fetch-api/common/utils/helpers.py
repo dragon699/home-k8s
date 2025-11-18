@@ -196,8 +196,8 @@ def create_cache_key(connector_name: str, method: str, endpoint: str, params: di
     ).hexdigest()
 
     return (
-        f'connector:{connector_name}:',
-        f'{method}:{endpoint}:',
-        f'params:{params_hash}:',
+        f'connector:{connector_name}:'
+        f'{method}:{endpoint}:'
+        f'params:{params_hash}:'
         f'data:{data_hash}'
     )
