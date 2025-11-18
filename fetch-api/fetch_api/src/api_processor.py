@@ -57,11 +57,11 @@ class APIProcessor:
                 
                 response_body = response.json()
                 results['items'] += response_body['items']
-                upstreams[upstream]['status'] = 'success'
+                upstream['status'] = 'success'
                 
                 if response_body.get('cached') and response_body['cached'] is True:
                     common_stream_log_attributes['cache_status'] = 'hit'
-                    upstreams[upstream]['cache'] = {
+                    upstream['cache'] = {
                         'cached': True,
                         'cached_at': response_body['cached_at']
                     }
@@ -69,7 +69,7 @@ class APIProcessor:
                 log.debug('Upstream fetch completed', extra=common_stream_log_attributes)
 
             except Exception as err:
-                upstreams[upstream]['status'] = 'failed'
+                upstream['status'] = 'failed'
                 log.warning('Upstream fetch failed', extra={
                     **common_stream_log_attributes,
                     'error': str(err)
