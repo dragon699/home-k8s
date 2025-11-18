@@ -57,6 +57,13 @@ class APIProcessor:
                 response_body = response.json()
                 results['items'] += response_body['items']
                 upstreams[upstreams.index(upstream)]['status'] = 'success'
+                
+                if response_body.get('cached') and response_body['cached'] is True:
+                    common_stream_log_attributes['cache_status'] = 'hit'
+                    upstreams[upstreams.index(upstream)]['cache'] = {
+                        'cached': True,
+                        'cached_at': response_body['cached_at']
+                    }
 
                 log.debug('Upstream fetch completed', extra=common_stream_log_attributes)
 
@@ -98,12 +105,13 @@ class APIProcessor:
 
                         assert response.status_code == 200
 
-                        results['ai_summary'] = response.json()['items'][0]
+                        response_body = response.json()
+                        results['ai_summary'] = response_body['items'][0]
 
-                        if response.json().get('cached') and response.json()['cached'] is True:
+                        if response_body.get('cached') and response_body['cached'] is True:
                             commong_ml_log_attributes['cache_status'] = 'hit'
                             results['ai_summary']['cached'] = True
-                            results['ai_summary']['cached_at'] = response.json()['cached_at']
+                            results['ai_summary']['cached_at'] = response_body['cached_at']
 
                         else:
                             commong_ml_log_attributes['cache_status'] = 'miss'
@@ -129,6 +137,16 @@ class APIProcessor:
 
         else:
             status_code = 200
+
+        for upstream in upstreams:
+            if not upstream.get('cache') is None:
+                if 'cache' not in results:
+                    results['cache'] = []
+
+                results['cache'] += [{
+                    'upstream_endpoint': upstream['endpoint'],
+                    **upstream['cache']
+                }]
 
         log.info('Fetch completed', extra=common_log_attributes)
 
