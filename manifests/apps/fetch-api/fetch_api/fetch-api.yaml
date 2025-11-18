@@ -48,10 +48,10 @@ spec:
               mountPath: /home/health-probe.py
               subPath: health-probe.py
             - name: fleet-api-private-key
-              mountPath: /app/fleet-api
+              mountPath: /app/fleet-api/private
               readOnly: true
             - name: fleet-api-public-key
-              mountPath: /app/fleet-api
+              mountPath: /app/fleet-api/public
               readOnly: true
           ports:
             - containerPort: 8069
