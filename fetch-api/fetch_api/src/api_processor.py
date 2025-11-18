@@ -1,7 +1,7 @@
 import json
 from fastapi.responses import JSONResponse
 from common.telemetry.src.tracing.wrappers import traced
-from common.utils.helpers import omit_volatile_data, create_cache_key
+from common.utils.helpers import omit_volatile_data, create_cache_key, beautify_json
 from fetch_api.settings import connectors, settings
 from fetch_api.src.telemetry.logging import log
 from fetch_api.src.client import ConnectorClient
@@ -99,7 +99,7 @@ class APIProcessor:
                                 'instructions_template': ai_instructions_template,
                                 'prompt': '{}\n\n{}'.format(
                                     ai_prompt,
-                                    json.dumps(results['items'])
+                                    beautify_json(results['items'])
                                 )
                             },
                             cache_key=create_cache_key(
