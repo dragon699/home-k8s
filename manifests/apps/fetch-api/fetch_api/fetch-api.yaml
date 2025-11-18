@@ -31,18 +31,18 @@ spec:
           secret:
             secretName: fleet-api-private-key
             items:
-            - key: private-key.pem
-              path: private-key.pem
+              - key: private-key.pem
+                path: private-key.pem
         - name: fleet-api-public-key
           secret:
             configMap:
               name: data-fleet-api
               items:
-              - key: public-key.pem
-                path: public-key.pem
+                - key: public-key.pem
+                  path: public-key.pem
       containers:
         - name: fetch-api
-          image: ghcr.io/dragon699/home-k8s/fetch-api/fetch-api:0.17.12
+          image: ghcr.io/dragon699/home-k8s/fetch-api/fetch-api:0.17.13
           imagePullPolicy: Always
           volumeMounts:
             - name: script-health-probe
