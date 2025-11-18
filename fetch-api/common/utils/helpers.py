@@ -167,50 +167,6 @@ def time_since(past: str, future: str = None, tz: str = 'Europe/Sofia', instant:
             return '<1m'
 
 
-def beautify_json(data, indent: int = 0, separator: bool =True):
-    if isinstance(data, str):
-        try:
-            parsed = json.loads(data)
-            return beautify_json(parsed, indent, separator)
-
-        except ValueError:
-            spaces = '  ' * indent
-            return f'{spaces}{data}'
-
-    spaces = '  ' * indent
-
-    if isinstance(data, dict):
-        lines = []
-
-        for key, value in data.items():
-            if isinstance(value, (dict, list)):
-                lines.append(f'{spaces}{key}:')
-                lines.append(beautify_json(value, indent + 1, separator))
-
-            else:
-                lines.append(f'{spaces}{key}: {value}')
-
-        return '\n'.join(lines)
-
-    if isinstance(data, list):
-        if all(not isinstance(i, (list, dict)) for i in data):
-            return f'{spaces}{', '.join(map(str, data))}'
-
-        blocks = []
-
-        for item in data:
-            block = beautify_json(item, indent, separator)
-            blocks.append(block)
-
-        if separator:
-            sep_line = spaces + ('-' * 40)
-            return f'\n{sep_line}\n'.join(blocks)
-
-        return ('\n\n' + spaces).join(blocks)
-
-    return f'{spaces}{data}'
-
-
 def omit_volatile_data(data: dict):
     if isinstance(data, dict):
         return {k: omit_volatile_data(v) for k, v in data.items()}
