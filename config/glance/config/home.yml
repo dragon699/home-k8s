@@ -112,6 +112,7 @@
         {{/* --- Extra vars --- */}}
         {{ $grafana_url := "https://grafana.k8s.iaminyourpc.xyz" }}
         {{ $grafana_dashboard_overview_url := printf "%s/d/kOuP_Fggz/overview" $grafana_url }}
+        {{ $grafana_dashboard_efficiency_url := printf "%s/d/fu4SiQgWz/driving-efficiency" $grafana_url }}
         {{ $grafana_dashboard_battery_health_url := printf "%s/d/jchmRiqUfXgTM/battery-health" $grafana_url }}
         {{ $grafana_dashboard_charging_history_url := printf "%s/d/TSmNYvRRk/charging-history" $grafana_url }}
         {{/* --- Extra vars ends --- */}}
@@ -266,7 +267,7 @@
                 {{ $state_state }}
               </a>
             </div>
-            <div class="header-text">for {{ $state_last_state_since }}</div>
+            <div class="header-text">{{ $state_last_state_since }}</div>
           </div>
 
           <div class="right-side">
@@ -307,7 +308,7 @@
         <div class="root-row">
           <div class="left-side">
             <div class="title">
-              <a href="{{ $grafana_dashboard_charging_history_url }}" 
+              <a href="{{ $grafana_dashboard_efficiency_url }}" 
                 target="_blank" 
                 style="color:inherit;text-decoration:none;">
                 {{ $efficiency_average_driving_efficiency_percentage }}%
@@ -411,7 +412,7 @@
       url: http://fetch-api.fetch-api.svc:8069/grafana/car-drives-history
       method: POST
       parameters:
-        number_of_drives: 3
+        number_of_drives: 10
       body: {"ai": true}
       template: |
         <style>
