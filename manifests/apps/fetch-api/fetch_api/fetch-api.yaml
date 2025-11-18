@@ -41,7 +41,7 @@ spec:
                 path: public-key.pem
       containers:
         - name: fetch-api
-          image: ghcr.io/dragon699/home-k8s/fetch-api/fetch-api:0.17.18
+          image: ghcr.io/dragon699/home-k8s/fetch-api/fetch-api:0.17.19
           imagePullPolicy: Always
           volumeMounts:
             - name: script-health-probe
