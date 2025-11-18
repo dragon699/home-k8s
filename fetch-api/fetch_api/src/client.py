@@ -138,7 +138,6 @@ class ConnectorClient:
             else:
                 span.set_attributes({
                     'connector.cache.enabled': self.cache,
-                    'connector.cache.status': 'miss',
                     'connector.error.message': str(err),
                     'connector.error.type': type(err).__name__
                 })
@@ -148,12 +147,32 @@ class ConnectorClient:
                 }
 
         except Exception as err:
-            span.set_attributes(
-                reword({
-                    'connector.error.message': str(err),
-                    'connector.error.type': type(err).__name__
+            if self.cache and not cached_value is None:
+                span.set_attributes({
+                    'connector.cache.enabled': self.cache,
+                    'connector.cache.status': 'hit',
+                    'connector.cache.key': cache_key,
+                    'connector.cache.cached_at': cached_value['cached_at']
                 })
-            )
+
+                return CachedResponse(
+                    cached_at=cached_value['cached_at'],
+                    status_code=cached_value['status_code'],
+                    json_data=cached_value['json']
+                )
+            
+            else:
+                span.set_attributes(
+                    reword({
+                        'connector.cache.enabled': self.cache,
+                        'connector.error.message': str(err),
+                        'connector.error.type': type(err).__name__
+                    })
+                )
+
+                return {
+                    'error': 'Connector request failed.'
+                }
 
 
     @traced()
@@ -231,15 +250,38 @@ class ConnectorClient:
             else:
                 span.set_attributes({
                     'connector.cache.enabled': self.cache,
-                    'connector.cache.status': 'miss',
                     'connector.error.message': str(err),
                     'connector.error.type': type(err).__name__
                 })
 
+                return {
+                    'error': 'Connector request timed out and cached response is not available.'
+                }
+
         except Exception as err:
-            span.set_attributes(
-                reword({
-                    'connector.error.message': str(err),
-                    'connector.error.type': type(err).__name__
+            if self.cache and not cached_value is None:
+                span.set_attributes({
+                    'connector.cache.enabled': self.cache,
+                    'connector.cache.status': 'hit',
+                    'connector.cache.key': cache_key,
+                    'connector.cache.cached_at': cached_value['cached_at']
                 })
-            )
+
+                return CachedResponse(
+                    cached_at=cached_value['cached_at'],
+                    status_code=cached_value['status_code'],
+                    json_data=cached_value['json']
+                )
+            
+            else:
+                span.set_attributes(
+                    reword({
+                        'connector.cache.enabled': self.cache,
+                        'connector.error.message': str(err),
+                        'connector.error.type': type(err).__name__
+                    })
+                )
+
+                return {
+                    'error': 'Connector request failed.'
+                }
