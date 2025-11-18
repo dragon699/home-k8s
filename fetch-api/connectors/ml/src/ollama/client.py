@@ -1,4 +1,5 @@
-import common.utils.requests as req
+import requests
+from requests import exceptions as ReqExceptions
 from langchain_ollama import ChatOllama
 from connectors.ml.settings import settings
 from common.telemetry.src.tracing.wrappers import traced
@@ -20,7 +21,7 @@ class OllamaClient:
             'ollama.endpoint': settings.health_endpoint
         })
 
-        response = req.get(
+        response = requests.get(
             settings.health_endpoint,
             timeout=5
         )

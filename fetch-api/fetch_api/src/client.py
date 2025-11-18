@@ -1,6 +1,5 @@
 import requests
 from requests import exceptions as ReqExceptions
-import common.utils.requests as req
 from fetch_api.src.cache.client import RedisClient
 from fetch_api.src.cache.data import CachedResponse
 from fetch_api.settings import settings, connectors
@@ -56,7 +55,7 @@ class ConnectorClient:
             'connector.operation': 'ping'
         })
 
-        response = req.get(
+        response = requests.get(
             health_endpoint,
             timeout=5
         )
@@ -73,7 +72,8 @@ class ConnectorClient:
                 'connector.request.params': params,
                 'connector.request.body': data,
                 'connector.url': self.url,
-                'connector.endpoint': endpoint
+                'connector.endpoint': endpoint,
+                'connector.cache.enabled': self.cache
             })
         )
 
@@ -96,36 +96,46 @@ class ConnectorClient:
                 timeout=self.requests_timeout
             )
 
-            if self.cache and response.status_code in [200, 201]:
-                self.redis.set(
-                    cache_key,
-                    {
-                        'cached_at': time_now(),
-                        'status_code': response.status_code,
-                        'json': response.json()
-                    },
-                    ttl=settings.redis_cache_ttl
-                )
+            if response.status_code in [200, 201]:
+                if self.cache:
+                    self.redis.set(
+                        cache_key,
+                        {
+                            'cached_at': time_now(),
+                            'status_code': response.status_code,
+                            'json': response.json()
+                        },
+                        ttl=settings.redis_cache_ttl
+                    )
 
-                span.set_attributes({
-                    'connector.cache.enabled': self.cache,
-                    'connector.cache.updated': True,
-                    'connector.cache.updated_at': time_now(),
-                    'connector.cache.key': cache_key
-                })
-            
+                    span.set_attributes({
+                        'connector.cache.updated': True,
+                        'connector.cache.updated_at': time_now(),
+                        'connector.cache.key': cache_key
+                    })
+
             else:
-                span.set_attributes({
-                    'connector.cache.enabled': self.cache
-                })
+                if self.cache and not cached_value is None:
+                    span.set_attributes({
+                        'connector.cache.status': 'hit',
+                        'connector.cache.updated': False,
+                        'connector.cache.key': cache_key,
+                        'connector.cache.cached_at': cached_value['cached_at']
+                    })
 
+                    return CachedResponse(
+                        cached_at=cached_value['cached_at'],
+                        status_code=cached_value['status_code'],
+                        json_data=cached_value['json']
+                    )
+                
             return response
 
         except ReqExceptions.RequestException as err:
             if self.cache and not cached_value is None:
                 span.set_attributes({
-                    'connector.cache.enabled': self.cache,
                     'connector.cache.status': 'hit',
+                    'connector.cache.updated': False,
                     'connector.cache.key': cache_key,
                     'connector.cache.cached_at': cached_value['cached_at']
                 })
@@ -154,7 +164,8 @@ class ConnectorClient:
                 'connector.request.params': params,
                 'connector.request.body': data,
                 'connector.url': self.url,
-                'connector.endpoint': endpoint
+                'connector.endpoint': endpoint,
+                'connector.cache.enabled': self.cache
             })
         )
 
@@ -177,36 +188,46 @@ class ConnectorClient:
                 timeout=self.requests_timeout
             )
 
-            if self.cache and response.status_code in [200, 201]:
-                self.redis.set(
-                    cache_key,
-                    {
-                        'cached_at': time_now(),
-                        'status_code': response.status_code,
-                        'json': response.json()
-                    },
-                    ttl=settings.redis_cache_ttl
-                )
+            if response.status_code in [200, 201]:
+                if self.cache:
+                    self.redis.set(
+                        cache_key,
+                        {
+                            'cached_at': time_now(),
+                            'status_code': response.status_code,
+                            'json': response.json()
+                        },
+                        ttl=settings.redis_cache_ttl
+                    )
 
-                span.set_attributes({
-                    'connector.cache.enabled': self.cache,
-                    'connector.cache.updated': True,
-                    'connector.cache.updated_at': time_now(),
-                    'connector.cache.key': cache_key
-                })
+                    span.set_attributes({
+                        'connector.cache.updated': True,
+                        'connector.cache.updated_at': time_now(),
+                        'connector.cache.key': cache_key
+                    })
 
             else:
-                span.set_attributes({
-                    'connector.cache.enabled': self.cache
-                })
+                if self.cache and not cached_value is None:
+                    span.set_attributes({
+                        'connector.cache.status': 'hit',
+                        'connector.cache.updated': False,
+                        'connector.cache.key': cache_key,
+                        'connector.cache.cached_at': cached_value['cached_at']
+                    })
 
+                    return CachedResponse(
+                        cached_at=cached_value['cached_at'],
+                        status_code=cached_value['status_code'],
+                        json_data=cached_value['json']
+                    )
+                
             return response
 
         except ReqExceptions.RequestException as err:
             if self.cache and not cached_value is None:
                 span.set_attributes({
-                    'connector.cache.enabled': self.cache,
                     'connector.cache.status': 'hit',
+                    'connector.cache.updated': False,
                     'connector.cache.key': cache_key,
                     'connector.cache.cached_at': cached_value['cached_at']
                 })

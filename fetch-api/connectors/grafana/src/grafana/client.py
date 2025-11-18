@@ -1,4 +1,5 @@
-import common.utils.requests as req
+import requests
+from requests import exceptions as ReqExceptions
 from connectors.grafana.settings import settings
 from common.telemetry.src.tracing.wrappers import traced
 from common.telemetry.src.tracing.helpers import reword
@@ -30,7 +31,7 @@ class GrafanaClient:
             'grafana.endpoint': settings.health_endpoint
         })
 
-        response = req.get(
+        response = requests.get(
             settings.health_endpoint,
             timeout=5
         )
@@ -45,7 +46,7 @@ class GrafanaClient:
             return False
 
         try:
-            response = req.get(
+            response = requests.get(
                 settings.auth_endpoint,
                 headers=self.headers
             )
@@ -92,7 +93,7 @@ class GrafanaClient:
 
                 return False
 
-        except Exception as err:
+        except ReqExceptions.RequestException as err:
             settings.authenticated = False
 
             log.critical(f'Authentication failed, Grafana is unreachable', extra={
@@ -128,7 +129,7 @@ class GrafanaClient:
                 })
             )
 
-            response = req.get(
+            response = requests.get(
                 f'{self.url}/{endpoint}',
                 headers=self.headers,
                 json=data
@@ -158,7 +159,7 @@ class GrafanaClient:
                 })
             )
 
-            response = req.post(
+            response = requests.post(
                 f'{self.url}/{endpoint}',
                 headers=self.headers,
                 json=data
