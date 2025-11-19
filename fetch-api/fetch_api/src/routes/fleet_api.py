@@ -3,7 +3,7 @@ from fastapi import APIRouter, Response, HTTPException
 
 
 
-FLEET_API_URL = 'https://fleet-api.prd.eu.vn.cloud.tesla.com'
+FLEET_API_URL = "https://fleet-api.prd.na.vn.cloud.tesla.com"
 FLEET_AUTH_URL = 'https://fleet-auth.prd.vn.cloud.tesla.com/oauth2/v3/token'
 AUDIENCE = FLEET_API_URL
 
