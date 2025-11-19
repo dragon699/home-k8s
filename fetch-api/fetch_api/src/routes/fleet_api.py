@@ -112,7 +112,7 @@ def register_fleet():
 def list_vehicles():
     access_token = get_access_token()
 
-    url = f'{FLEET_API_URL}/api/1/users/me/vehicles'
+    url = f'{FLEET_API_URL}/api/1/vehicles'
 
     headers = {
         'Authorization': f'Bearer {access_token}',
