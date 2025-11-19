@@ -2,23 +2,23 @@ import requests, os
 from fastapi import APIRouter, HTTPException
 
 
-FLEET_API_URL = "https://fleet-api.prd.eu.vn.cloud.tesla.com"
-FLEET_AUTH_URL = "https://fleet-auth.prd.vn.cloud.tesla.com/oauth2/v3/token"
+FLEET_API_URL = 'https://fleet-api.prd.eu.vn.cloud.tesla.com'
+FLEET_AUTH_URL = 'https://fleet-auth.prd.vn.cloud.tesla.com/oauth2/v3/token'
 AUDIENCE = FLEET_API_URL
 
-ACCESS_TOKEN_FILE = "/app/fleet-api/access_token"
-REFRESH_TOKEN_FILE = "/app/fleet-api/refresh_token"
+ACCESS_TOKEN_FILE = '/app/fleet-api/access_token'
+REFRESH_TOKEN_FILE = '/app/fleet-api/refresh_token'
 
 
 router = APIRouter()
 
 
 def save_tokens(tokens: dict):
-    with open(ACCESS_TOKEN_FILE, "w") as f:
-        f.write(tokens["access_token"])
+    with open(ACCESS_TOKEN_FILE, 'w') as f:
+        f.write(tokens['access_token'])
 
-    with open(REFRESH_TOKEN_FILE, "w") as f:
-        f.write(tokens["refresh_token"])
+    with open(REFRESH_TOKEN_FILE, 'w') as f:
+        f.write(tokens['refresh_token'])
 
 
 def get_access_token():
@@ -30,15 +30,14 @@ def get_access_token():
 
 def refresh_access_token():
     if not os.path.exists(REFRESH_TOKEN_FILE):
-        raise HTTPException(400, "Missing refresh_token. Re-login required.")
+        raise HTTPException(400, 'Missing refresh_token. Re-login required.')
 
     refresh_token = open(REFRESH_TOKEN_FILE).read().strip()
 
     data = {
-        "grant_type": "refresh_token",
-        "client_id": os.getenv("CLIENT_ID"),
-        "refresh_token": refresh_token,
-        "audience": AUDIENCE,
+        'grant_type': 'refresh_token',
+        'client_id': os.getenv('CLIENT_ID'),
+        'refresh_token': refresh_token
     }
 
     resp = requests.post(FLEET_AUTH_URL, data=data)
@@ -49,23 +48,23 @@ def refresh_access_token():
     tokens = resp.json()
     save_tokens(tokens)
 
-    return tokens["access_token"]
+    return tokens['access_token']
 
 
 def tesla_get(endpoint: str):
     access_token = get_access_token()
 
     headers = {
-        "Authorization": f"Bearer {access_token}",
-        "X-Tesla-User-Agent": "fetch-api",
+        'Authorization': f'Bearer {access_token}',
+        'X-Tesla-User-Agent': 'fetch-api',
     }
 
-    url = f"{FLEET_API_URL}{endpoint}"
+    url = f'{FLEET_API_URL}{endpoint}'
     resp = requests.get(url, headers=headers)
 
     if resp.status_code == 401:
         new_token = refresh_access_token()
-        headers["Authorization"] = f"Bearer {new_token}"
+        headers['Authorization'] = f'Bearer {new_token}'
         resp = requests.get(url, headers=headers)
 
     if resp.status_code != 200:
@@ -74,14 +73,15 @@ def tesla_get(endpoint: str):
     return resp.json()
 
 
-@router.get("/callback")
+@router.get('/callback')
 def update_tokens(code: str):
     data = {
-        "grant_type": "authorization_code",
-        "client_id": os.getenv("CLIENT_ID"),
-        "code": code,
-        "redirect_uri": "https://fleet.car.k8s.iaminyourpc.xyz/car/callback",
-        "audience": AUDIENCE,
+        'grant_type': 'authorization_code',
+        'client_id': os.getenv('CLIENT_ID'),
+        'client_secret': os.getenv('CLIENT_SECRET'),
+        'code': code,
+        'redirect_uri': 'https://fleet.car.k8s.iaminyourpc.xyz/car/callback',
+        'audience': AUDIENCE,
     }
 
     response = requests.post(FLEET_AUTH_URL, data=data)
@@ -92,10 +92,9 @@ def update_tokens(code: str):
     tokens = response.json()
     save_tokens(tokens)
 
-    return {"status": "ok"}
+    return {'status': 'ok'}
 
 
-@router.get("/list/vehicles")
+@router.get('/list/vehicles')
 def list_vehicles():
-    return tesla_get("/api/1/vehicles")
-
+    return tesla_get('/api/1/vehicles')
