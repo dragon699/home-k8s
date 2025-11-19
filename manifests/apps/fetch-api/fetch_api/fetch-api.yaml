@@ -27,6 +27,9 @@ spec:
           configMap:
             name: script-health-probe
             defaultMode: 0755
+        - name: fleet-api
+          persistentVolumeClaim:
+            claimName: fetch-api-fleet
         - name: fleet-api-private-key
           secret:
             secretName: fleet-api-private-key
@@ -47,6 +50,8 @@ spec:
             - name: script-health-probe
               mountPath: /home/health-probe.py
               subPath: health-probe.py
+            - name: fleet-api
+              mountPath: /app/fleet-api
             - name: fleet-api-private-key
               mountPath: /app/fleet-api/private
               readOnly: true
