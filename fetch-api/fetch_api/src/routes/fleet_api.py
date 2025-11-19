@@ -3,7 +3,7 @@ from fastapi import APIRouter, HTTPException
 
 
 FLEET_API_URL = "https://fleet-api.prd.eu.vn.cloud.tesla.com"
-FLEET_AUTH_URL = "https://fleet-auth.prd.eu.vn.cloud.tesla.com/oauth2/v3/token"
+FLEET_AUTH_URL = "https://fleet-auth.prd.vn.cloud.tesla.com/oauth2/v3/token"
 AUDIENCE = FLEET_API_URL
 
 ACCESS_TOKEN_FILE = "/app/fleet-api/access_token"
@@ -63,7 +63,6 @@ def tesla_get(endpoint: str):
     url = f"{FLEET_API_URL}{endpoint}"
     resp = requests.get(url, headers=headers)
 
-    # If token expired → refresh → retry once
     if resp.status_code == 401:
         new_token = refresh_access_token()
         headers["Authorization"] = f"Bearer {new_token}"
