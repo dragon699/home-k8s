@@ -3,7 +3,7 @@ from fastapi import APIRouter, Response, HTTPException
 
 
 
-FLEET_API_URL = "https://fleet-api.prd.na.vn.cloud.tesla.com"
+FLEET_API_URL = "https://fleet-api.prd.eu.vn.cloud.tesla.com"
 FLEET_AUTH_URL = 'https://fleet-auth.prd.vn.cloud.tesla.com/oauth2/v3/token'
 AUDIENCE = FLEET_API_URL
 
@@ -38,10 +38,12 @@ def tesla_callback(code: str):
 
     return {'status': 'ok'}
 
+
 def get_access_token():
     if os.path.exists(ACCESS_TOKEN_FILE):
         return open(ACCESS_TOKEN_FILE).read().strip()
     return refresh_access_token()
+
 
 def refresh_access_token():
     refresh_token = open(REFRESH_TOKEN_FILE).read().strip()
@@ -67,6 +69,7 @@ def refresh_access_token():
 
     return tokens['access_token']
 
+
 def get_partner_token():
     data = {
         'grant_type': 'client_credentials',
@@ -80,6 +83,7 @@ def get_partner_token():
         raise HTTPException(resp.status_code, resp.text)
 
     return resp.json()['access_token']
+
 
 @router.post('/register')
 def register_fleet():
@@ -102,6 +106,7 @@ def register_fleet():
         raise HTTPException(resp.status_code, resp.text)
 
     return resp.json()
+
 
 @router.get('/list/vehicles')
 def list_vehicles():
