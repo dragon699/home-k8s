@@ -29,7 +29,7 @@ spec:
         command: ["python", "app.py"]
         envFrom:
         - secretRef:
-            name: data-tesla-public-key
+            name: data-tesla-public-key-hoster
         env:
         - name: PUBLIC_KEY_ENDPOINT
           value: "/.well-known/appspecific/com.tesla.3p.public-key.pem"
