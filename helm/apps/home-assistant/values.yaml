@@ -2,6 +2,7 @@ persistence:
   enabled: true
 
 configuration:
+  enabled: true
   templateConfig: |-
     default_config:
 
