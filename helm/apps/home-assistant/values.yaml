@@ -3,6 +3,7 @@ persistence:
 
 configuration:
   enabled: true
+  forceInit: true
   templateConfig: |-
     default_config:
 
