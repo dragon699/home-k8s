@@ -1,0 +1,35 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: public-key-hoster
+  namespace: home-assistant
+  labels:
+    app: public-key-hoster
+    env: home
+spec:
+  replicas: 1
+  revisionHistoryLimit: 0
+  selector:
+    matchLabels:
+      app: public-key-hoster
+  template:
+    metadata:
+      labels:
+        app: public-key-hoster
+        env: home
+    spec:
+      restartPolicy: Always
+      containers:
+      - name: public-key-hoster
+        image: ghcr.io/dragon699/public-key-hoster:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        command: ["python", "app.py"]
+        envFrom:
+        - secretRef:
+            name: data-tesla-public-key
+        env:
+        - name: PUBLIC_KEY_ENDPOINT
+          value: "/.well-known/appspecific/com.tesla.3p.public-key.pem"
