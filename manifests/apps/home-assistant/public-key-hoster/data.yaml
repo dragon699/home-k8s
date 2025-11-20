@@ -2,7 +2,7 @@
 apiVersion: external-secrets.io/v1
 kind: ExternalSecret
 metadata:
-  name: data-tesla-public-key
+  name: data-tesla-public-key-hoster
   namespace: home-assistant
 spec:
   refreshInterval: 5m0s
@@ -10,11 +10,11 @@ spec:
     name: home-vault
     kind: ClusterSecretStore
   target:
-    name: data-tesla-public-key
+    name: data-tesla-public-key-hoster
     creationPolicy: Owner
   dataFrom:
   - extract:
-      key: home/home-assistant/data-tesla-public-key
+      key: home/home-assistant/data-tesla-public-key-hoster
       conversionStrategy: Default
       decodingStrategy: None
       metadataPolicy: None

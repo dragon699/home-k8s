@@ -2,26 +2,26 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: public-key-hoster
+  name: tesla-public-key-hoster
   namespace: home-assistant
   labels:
-    app: public-key-hoster
+    app: tesla-public-key-hoster
     env: home
 spec:
   replicas: 1
   revisionHistoryLimit: 0
   selector:
     matchLabels:
-      app: public-key-hoster
+      app: tesla-public-key-hoster
   template:
     metadata:
       labels:
-        app: public-key-hoster
+        app: tesla-public-key-hoster
         env: home
     spec:
       restartPolicy: Always
       containers:
-      - name: public-key-hoster
+      - name: tesla-public-key-hoster
         image: ghcr.io/dragon699/public-key-hoster:latest
         imagePullPolicy: Always
         ports:
