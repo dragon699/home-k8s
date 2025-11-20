@@ -81,7 +81,6 @@ grafana.ini:
 
   users:
     viewers_can_edit: true
-    default_theme: gloom
 
 
 # Grafana provisioning
