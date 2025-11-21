@@ -213,7 +213,7 @@ beyla.ebpf "home_discovery" {
     context_propagation        = "all"
     track_request_headers      = true
     high_request_volume        = true
-    heuristic_sql_detect       = true
+    heuristic_sql_detect       = false
   }
 
   traces {
