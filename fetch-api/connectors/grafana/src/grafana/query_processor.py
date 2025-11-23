@@ -96,27 +96,19 @@ class Processor:
         if query_id in [
             'teslamate-car-drives-info'
         ]:
-            result = []
-
-            for item in data:
-                renamed_item = {}
-
-                for key in item:
-                    if key in reword_map[query_id]:
-                        renamed_item[reword_map[query_id][key]] = item[key]
-                    else:
-                        renamed_item[key] = item[key]
-
-                result += [renamed_item]
+            result = [
+                {
+                    reword_map[query_id].get(key, key): value
+                    for key, value in item.items()
+                }
+                for item in data
+            ]
 
         else:
-            result = {}
-
-            for key in data:
-                if key in reword_map[query_id]:
-                    result[reword_map[query_id][key]] = data[key]
-                else:
-                    result[key] = data[key]
+            result = {
+                reword_map[query_id].get(key, key): value
+                for key, value in data.items()
+            }
 
         return result
 
@@ -139,13 +131,11 @@ class Processor:
         ]:
             for item in data:
                 for key in drop_map[query_id]:
-                    if key in item:
-                        del item[key]
+                    item.pop(key, None)
 
         else:
             for key in drop_map[query_id]:
-                if key in data:
-                    del data[key]
+                data.pop(key, None)
 
         return data
 
@@ -252,13 +242,14 @@ class Processor:
                     result = data
 
                 else:
-                    result += [data]
+                    result.append(data)
 
         else:
             if query_id == 'argocd-apps':
                 for item in query_response['results']['query']['frames']:
                     labels = item['schema']['fields'][1]['labels']
-                    result += [{**labels}]
+                    result.append({**labels})
+                    
 
                 result = sorted(
                     result,

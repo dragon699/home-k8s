@@ -19,11 +19,11 @@ class ConnectorClient:
         self.set_headers()
 
         if self.cache:
-            if any(v is None for v in [
+            if any(v is None for v in (
                 settings.redis_host,
                 settings.redis_port,
                 settings.redis_db
-            ]):
+            )):
                 log.critical(
                     f'{self.connector_name} requires caching configuration, but Redis settings are incomplete',
                     connector=self.connector_name

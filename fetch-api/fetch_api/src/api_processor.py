@@ -56,7 +56,7 @@ class APIProcessor:
                 assert response.status_code in (200, 201)
                 
                 response_body = response.json()
-                results['items'] += response_body['items']
+                results['items'].extend(response_body['items'])
                 upstream['status'] = 'success'
                 
                 if response_body.get('cached') and response_body['cached'] is True:
@@ -152,10 +152,10 @@ class APIProcessor:
                 if 'cache' not in results:
                     results['cache'] = []
 
-                results['cache'] += [{
+                results['cache'].append({
                     'upstream_endpoint': upstream['endpoint'],
                     **upstream['cache']
-                }]
+                })
 
         log.info('Fetch completed', extra=common_log_attributes)
 

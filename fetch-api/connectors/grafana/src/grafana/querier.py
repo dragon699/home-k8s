@@ -71,7 +71,7 @@ class Querier:
                     if ds_template_name == 'payload':
                         self.templates[ds_dir_name][ds_template_name]['queries'][0]['datasource']['uid'] = self.templates_struct[ds_dir_name]['ds_uid']
 
-                    validated_files += [ds_file_name]
+                    validated_files.append(ds_file_name)
 
                 except:
                     log.critical(f'{ds_file_name} is not a valid JSON file for {ds_dir_name}', extra={

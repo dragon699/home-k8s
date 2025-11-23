@@ -185,10 +185,16 @@ def time_since_minutes_only(minutes: int):
 
 def omit_volatile_data(data: dict):
     if isinstance(data, dict):
-        return {k: omit_volatile_data(v) for k, v in data.items()}
+        return {
+            k: omit_volatile_data(v)
+            for k, v in data.items()
+        }
 
     if isinstance(data, list):
-        return [omit_volatile_data(item) for item in data]
+        return [
+            omit_volatile_data(item)
+            for item in data
+        ]
 
     if isinstance(data, str):
         return '<volatile>' if VOLATILE_PATTERN.match(data.strip()) else data

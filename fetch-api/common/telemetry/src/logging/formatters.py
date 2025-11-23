@@ -22,16 +22,16 @@ class Formatters:
                         continue
 
                     if isinstance(value, str):
-                        attr += [(f'{key}="{value}"')]
+                        attr.append(f'{key}="{value}"')
 
                     elif value is None:
-                        attr += [f'{key}=null']
+                        attr.append(f'{key}=null')
 
                     elif isinstance(value, bool):
-                        attr += [f'{key}={str(value).lower()}']
+                        attr.append(f'{key}={str(value).lower()}')
 
                     else:
-                        attr += [f'{key}={value}']
+                        attr.append(f'{key}={value}')
 
             return ' '.join(attr)
 

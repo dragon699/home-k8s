@@ -14,13 +14,13 @@ class Processor:
         if answer.startswith(' '):
             answer = answer[1:]
 
-        result += [{
+        result.append({
             'answer': answer,
             'duration_seconds': round((int(response.response_metadata['total_duration']) / 1_000_000_000), 1),
             'provider': response.response_metadata['model_provider'],
             'model': response.response_metadata['model_name'],
             'temperature': settings.default_temperature
-        }]
+        })
 
         span.set_attributes(
             reword({
