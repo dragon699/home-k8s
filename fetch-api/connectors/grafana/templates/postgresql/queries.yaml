@@ -126,14 +126,16 @@
               END AS type,
               cp.charge_energy_added AS energy_added,
               start_battery_level AS start_percent,
-              end_battery_level AS end_percent
+              end_battery_level AS end_percent,
+              TO_CHAR((end_date - start_date), 'HH24:MI') AS duration_str,
+              EXTRACT(EPOCH FROM (end_date - start_date)) / 60 AS duration_min  
           FROM charging_processes cp
           LEFT JOIN charges c ON cp.id = c.charging_process_id
           LEFT JOIN positions p ON p.id = cp.position_id
           LEFT JOIN addresses ON addresses.id = cp.address_id
           LEFT JOIN geofences g ON g.id = geofence_id
           WHERE cp.car_id = 1
-            AND (cp.charge_energy_added IS NULL OR cp.charge_energy_added > 0)
+          AND (cp.charge_energy_added IS NULL OR cp.charge_energy_added > 0)
           GROUP BY cp.id, p.id, g.id, addresses.id
           ORDER BY start_date DESC
       )
@@ -143,7 +145,9 @@
           type,
           energy_added,
           start_percent,
-          end_percent
+          end_percent,
+          duration_str,
+          duration_min
       FROM data
       LIMIT 1;
 

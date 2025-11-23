@@ -4,6 +4,7 @@ from common.utils.helpers import (
     time_beautify_ms,
     time_beautify_ordinal,
     time_since,
+    time_since_minutes_only,
     get_maps_url,
     get_maps_directions_url,
     get_teslamate_drive_grafana_url
@@ -52,7 +53,9 @@ class Processor:
                 'type': 'charge_type',
                 'energy_added': 'charge_energy_added_kwh',
                 'start_percent': 'charge_start_percentage',
-                'end_percent': 'charge_end_percentage'
+                'end_percent': 'charge_end_percentage',
+                'duration_str': 'duration',
+                'duration_min': 'duration_minutes'
             },
             'teslamate-last-seen-location': {
                 'time': 'last_seen'
@@ -69,8 +72,8 @@ class Processor:
             'teslamate-car-drives-info': {
                 'start_date_ts': 'start_time',
                 'end_date_ts': 'end_time',
-                'duration_str': 'duration',
                 'drive_id': 'id',
+                'duration_str': 'duration',
                 'duration_min': 'duration_minutes',
                 '% Start': 'start_battery_percentage',
                 '% End': 'end_battery_percentage',
@@ -165,6 +168,8 @@ class Processor:
                     data['last_charge'] = time_beautify_ms(data['last_charge'])
                     data['last_charge_since'] = time_since(data['last_charge'])
                     data['charge_energy_added_percentage'] = (data['charge_end_percentage'] - data['charge_start_percentage'])
+                    data['duration_minutes'] = round(data['duration_minutes'], 0)
+                    data['duration_end_since_start'] = time_since_minutes_only(data['duration_minutes'])
 
                 elif query_id == 'teslamate-last-seen-location':
                     data['last_seen'] = time_beautify_ms(data['last_seen'])

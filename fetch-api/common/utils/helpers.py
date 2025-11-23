@@ -167,6 +167,22 @@ def time_since(past: str, future: str = None, tz: str = 'Europe/Sofia', instant:
             return '<1m'
 
 
+def time_since_minutes_only(minutes: int):
+    if minutes < 1:
+        return '<1m'
+
+    hours = minutes // 60
+    mins = minutes % 60
+
+    if hours > 0:
+        if mins > 0:
+            return f'{int(hours)}h{int(mins)}m'
+
+        return f'{int(hours)}h'
+
+    return f'{int(mins)}m'
+
+
 def omit_volatile_data(data: dict):
     if isinstance(data, dict):
         return {k: omit_volatile_data(v) for k, v in data.items()}
