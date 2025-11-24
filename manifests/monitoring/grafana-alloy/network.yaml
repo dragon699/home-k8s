@@ -58,3 +58,29 @@ spec:
             name: grafana-alloy
             port:
               number: 4318
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: grafana-alloy-grpc
+  namespace: monitoring
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/whitelist-source-range: "92.247.208.224/32"
+    nginx.ingress.kubernetes.io/backend-protocol: "GRPC"
+  labels:
+    app: grafana-alloy
+    env: home
+spec:
+  rules:
+  - host: grpc.k8s.iaminyourpc.xyz
+    http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: grafana-alloy
+            port:
+              number: 4317
