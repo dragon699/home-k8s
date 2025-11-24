@@ -1,3 +1,5 @@
 **/.vscode
 **/.misc
 **/__pycache__/
+
+fetch-api/local/env
