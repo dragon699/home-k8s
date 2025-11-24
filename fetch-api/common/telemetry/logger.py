@@ -14,8 +14,8 @@ class Logger:
         self.style = {'datefmt': '%Y-%m-%dT%H:%M:%S'}
 
         self.handler = logging.StreamHandler()
-        self.handler.addFilter(Filters.Rename())
         self.handler.addFilter(Filters.Clear())
+        self.handler.addFilter(Filters.Rename())
 
         self.formatter = None
         self.logger.addHandler(self.handler)
@@ -69,11 +69,14 @@ class Logger:
             'version': 1,
             'disable_existing_loggers': False,
             'filters': {
-                'Rename': {
-                    '()': 'common.telemetry.src.logging.filters.Filters.Rename'
+                'Drop': {
+                    '()': 'common.telemetry.src.logging.filters.Filters.Drop'
                 },
                 'Clear': {
                     '()': 'common.telemetry.src.logging.filters.Filters.Clear'
+                },
+                'Rename': {
+                    '()': 'common.telemetry.src.logging.filters.Filters.Rename'
                 }
             },
             'formatters': {
@@ -85,7 +88,7 @@ class Logger:
                 'default': {
                     'formatter': 'default',
                     'class': 'logging.StreamHandler',
-                    'filters': ['Rename', 'Clear']
+                    'filters': ['Drop', 'Clear', 'Rename']
                 }
             },
             'loggers': {

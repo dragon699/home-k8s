@@ -125,7 +125,7 @@ class APIProcessor:
                         else:
                             commong_ml_log_attributes['cache_status'] = 'miss'
 
-                        log.debug('Fetched AI summary for upstreams response', extra=commong_ml_log_attributes)
+                        log.debug('Fetched AI summary for upstream responses', extra=commong_ml_log_attributes)
 
                     except Exception as err:
                         log.warning('AI summary fetch failed', extra={

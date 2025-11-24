@@ -2,7 +2,6 @@ import json
 
 
 def reword(attributes: dict):
-    reworded = attributes.copy()
     reword_map = {
         'health.status.current': {True: 'healthy', False: 'unhealthy'},
         'health.status.previous': {True: 'healthy', False: 'unhealthy'},
@@ -19,7 +18,14 @@ def reword(attributes: dict):
         '__response.content': 'json'
     }
 
+    reworded = attributes.copy()
+    discarded_keys = []
+
     for a_k, a_v in reworded.items():
+        if isinstance(a_v, (list, dict)) and len(a_v) == 0:
+            discarded_keys.append(a_k)
+            continue
+
         if a_v is None:
             reworded[a_k] = 'unknown'
 
@@ -37,5 +43,8 @@ def reword(attributes: dict):
 
                 else:
                     reworded[a_k] = json.dumps(a_v, indent=4)
+
+    for key in discarded_keys:
+        reworded.pop(key, None)
 
     return reworded

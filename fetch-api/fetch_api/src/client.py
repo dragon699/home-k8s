@@ -25,17 +25,32 @@ class ConnectorClient:
                 settings.redis_db
             )):
                 log.critical(
-                    f'{self.connector_name} requires caching configuration, but Redis settings are incomplete',
-                    connector=self.connector_name
+                    f'{self.connector_name} requires caching configuration, but Redis settings are incomplete', extra={
+                        'connector': self.connector_name,
+                        'required_settings': ['REDIS_HOST', 'REDIS_PORT', 'REDIS_DB'],
+                        'optional_settings': ['REDIS_PASSWORD', 'REDIS_CACHE_TTL']
+                    }
                 )
                 raise SystemExit(1)
 
-            self.redis = RedisClient(
-                host=settings.redis_host,
-                port=settings.redis_port,
-                db=settings.redis_db,
-                password=settings.redis_password
-            )
+            try:
+                self.redis = RedisClient(
+                    host=settings.redis_host,
+                    port=settings.redis_port,
+                    db=settings.redis_db,
+                    password=settings.redis_password
+                )
+                self.redis.ping()
+
+            except Exception as err:
+                log.critical(
+                    f'{self.connector_name} failed to connect to Redis: {str(err)}', extra={
+                        'connector': self.connector_name,
+                        'required_settings': ['REDIS_HOST', 'REDIS_PORT', 'REDIS_DB'],
+                        'optional_settings': ['REDIS_PASSWORD', 'REDIS_CACHE_TTL']
+                    }
+                )
+                raise SystemExit(1)
 
 
     def set_headers(self):

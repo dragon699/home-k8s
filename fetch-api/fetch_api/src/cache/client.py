@@ -15,6 +15,10 @@ class RedisClient:
         )
 
 
+    def ping(self):
+        return self.client.ping()
+
+
     @traced()
     def get(self, key: str, span=None):
         value = self.client.get(key)

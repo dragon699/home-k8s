@@ -2,21 +2,14 @@ import logging
 
 
 class Filters:
-    class Rename(logging.Filter):
+    class Drop(logging.Filter):
         def filter(self, record):
-            renamed_fields = {
-                'levelname': 'level',
-                'name': 'component',
-                'message': 'msg',
-                'asctime': 'time',
-                'otelTraceID': 'trace_id',
-                'otelSpanID': 'span_id'
-            }
+            try:
+                if (record.name == 'uvicorn.access') and ('/api/health' in record.getMessage()):
+                    return False
 
-            for current_field, renamed_field in renamed_fields.items():
-                if hasattr(record, current_field):
-                    setattr(record, renamed_field, getattr(record, current_field))
-                    delattr(record, current_field)
+            except Exception:
+                return True
 
             return True
 
@@ -33,5 +26,24 @@ class Filters:
             for field in checked_fields:
                 if hasattr(record, field) and getattr(record, field) == '0':
                     delattr(record, field)
+
+            return True
+
+
+    class Rename(logging.Filter):
+        def filter(self, record):
+            renamed_fields = {
+                'levelname': 'level',
+                'name': 'component',
+                'message': 'msg',
+                'asctime': 'time',
+                'otelTraceID': 'trace_id',
+                'otelSpanID': 'span_id'
+            }
+
+            for current_field, renamed_field in renamed_fields.items():
+                if hasattr(record, current_field):
+                    setattr(record, renamed_field, getattr(record, current_field))
+                    delattr(record, current_field)
 
             return True
