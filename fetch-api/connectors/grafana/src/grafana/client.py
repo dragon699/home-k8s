@@ -23,7 +23,7 @@ class GrafanaClient:
 
 
     @staticmethod
-    @traced()
+    @traced('ping grafana')
     def ping(span=None):
         span.set_attributes({
             'grafana.operation': 'ping',
@@ -39,7 +39,7 @@ class GrafanaClient:
         return response
 
 
-    @traced()
+    @traced('authenticate')
     def authenticate(self, span=None):
         if not settings.healthy:
             settings.authenticated = False
@@ -115,7 +115,7 @@ class GrafanaClient:
             return False
 
 
-    @traced()
+    @traced('GET /:grafana')
     def get(self, endpoint: str, data: dict = {}, span=None):
         if self.authenticate():
             span.set_attributes(
@@ -145,7 +145,7 @@ class GrafanaClient:
             )
 
 
-    @traced()
+    @traced('POST /:grafana')
     def post(self, endpoint: str, data: dict = {}, span=None):
         if self.authenticate():
             span.set_attributes(

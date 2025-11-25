@@ -9,7 +9,7 @@ class CachedResponse:
         self.headers = headers or {}
         self._json = json_data or {}
 
-    @traced()
+    @traced('serve cache')
     def json(self, span=None):
         return {
             'cached': True,

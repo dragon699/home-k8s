@@ -19,7 +19,7 @@ class RedisClient:
         return self.client.ping()
 
 
-    @traced()
+    @traced('retrieve cache')
     def get(self, key: str, span=None):
         value = self.client.get(key)
         span.set_attributes({
@@ -55,7 +55,7 @@ class RedisClient:
             return value
 
 
-    @traced()
+    @traced('update cache')
     def set(self, key: str, value, ttl: int | None = None, span=None):
         encoded_value = json.dumps(value)
         span.set_attributes(

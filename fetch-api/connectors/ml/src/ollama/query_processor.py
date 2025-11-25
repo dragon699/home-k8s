@@ -6,7 +6,7 @@ from common.telemetry.src.tracing.helpers import reword
 
 class Processor:
     @staticmethod
-    @traced()
+    @traced('process response')
     def process(response, span=None):
         result = []
 

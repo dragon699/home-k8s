@@ -8,7 +8,7 @@ from fastapi.responses import JSONResponse
 
 class APIProcessor:
     @staticmethod
-    @traced()
+    @traced('process request')
     def process_request(
         query_ds_type: str,
         query_id: str,

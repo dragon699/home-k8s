@@ -87,7 +87,7 @@ class Querier:
                 raise SystemExit(1)
 
 
-    @traced()
+    @traced('commit query')
     def commit(self, query_ds_type: str, query_id: str, query_params: dict = {}, span=None):
         span.set_attributes(
             reword({
@@ -119,7 +119,7 @@ class Querier:
             })
 
 
-    @traced()
+    @traced('fetch query blueprint')
     def fetch(self, query_ds_type: str, query_id: str, query_params: dict = {}, span=None):
         span.set_attributes({
             'querier.query.id': query_id,
@@ -133,15 +133,13 @@ class Querier:
             })
             return None
 
-        span.add_event('search_started', attributes={
-            'querier.queries.template.path': f'{self.templates_dir}/{query_ds_type}/queries.yaml'
-        })
+        span.add_event('search started')
 
         for query in self.templates[query_ds_type]['queries']:
             if query['query']['id'] == query_id:
                 expression = copy.deepcopy(query['query']['query'])
 
-                span.add_event('search_completed', attributes={
+                span.add_event('search completed', attributes={
                     'querier.queries.template.path': f'{self.templates_dir}/{query_ds_type}/queries.yaml'
                 })
 
@@ -170,7 +168,7 @@ class Querier:
         return None
 
 
-    @traced()
+    @traced('render query payload')
     def render(self, query_ds_type: str, expression: str,  span=None):
         payload = copy.deepcopy(self.templates[query_ds_type]['payload'])
         expression_key = 'rawSql' if query_ds_type == 'postgresql' else 'expr'
@@ -187,7 +185,7 @@ class Querier:
         return payload
 
 
-    @traced()
+    @traced('send query')
     def send(self, query_payload: str, span=None):
         try:
             response = self.client.post(
@@ -217,7 +215,7 @@ class Querier:
             return None
 
 
-    @traced()
+    @traced('process query response')
     def process(self, query_id: str, query_response: dict, span=None):
         return Processor.process(query_id, query_response)
 

@@ -61,7 +61,7 @@ class ConnectorClient:
 
 
     @staticmethod
-    @traced()
+    @traced('ping connector')
     def ping(connector_name: str, connector_url: str, health_endpoint: str, span=None):
         span.set_attributes({
             'connector.name': connector_name,
@@ -78,7 +78,7 @@ class ConnectorClient:
         return response
 
 
-    @traced()
+    @traced('GET /:connector')
     def get(self, endpoint: str, params: dict = {}, data: dict = {}, cache_key: tuple | None = None, span=None):
         span.set_attributes(
             reword({
@@ -174,7 +174,7 @@ class ConnectorClient:
             raise err
 
 
-    @traced()
+    @traced('POST /:connector')
     def post(self, endpoint: str, params: dict = {}, data: dict = {}, cache_key: tuple | None = None, span=None):
         span.set_attributes(
             reword({

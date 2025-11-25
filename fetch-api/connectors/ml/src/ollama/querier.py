@@ -40,7 +40,7 @@ class Querier:
         self.instructions = instructions
 
     
-    @traced()
+    @traced('commit query')
     def commit(self, prompt: str, model: str=None, instructions: str='', instructions_template: str=None, span=None):
         try:
             full_instructions = self.fetch(instructions, instructions_template)
@@ -68,7 +68,7 @@ class Querier:
             })
 
 
-    @traced()
+    @traced('fetch instructions')
     def fetch(self, instructions: str, instructions_template: str, span=None):
         if instructions_template:
             span.set_attributes({
@@ -104,7 +104,7 @@ class Querier:
         return ''
 
 
-    @traced()
+    @traced('render query payload')
     def render(self, prompt: str, model: str, instructions: str, span=None):
         payload = {
             'prompt': prompt,
@@ -121,7 +121,7 @@ class Querier:
         return payload
 
 
-    @traced()
+    @traced('send query')
     def send(self, prompt: str, model: str=None, instructions: str='', span=None):
         try:
             response = self.client.ask(
@@ -154,7 +154,7 @@ class Querier:
             return None
         
 
-    @traced()
+    @traced('process query response')
     def process(self, response: str, span=None):
         return Processor.process(response)
 

@@ -13,7 +13,7 @@ class OllamaClient:
 
 
     @staticmethod
-    @traced()
+    @traced('ping ollama')
     def ping(span=None):
         span.set_attributes({
             'ollama.operation': 'ping',
@@ -29,7 +29,7 @@ class OllamaClient:
         return response
 
 
-    @traced()
+    @traced('ask ollama')
     def ask(self, prompt: str, model: str, instructions: str='', span=None):
         span.set_attributes(
             reword({

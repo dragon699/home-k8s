@@ -27,7 +27,7 @@ class HealthChecker:
         return ts.isoformat().split('.')[0]
 
 
-    @traced()
+    @traced('get connector health status')
     def get_connector_status(self, span=None):
         was_healthy = self.connector.healthy
         self.connector.health_last_check = datetime.now().isoformat().split('.')[0]
@@ -182,7 +182,7 @@ class HealthChecker:
             )
 
 
-    @traced()
+    @traced('create health check schedule')
     def create_connector_schedule(self, span=None):
         log.debug(f'Scheduling health checks for {self.connector.name}')
         self.get_connector_status()
@@ -191,7 +191,7 @@ class HealthChecker:
             self.update_connector_schedule()
 
 
-    @traced()
+    @traced('update health check schedule')
     def update_connector_schedule(self, span=None):
         if not self.connector.health_job_id is None:
             try:

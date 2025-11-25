@@ -10,16 +10,19 @@ class HttpSpanProcessor(SpanProcessor):
             target = span.attributes.get('http.target') or span.attributes.get('url.path')
 
             if target:
-                span.update_name(f"{span.name} {target}")
+                span.update_name(f'{span.name} {target}')
 
             elif url:
-                span.update_name(f"{span.name} {urlparse(url).path}")
-    
+                span.update_name(f'{span.name} {urlparse(url).path}')
+
+
     def on_end(self, span):
         pass
     
+
     def shutdown(self):
         pass
-    
+
+
     def force_flush(self, timeout_millis=None):
         pass

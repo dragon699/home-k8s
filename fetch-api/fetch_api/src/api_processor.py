@@ -10,7 +10,7 @@ from fetch_api.src.client import ConnectorClient
 
 class APIProcessor:
     @staticmethod
-    @traced()
+    @traced('process request')
     def process_request(
         request,
         body,

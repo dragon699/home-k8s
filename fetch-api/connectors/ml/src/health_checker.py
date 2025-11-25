@@ -26,7 +26,7 @@ class HealthChecker:
         return ts.isoformat().split('.')[0]
 
 
-    @traced()
+    @traced('get health status')
     def get_status(self, span=None):
         was_healthy = settings.healthy
         settings.health_last_check = datetime.now().isoformat().split('.')[0]
@@ -141,7 +141,7 @@ class HealthChecker:
             )
 
 
-    @traced()
+    @traced('schedule health checks')
     def create_schedule(self, span=None):
         log.debug(f'Scheduling health checks')
         self.get_status()
@@ -150,7 +150,7 @@ class HealthChecker:
             self.update_schedule()
 
 
-    @traced()
+    @traced('update health check schedule')
     def update_schedule(self, span=None):
         if not settings.health_job_id is None:
             try:
