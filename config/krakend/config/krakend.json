@@ -55,41 +55,23 @@
             }
         }
     },
-    "timeout": "3000ms",
+    "timeout": "60s",
     "cache_ttl": "300s",
     "endpoints": [
         {
-          "endpoint": "/test-ping",
-          "method": "GET",
-          "backend": [
-              {
-                  "method": "GET",
-                  "host": [],
-                  "url_pattern": "/__debug/roots",
-                  "encoding": "json",
-                  "deny": [
-                      "message"
-                  ]
-              }
-          ],
-          "extra_config": {
-              "proxy": {
-                  "static": {
-                      "data": {
-                          "collection": [
-                              {
-                                  "directories": [
-                                      "Graceland"
-                                  ]
-                              }
-                          ],
-                          "version": "deficient"
-                      },
-                      "strategy": "always"
-                  }
-              }
-          },
-          "output_encoding": "json"
+            "endpoint": "/fetch/{connector_name}/{connector_item}",
+            "method": "POST",
+            "output_encoding": "no-op",
+            "backend": [
+                {
+                    "host": ["http://fetch-api.fetch-api.svc:8069"],
+                    "url_pattern": "/{connector_name}/{connector_item}",
+                    "method": "POST",
+                    "encoding": "no-op",
+                    "sd": "static",
+                    "disable_host_sanitize": false
+                }
+            ]
         }
     ]
 }
