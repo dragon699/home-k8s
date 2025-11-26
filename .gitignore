@@ -1,3 +1,8 @@
+# Temporary excludes
+config/postgresql-shared
+scripts/test*
+manifests/apps/postgresql-shared
+
 **/.vscode
 **/.misc
 **/__pycache__/
