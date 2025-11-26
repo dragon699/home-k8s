@@ -6,3 +6,4 @@ resources:
 - vault
 - glance
 - fetch-api
+- krakend

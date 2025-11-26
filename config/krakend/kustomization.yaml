@@ -1,0 +1,9 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: krakend
+generatorOptions:
+  disableNameSuffixHash: true
+configMapGenerator:
+- name: config-krakend
+  files: ['config.json=config/config.json']
