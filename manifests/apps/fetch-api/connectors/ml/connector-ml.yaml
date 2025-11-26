@@ -29,7 +29,7 @@ spec:
             defaultMode: 0755
       containers:
         - name: connector-ml
-          image: ghcr.io/dragon699/home-k8s/fetch-api/connectors/ml:0.7.0
+          image: ghcr.io/dragon699/home-k8s/fetch-api/connectors/ml:0.8.2
           imagePullPolicy: Always
           volumeMounts:
             - name: script-health-probe
