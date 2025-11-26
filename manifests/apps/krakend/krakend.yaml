@@ -25,6 +25,7 @@ spec:
       containers:
       - name: krakend
         image: krakend:2.12.0
+        imagePullPolicy: IfNotPresent
         volumeMounts:
         - name: config-krakend
           mountPath: /etc/krakend/krakend.json
@@ -32,7 +33,6 @@ spec:
           readOnly: true
         ports:
         - containerPort: 8080
-        imagePullPolicy: Never
         command: ['/usr/bin/krakend']
         args: ['run', '-d', '-c', '/etc/krakend/krakend.json', '-p', '8080']
         securityContext:
