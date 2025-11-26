@@ -26,6 +26,26 @@ def get_app_version(version_file: str) -> str:
         return 'unknown'
 
 
+def get_swagger_params() -> dict:
+    return {
+        'swagger_ui_parameters': {
+            'docExpansion': 'list',
+            'defaultModelsExpandDepth': -1,
+            'defaultModelExpandDepth': 2,
+            'displayRequestDuration': True,
+            'syntaxHighlight': {
+                'theme': 'obsidian'
+            },
+            'filter': True,
+            'tryItOutEnabled': True,
+            'persistAuthorization': True,
+            'displayOperationId': False,
+            'deepLinking': True,
+            'requestSnippetsEnabled': True
+        }
+    }
+
+
 def get_maps_url(path: str) -> str:
     if not path.startswith('new?lat='):
         return path

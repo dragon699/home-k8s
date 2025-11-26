@@ -4,7 +4,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
-from common.utils.helpers import get_app_version
+from common.utils.helpers import (get_app_version, get_swagger_params)
 from fetch_api.settings import (settings, connectors)
 from fetch_api.src.telemetry.tracing import instrumentor
 from fetch_api.src.health_checker import HealthChecker
@@ -36,7 +36,8 @@ app = FastAPI(
     title='FetchAPI',
     version=get_app_version(f'{os.path.dirname(__file__)}/../VERSION'),
     description='An API Gateway that fetches data from upstream connectors such as grafana, ollama, kubernetes etc.',
-    lifespan=lifespan
+    lifespan=lifespan,
+    **get_swagger_params()
 )
 
 instrumentor.instrument(app)

@@ -62,7 +62,7 @@ def fetch_car_info(
 def fetch_car_drives_history(
     request: Request,
     body: GrafanaBody,
-    number_of_drives: int = Query(5, ge=1, le=1000)
+    number_of_drives: int = Query(5, ge=1, le=1000, description='How many recent drive records to fetch')
 ) -> JSONResponse:
     return APIProcessor.process_request(
         request=request,

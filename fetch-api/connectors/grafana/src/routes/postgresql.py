@@ -46,7 +46,7 @@ def get_car_average_consumption() -> dict:
 
 
 @router.get('/car-drives-history', tags=['postgresql'], summary='Retrieve car drives history from Teslamate')
-def get_car_drives(number_of_drives: int = Query(5, ge=1, le=1000)) -> dict:
+def get_car_drives(number_of_drives: int = Query(5, ge=1, le=1000, description='How many recent drive records to retrieve')) -> dict:
     return APIProcessor.process_request(
         query_ds_type='postgresql',
         query_id='teslamate-car-drives-info',

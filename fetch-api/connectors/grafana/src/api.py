@@ -4,7 +4,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
-from common.utils.helpers import get_app_version
+from common.utils.helpers import (get_app_version, get_swagger_params)
 from connectors.grafana.settings import settings
 from connectors.grafana.src.telemetry.tracing import instrumentor
 from connectors.grafana.src.grafana.client import GrafanaClient
@@ -33,7 +33,8 @@ app = FastAPI(
     title='Grafana Connector',
     version=get_app_version(f'{os.path.dirname(__file__)}/../VERSION'),
     description='A connector that runs queries against Grafana data sources.',
-    lifespan=lifespan
+    lifespan=lifespan,
+    **get_swagger_params()
 )
 
 instrumentor.instrument(app)
