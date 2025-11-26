@@ -207,6 +207,7 @@ beyla.ebpf "home_discovery" {
     exclude_instrument         { kubernetes { namespace = "monitoring" } }
     exclude_instrument         { kubernetes { namespace = "speedtest" } }
     exclude_instrument         { kubernetes { namespace = "fetch-api" } }
+    exclude_instrument         { kubernetes { namespace = "krakend" } }
   }
 
   ebpf {
