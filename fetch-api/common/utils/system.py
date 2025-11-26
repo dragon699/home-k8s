@@ -1,8 +1,9 @@
+from typing import Any
 import os, json, yaml, jinja2
 
 
 
-def read_file(path: str, type='json'):
+def read_file(path: str, type: str = 'json') -> Any:
     readers = {
         'yaml': lambda f: yaml.safe_load(f),
         'json': lambda f: json.load(f)
@@ -28,7 +29,7 @@ def read_file(path: str, type='json'):
                 return f.read()
 
 
-def render_template(content, vars={}):
+def render_template(content: str, vars: dict | None = None) -> str:
     template = jinja2.Template(
         content,
         undefined=jinja2.StrictUndefined

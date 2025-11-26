@@ -3,7 +3,7 @@ import logging
 
 class Filters:
     class Drop(logging.Filter):
-        def filter(self, record):
+        def filter(self, record: logging.LogRecord) -> bool:
             try:
                 if (record.name == 'uvicorn.access') and ('/api/health' in record.getMessage()):
                     return False
@@ -15,7 +15,7 @@ class Filters:
 
 
     class Clear(logging.Filter):
-        def filter(self, record):
+        def filter(self, record: logging.LogRecord) -> bool:
             deleted_fields = ['otelTraceSampled', 'otelServiceName']
             checked_fields = ['trace_id', 'span_id']
 
@@ -31,7 +31,7 @@ class Filters:
 
 
     class Rename(logging.Filter):
-        def filter(self, record):
+        def filter(self, record: logging.LogRecord) -> bool:
             renamed_fields = {
                 'levelname': 'level',
                 'name': 'component',

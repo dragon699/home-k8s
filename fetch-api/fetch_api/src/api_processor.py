@@ -1,4 +1,6 @@
 import json
+from typing import Any
+from fastapi import Request
 from fastapi.responses import JSONResponse
 from common.telemetry.src.tracing.wrappers import traced
 from common.utils.helpers import omit_volatile_data, create_cache_key
@@ -12,14 +14,14 @@ class APIProcessor:
     @staticmethod
     @traced('process request')
     def process_request(
-        request,
-        body,
+        request: Request,
+        body: Any,
         client: ConnectorClient,
-        upstreams: list[dict[str, str]],
-        ai_prompt: str = None,
+        upstreams: list[dict[str, Any]],
+        ai_prompt: str | None = None,
         ai_instructions_template: str = 'default',
         span=None
-    ):
+    ) -> JSONResponse:
         status_code = None
         results = {'total_items': 0, 'items': []}
         common_log_attributes = {

@@ -1,6 +1,8 @@
+from typing import Any
 from datetime import (datetime, timedelta)
+from apscheduler.schedulers.background import BackgroundScheduler
 from fetch_api.src.telemetry.logging import log
-from fetch_api.settings import (settings, connectors)
+from fetch_api.settings import settings
 from fetch_api.src.client import ConnectorClient
 
 from common.telemetry.src.tracing.wrappers import traced
@@ -9,12 +11,12 @@ from common.telemetry.src.tracing.helpers import reword
 
 
 class HealthChecker:
-    def __init__(self, scheduler, connector):
+    def __init__(self, scheduler: BackgroundScheduler, connector: Any) -> None:
         self.scheduler = scheduler
         self.connector = connector
 
 
-    def get_next_interval(self):
+    def get_next_interval(self) -> int:
         return (
             settings.connector_health_check_interval_seconds
             if self.connector.healthy is True
@@ -22,13 +24,13 @@ class HealthChecker:
         )
 
 
-    def get_next_check_time(self):
+    def get_next_check_time(self) -> str:
         ts = datetime.now() + timedelta(seconds=self.get_next_interval())
         return ts.isoformat().split('.')[0]
 
 
     @traced('get connector health status')
-    def get_connector_status(self, span=None):
+    def get_connector_status(self, span=None) -> None:
         was_healthy = self.connector.healthy
         self.connector.health_last_check = datetime.now().isoformat().split('.')[0]
 
@@ -183,7 +185,7 @@ class HealthChecker:
 
 
     @traced('create health check schedule')
-    def create_connector_schedule(self, span=None):
+    def create_connector_schedule(self, span=None) -> None:
         log.debug(f'Scheduling health checks for {self.connector.name}')
         self.get_connector_status()
 
@@ -192,7 +194,7 @@ class HealthChecker:
 
 
     @traced('update health check schedule')
-    def update_connector_schedule(self, span=None):
+    def update_connector_schedule(self, span=None) -> None:
         if not self.connector.health_job_id is None:
             try:
                 self.scheduler.remove_job(self.connector.health_job_id)

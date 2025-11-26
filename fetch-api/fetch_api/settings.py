@@ -1,4 +1,5 @@
 import os
+from typing import Any
 from pydantic_settings import BaseSettings
 from common.utils.helpers import get_app_version
 from fetch_api.src.telemetry.logging import logger
@@ -34,7 +35,7 @@ class FetchAPISettings(BaseSettings):
     ai_summary_requests_timeout: int = 4
 
 
-    def model_post_init(self, __context):
+    def model_post_init(self, __context: Any) -> None:
         if not self.listen_url:
             self.listen_url = f'http://{self.listen_host}:{self.listen_port}'
 
@@ -61,7 +62,7 @@ class ConnectorSettings(BaseSettings):
     requests_timeout: int = 5
 
 
-    def model_post_init(self, __context):
+    def model_post_init(self, __context: Any) -> None:
         if not self.url:
             self.url = f'{self.protocol}://{self.host}:{self.port}'
 

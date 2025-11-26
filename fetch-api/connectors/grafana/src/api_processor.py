@@ -12,9 +12,11 @@ class APIProcessor:
     def process_request(
         query_ds_type: str,
         query_id: str,
-        query_params: dict = {},
+        query_params: dict | None = None,
         span=None
-    ):
+    ) -> JSONResponse:
+        query_params = query_params or {}
+
         try:
             result = querier.commit(
                 query_ds_type=query_ds_type,

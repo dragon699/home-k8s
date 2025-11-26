@@ -10,8 +10,8 @@ from connectors.ml.src.schemas.ollama import RequestAsk
 router = APIRouter()
 
 
-@router.post('/ask')
-def ask_ollama(request: RequestAsk):
+@router.post('/ask', tags=['ollama'], summary='Ask Ollama models a question')
+def ask_ollama(request: RequestAsk) -> JSONResponse:
     try:
         result = querier.commit(
             prompt=request.prompt,

@@ -13,7 +13,7 @@ REFRESH_TOKEN_FILE = '/app/fleet-api/refresh_token'
 router = APIRouter()
 
 
-def save_tokens(tokens: dict):
+def save_tokens(tokens: dict) -> None:
     with open(ACCESS_TOKEN_FILE, 'w') as f:
         f.write(tokens['access_token'])
 
@@ -21,14 +21,14 @@ def save_tokens(tokens: dict):
         f.write(tokens['refresh_token'])
 
 
-def get_access_token():
+def get_access_token() -> str:
     if os.path.exists(ACCESS_TOKEN_FILE):
         return open(ACCESS_TOKEN_FILE).read().strip()
 
     return refresh_access_token()
 
 
-def refresh_access_token():
+def refresh_access_token() -> str:
     if not os.path.exists(REFRESH_TOKEN_FILE):
         raise HTTPException(400, 'Missing refresh_token. Re-login required.')
 
@@ -51,7 +51,7 @@ def refresh_access_token():
     return tokens['access_token']
 
 
-def tesla_get(endpoint: str):
+def tesla_get(endpoint: str) -> dict:
     access_token = get_access_token()
 
     headers = {
@@ -73,8 +73,8 @@ def tesla_get(endpoint: str):
     return resp.json()
 
 
-@router.get('/callback')
-def update_tokens(code: str):
+@router.get('/callback', tags=['side-stuff'], summary='OAuth2 callback listener that updates access/refresh tokens')
+def update_tokens(code: str) -> dict:
     data = {
         'grant_type': 'authorization_code',
         'client_id': os.getenv('CLIENT_ID'),
@@ -95,6 +95,6 @@ def update_tokens(code: str):
     return {'status': 'ok'}
 
 
-@router.get('/list/vehicles')
-def list_vehicles():
+@router.get('/list/vehicles', tags=['side-stuff'], summary='List vehicles')
+def list_vehicles() -> dict:
     return tesla_get('/api/1/vehicles')

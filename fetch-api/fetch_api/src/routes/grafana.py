@@ -2,7 +2,7 @@ from fetch_api.settings import connectors
 from fetch_api.src.client import ConnectorClient
 from fetch_api.src.api_processor import APIProcessor
 from fastapi import APIRouter, Request, Query
-
+from fastapi.responses import JSONResponse
 from fetch_api.src.schemas.grafana import GrafanaBody
 
 
@@ -14,11 +14,11 @@ client = ConnectorClient(
 )
 
 
-@router.post('/argocd-apps')
+@router.post('/argocd-apps', tags=['connector-grafana'], summary='Fetch ArgoCD applications and their statuses')
 def fetch_argocd_apps(
     request: Request,
     body: GrafanaBody
-):
+) -> JSONResponse:
     return APIProcessor.process_request(
         request=request,
         body=body,
@@ -32,11 +32,11 @@ def fetch_argocd_apps(
     )
 
 
-@router.post('/car-info')
+@router.post('/car-info', tags=['connector-grafana'], summary='Fetch recent car state and info from Teslamate')
 def fetch_car_info(
     request: Request,
     body: GrafanaBody
-):
+) -> JSONResponse:
     return APIProcessor.process_request(
         request=request,
         body=body,
@@ -58,12 +58,12 @@ def fetch_car_info(
     )
 
 
-@router.post('/car-drives-history')
+@router.post('/car-drives-history', tags=['connector-grafana'], summary='Fetch car drives history from Teslamate')
 def fetch_car_drives_history(
     request: Request,
     body: GrafanaBody,
     number_of_drives: int = Query(5, ge=1, le=1000)
-):
+) -> JSONResponse:
     return APIProcessor.process_request(
         request=request,
         body=body,

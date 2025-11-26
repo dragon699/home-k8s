@@ -5,7 +5,7 @@ from common.telemetry.src.logging.filters import Filters
 
 
 class Logger:
-    def __init__(self, name: str):
+    def __init__(self, name: str) -> None:
         self.name = name
         self.log_level = None
         self.log_format = None
@@ -21,7 +21,7 @@ class Logger:
         self.logger.addHandler(self.handler)
 
 
-    def create_formatter(self, log_format: str):
+    def create_formatter(self, log_format: str) -> logging.Formatter:
         if log_format.lower() == 'logfmt':
             return Formatters.Logfmt(
                 datefmt=self.style['datefmt']
@@ -35,7 +35,7 @@ class Logger:
             )
 
 
-    def update_settings(self, log_level: str, log_format: str):
+    def update_settings(self, log_level: str, log_format: str) -> None:
         self.log_level = log_level
         self.log_format = log_format
 
@@ -45,11 +45,11 @@ class Logger:
         self.logger.addHandler(self.handler)
 
 
-    def get(self):
+    def get(self) -> logging.Logger:
         return self.logger
     
 
-    def get_uvicorn_config(self):
+    def get_uvicorn_config(self) -> dict:
         if self.log_format.lower() == 'json':
             formatter_config = {
                 '()': 'common.telemetry.src.logging.formatters.Formatters.Json',
@@ -105,7 +105,7 @@ class Logger:
         }
 
 
-    def configure_otel(self):
+    def configure_otel(self) -> None:
         loggers = [
             'opentelemetry.sdk.trace',
             'opentelemetry.exporter.otlp',

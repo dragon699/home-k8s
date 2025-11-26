@@ -1,4 +1,5 @@
 import os
+from typing import Any
 from pydantic_settings import BaseSettings
 from common.utils.helpers import get_app_version
 from connectors.grafana.src.telemetry.logging import logger
@@ -40,7 +41,7 @@ class Settings(BaseSettings):
     querier_ds_uid_prometheus: str = 'internal-victoriametrics'
 
 
-    def model_post_init(self, __context):
+    def model_post_init(self, __context: Any) -> None:
         logger.update_settings(
             log_level=self.log_level,
             log_format=self.log_format

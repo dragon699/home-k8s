@@ -1,7 +1,10 @@
+import os
 from fastapi import FastAPI
 from apscheduler.schedulers.background import BackgroundScheduler
+from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
+from common.utils.helpers import get_app_version
 from connectors.ml.settings import settings
 from connectors.ml.src.telemetry.tracing import instrumentor
 from connectors.ml.src.ollama.client import OllamaClient
@@ -10,7 +13,7 @@ from connectors.ml.src.loaders import RoutesLoader
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     scheduler.start()
     health_checker.create_schedule()
 
@@ -25,5 +28,11 @@ scheduler = BackgroundScheduler()
 health_checker = HealthChecker(scheduler)
 ollama_client = OllamaClient()
 
-app = FastAPI(lifespan=lifespan)
+app = FastAPI(
+    title='ML Connector',
+    version=get_app_version(f'{os.path.dirname(__file__)}/../VERSION'),
+    description='A connector that runs LLM queries against Ollama models.',
+    lifespan=lifespan
+)
+
 instrumentor.instrument(app)

@@ -1,6 +1,6 @@
 import requests
-from requests import exceptions as ReqExceptions
 from langchain_ollama import ChatOllama
+from langchain_core.messages import BaseMessage
 from connectors.ml.settings import settings
 from common.telemetry.src.tracing.wrappers import traced
 from common.telemetry.src.tracing.helpers import reword
@@ -8,13 +8,13 @@ from common.telemetry.src.tracing.helpers import reword
 
 
 class OllamaClient:
-    def __init__(self):
+    def __init__(self) -> None:
         self.url = settings.url
 
 
     @staticmethod
     @traced('ping ollama')
-    def ping(span=None):
+    def ping(span=None) -> requests.Response:
         span.set_attributes({
             'ollama.operation': 'ping',
             'ollama.url': settings.url,
@@ -30,7 +30,7 @@ class OllamaClient:
 
 
     @traced('ask ollama')
-    def ask(self, prompt: str, model: str, instructions: str='', span=None):
+    def ask(self, prompt: str, model: str, instructions: str = '', span=None) -> BaseMessage:
         span.set_attributes(
             reword({
                 'ollama.operation': 'ask',

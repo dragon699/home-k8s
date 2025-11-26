@@ -1,5 +1,6 @@
 import atexit
-
+import logging
+from fastapi import FastAPI
 from opentelemetry import trace
 from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider
@@ -7,14 +8,13 @@ from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from opentelemetry.instrumentation.requests import RequestsInstrumentor
 from opentelemetry.instrumentation.logging import LoggingInstrumentor
-
 from common.telemetry.src.tracing.processors import HttpSpanProcessor
 from common.telemetry.src.tracing.exporters import StatusSpanExporter
 
 
 
 class Tracer:
-    def __init__(self, otel_meta, logger):
+    def __init__(self, otel_meta: dict, logger: logging.Logger) -> None:
         self.resource = Resource.create({
             'service.name': otel_meta['service_name'],
             'service.namespace': otel_meta['service_namespace'],
@@ -40,11 +40,11 @@ class Tracer:
         logger.configure_otel()
 
 
-    def instrument(self, app):
+    def instrument(self, app: FastAPI) -> None:
         FastAPIInstrumentor().instrument_app(app)
         RequestsInstrumentor().instrument()
         LoggingInstrumentor().instrument(set_logging_format=False)
 
 
-    def get_tracer(self):
+    def get_tracer(self) -> trace.Tracer:
         return self.tracer

@@ -4,7 +4,7 @@ from pythonjsonlogger.jsonlogger import JsonFormatter
 
 class Formatters:
     class Logfmt(logging.Formatter):
-        def format(self, record):
+        def format(self, record: logging.LogRecord) -> str:
             attr = [
                 f'time="{self.formatTime(record, self.datefmt)}"',
                 f'level={record.level}',
@@ -37,7 +37,7 @@ class Formatters:
 
 
     class Json(JsonFormatter):
-        def add_fields(self, log_record, record, message_dict):
+        def add_fields(self, log_record: dict, record: logging.LogRecord, message_dict: dict) -> None:
             super().add_fields(log_record, record, message_dict)
 
             if 'msg' in log_record:

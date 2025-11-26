@@ -5,8 +5,8 @@ from fastapi import APIRouter
 router = APIRouter()
 
 
-@router.get('/health')
-def health():
+@router.get('/health', tags=['internal'], summary='Health check')
+def health() -> dict:
     return {
         'connector_name': settings.name,
         'healthy': settings.healthy,
@@ -16,8 +16,8 @@ def health():
     }
 
 
-@router.get('/ready')
-def ready():
+@router.get('/ready', tags=['internal'], summary='Readiness check')
+def ready() -> dict:
     return {
         'ready': settings.healthy
     }

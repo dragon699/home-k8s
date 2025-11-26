@@ -1,6 +1,7 @@
-import re, zoneinfo, json, hashlib
+from typing import Any
 from datetime import datetime, timezone
 from common.utils.system import read_file
+import re, zoneinfo, json, hashlib
 
 
 VOLATILE_PATTERN = re.compile(
@@ -16,16 +17,16 @@ VOLATILE_PATTERN = re.compile(
 )
 
 
-def get_app_version(version_file: str):
+def get_app_version(version_file: str) -> str:
     try:
         return read_file(version_file, type=None).strip()
 
     except:
-        print(f'{version_file} not found, traces will not have version info.')
+        print(f'Unable to determine app version, {version_file} not found')
         return 'unknown'
-    
 
-def get_maps_url(path: str):
+
+def get_maps_url(path: str) -> str:
     if not path.startswith('new?lat='):
         return path
     
@@ -39,8 +40,8 @@ def get_maps_url(path: str):
         return path
     
 
-def get_maps_directions_url(start_url: str, end_url: str):
-    def extract_coords(u: str):
+def get_maps_directions_url(start_url: str, end_url: str) -> str:
+    def extract_coords(u: str) -> str | None:
         if 'new?lat=' in u:
             try:
                 lat = u.split('lat=')[1].split('&')[0]
@@ -66,14 +67,14 @@ def get_maps_directions_url(start_url: str, end_url: str):
     return f'https://www.google.com/maps/dir/?api=1&origin={start}&destination={end}'
     
 
-def get_teslamate_drive_grafana_url(drive_id: int, drive_start_time: str, drive_end_time: str):
+def get_teslamate_drive_grafana_url(drive_id: int, drive_start_time: str, drive_end_time: str) -> str:
     grafana_url = 'https://grafana.k8s.iaminyourpc.xyz'
     grafana_dashboard_path = 'd/zm7wN6Zgz/driving-details'
 
     return f'{grafana_url}/{grafana_dashboard_path}?from={drive_start_time}&to={drive_end_time}&var-drive_id={drive_id}&timezone=Europe%2FSofia&orgId=1&var-temp_unit=C&var-length_unit=km&var-alternative_length_unit=m&var-preferred_range=rated&var-base_url=https:%2F%2Fcar.k8s.iaminyourpc.xyz&var-pressure_unit=bar&var-speed_unit=km%2Fh'
 
 
-def time_beautify_ms(milliseconds: int, target_tz: str = 'Europe/Sofia', convert_tz: bool = True):
+def time_beautify_ms(milliseconds: int, target_tz: str = 'Europe/Sofia', convert_tz: bool = True) -> str:
     seconds = milliseconds / 1000
     tz = zoneinfo.ZoneInfo(target_tz)
     
@@ -87,8 +88,8 @@ def time_beautify_ms(milliseconds: int, target_tz: str = 'Europe/Sofia', convert
     return dt.strftime('%Y-%m-%dT%H:%M:%S')
 
 
-def time_beautify_ordinal(dt_string: int, target_tz: str = 'Europe/Sofia'):
-    def get_ordinal_day(n: int):
+def time_beautify_ordinal(dt_string: str, target_tz: str = 'Europe/Sofia') -> str:
+    def get_ordinal_day(n: int) -> str:
         if 10 <= n % 100 <= 20:
             suffix = 'th'
         else:
@@ -109,14 +110,14 @@ def time_beautify_ordinal(dt_string: int, target_tz: str = 'Europe/Sofia'):
     return f'{year} / {day} of {month} at {time}'
 
 
-def time_now(target_tz: str = 'Europe/Sofia'):
+def time_now(target_tz: str = 'Europe/Sofia') -> str:
     tz = zoneinfo.ZoneInfo(target_tz)
     now = datetime.now(tz)
 
     return now.strftime('%Y-%m-%dT%H:%M:%S')
 
 
-def time_since(past: str, future: str = None, tz: str = 'Europe/Sofia', instant: bool = True):
+def time_since(past: str, future: str | None = None, tz: str = 'Europe/Sofia', instant: bool = True) -> str:
     tz = zoneinfo.ZoneInfo(tz)
     past_dt = datetime.fromisoformat(past)
 
@@ -167,7 +168,7 @@ def time_since(past: str, future: str = None, tz: str = 'Europe/Sofia', instant:
             return '<1m'
 
 
-def time_since_minutes_only(minutes: int):
+def time_since_minutes_only(minutes: int) -> str:
     if minutes < 1:
         return '<1m'
 
@@ -183,7 +184,7 @@ def time_since_minutes_only(minutes: int):
     return f'{int(mins)}m'
 
 
-def omit_volatile_data(data: dict):
+def omit_volatile_data(data: Any) -> Any:
     if isinstance(data, dict):
         return {
             k: omit_volatile_data(v)
@@ -202,7 +203,7 @@ def omit_volatile_data(data: dict):
     return data
 
 
-def create_cache_key(connector_name: str, method: str, endpoint: str, params: dict, data: dict):
+def create_cache_key(connector_name: str, method: str, endpoint: str, params: dict, data: dict) -> str:
     params_hash = hashlib.md5(
         json.dumps(
             params,

@@ -15,7 +15,7 @@ from common.utils.helpers import (
 class Processor:
     @staticmethod
     @traced('map fields')
-    def map(query_id: str, query_response: dict, span=None):
+    def map(query_id: str, query_response: dict, span=None) -> dict | list:
         frames = query_response['results']['query'].get('frames', [])
 
         if not frames:
@@ -46,7 +46,7 @@ class Processor:
 
     @staticmethod
     @traced('rename fields')
-    def rename(query_id: str, data: dict, span=None):
+    def rename(query_id: str, data: dict | list, span=None) -> dict | list:
         reword_map = {
             'teslamate-last-charge-info': {
                 'date': 'last_charge',
@@ -115,7 +115,7 @@ class Processor:
 
     @staticmethod
     @traced('drop unwanted fields')
-    def drop(query_id: str, data: dict, span=None):
+    def drop(query_id: str, data: dict | list, span=None) -> dict | list:
         drop_map = {
             'teslamate-car-drives-info': [
                 'car_id',
@@ -142,7 +142,7 @@ class Processor:
 
     @staticmethod
     @traced('process response')
-    def process(query_id: str, query_response: dict, span=None):
+    def process(query_id: str, query_response: dict, span=None) -> dict:
         result = []
 
         if query_id.startswith('teslamate-'):

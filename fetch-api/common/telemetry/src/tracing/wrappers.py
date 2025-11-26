@@ -1,6 +1,7 @@
-from opentelemetry import trace
+from typing import Any, Callable
 from functools import wraps
 from os import getenv
+from opentelemetry import trace
 
 
 tracer = trace.get_tracer(
@@ -8,10 +9,14 @@ tracer = trace.get_tracer(
 )
 
 
-def traced(span_name=None, attributes=None, inject_span=True):
-    def decorator(func):
+def traced(
+    span_name: str | None = None,
+    attributes: dict | None = None,
+    inject_span: bool = True
+) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
+    def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
         @wraps(func)
-        def wrapper(*args, **kwargs):
+        def wrapper(*args: Any, **kwargs: Any) -> Any:
             if span_name:
                 name = span_name
 

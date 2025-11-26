@@ -1,3 +1,4 @@
+from langchain_core.messages import BaseMessage
 from connectors.ml.settings import settings
 from common.telemetry.src.tracing.wrappers import traced
 from common.telemetry.src.tracing.helpers import reword
@@ -7,7 +8,7 @@ from common.telemetry.src.tracing.helpers import reword
 class Processor:
     @staticmethod
     @traced('process response')
-    def process(response, span=None):
+    def process(response: BaseMessage, span=None) -> dict:
         result = []
 
         answer = response.content.rstrip('"').lstrip('"')

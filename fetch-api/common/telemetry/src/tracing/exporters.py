@@ -1,9 +1,11 @@
+from typing import Sequence
 from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
 from opentelemetry.sdk.trace import (Status, StatusCode)
+from opentelemetry.sdk.trace.export import ReadableSpan, SpanExportResult
 
 
 class StatusSpanExporter(OTLPSpanExporter):
-    def export(self, spans):
+    def export(self, spans: Sequence[ReadableSpan]) -> SpanExportResult:
         for span in spans:
             if span.status.status_code == StatusCode.UNSET:
                 status_code = span.attributes.get('http.status_code')

@@ -1,17 +1,18 @@
-import os, copy
+import os
+from langchain_core.messages import BaseMessage
 from common.utils.system import read_file, render_template
 from common.utils.helpers import time_now
 from common.telemetry.src.tracing.wrappers import traced
 from common.telemetry.src.tracing.helpers import reword
 from connectors.ml.settings import settings
 from connectors.ml.src.telemetry.logging import log
-from connectors.ml.src.api import ollama_client
+from connectors.ml.src.api import OllamaClient, ollama_client
 from connectors.ml.src.ollama.query_processor import Processor
 
 
 
 class Querier:
-    def __init__(self, client):
+    def __init__(self, client: OllamaClient) -> None:
         self.instructions_template_path = settings.instructions_template_path
         
         self.client = client
@@ -20,7 +21,7 @@ class Querier:
         self.load_instructions()
 
 
-    def load_instructions(self):
+    def load_instructions(self) -> None:
         if not os.path.exists(self.instructions_template_path):
             log.critical(f'Instructions template file does not exist', extra={
                 'instructions_file': self.instructions_template_path
@@ -41,7 +42,7 @@ class Querier:
 
     
     @traced('commit query')
-    def commit(self, prompt: str, model: str=None, instructions: str='', instructions_template: str=None, span=None):
+    def commit(self, prompt: str, model: str | None = None, instructions: str = '', instructions_template: str | None = None, span=None) -> dict | None:
         try:
             full_instructions = self.fetch(instructions, instructions_template)
             payload = self.render(prompt, model, full_instructions)
@@ -69,7 +70,7 @@ class Querier:
 
 
     @traced('fetch instructions')
-    def fetch(self, instructions: str, instructions_template: str, span=None):
+    def fetch(self, instructions: str, instructions_template: str | None, span=None) -> str:
         if instructions_template:
             span.set_attributes({
                 'querier.instructions.template.path': self.instructions_template_path,
@@ -105,7 +106,7 @@ class Querier:
 
 
     @traced('render query payload')
-    def render(self, prompt: str, model: str, instructions: str, span=None):
+    def render(self, prompt: str, model: str | None, instructions: str, span=None) -> dict:
         payload = {
             'prompt': prompt,
             'model': model or settings.default_model,
@@ -122,7 +123,7 @@ class Querier:
 
 
     @traced('send query')
-    def send(self, prompt: str, model: str=None, instructions: str='', span=None):
+    def send(self, prompt: str, model: str = None, instructions: str = '', span=None) -> BaseMessage | None:
         try:
             response = self.client.ask(
                 prompt=prompt,
@@ -155,7 +156,7 @@ class Querier:
         
 
     @traced('process query response')
-    def process(self, response: str, span=None):
+    def process(self, response: BaseMessage, span=None) -> dict:
         return Processor.process(response)
 
 

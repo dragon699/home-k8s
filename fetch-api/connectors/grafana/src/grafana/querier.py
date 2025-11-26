@@ -4,13 +4,13 @@ from common.telemetry.src.tracing.wrappers import traced
 from common.telemetry.src.tracing.helpers import reword
 from connectors.grafana.settings import settings
 from connectors.grafana.src.telemetry.logging import log
-from connectors.grafana.src.api import grafana_client
+from connectors.grafana.src.api import GrafanaClient, grafana_client
 from connectors.grafana.src.grafana.query_processor import Processor
 
 
 
 class Querier:
-    def __init__(self, client):
+    def __init__(self, client: GrafanaClient) -> None:
         self.templates_dir = settings.querier_templates_dir
         self.ds_uid_postgresql = settings.querier_ds_uid_postgresql
         self.ds_uid_prometheus = settings.querier_ds_uid_prometheus
@@ -23,7 +23,7 @@ class Querier:
         self.load_templates()
 
 
-    def set_templates_struct(self):
+    def set_templates_struct(self) -> None:
         self.templates_struct = {
             'prometheus': {
                 'ds_uid': self.ds_uid_prometheus,
@@ -36,7 +36,7 @@ class Querier:
         }
 
 
-    def load_templates(self):
+    def load_templates(self) -> None:
         for ds_dir_name in os.listdir(self.templates_dir):
             ds_dir_path = os.path.join(self.templates_dir, ds_dir_name)
             validated_files = []
@@ -88,7 +88,9 @@ class Querier:
 
 
     @traced('commit query')
-    def commit(self, query_ds_type: str, query_id: str, query_params: dict = {}, span=None):
+    def commit(self, query_ds_type: str, query_id: str, query_params: dict | None = None, span=None) -> dict | None:
+        query_params = query_params or {}
+
         span.set_attributes(
             reword({
                 'querier.templates_dir': self.templates_dir,
@@ -120,7 +122,9 @@ class Querier:
 
 
     @traced('fetch query blueprint')
-    def fetch(self, query_ds_type: str, query_id: str, query_params: dict = {}, span=None):
+    def fetch(self, query_ds_type: str, query_id: str, query_params: dict | None = None, span=None) -> str | None:
+        query_params = query_params or {}
+
         span.set_attributes({
             'querier.query.id': query_id,
             'querier.query.datasource.type': query_ds_type,
@@ -169,7 +173,7 @@ class Querier:
 
 
     @traced('render query payload')
-    def render(self, query_ds_type: str, expression: str,  span=None):
+    def render(self, query_ds_type: str, expression: str,  span=None) -> dict:
         payload = copy.deepcopy(self.templates[query_ds_type]['payload'])
         expression_key = 'rawSql' if query_ds_type == 'postgresql' else 'expr'
         payload['queries'][0][expression_key] = expression
@@ -186,7 +190,7 @@ class Querier:
 
 
     @traced('send query')
-    def send(self, query_payload: str, span=None):
+    def send(self, query_payload: str, span=None) -> dict | None:
         try:
             response = self.client.post(
                 endpoint = self.default_endpoint,
@@ -216,7 +220,7 @@ class Querier:
 
 
     @traced('process query response')
-    def process(self, query_id: str, query_response: dict, span=None):
+    def process(self, query_id: str, query_response: dict, span=None) -> dict | None:
         return Processor.process(query_id, query_response)
 
 

@@ -1,7 +1,7 @@
 import json
 
 
-def reword(attributes: dict):
+def reword(attributes: dict) -> dict:
     reword_map = {
         'health.status.current': {True: 'healthy', False: 'unhealthy'},
         'health.status.previous': {True: 'healthy', False: 'unhealthy'},

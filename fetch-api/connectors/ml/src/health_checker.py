@@ -1,4 +1,5 @@
 from datetime import (datetime, timedelta)
+from apscheduler.schedulers.background import BackgroundScheduler
 from connectors.ml.src.telemetry.logging import log
 from connectors.ml.settings import settings
 
@@ -9,11 +10,11 @@ from connectors.ml.src.ollama.client import OllamaClient
 
 
 class HealthChecker:
-    def __init__(self, scheduler):
+    def __init__(self, scheduler: BackgroundScheduler) -> None:
         self.scheduler = scheduler
 
 
-    def get_next_interval(self):
+    def get_next_interval(self) -> int:
         return (
             settings.health_check_interval_seconds
             if settings.healthy is True
@@ -21,13 +22,13 @@ class HealthChecker:
         )
 
 
-    def get_next_check_time(self):
+    def get_next_check_time(self) -> str:
         ts = datetime.now() + timedelta(seconds=self.get_next_interval())
         return ts.isoformat().split('.')[0]
 
 
     @traced('get health status')
-    def get_status(self, span=None):
+    def get_status(self, span=None) -> None:
         was_healthy = settings.healthy
         settings.health_last_check = datetime.now().isoformat().split('.')[0]
 
@@ -142,7 +143,7 @@ class HealthChecker:
 
 
     @traced('schedule health checks')
-    def create_schedule(self, span=None):
+    def create_schedule(self, span=None) -> None:
         log.debug(f'Scheduling health checks')
         self.get_status()
 
@@ -151,7 +152,7 @@ class HealthChecker:
 
 
     @traced('update health check schedule')
-    def update_schedule(self, span=None):
+    def update_schedule(self, span=None) -> None:
         if not settings.health_job_id is None:
             try:
                 self.scheduler.remove_job(settings.health_job_id)

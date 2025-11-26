@@ -8,13 +8,13 @@ from connectors.grafana.src.telemetry.logging import log
 
 
 class GrafanaClient:
-    def __init__(self):
+    def __init__(self) -> None:
         self.url = settings.url
         self.sa_token = settings.sa_token
         self.set_headers()
 
 
-    def set_headers(self):
+    def set_headers(self) -> None:
         self.headers = {
             'Authorization': f'Bearer {self.sa_token}',
             'Content-Type': 'application/json',
@@ -24,7 +24,7 @@ class GrafanaClient:
 
     @staticmethod
     @traced('ping grafana')
-    def ping(span=None):
+    def ping(span=None) -> requests.Response:
         span.set_attributes({
             'grafana.operation': 'ping',
             'grafana.url': settings.url,
@@ -40,7 +40,7 @@ class GrafanaClient:
 
 
     @traced('authenticate')
-    def authenticate(self, span=None):
+    def authenticate(self, span=None) -> bool:
         if not settings.healthy:
             settings.authenticated = False
             return False
@@ -116,7 +116,7 @@ class GrafanaClient:
 
 
     @traced('GET /:grafana')
-    def get(self, endpoint: str, data: dict = {}, span=None):
+    def get(self, endpoint: str, data: dict = {}, span=None) -> requests.Response | None:
         if self.authenticate():
             span.set_attributes(
                 reword({
@@ -146,7 +146,7 @@ class GrafanaClient:
 
 
     @traced('POST /:grafana')
-    def post(self, endpoint: str, data: dict = {}, span=None):
+    def post(self, endpoint: str, data: dict = {}, span=None) -> requests.Response | None:
         if self.authenticate():
             span.set_attributes(
                 reword({

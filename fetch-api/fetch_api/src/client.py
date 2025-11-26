@@ -1,4 +1,5 @@
 import requests
+from typing import Any
 from requests import exceptions as ReqExceptions
 from fetch_api.src.cache.client import RedisClient
 from fetch_api.src.cache.data import CachedResponse
@@ -11,7 +12,7 @@ from common.utils.helpers import time_now, create_cache_key
 
 
 class ConnectorClient:
-    def __init__(self, connector_name: str, requests_timeout: int = 5, cache: bool = False):
+    def __init__(self, connector_name: str, requests_timeout: int = 5, cache: bool = False) -> None:
         self.connector_name = connector_name
         self.url = connectors[connector_name].url
         self.requests_timeout = requests_timeout
@@ -53,7 +54,7 @@ class ConnectorClient:
                 raise SystemExit(1)
 
 
-    def set_headers(self):
+    def set_headers(self) -> None:
         self.headers = {
             'Content-Type': 'application/json',
             'Accept': 'application/json'
@@ -62,7 +63,7 @@ class ConnectorClient:
 
     @staticmethod
     @traced('ping connector')
-    def ping(connector_name: str, connector_url: str, health_endpoint: str, span=None):
+    def ping(connector_name: str, connector_url: str, health_endpoint: str, span=None) -> requests.Response:
         span.set_attributes({
             'connector.name': connector_name,
             'connector.url': connector_url,
@@ -79,7 +80,10 @@ class ConnectorClient:
 
 
     @traced('GET /:connector')
-    def get(self, endpoint: str, params: dict = {}, data: dict = {}, cache_key: tuple | None = None, span=None):
+    def get(self, endpoint: str, params: dict | None = None, data: dict | None = None, cache_key: tuple | None = None, span=None) -> Any:
+        params = params or {}
+        data = data or {}
+
         span.set_attributes(
             reword({
                 'connector.name': self.connector_name,
@@ -175,7 +179,10 @@ class ConnectorClient:
 
 
     @traced('POST /:connector')
-    def post(self, endpoint: str, params: dict = {}, data: dict = {}, cache_key: tuple | None = None, span=None):
+    def post(self, endpoint: str, params: dict | None = None, data: dict | None = None, cache_key: tuple | None = None, span=None) -> Any:
+        params = params or {}
+        data = data or {}        
+
         span.set_attributes(
             reword({
                 'connector.name': self.connector_name,
