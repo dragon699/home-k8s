@@ -75,7 +75,7 @@
             ]
         },
         {
-            "@comment": "FetchAPI - SwaggerUI",
+            "@comment": "FetchAPI - Swagger UI",
             "endpoint": "/fetch/swagger",
             "method": "GET",
             "output_encoding": "no-op",
@@ -83,6 +83,22 @@
                 {
                     "host": ["http://fetch-api.fetch-api.svc:8069"],
                     "url_pattern": "/docs",
+                    "method": "GET",
+                    "encoding": "no-op",
+                    "sd": "static",
+                    "disable_host_sanitize": false
+                }
+            ]
+        },
+        {
+            "@comment": "FetchAPI - Swagger spec",
+            "endpoint": "/fetch/openapi.json",
+            "method": "GET",
+            "output_encoding": "no-op",
+            "backend": [
+                {
+                    "host": ["http://fetch-api.fetch-api.svc:8069"],
+                    "url_pattern": "/openapi.json",
                     "method": "GET",
                     "encoding": "no-op",
                     "sd": "static",
