@@ -1,0 +1,50 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: krakend
+  namespace: krakend
+  labels:
+    app: krakend
+    env: home
+spec:
+  selector:
+    matchLabels:
+      app: krakend
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: krakend
+        env: home
+    spec:
+      volumes:
+      - name: config-krakend
+        configMap:
+          name: config-krakend
+      containers:
+      - name: krakend
+        image: krakend:2.12.0
+        volumeMounts:
+        - name: config-krakend
+          mountPath: /etc/krakend/krakend.json
+          subPath: krakend.json
+          readOnly: true
+        ports:
+        - containerPort: 8080
+        imagePullPolicy: Never
+        command: ['/usr/bin/krakend']
+        args: ['run', '-d', '-c', '/etc/krakend/krakend.json', '-p', '8080']
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsNonRoot: true
+          runAsUser: 1000
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+            add:
+            - NET_BIND_SERVICE
+        env:
+        - name: KRAKEND_PORT
+          value: "8080"

@@ -13,15 +13,6 @@ spec:
   sources:
   - repoURL: git@github.com:dragon699/home-k8s.git
     targetRevision: main
-    ref: values
-  - repoURL: https://helm.equinixmetal.com
-    targetRevision: 0.1.36
-    chart: krakend
-    helm:
-      valueFiles:
-      - '$values/helm/apps/krakend/values.yaml'
-  - repoURL: git@github.com:dragon699/home-k8s.git
-    targetRevision: main
     path: manifests/apps/krakend
     directory:
       recurse: true
