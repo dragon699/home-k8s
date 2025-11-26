@@ -82,7 +82,7 @@
             "backend": [
                 {
                     "host": ["http://fetch-api.fetch-api.svc:8069"],
-                    "url_pattern": "/docs",
+                    "url_pattern": "/docs?url=/fetch/openapi.json",
                     "method": "GET",
                     "encoding": "no-op",
                     "sd": "static",
