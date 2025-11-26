@@ -6,4 +6,4 @@ generatorOptions:
   disableNameSuffixHash: true
 configMapGenerator:
 - name: config-krakend
-  files: ['config.json=config/config.json']
+  files: ['krakend.json=config/krakend.json']
