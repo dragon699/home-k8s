@@ -59,6 +59,7 @@
     "cache_ttl": "300s",
     "endpoints": [
         {
+            "@comment": "FetchAPI - Connector endpoints",
             "endpoint": "/fetch/{connector_name}/{connector_item}",
             "method": "POST",
             "output_encoding": "no-op",
@@ -67,6 +68,22 @@
                     "host": ["http://fetch-api.fetch-api.svc:8069"],
                     "url_pattern": "/{connector_name}/{connector_item}",
                     "method": "POST",
+                    "encoding": "no-op",
+                    "sd": "static",
+                    "disable_host_sanitize": false
+                }
+            ]
+        },
+        {
+            "@comment": "FetchAPI - SwaggerUI",
+            "endpoint": "/fetch/swagger",
+            "method": "GET",
+            "output_encoding": "no-op",
+            "backend": [
+                {
+                    "host": ["http://fetch-api.fetch-api.svc:8069"],
+                    "url_pattern": "/docs",
+                    "method": "GET",
                     "encoding": "no-op",
                     "sd": "static",
                     "disable_host_sanitize": false
