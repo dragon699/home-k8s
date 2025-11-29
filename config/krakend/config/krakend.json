@@ -1,7 +1,7 @@
 {
     "$schema": "https://www.krakend.io/schema/krakend.json",
     "version": 3,
-    "name": "paas-backend-api",
+    "name": "home",
     "extra_config": {
         "security/cors": {
             "allow_origins": ["*"],
@@ -68,38 +68,6 @@
                     "host": ["http://fetch-api.fetch-api.svc:8069"],
                     "url_pattern": "/{connector_name}/{connector_item}",
                     "method": "POST",
-                    "encoding": "no-op",
-                    "sd": "static",
-                    "disable_host_sanitize": false
-                }
-            ]
-        },
-        {
-            "@comment": "FetchAPI - Swagger UI",
-            "endpoint": "/fetch/swagger",
-            "method": "GET",
-            "output_encoding": "no-op",
-            "backend": [
-                {
-                    "host": ["http://fetch-api.fetch-api.svc:8069"],
-                    "url_pattern": "/docs?url=/fetch/openapi.json",
-                    "method": "GET",
-                    "encoding": "no-op",
-                    "sd": "static",
-                    "disable_host_sanitize": false
-                }
-            ]
-        },
-        {
-            "@comment": "FetchAPI - Swagger spec",
-            "endpoint": "/fetch/openapi.json",
-            "method": "GET",
-            "output_encoding": "no-op",
-            "backend": [
-                {
-                    "host": ["http://fetch-api.fetch-api.svc:8069"],
-                    "url_pattern": "/openapi.json",
-                    "method": "GET",
                     "encoding": "no-op",
                     "sd": "static",
                     "disable_host_sanitize": false

@@ -7,3 +7,4 @@ resources:
 - glance
 - fetch-api
 - krakend
+- postgresql-shared

@@ -5,7 +5,7 @@ metadata:
   name: vault-auto-unseal
   namespace: vault
 spec:
-  schedule: "*/3 * * * *"
+  schedule: "*/3 * * * *" # Every 3 minutes
   successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 1
   jobTemplate:

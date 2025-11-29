@@ -1,0 +1,67 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: pg-auto-backup
+  namespace: shared
+spec:
+  schedule: "0 3 * * *" # Every day at 03:00AM
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: Never
+          volumes:
+          - name: script-pg-auto-backup
+            configMap:
+              name: script-pg-auto-backup
+              defaultMode: 0755
+          - name: auth-gcloud-storage
+            secret:
+              secretName: auth-gcloud-storage
+              items:
+                - key: key.json
+                  path: key.json
+          containers:
+          - name: pg-backup
+            image: skullfighter6/python:3.13-utils
+            volumeMounts:
+            - name: script-pg-auto-backup
+              mountPath: /scripts
+            - name: auth-gcloud-storage
+              mountPath: /var/run/gcp
+              readOnly: true
+            command: ["/bin/sh", "-c", "set -e python /scripts/backup.py"]
+            env:
+            - name: DATABASES
+              value: "teslamate-teslamate"
+            - name: GCP_PROJECT
+              value: "home-k8s"
+            - name: GCP_BUCKET
+              value: "db-backups-teslamate"
+            - name: PYTHONUNBUFFERED
+              value: "1"
+            - name: PGHOST
+              valueFrom:
+                secretKeyRef:
+                  name: data-postgresql-shared-teslamate-teslamate
+                  key: pgbouncer-host
+            - name: PGPORT
+              valueFrom:
+                secretKeyRef:
+                  name: data-postgresql-shared-teslamate-teslamate
+                  key: pgbouncer-port
+            - name: PGUSER
+              valueFrom:
+                secretKeyRef:
+                  name: data-postgresql-shared-teslamate-teslamate
+                  key: user
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: data-postgresql-shared-teslamate-teslamate
+                  key: password
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: "/var/run/gcp/key.json"
