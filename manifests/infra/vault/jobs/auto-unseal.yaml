@@ -21,6 +21,7 @@ spec:
           containers:
           - name: unseal
             image: hashicorp/vault:latest
+            imagePullPolicy: IfNotPresent
             volumeMounts:
             - name: script-vault-auto-unseal
               mountPath: /scripts

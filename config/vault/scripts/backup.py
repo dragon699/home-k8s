@@ -1,5 +1,4 @@
 import os, subprocess, json
-from time import sleep
 from datetime import datetime
 from zoneinfo import ZoneInfo
 from google.cloud import storage
@@ -107,7 +106,7 @@ class Backup:
 
             time = datetime.now(
                 tz=ZoneInfo('Europe/Sofia')
-            ).strftime('%Y%m%dT%H%M%S')
+            ).strftime('%Y-%m-%dT%H-%M-%S')
 
             output_file = f'{self.backups_dir}/{kv}@{time}.zip'
             os.makedirs(kv_dir, exist_ok=True)
@@ -142,7 +141,7 @@ class Backup:
         for backup in self.created_backups:
             try:
                 dest = backup.split('/')[-1]
-                db_name = dest.split('@')[0]
+                kv_name = dest.split('@')[0]
 
                 self.log(f'Uploading {dest} in Google Cloud Storage -> {self.params["GCP_BUCKET"]}..')
 
@@ -152,7 +151,7 @@ class Backup:
                 self.log(f'Done!')
 
                 try:
-                    for old_blob in bucket.list_blobs(prefix=f'{db_name}@'):
+                    for old_blob in bucket.list_blobs(prefix=f'{kv_name}@'):
                         if old_blob.name != dest:
                             self.log(f'Deleting {old_blob.name}..')
                             old_blob.delete()
@@ -160,7 +159,7 @@ class Backup:
                     self.log('We are clean now ((:')
 
                 except Exception as delete_err:
-                    self.log(f'Failed to delete older backups for {db_name}', warn=True)
+                    self.log(f'Failed to delete older backups for {kv_name}', warn=True)
                     print(str(delete_err))
 
             except Exception as err:
@@ -173,9 +172,9 @@ class Backup:
 if __name__ == '__main__':
     backups = Backup()
     backups.create()
-    sleep(3500)
+    backups.upload()
 
-    # if not backups.success:
-    #     raise SystemExit(1)
+    if not backups.success:
+        raise SystemExit(1)
 
-    # raise SystemExit(0)
+    raise SystemExit(0)

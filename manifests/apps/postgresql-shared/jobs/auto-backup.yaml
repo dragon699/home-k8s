@@ -27,6 +27,7 @@ spec:
           containers:
           - name: pg-backup
             image: skullfighter6/python:3.13-utils
+            imagePullPolicy: IfNotPresent
             volumeMounts:
             - name: script-pg-auto-backup
               mountPath: /scripts

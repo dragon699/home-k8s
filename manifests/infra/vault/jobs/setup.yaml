@@ -21,6 +21,7 @@ spec:
       containers:
       - name: setup
         image: hashicorp/vault:latest
+        imagePullPolicy: IfNotPresent
         volumeMounts:
         - name: script-vault-setup
           mountPath: /scripts
