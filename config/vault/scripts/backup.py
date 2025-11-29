@@ -76,35 +76,37 @@ class Backup:
 
 
     def create(self):
+        def recurse(path_prefix: str, out_dir: str):
+            items = json.loads(self.run_cmd(['vault', 'kv', 'list', '-format=json', path_prefix]))
+            for item in items:
+                if item.endswith('/'):
+                    child_path = f'{path_prefix}{item}'
+                    child_dir = os.path.join(out_dir, item.rstrip('/'))
+                    os.makedirs(child_dir, exist_ok=True)
+                    recurse(child_path, child_dir)
+                else:
+                    secret_path = f'{path_prefix}{item}'
+                    secret_data = self.run_cmd(['vault', 'kv', 'get', '-format=json', secret_path])
+                    secret_dir = os.path.join(out_dir, item)
+                    os.makedirs(secret_dir, exist_ok=True)
+                    secret_file = os.path.join(secret_dir, f'{item}.json')
+                    with open(secret_file, 'w') as file:
+                        file.write(secret_data)
+
         for kv in self.kv_names:
-            kv_path = f'{kv}/'
-            kv_dir = os.path.join(self.backups_dir, kv)
+            kv_root = kv.rstrip('/')
+            kv_path = f'{kv_root}/'
+            kv_dir = os.path.join(self.backups_dir, kv_root)
             os.makedirs(kv_dir, exist_ok=True)
 
             try:
                 self.log(f'{kv_path} is being exported..')
-                secrets = json.loads(
-                    self.run_cmd(['vault', 'kv', 'list', '-format=json', kv_path])
-                )
-
-                for secret in secrets:
-                    secret_data = self.run_cmd(['vault', 'kv', 'get', '-format=json', f'{kv_path}{secret}'])
-                    secret_dir = os.path.join(kv_dir, secret)
-                    secret_file = os.path.join(secret_dir, f'{secret}.json')
-
-                    os.makedirs(secret_dir, exist_ok=True)
-
-                    with open(secret_file, 'w') as file:
-                        file.write(secret_data)
-
+                recurse(kv_path, kv_dir)
                 self.created_backups.append(kv_dir)
-                self.log(f'Nice, {kv} just got a new backup!')
-
-
+                self.log(f'Nice, {kv_root} just got a new backup!')
             except Exception as err:
                 self.log(f'Backup failed!', warn=True)
                 print(str(err))
-
                 self.success = False
 
 
