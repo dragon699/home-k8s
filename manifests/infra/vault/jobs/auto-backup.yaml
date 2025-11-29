@@ -40,7 +40,7 @@ spec:
             - name: GCP_PROJECT
               value: "home-k8s"
             - name: GCP_BUCKET
-              value: "db-backups-teslamate"
+              value: "vault-kv-backups"
             - name: PYTHONUNBUFFERED
               value: "1"
             - name: VAULT_SCHEME

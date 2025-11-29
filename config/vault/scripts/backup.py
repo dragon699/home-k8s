@@ -39,14 +39,14 @@ class Backup:
         print(f'[ > ] {msg}')
 
 
-    def run_cmd(self, cmd: list):
+    def run_cmd(self, cmd: list, **kwargs):
         env = os.environ.copy()
         env.update({
             'VAULT_ADDR': f'{self.params["VAULT_SCHEME"]}://{self.params["VAULT_ADDRESS"]}',
             'VAULT_TOKEN': self.params['VAULT_ROOT_TOKEN']
         })
 
-        process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env)
+        process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env, **kwargs)
         stdout, stderr = process.communicate()
 
         if process.returncode != 0:
@@ -76,37 +76,55 @@ class Backup:
 
 
     def create(self):
-        def recurse(path_prefix: str, out_dir: str):
-            items = json.loads(self.run_cmd(['vault', 'kv', 'list', '-format=json', path_prefix]))
+        def recurse_kv(path_prefix: str, out_dir: str):
+            items = json.loads(
+                self.run_cmd(['vault', 'kv', 'list', '-format=json', path_prefix])
+            )
+
             for item in items:
                 if item.endswith('/'):
                     child_path = f'{path_prefix}{item}'
                     child_dir = os.path.join(out_dir, item.rstrip('/'))
+
                     os.makedirs(child_dir, exist_ok=True)
-                    recurse(child_path, child_dir)
+                    recurse_kv(child_path, child_dir)
+
                 else:
                     secret_path = f'{path_prefix}{item}'
-                    secret_data = self.run_cmd(['vault', 'kv', 'get', '-format=json', secret_path])
                     secret_dir = os.path.join(out_dir, item)
-                    os.makedirs(secret_dir, exist_ok=True)
                     secret_file = os.path.join(secret_dir, f'{item}.json')
+                    secret_data = self.run_cmd(['vault', 'kv', 'get', '-format=json', secret_path])
+
+                    os.makedirs(secret_dir, exist_ok=True)
+
                     with open(secret_file, 'w') as file:
                         file.write(secret_data)
 
+
         for kv in self.kv_names:
-            kv_root = kv.rstrip('/')
-            kv_path = f'{kv_root}/'
-            kv_dir = os.path.join(self.backups_dir, kv_root)
+            kv_path = f'{kv}/'
+            kv_dir = os.path.join(self.backups_dir, kv)
+
+            time = datetime.now(
+                tz=ZoneInfo('Europe/Sofia')
+            ).strftime('%Y%m%dT%H%M%S')
+
+            output_file = f'{self.backups_dir}/{kv}@{time}.zip'
             os.makedirs(kv_dir, exist_ok=True)
 
             try:
                 self.log(f'{kv_path} is being exported..')
-                recurse(kv_path, kv_dir)
-                self.created_backups.append(kv_dir)
-                self.log(f'Nice, {kv_root} just got a new backup!')
+                recurse_kv(kv_path, kv_dir)
+
+                self.run_cmd(['zip', '-r', output_file, kv_dir], cwd=self.backups_dir)
+
+                self.created_backups.append(output_file)
+                self.log(f'Nice, {kv} just got a new backup!')
+
             except Exception as err:
                 self.log(f'Backup failed!', warn=True)
                 print(str(err))
+
                 self.success = False
 
 
