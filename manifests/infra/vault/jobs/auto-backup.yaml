@@ -27,6 +27,7 @@ spec:
           containers:
           - name: vault-backup
             image: skullfighter6/python:3.13-utils
+            imagePullPolicy: Always
             volumeMounts:
             - name: script-vault-auto-backup
               mountPath: /scripts
