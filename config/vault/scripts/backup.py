@@ -40,6 +40,11 @@ class Backup:
 
 
     def run_cmd(self, cmd: list):
+        cmd = [
+            f'VAULT_SCHEME={self.params["VAULT_SCHEME"]}',
+            f'VAULT_ADDR={self.params["VAULT_ADDRESS"]}',
+            f'VAULT_TOKEN={self.params["VAULT_ROOT_TOKEN"]}'
+        ] + cmd
         process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout, stderr = process.communicate()
 
