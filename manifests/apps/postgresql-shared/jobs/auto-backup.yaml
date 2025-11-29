@@ -33,7 +33,7 @@ spec:
             - name: auth-gcloud-storage
               mountPath: /var/run/gcp
               readOnly: true
-            command: ["/bin/sh", "-c", "set -e python /scripts/backup.py"]
+            command: ["/bin/sh", "-c", "set -e; python /scripts/backup.py"]
             env:
             - name: DATABASES
               value: "teslamate-teslamate"
