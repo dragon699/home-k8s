@@ -42,8 +42,7 @@ class Backup:
     def run_cmd(self, cmd: list):
         env = os.environ.copy()
         env.update({
-            'VAULT_SCHEME': self.params['VAULT_SCHEME'],
-            'VAULT_ADDR': self.params['VAULT_ADDRESS'],
+            'VAULT_ADDR': f'{self.params["VAULT_SCHEME"]}://{self.params["VAULT_ADDRESS"]}',
             'VAULT_TOKEN': self.params['VAULT_ROOT_TOKEN']
         })
 
@@ -52,6 +51,8 @@ class Backup:
 
         if process.returncode != 0:
             raise RuntimeError(f'"{" ".join(cmd)}" returned non-zero code: {stderr.decode()}')
+
+        return stdout.decode()
 
 
     def set_vars(self):
