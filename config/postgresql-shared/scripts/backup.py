@@ -87,7 +87,7 @@ class Backup:
                 ])
 
                 self.created_backups.append(output_file)
-                self.log(f'Nice.. {db} just got a new backup!')
+                self.log(f'Nice, {db} just got a new backup!')
 
             except Exception as err:
                 self.log(f'Backup failed!', warn=True)
@@ -110,12 +110,26 @@ class Backup:
         for backup in self.created_backups:
             try:
                 dest = backup.split('/')[-1]
-                self.log(f'Uploading {backup} in Google Cloud Storage -> {self.params["GCP_BUCKET"]}..')
+                db_name = dest.split('@')[0]
+
+                self.log(f'Uploading {dest} in Google Cloud Storage -> {self.params["GCP_BUCKET"]}..')
 
                 blob = bucket.blob(dest)
                 blob.upload_from_filename(backup)
 
                 self.log(f'Done!')
+
+                try:
+                    for old_blob in bucket.list_blobs(prefix=f'{db_name}@'):
+                        if old_blob.name != dest:
+                            self.log(f'Deleting {old_blob.name}..')
+                            old_blob.delete()
+
+                    self.log('We are clean now ((:')
+
+                except Exception as delete_err:
+                    self.log(f'Failed to delete older backups for {db_name}', warn=True)
+                    print(str(delete_err))
 
             except Exception as err:
                 self.log(f'Failed to upload!', warn=True)
