@@ -108,14 +108,15 @@ class Backup:
                 tz=ZoneInfo('Europe/Sofia')
             ).strftime('%Y-%m-%dT%H-%M-%S')
 
-            output_file = f'{self.backups_dir}/{kv}@{time}.zip'
+            archive_name = f'{kv}@{time}.zip'
+            output_file = os.path.join(self.backups_dir, archive_name)
             os.makedirs(kv_dir, exist_ok=True)
 
             try:
                 self.log(f'{kv_path} is being exported..')
                 recurse_kv(kv_path, kv_dir)
 
-                self.run_cmd(['zip', '-r', output_file, kv_dir], cwd=self.backups_dir)
+                self.run_cmd(['zip', '-r', archive_name, kv], cwd=self.backups_dir)
 
                 self.created_backups.append(output_file)
                 self.log(f'Nice, {kv} just got a new backup!')
