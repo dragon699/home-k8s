@@ -1,0 +1,59 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: vault-auto-backup
+  namespace: vault
+spec:
+  schedule: "0 3 * * *" # Every day at 03:00AM
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: Never
+          volumes:
+          - name: script-vault-auto-backup
+            configMap:
+              name: script-vault-auto-backup
+              defaultMode: 0755
+          - name: auth-gcloud-storage
+            secret:
+              secretName: auth-gcloud-storage
+              items:
+                - key: key.json
+                  path: key.json
+          containers:
+          - name: vault-backup
+            image: skullfighter6/python:3.13-utils
+            volumeMounts:
+            - name: script-vault-auto-backup
+              mountPath: /scripts
+            - name: auth-gcloud-storage
+              mountPath: /var/run/gcp
+              readOnly: true
+            command: ["/bin/sh", "-c", "set -e; python /scripts/backup.py"]
+            env:
+            - name: VAULT_KV_NAMES
+              value: "home"
+            - name: GCP_PROJECT
+              value: "home-k8s"
+            - name: GCP_BUCKET
+              value: "db-backups-teslamate"
+            - name: PYTHONUNBUFFERED
+              value: "1"
+            - name: VAULT_SCHEME
+              value: "http"
+            - name: VAULT_ADDRESS
+              valueFrom:
+                secretKeyRef:
+                  name: data-vault-sensitive
+                  key: VAULT_ADDRESS
+            - name: VAULT_ROOT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: data-vault-sensitive
+                  key: VAULT_ROOT_TOKEN
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: "/var/run/gcp/key.json"
