@@ -15,8 +15,6 @@ spec:
   - repoURL: git@github.com:dragon699/home-k8s.git
     targetRevision: main
     path: config
-    kustomize:
-      buildOptions: --load-restrictor LoadRestrictionsNone
   destination:
     server: https://kubernetes.default.svc
   syncPolicy:
