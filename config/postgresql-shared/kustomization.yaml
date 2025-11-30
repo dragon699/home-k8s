@@ -6,4 +6,4 @@ generatorOptions:
   disableNameSuffixHash: true
 configMapGenerator:
 - name: script-pg-auto-backup
-  files: ['backup.py=scripts/backup.py']
+  files: ['backup.py=../../scripts/utils/backup.py']
