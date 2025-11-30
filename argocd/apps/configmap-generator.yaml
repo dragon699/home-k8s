@@ -15,6 +15,7 @@ spec:
   - repoURL: git@github.com:dragon699/home-k8s.git
     targetRevision: main
     path: config
+    kustomize: {}
   destination:
     server: https://kubernetes.default.svc
   syncPolicy:
