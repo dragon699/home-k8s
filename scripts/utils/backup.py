@@ -257,3 +257,5 @@ if __name__ == '__main__':
         backups.create_pg_backup()
 
     backups.upload_archives()
+
+    backups.log('Have a good day <:')
