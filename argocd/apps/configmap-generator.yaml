@@ -7,6 +7,7 @@ metadata:
   finalizers:
   - resources-finalizer.argocd.argoproj.io
   annotations:
+    argocd.argoproj.io/kustomize-build-options: --load-restrictor LoadRestrictionsNone
     env: home
 spec:
   project: home
