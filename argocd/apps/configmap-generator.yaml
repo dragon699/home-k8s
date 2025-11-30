@@ -7,15 +7,15 @@ metadata:
   finalizers:
   - resources-finalizer.argocd.argoproj.io
   annotations:
-    argocd.argoproj.io/kustomize-build-options: --load-restrictor LoadRestrictionsNone
     env: home
 spec:
   project: home
-  sources:
-  - repoURL: git@github.com:dragon699/home-k8s.git
+  source:
+    repoURL: git@github.com:dragon699/home-k8s.git
     targetRevision: main
     path: config
-    kustomize: {}
+    kustomize:
+      buildOptions: --load-restrictor LoadRestrictionsNone
   destination:
     server: https://kubernetes.default.svc
   syncPolicy:
