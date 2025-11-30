@@ -13,5 +13,5 @@ configMapGenerator:
   files: ['setup.sh=scripts/setup.sh']
 - name: data-vault-policy-external-secrets
   files: ['external-secrets.hcl=policies/external-secrets.hcl']
-- name: dummy-test
-  files: ['test.sh=../../test.sh']
+# - name: dummy-test
+#   files: ['test.sh=../../test.sh']
