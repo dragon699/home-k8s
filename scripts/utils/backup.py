@@ -52,7 +52,7 @@ class Backups:
         self.dir = '/tmp/backups'
 
         os.makedirs(self.dir, exist_ok=True)
-        self.set_vars()
+        self.set_params()
 
 
     def log(self, msg: str, warn: bool = False, crash: bool = False):
