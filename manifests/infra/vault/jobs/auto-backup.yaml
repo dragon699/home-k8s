@@ -38,7 +38,7 @@ spec:
             command: ["/bin/sh", "-c", "set -e; python /scripts/backup.py --backup-vault"]
             env:
             - name: VAULT_KV_NAMES
-              value: "home,temp"
+              value: "home"
             - name: GCP_PROJECT
               value: "home-k8s"
             - name: GCP_BUCKET
