@@ -1,14 +1,6 @@
 from common.telemetry.src.tracing.wrappers import traced
 from common.telemetry.src.tracing.helpers import reword
-from common.utils.helpers import (
-    time_beautify_ms,
-    time_beautify_ordinal,
-    time_since,
-    time_since_minutes_only,
-    get_maps_url,
-    get_maps_directions_url,
-    get_teslamate_drive_grafana_url
-)
+from common.utils.helpers import TimeUtils, DataUtils
 
 
 
@@ -155,19 +147,19 @@ class Processor:
                     data['usable_battery_kwh'] = round(data['usable_battery_kwh'], 2)
 
                 elif query_id == 'teslamate-last-charge-info':
-                    data['last_charge'] = time_beautify_ms(data['last_charge'])
-                    data['last_charge_since'] = time_since(data['last_charge'])
+                    data['last_charge'] = TimeUtils.time_beautify_ms(data['last_charge'])
+                    data['last_charge_since'] = TimeUtils.time_since(data['last_charge'])
                     data['charge_energy_added_percentage'] = (data['charge_end_percentage'] - data['charge_start_percentage'])
                     data['duration_minutes'] = round(data['duration_minutes'], 0)
-                    data['duration_end_since_start'] = time_since_minutes_only(data['duration_minutes'])
+                    data['duration_end_since_start'] = TimeUtils.time_since_minutes_only(data['duration_minutes'])
 
                 elif query_id == 'teslamate-last-seen-location':
-                    data['last_seen'] = time_beautify_ms(data['last_seen'])
-                    data['last_seen_since'] = time_since(data['last_seen'])
+                    data['last_seen'] = TimeUtils.time_beautify_ms(data['last_seen'])
+                    data['last_seen_since'] = TimeUtils.time_since(data['last_seen'])
 
                 elif query_id == 'teslamate-car-state':
-                    data['last_updated'] = time_beautify_ms(data['last_updated'])
-                    data['last_state_since'] = time_since(data['last_updated'])
+                    data['last_updated'] = TimeUtils.time_beautify_ms(data['last_updated'])
+                    data['last_state_since'] = TimeUtils.time_since(data['last_updated'])
 
                 if query_id in [
                     'teslamate-car-drives-info'
@@ -175,10 +167,10 @@ class Processor:
                     if query_id == 'teslamate-car-drives-info':
                         for item in data:
                             try:
-                                item['grafana_drive_url'] = get_teslamate_drive_grafana_url(
+                                item['grafana_drive_url'] = DataUtils.get_teslamate_drive_grafana_url(
                                     drive_id = item['id'],
-                                    drive_start_time = time_beautify_ms(item['start_time'], convert_tz=False),
-                                    drive_end_time = time_beautify_ms(item['end_time'], convert_tz=False)
+                                    drive_start_time = TimeUtils.time_beautify_ms(item['start_time'], convert_tz=False),
+                                    drive_end_time = TimeUtils.time_beautify_ms(item['end_time'], convert_tz=False)
                                 )
                             except:
                                 item['grafana_drive_url'] = 'N/A'
@@ -187,17 +179,17 @@ class Processor:
                                 if item[key] is None:
                                     item[key] = 'N/A'
                                 else:
-                                    item[key] = time_beautify_ms(item[key])
-                                    item[f'{key}_ordinal'] = time_beautify_ordinal(item[key])
+                                    item[key] = TimeUtils.time_beautify_ms(item[key])
+                                    item[f'{key}_ordinal'] = TimeUtils.time_beautify_ordinal(item[key])
 
                             for key in ['start_address_url', 'end_address_url']:
                                 if item[key] is None:
                                     item[key] = 'N/A'
                                 else:
-                                    item[key] = get_maps_url(item[key])
+                                    item[key] = DataUtils.get_maps_url(item[key])
 
                             try:
-                                item['directions_url'] = get_maps_directions_url(
+                                item['directions_url'] = DataUtils.get_maps_directions_url(
                                     item['start_address_url'],
                                     item['end_address_url']
                                 )
@@ -231,7 +223,7 @@ class Processor:
                                 pass
 
                             try:
-                                item['duration_end_since_start'] = time_since(
+                                item['duration_end_since_start'] = TimeUtils.time_since(
                                     item['start_time'],
                                     item['end_time'],
                                     instant=False

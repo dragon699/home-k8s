@@ -3,7 +3,7 @@ from typing import Any
 from fastapi import Request
 from fastapi.responses import JSONResponse
 from common.telemetry.src.tracing.wrappers import traced
-from common.utils.helpers import omit_volatile_data, create_cache_key
+from common.utils.helpers import DataUtils
 from fetch_api.settings import connectors, settings
 from fetch_api.src.telemetry.logging import log
 from fetch_api.src.client import ConnectorClient
@@ -105,12 +105,12 @@ class APIProcessor:
                                     )
                                 )
                             },
-                            cache_key=create_cache_key(
+                            cache_key=DataUtils.create_cache_key(
                                 connector_name=ml_client.connector_name,
                                 method='POST',
                                 endpoint=upstream_ml_endpoint,
                                 params={},
-                                data=omit_volatile_data(results['items'])
+                                data=DataUtils.omit_volatile_data(results['items'])
                             )
                         )
 

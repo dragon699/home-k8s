@@ -1,7 +1,7 @@
 import os
 from typing import Any
 from pydantic_settings import BaseSettings
-from common.utils.helpers import get_app_version
+from common.utils.helpers import SysUtils
 from fetch_api.src.telemetry.logging import logger
 from fetch_api.src.loaders import SettingsLoader
 
@@ -15,7 +15,7 @@ class FetchAPISettings(BaseSettings):
 
     otel_service_name: str = 'fetch-api'
     otel_service_namespace: str = 'fetch-api'
-    otel_service_version: str = get_app_version(f'{os.path.dirname(__file__)}/VERSION')
+    otel_service_version: str = SysUtils.get_app_version(f'{os.path.dirname(__file__)}/VERSION')
     otlp_endpoint_grpc: str = 'grafana-alloy.monitoring.svc:4317'
 
     redis_host: str | None = None

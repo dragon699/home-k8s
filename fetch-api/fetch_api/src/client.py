@@ -7,7 +7,7 @@ from fetch_api.settings import settings, connectors
 from fetch_api.src.telemetry.logging import log
 from common.telemetry.src.tracing.wrappers import traced
 from common.telemetry.src.tracing.helpers import reword
-from common.utils.helpers import time_now, create_cache_key
+from common.utils.helpers import TimeUtils, DataUtils
 
 
 
@@ -100,7 +100,7 @@ class ConnectorClient:
 
         if self.cache:
             if cache_key is None:
-                cache_key = create_cache_key(
+                cache_key = DataUtils.create_cache_key(
                     connector_name=self.connector_name,
                     method='GET',
                     endpoint=endpoint,
@@ -124,7 +124,7 @@ class ConnectorClient:
                     self.redis.set(
                         cache_key,
                         {
-                            'cached_at': time_now(),
+                            'cached_at': TimeUtils.time_now(),
                             'status_code': response.status_code,
                             'json': response.json()
                         },
@@ -133,7 +133,7 @@ class ConnectorClient:
 
                     span.set_attributes({
                         'connector.cache.updated': True,
-                        'connector.cache.updated_at': time_now(),
+                        'connector.cache.updated_at': TimeUtils.time_now(),
                         'connector.cache.key': cache_key
                     })
 
@@ -199,7 +199,7 @@ class ConnectorClient:
 
         if self.cache:
             if cache_key is None:
-                cache_key = create_cache_key(
+                cache_key = DataUtils.create_cache_key(
                     connector_name=self.connector_name,
                     method='POST',
                     endpoint=endpoint,
@@ -223,7 +223,7 @@ class ConnectorClient:
                     self.redis.set(
                         cache_key,
                         {
-                            'cached_at': time_now(),
+                            'cached_at': TimeUtils.time_now(),
                             'status_code': response.status_code,
                             'json': response.json()
                         },
@@ -232,7 +232,7 @@ class ConnectorClient:
 
                     span.set_attributes({
                         'connector.cache.updated': True,
-                        'connector.cache.updated_at': time_now(),
+                        'connector.cache.updated_at': TimeUtils.time_now(),
                         'connector.cache.key': cache_key
                     })
 

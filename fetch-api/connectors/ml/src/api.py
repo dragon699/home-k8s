@@ -4,7 +4,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
-from common.utils.helpers import (get_app_version, get_swagger_params)
+from common.utils.helpers import SysUtils
 from connectors.ml.settings import settings
 from connectors.ml.src.telemetry.tracing import instrumentor
 from connectors.ml.src.ollama.client import OllamaClient
@@ -30,10 +30,10 @@ ollama_client = OllamaClient()
 
 app = FastAPI(
     title='ML Connector',
-    version=get_app_version(f'{os.path.dirname(__file__)}/../VERSION'),
+    version=SysUtils.get_app_version(f'{os.path.dirname(__file__)}/../VERSION'),
     description='A connector that runs LLM queries against Ollama models.',
     lifespan=lifespan,
-    **get_swagger_params()
+    **SysUtils.get_swagger_params()
 )
 
 instrumentor.instrument(app)
