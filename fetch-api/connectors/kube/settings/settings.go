@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"runtime"
 	"strings"
 
 	"common/utils"
@@ -12,25 +13,28 @@ import (
 
 
 type Settings struct {
-	Name       string                 `json:"name"                          env:"NAME"`
-	ListenHost string                 `json:"listen_host"                   env:"LISTEN_HOST"`
-	ListenPort int                    `json:"listen_port"                   env:"LISTEN_PORT"`
+	Name       string                  `json:"connector_name"                env:"NAME"`
+	ListenHost string                  `json:"listen_host"                   env:"LISTEN_HOST"`
+	ListenPort int                     `json:"listen_port"                   env:"LISTEN_PORT"`
 
-	InCluster      bool               `json:"in_cluster"                    env:"IN_CLUSTER"`
-	KubeConfigPath string             `json:"kube_config_path"              env:"KUBE_CONFIG_PATH"`
+	InCluster      bool                `json:"in_cluster"                    env:"IN_CLUSTER"`
+	KubeConfigPath string              `json:"kube_config_path"              env:"KUBE_CONFIG_PATH"`
 
-	OtelServiceName      string       `json:"otel_service_name"             env:"OTEL_SERVICE_NAME"`
-	OtelServiceNamespace string       `json:"otel_service_namespace"        env:"OTEL_SERVICE_NAMESPACE"`
-	OtelServiceVersion   string       `json:"otel_service_version"          env:"OTEL_SERVICE_VERSION"`
-	OtlpEndpointGrpc     string       `json:"otlp_endpoint_grpc"            env:"OTLP_ENDPOINT_GRPC"`
+	OtelServiceName      string        `json:"otel_service_name"             env:"OTEL_SERVICE_NAME"`
+	OtelServiceNamespace string        `json:"otel_service_namespace"        env:"OTEL_SERVICE_NAMESPACE"`
+	OtelServiceVersion   string        `json:"otel_service_version"          env:"OTEL_SERVICE_VERSION"`
+	OtlpEndpointGrpc     string        `json:"otlp_endpoint_grpc"            env:"OTLP_ENDPOINT_GRPC"`
 
-	LogLevel  string                  `json:"log_level"                     env:"LOG_LEVEL"`
-	LogFormat string                  `json:"log_format"                    env:"LOG_FORMAT"`
+	LogLevel  string                   `json:"log_level"                     env:"LOG_LEVEL"`
+	LogFormat string                   `json:"log_format"                    env:"LOG_FORMAT"`
 
-	HealthCheckIntervalSeconds int    `json:"health_check_interval_seconds" env:"HEALTH_CHECK_INTERVAL_SECONDS"`
-	HealthRetryIntervalSeconds int    `json:"health_retry_interval_seconds" env:"HEALTH_RETRY_INTERVAL_SECONDS"`
-	HealthEndpoint             string `json:"health_endpoint"               env:"HEALTH_ENDPOINT"`
-	Healthy                    *bool  `json:"healthy"`
+	HealthCheckIntervalSeconds int     `json:"health_check_interval_seconds" env:"HEALTH_CHECK_INTERVAL_SECONDS"`
+	HealthRetryIntervalSeconds int     `json:"health_retry_interval_seconds" env:"HEALTH_RETRY_INTERVAL_SECONDS"`
+	
+	Healthy                    *bool
+	HealthJobID                *string
+	HealthNextCheck            *string
+	HealthLastCheck            *string
 }
 
 var defaultSettings = Settings{
@@ -38,21 +42,22 @@ var defaultSettings = Settings{
 	ListenHost:                       "0.0.0.0",
 	ListenPort:             		  8080,
 
-	InCluster:                        true,
-	KubeConfigPath:					  "",
+	InCluster:                        false,
+	KubeConfigPath:					  "/home/martin/.kube/config",
 
 	OtelServiceName:                  "connector-kube",
 	OtelServiceNamespace:             "fetch-api",
 	OtelServiceVersion:               "",
-	OtlpEndpointGrpc:                 "grafana-alloy.monitoring.svc:4317",
+	OtlpEndpointGrpc:                 "grpc.k8s.iaminyourpc.xyz:80",
 
 	LogLevel:                         "info",
-	LogFormat:                        "json",
+	LogFormat:                        "logfmt",
 
-	HealthCheckIntervalSeconds:       180,
-	HealthRetryIntervalSeconds:       15,
-	HealthEndpoint:                   "/healthz",
+	HealthCheckIntervalSeconds:       15,
+	HealthRetryIntervalSeconds:       5,
+
 	Healthy:                          nil,
+	HealthJobID:                      nil,
 }
 
 var Config Settings
@@ -121,11 +126,12 @@ func loadSettings() (Settings, error) {
 	}
 
 	if settings.OtelServiceVersion == "" {
-		currentDir, err := utils.GetCurrentDir()
+		_, currentFile, _, ok := runtime.Caller(0)
 
-		if err != nil {
+		if !ok {
 			settings.OtelServiceVersion = "unknown"
 		} else {
+			currentDir := filepath.Dir(currentFile)
 			verFile := filepath.Join(currentDir, "..", "VERSION")
 
 			if appVer, err := utils.ReadFile(verFile); err != nil {

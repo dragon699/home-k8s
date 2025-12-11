@@ -3,9 +3,8 @@ package utils
 import (
 	"fmt"
 	"os"
-	"runtime"
 	"strconv"
-	"path/filepath"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 
@@ -18,6 +17,7 @@ func ToInt(val string) (int64, error) {
 	return int64(i), nil
 }
 
+
 func ToBool(val string) (bool, error) {
 	b, err := strconv.ParseBool(val)
 
@@ -27,15 +27,6 @@ func ToBool(val string) (bool, error) {
 	return b, nil
 }
 
-func GetCurrentDir() (string, error) {
-	_, file, _, ok := runtime.Caller(0)
-
-	if !ok {
-		return "", fmt.Errorf("unable to detect current file location")
-	}
-
-	return filepath.Dir(file), nil
-}
 
 func ReadFile(path string) (string, error) {
 	contents, err := os.ReadFile(path)
@@ -45,4 +36,14 @@ func ReadFile(path string) (string, error) {
 	}
 
 	return string(contents), nil
+}
+
+
+func WriteFile(path string, content string) error {
+	return os.WriteFile(path, []byte(content), 0644)
+}
+
+
+func TrimKubeTime(time metav1.Time) string {
+	return time.Time.Format("2006-01-02T15:04:05")
 }
