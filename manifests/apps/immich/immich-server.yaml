@@ -30,7 +30,7 @@ spec:
       volumes:
       - name: library
         persistentVolumeClaim:
-          claimName: immich-server
+          claimName: immich-server-photos
       containers:
       - name: immich-server
         image: ghcr.io/immich-app/immich-server:v2.1.0
