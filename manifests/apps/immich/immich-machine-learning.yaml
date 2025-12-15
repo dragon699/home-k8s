@@ -32,7 +32,7 @@ spec:
         persistentVolumeClaim:
           claimName: immich-machine-learning
       containers:
-      - name: immich-server
+      - name: immich-machine-learning
         image: ghcr.io/immich-app/immich-machine-learning:v2.1.0
         imagePullPolicy: IfNotPresent
         livenessProbe:

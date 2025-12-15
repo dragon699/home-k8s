@@ -1,8 +1,8 @@
-# Temporary excludes
-scripts/test*
-
 **/.vscode
 **/.misc
 **/__pycache__/
+**/.cache
 
 fetch-api/local/env
+
+scripts/test*
