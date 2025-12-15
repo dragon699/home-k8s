@@ -8,12 +8,6 @@ import (
 )
 
 
-// Health godoc
-// @Summary      Health check
-// @Tags         health
-// @Produce      json
-// @Success      200  {object}  response.HealthResponse
-// @Router       /api/health [get]
 func Health(ctx *fiber.Ctx) error {
 	return ctx.JSON(
 		response.HealthResponse{
@@ -25,13 +19,6 @@ func Health(ctx *fiber.Ctx) error {
 	)
 }
 
-
-// Ready godoc
-// @Summary      Readiness check
-// @Tags         health
-// @Produce      json
-// @Success      200  {object}  response.ReadyResponse
-// @Router       /api/ready [get]
 func Ready(ctx *fiber.Ctx) error {
 	return ctx.JSON(
 		response.ReadyResponse{

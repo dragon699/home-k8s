@@ -49,10 +49,13 @@ func LoadRoutes(app fiber.Router) {
 	routes.Health(app)
 	routes.Ready(app)
 
-	// /list routes
+	// /pods routes
 	routes.ListPods(app)
 
-	// /docs
+	// /workloads/* routes
+	routes.ListDeployments(app)
+
+	// Swagger routes
 	docs.SwaggerInfo.Host = fmt.Sprintf("%s:%d", settings.Config.ListenHost, settings.Config.ListenPort)
 
 	if settings.Config.OtelServiceVersion != "" {

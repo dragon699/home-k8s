@@ -56,9 +56,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/list/pods": {
+        "/pods": {
             "get": {
-                "description": "Returns pods with optional filters applied.",
+                "description": "Returns list of pods.",
                 "produces": [
                     "application/json"
                 ],
@@ -119,9 +119,126 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/workloads/deployments": {
+            "get": {
+                "description": "Returns list of Deployments.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "workloads"
+                ],
+                "summary": "List Deployments",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Deployments only from this namespace",
+                        "name": "namespace",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.DeploymentListResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
+        "response.Deployment": {
+            "type": "object",
+            "properties": {
+                "conditions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.DeploymentCondition"
+                    }
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "namespace": {
+                    "type": "string"
+                },
+                "replicas": {
+                    "type": "integer"
+                },
+                "status": {
+                    "$ref": "#/definitions/response.DeploymentStatus"
+                }
+            }
+        },
+        "response.DeploymentCondition": {
+            "type": "object",
+            "properties": {
+                "last_transition_time": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "reason": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.DeploymentListResponse": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.Deployment"
+                    }
+                },
+                "total_items": {
+                    "type": "integer"
+                }
+            }
+        },
+        "response.DeploymentStatus": {
+            "type": "object",
+            "properties": {
+                "available_replicas": {
+                    "type": "integer"
+                },
+                "generation": {
+                    "type": "integer"
+                },
+                "ready_replicas": {
+                    "type": "integer"
+                },
+                "replicas": {
+                    "type": "integer"
+                },
+                "updated_replicas": {
+                    "type": "integer"
+                }
+            }
+        },
         "response.ErrorResponse": {
             "type": "object",
             "properties": {

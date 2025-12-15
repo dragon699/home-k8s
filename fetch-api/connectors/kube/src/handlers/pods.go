@@ -68,27 +68,13 @@ func getPodUnhealthyStatus(status v1.ContainerStatus) (response.PodStatus, bool)
 	return response.PodStatus{}, false
 }
 
-// ListPods godoc
-// @Summary      List pods
-// @Description  Returns pods with optional filters applied.
-// @Tags         pods
-// @Produce      json
-// @Param        namespace               query     string  false  "Pods only from this namespace"
-// @Param        container_name_contains query     string  false  "Pods only with container name matching this substring"
-// @Param        status                  query     string  false  "Pods only with this status"
-// @Param        status_not              query     string  false  "Pods only without this status"
-// @Param        jobs_only               query     bool    false  "Pods only which are jobs"
-// @Success      200  {object}  response.PodListResponse
-// @Failure      400  {object}  response.ErrorResponse
-// @Failure      500  {object}  response.ErrorResponse
-// @Router       /list/pods [get]
 func ListPods(ctx *fiber.Ctx) error {
 	var params request.ListPodsParams
 
 	if err := ctx.QueryParser(&params); err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(
-			map[string]any{
-				"error": err.Error(),
+			response.ErrorResponse{
+				Error: err.Error(),
 			},
 		)
 	}
@@ -100,8 +86,8 @@ func ListPods(ctx *fiber.Ctx) error {
 
 	if err != nil {
 		return ctx.Status(500).JSON(
-			map[string]any{
-				"error": err.Error(),
+			response.ErrorResponse{
+				Error: err.Error(),
 			},
 		)
 	}

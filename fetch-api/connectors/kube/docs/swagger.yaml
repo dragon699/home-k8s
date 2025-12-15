@@ -1,5 +1,55 @@
 basePath: /
 definitions:
+  response.Deployment:
+    properties:
+      conditions:
+        items:
+          $ref: '#/definitions/response.DeploymentCondition'
+        type: array
+      created_at:
+        type: string
+      name:
+        type: string
+      namespace:
+        type: string
+      replicas:
+        type: integer
+      status:
+        $ref: '#/definitions/response.DeploymentStatus'
+    type: object
+  response.DeploymentCondition:
+    properties:
+      last_transition_time:
+        type: string
+      name:
+        type: string
+      reason:
+        type: string
+      status:
+        type: string
+    type: object
+  response.DeploymentListResponse:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/response.Deployment'
+        type: array
+      total_items:
+        type: integer
+    type: object
+  response.DeploymentStatus:
+    properties:
+      available_replicas:
+        type: integer
+      generation:
+        type: integer
+      ready_replicas:
+        type: integer
+      replicas:
+        type: integer
+      updated_replicas:
+        type: integer
+    type: object
   response.ErrorResponse:
     properties:
       error:
@@ -135,9 +185,9 @@ paths:
       summary: Readiness check
       tags:
       - health
-  /list/pods:
+  /pods:
     get:
-      description: Returns pods with optional filters applied.
+      description: Returns list of pods.
       parameters:
       - description: Pods only from this namespace
         in: query
@@ -177,6 +227,32 @@ paths:
       summary: List pods
       tags:
       - pods
+  /workloads/deployments:
+    get:
+      description: Returns list of Deployments.
+      parameters:
+      - description: Deployments only from this namespace
+        in: query
+        name: namespace
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.DeploymentListResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: List Deployments
+      tags:
+      - workloads
 produces:
 - application/json
 swagger: "2.0"

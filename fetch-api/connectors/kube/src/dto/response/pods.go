@@ -1,5 +1,6 @@
 package response
 
+
 type Pod struct {
 	Name       string         `json:"name"`
 	Namespace  string         `json:"namespace"`
