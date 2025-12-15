@@ -39,7 +39,7 @@ type Settings struct {
 
 var defaultSettings = Settings{
 	Name:                             "connector-kube",
-	ListenHost:                       "0.0.0.0",
+	ListenHost:                       "192.168.1.170",
 	ListenPort:             		  8080,
 
 	InCluster:                        false,

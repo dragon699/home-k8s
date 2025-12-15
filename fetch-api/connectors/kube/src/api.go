@@ -1,3 +1,9 @@
+// connector-kube bootstrap
+//
+// @title           Kube Connector
+// @description     A connector that runs queries against Kubernetes cluster.
+// @BasePath        /
+// @produce         json
 package src
 
 import (
@@ -12,7 +18,9 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-var app = fiber.New()
+var app = fiber.New(fiber.Config{
+	AppName: "connector-kube",
+})
 
 
 func init() {
@@ -22,7 +30,7 @@ func init() {
 	LoadHealthChecker()
 	LoadRoutes(app)
 
-	t.Log.Info("Starting Fiber server..",
+	t.Log.Info("Starting Fiber..",
 		"host", settings.Config.ListenHost,
 		"port", settings.Config.ListenPort,
 		"service", settings.Config.Name,
@@ -32,7 +40,7 @@ func init() {
 		if err := app.Listen(
 			fmt.Sprintf("%s:%d", settings.Config.ListenHost, settings.Config.ListenPort),
 		); err != nil {
-			t.Log.Error("Failed to start server", "error", err.Error())
+			t.Log.Error("Failed to start Fiber", "error", err.Error())
 			os.Exit(1)
 		}
 	}()

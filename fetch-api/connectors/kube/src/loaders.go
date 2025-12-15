@@ -1,17 +1,21 @@
 package src
 
 import (
+	"fmt"
 	"os"
 	"time"
 
+	docs "connector-kube/docs"
 	"connector-kube/settings"
 	"connector-kube/src/health"
 	"connector-kube/src/kubernetes"
 	"connector-kube/src/routes"
+	"connector-kube/src/swagger"
 	t "connector-kube/src/telemetry"
 
 	"github.com/go-co-op/gocron"
 	"github.com/gofiber/fiber/v2"
+	fiberSwagger "github.com/swaggo/fiber-swagger"
 )
 
 var scheduler = gocron.NewScheduler(time.UTC)
@@ -47,4 +51,20 @@ func LoadRoutes(app fiber.Router) {
 
 	// /list routes
 	routes.ListPods(app)
+
+	// /docs
+	docs.SwaggerInfo.Host = fmt.Sprintf("%s:%d", settings.Config.ListenHost, settings.Config.ListenPort)
+
+	if settings.Config.OtelServiceVersion != "" {
+		docs.SwaggerInfo.Version = settings.Config.OtelServiceVersion
+	}
+
+	swaggerHandler := fiberSwagger.FiberWrapHandler(
+		fiberSwagger.URL("/swagger/doc.json"),
+		fiberSwagger.DocExpansion("list"),
+		fiberSwagger.DeepLinking(true),
+		fiberSwagger.PersistAuthorization(true),
+	)
+	app.Get("/swagger/*", swaggerHandler)
+	app.Get("/docs", swagger.Handler("/swagger/doc.json"))
 }
