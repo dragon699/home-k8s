@@ -14,4 +14,4 @@ toolkit:
     value: nvidia
 
 validator:
-  version: "v24.9.1"
+  version: "v25.3.4"
