@@ -3,6 +3,7 @@ operator:
 
 driver:
   enabled: false
+  version: 570.211.01
 
 toolkit:
   env:
