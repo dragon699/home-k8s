@@ -1,6 +1,9 @@
 operator:
   defaultRuntime: containerd
 
+driver:
+  enabled: false
+
 toolkit:
   env:
   - name: CONTAINERD_CONFIG
