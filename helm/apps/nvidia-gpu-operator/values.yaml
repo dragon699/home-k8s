@@ -2,9 +2,7 @@ operator:
   defaultRuntime: containerd
 
 driver:
-  enabled: true
-  version: "570.211.01"
-  kernelModuleType: "proprietary"
+  enabled: false
 
 toolkit:
   env:
@@ -14,3 +12,6 @@ toolkit:
     value: /run/k0s/containerd.sock
   - name: CONTAINERD_RUNTIME_CLASS
     value: nvidia
+
+validator:
+  version: "v24.9.1"
