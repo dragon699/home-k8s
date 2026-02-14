@@ -12,6 +12,3 @@ toolkit:
     value: /run/k0s/containerd.sock
   - name: CONTAINERD_RUNTIME_CLASS
     value: nvidia
-
-validator:
-  version: "v25.3.4"
