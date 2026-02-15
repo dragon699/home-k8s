@@ -5,11 +5,15 @@ metadata:
   name: vault-auto-unseal
   namespace: vault
 spec:
+  concurrencyPolicy: Forbid
   schedule: "*/3 * * * *" # Every 3 minutes
   successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 1
   jobTemplate:
     spec:
+      activeDeadlineSeconds: 180
+      backoffLimit: 1
+      ttlSecondsAfterFinished: 600
       template:
         spec:
           restartPolicy: OnFailure

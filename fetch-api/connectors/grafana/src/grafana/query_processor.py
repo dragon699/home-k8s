@@ -237,11 +237,10 @@ class Processor:
                     result.append(data)
 
         else:
-            if query_id == 'argocd-apps':
+            if query_id in ['argocd-apps']:
                 for item in query_response['results']['query']['frames']:
                     labels = item['schema']['fields'][1]['labels']
                     result.append({**labels})
-                    
 
                 result = sorted(
                     result,
@@ -249,6 +248,33 @@ class Processor:
                         item['health_status'] == 'Healthy',
                         item['name'].lower()
                     )
+                )
+
+            elif query_id in ['longhorn-usage']:
+                refined_result = {}
+
+                for item in query_response['results']['query']['frames']:
+                    labels = item['schema']['fields'][1]['labels']
+                    value = item['data']['values'][1][0]
+
+                    metric = labels['metric']
+                    pvc_name = labels['pvc']
+                    pvc_namespace = labels['pvc_namespace']
+                    pvc_signature = (pvc_name, pvc_namespace)
+
+                    if not pvc_signature in refined_result:
+                        refined_result[pvc_signature] = {
+                            'name': pvc_name,
+                            'namespace': pvc_namespace
+                        }
+
+                    refined_result[pvc_signature][metric] = round(value, 1)
+
+                result = list(refined_result.values())
+                result = sorted(
+                    result,
+                    key = lambda item: item['pvc_usage_percentage'],
+                    reverse = True
                 )
 
         span.set_attributes(

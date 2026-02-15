@@ -56,6 +56,38 @@ const docTemplate = `{
                 }
             }
         },
+        "/namespaces": {
+            "get": {
+                "description": "Returns list of Namespaces.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "namespaces"
+                ],
+                "summary": "List namespaces",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.NamespaceListResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/pods": {
             "get": {
                 "description": "Returns list of pods.",
@@ -129,7 +161,7 @@ const docTemplate = `{
                 "tags": [
                     "workloads"
                 ],
-                "summary": "List Deployments",
+                "summary": "List deployments",
                 "parameters": [
                     {
                         "type": "string",
@@ -261,6 +293,31 @@ const docTemplate = `{
                 },
                 "healthy": {
                     "type": "boolean"
+                }
+            }
+        },
+        "response.Namespace": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.NamespaceListResponse": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.Namespace"
+                    }
+                },
+                "total_items": {
+                    "type": "integer"
                 }
             }
         },

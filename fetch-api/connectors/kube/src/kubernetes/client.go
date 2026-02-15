@@ -80,3 +80,15 @@ func (instance *KubernetesClient) ListDeployments() ([]appsv1.Deployment, error)
 
 	return deployments.Items, nil
 }
+
+func (instance *KubernetesClient) ListNamespaces() ([]v1.Namespace, error) {
+	namespaces, err := instance.Client.CoreV1().Namespaces().List(
+		context.TODO(), metav1.ListOptions{},
+	)
+
+	if err != nil {
+		t.Log.Error("Failed to list namespaces", "error", err.Error())
+	}
+
+	return namespaces.Items, nil
+}

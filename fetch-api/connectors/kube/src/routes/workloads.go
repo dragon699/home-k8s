@@ -10,7 +10,7 @@ const workloadsRouterName = "/workloads"
 
 
 // ListDeployments
-// @Summary      List Deployments
+// @Summary      List deployments
 // @Description  Returns list of Deployments.
 // @Tags         workloads
 // @Produce      json

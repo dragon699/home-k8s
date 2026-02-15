@@ -49,6 +49,9 @@ func LoadRoutes(app fiber.Router) {
 	routes.Health(app)
 	routes.Ready(app)
 
+	// /namespaces routes
+	routes.ListNamespaces(app)
+
 	// /pods routes
 	routes.ListPods(app)
 

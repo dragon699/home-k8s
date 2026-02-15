@@ -11,3 +11,10 @@ def get_argocd_apps() -> dict:
         query_ds_type='prometheus',
         query_id='argocd-apps'
     )
+
+@router.get('/longhorn-usage', tags=['prometheus'], summary='Retrieve Longhorn PVC usage')
+def get_longhorn_usage() -> dict:
+    return APIProcessor.process_request(
+        query_ds_type='prometheus',
+        query_id='longhorn-usage'
+    )
