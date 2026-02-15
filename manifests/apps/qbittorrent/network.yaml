@@ -24,6 +24,6 @@ spec:
         path: /
         backend:
           service:
-            name: qbittorrent
+            name: qbittorrent-web
             port:
               number: 80
