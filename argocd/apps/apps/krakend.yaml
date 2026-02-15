@@ -9,7 +9,7 @@ metadata:
   annotations:
     env: home
 spec:
-  project: home
+  project: apps
   sources:
   - repoURL: git@github.com:dragon699/home-k8s.git
     targetRevision: main
