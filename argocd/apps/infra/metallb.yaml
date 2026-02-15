@@ -9,7 +9,7 @@ metadata:
   annotations:
     env: home
 spec:
-  project: home
+  project: infra
   sources:
   - repoURL: https://metallb.github.io/metallb
     targetRevision: 0.14.9
