@@ -7,7 +7,7 @@ metadata:
   finalizers:
   - resources-finalizer.argocd.argoproj.io
 spec:
-  project: home
+  project: default
   source:
     repoURL: git@github.com:dragon699/home-k8s.git
     path: argocd/apps
