@@ -69,7 +69,7 @@
     - type: custom-api
       hide-header: false
       title: car
-      cache: 5s
+      cache: 10s
       url: http://fetch-api.fetch-api.svc:8069/grafana/car-info
       method: POST
       body: {"ai": false}
@@ -407,12 +407,12 @@
     - type: custom-api
       hide-header: false
       title: t/drives
-      cache: 30s
+      cache: 10s
       url: http://fetch-api.fetch-api.svc:8069/grafana/car-drives-history
       method: POST
       parameters:
         number_of_drives: 10
-      body: {"ai": true}
+      body: {"ai": false}
       template: |
         <style>
           :root {

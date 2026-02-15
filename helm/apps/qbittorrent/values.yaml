@@ -1,0 +1,25 @@
+qbittorrent:
+  replicaCount: 1
+
+  strategy:
+    type: Recreate
+
+  extraEnv: []
+  extraEnvFrom: []
+
+  config:
+    persistence:
+      enabled: true
+      size: 5Gi
+
+  ingress:
+    enabled: false
+
+  gluetun:
+    enabled: false
+
+  prometheusQbittorrentExporter:
+    enabled: true
+
+genericDevicePlugin:
+  enabled: true
