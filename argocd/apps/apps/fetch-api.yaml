@@ -8,10 +8,8 @@ metadata:
   - resources-finalizer.argocd.argoproj.io
   annotations:
     env: home
-  labels:
-    kind: app
 spec:
-  project: home
+  project: apps
   sources:
   - repoURL: git@github.com:dragon699/home-k8s.git
     targetRevision: main
