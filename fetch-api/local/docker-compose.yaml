@@ -106,6 +106,37 @@ services:
       timeout: 3s
       retries: 3
 
+  connector-downloader:
+    container_name: connector-downloader
+    build:
+      context: ..
+      dockerfile: connectors/downloader/Dockerfile
+      tags:
+      - fetch-api/connector-downloader:dev
+    pull_policy: build
+    restart: unless-stopped
+    env_file:
+    - ../../config/fetch-api/connectors/downloader/config.env
+    - env/connector-downloader.env
+    environment:
+    - OTEL_SERVICE_NAMESPACE=fetch-api-dev
+    - OTLP_ENDPOINT_GRPC=grpc.k8s.iaminyourpc.xyz:80
+    - LOG_FORMAT=logfmt
+    - LOG_LEVEL=debug
+    - LISTEN_PORT=9069
+    hostname: connector-downloader.fetch-api.svc
+    networks:
+    - fetch-api
+    ports:
+    - 9071:9069
+    volumes:
+    - ../../config/fetch-api/scripts/health-probe.py:/app/health-probe.py:ro
+    healthcheck:
+      test: ["CMD", "python", "/app/health-probe.py"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
   redis:
     container_name: redis
     image: redis:7.4-alpine

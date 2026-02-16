@@ -1,7 +1,7 @@
-// connector-kube bootstrap
+// connector-downloader bootstrap
 //
-// @title           Kube Connector
-// @description     A connector that runs queries against Kubernetes cluster.
+// @title           Downloader Connector
+// @description     A connector that downloads data from various sources to the host.
 // @BasePath        /
 // @produce         json
 package src
@@ -12,15 +12,15 @@ import (
 	"os/signal"
 	"syscall"
 
-	"connector-kube/settings"
-	t "connector-kube/src/telemetry"
+	"connector-downloader/settings"
+	t "connector-downloader/src/telemetry"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 )
 
 var app = fiber.New(fiber.Config{
-	AppName: "connector-kube",
+	AppName: "connector-downloader",
 })
 
 func init() {
@@ -32,7 +32,7 @@ func init() {
 
 	app.Use(t.TracingMiddleware())
 
-	LoadKubernetesClient()
+	LoadQBittorrentClient()
 	LoadHealthChecker()
 	LoadRoutes(app)
 

@@ -1,0 +1,202 @@
+basePath: /
+definitions:
+  qbittorrent.TorrentInfo:
+    properties:
+      added_on:
+        type: integer
+      amount_left:
+        type: integer
+      auto_tmm:
+        type: boolean
+      availability:
+        type: number
+      category:
+        type: string
+      comment:
+        type: string
+      completed:
+        type: integer
+      completion_on:
+        type: integer
+      content_path:
+        type: string
+      dl_limit:
+        type: integer
+      dlspeed:
+        type: integer
+      download_path:
+        type: string
+      downloaded:
+        type: integer
+      downloaded_session:
+        type: integer
+      eta:
+        type: integer
+      f_l_piece_prio:
+        type: boolean
+      force_start:
+        type: boolean
+      has_metadata:
+        type: boolean
+      hash:
+        type: string
+      inactive_seeding_time_limit:
+        type: integer
+      infohash_v1:
+        type: string
+      infohash_v2:
+        type: string
+      last_activity:
+        type: integer
+      magnet_uri:
+        type: string
+      max_inactive_seeding_time:
+        type: integer
+      max_ratio:
+        type: number
+      max_seeding_time:
+        type: integer
+      name:
+        type: string
+      num_complete:
+        type: integer
+      num_incomplete:
+        type: integer
+      num_leechs:
+        type: integer
+      num_seeds:
+        type: integer
+      popularity:
+        type: number
+      priority:
+        type: integer
+      private:
+        type: boolean
+      progress:
+        type: number
+      ratio:
+        type: number
+      ratio_limit:
+        type: number
+      reannounce:
+        type: integer
+      root_path:
+        type: string
+      save_path:
+        type: string
+      seeding_time:
+        type: integer
+      seeding_time_limit:
+        type: integer
+      seen_complete:
+        type: integer
+      seq_dl:
+        type: boolean
+      size:
+        type: integer
+      state:
+        type: string
+      super_seeding:
+        type: boolean
+      tags:
+        type: string
+      time_active:
+        type: integer
+      total_size:
+        type: integer
+      tracker:
+        type: string
+      trackers_count:
+        type: integer
+      up_limit:
+        type: integer
+      uploaded:
+        type: integer
+      uploaded_session:
+        type: integer
+      upspeed:
+        type: integer
+    type: object
+  response.ErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  response.HealthResponse:
+    properties:
+      connector_name:
+        type: string
+      health_last_check:
+        type: string
+      health_next_check:
+        type: string
+      healthy:
+        type: boolean
+    type: object
+  response.ReadyResponse:
+    properties:
+      ready:
+        type: boolean
+    type: object
+  response.TorrentListResponse:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/qbittorrent.TorrentInfo'
+        type: array
+      total_items:
+        type: integer
+    type: object
+info:
+  contact: {}
+  description: A connector that downloads data from various sources to the host.
+  title: Downloader Connector
+paths:
+  /api/health:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.HealthResponse'
+      summary: Health check
+      tags:
+      - health
+  /api/ready:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ReadyResponse'
+      summary: Readiness check
+      tags:
+      - health
+  /torrents:
+    get:
+      description: Returns list of torrents in qBittorrent.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.TorrentListResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: List torrents in qBittorrent
+      tags:
+      - torrents
+produces:
+- application/json
+swagger: "2.0"
