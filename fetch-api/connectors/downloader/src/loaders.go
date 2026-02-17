@@ -12,6 +12,7 @@ import (
 	"connector-downloader/src/routes"
 	"connector-downloader/src/swagger"
 	t "connector-downloader/src/telemetry"
+	action_scheduler "connector-downloader/src/torrent_actions"
 
 	"github.com/go-co-op/gocron"
 	"github.com/gofiber/fiber/v2"
@@ -22,10 +23,12 @@ var scheduler = gocron.NewScheduler(time.UTC)
 var healthChecker = health.HealthChecker{
 	Scheduler: scheduler,
 }
+var actionChecker = action_scheduler.ActionChecker{
+	Scheduler: scheduler,
+}
 
 func LoadQBittorrentClient() {
-	qbittorrent.Client = &qbittorrent.QBittorrentClient{
-	}
+	qbittorrent.Client = &qbittorrent.QBittorrentClient{}
 	err := qbittorrent.Client.Init()
 
 	if err != nil {
@@ -37,6 +40,10 @@ func LoadQBittorrentClient() {
 func LoadHealthChecker() {
 	healthChecker.CreateSchedule()
 	scheduler.StartAsync()
+}
+
+func LoadActionChecker() {
+	actionChecker.CreateSchedule()
 }
 
 func LoadRoutes(app fiber.Router) {

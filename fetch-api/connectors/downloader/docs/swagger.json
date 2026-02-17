@@ -82,182 +82,6 @@
         }
     },
     "definitions": {
-        "qbittorrent.TorrentInfo": {
-            "type": "object",
-            "properties": {
-                "added_on": {
-                    "type": "integer"
-                },
-                "amount_left": {
-                    "type": "integer"
-                },
-                "auto_tmm": {
-                    "type": "boolean"
-                },
-                "availability": {
-                    "type": "number"
-                },
-                "category": {
-                    "type": "string"
-                },
-                "comment": {
-                    "type": "string"
-                },
-                "completed": {
-                    "type": "integer"
-                },
-                "completion_on": {
-                    "type": "integer"
-                },
-                "content_path": {
-                    "type": "string"
-                },
-                "dl_limit": {
-                    "type": "integer"
-                },
-                "dlspeed": {
-                    "type": "integer"
-                },
-                "download_path": {
-                    "type": "string"
-                },
-                "downloaded": {
-                    "type": "integer"
-                },
-                "downloaded_session": {
-                    "type": "integer"
-                },
-                "eta": {
-                    "type": "integer"
-                },
-                "f_l_piece_prio": {
-                    "type": "boolean"
-                },
-                "force_start": {
-                    "type": "boolean"
-                },
-                "has_metadata": {
-                    "type": "boolean"
-                },
-                "hash": {
-                    "type": "string"
-                },
-                "inactive_seeding_time_limit": {
-                    "type": "integer"
-                },
-                "infohash_v1": {
-                    "type": "string"
-                },
-                "infohash_v2": {
-                    "type": "string"
-                },
-                "last_activity": {
-                    "type": "integer"
-                },
-                "magnet_uri": {
-                    "type": "string"
-                },
-                "max_inactive_seeding_time": {
-                    "type": "integer"
-                },
-                "max_ratio": {
-                    "type": "number"
-                },
-                "max_seeding_time": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "num_complete": {
-                    "type": "integer"
-                },
-                "num_incomplete": {
-                    "type": "integer"
-                },
-                "num_leechs": {
-                    "type": "integer"
-                },
-                "num_seeds": {
-                    "type": "integer"
-                },
-                "popularity": {
-                    "type": "number"
-                },
-                "priority": {
-                    "type": "integer"
-                },
-                "private": {
-                    "type": "boolean"
-                },
-                "progress": {
-                    "type": "number"
-                },
-                "ratio": {
-                    "type": "number"
-                },
-                "ratio_limit": {
-                    "type": "number"
-                },
-                "reannounce": {
-                    "type": "integer"
-                },
-                "root_path": {
-                    "type": "string"
-                },
-                "save_path": {
-                    "type": "string"
-                },
-                "seeding_time": {
-                    "type": "integer"
-                },
-                "seeding_time_limit": {
-                    "type": "integer"
-                },
-                "seen_complete": {
-                    "type": "integer"
-                },
-                "seq_dl": {
-                    "type": "boolean"
-                },
-                "size": {
-                    "type": "integer"
-                },
-                "state": {
-                    "type": "string"
-                },
-                "super_seeding": {
-                    "type": "boolean"
-                },
-                "tags": {
-                    "type": "string"
-                },
-                "time_active": {
-                    "type": "integer"
-                },
-                "total_size": {
-                    "type": "integer"
-                },
-                "tracker": {
-                    "type": "string"
-                },
-                "trackers_count": {
-                    "type": "integer"
-                },
-                "up_limit": {
-                    "type": "integer"
-                },
-                "uploaded": {
-                    "type": "integer"
-                },
-                "uploaded_session": {
-                    "type": "integer"
-                },
-                "upspeed": {
-                    "type": "integer"
-                }
-            }
-        },
         "response.ErrorResponse": {
             "type": "object",
             "properties": {
@@ -291,13 +115,36 @@
                 }
             }
         },
+        "response.Torrent": {
+            "type": "object",
+            "properties": {
+                "added_on": {
+                    "type": "integer"
+                },
+                "availability": {
+                    "type": "number"
+                },
+                "completion_on": {
+                    "type": "integer"
+                },
+                "content_path": {
+                    "type": "string"
+                },
+                "download_speed": {
+                    "type": "integer"
+                },
+                "downloaded": {
+                    "type": "integer"
+                }
+            }
+        },
         "response.TorrentListResponse": {
             "type": "object",
             "properties": {
                 "items": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/qbittorrent.TorrentInfo"
+                        "$ref": "#/definitions/response.Torrent"
                     }
                 },
                 "total_items": {

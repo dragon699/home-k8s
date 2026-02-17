@@ -10,6 +10,7 @@ import (
 	"github.com/go-co-op/gocron"
 )
 
+
 type HealthChecker struct {
 	Scheduler *gocron.Scheduler
 }

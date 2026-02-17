@@ -11,55 +11,60 @@ import (
 	"common/utils"
 )
 
-
 type Settings struct {
-	Name       string                  `json:"connector_name"                env:"NAME"`
-	ListenHost string                  `json:"listen_host"                   env:"LISTEN_HOST"`
-	ListenPort int                     `json:"listen_port"                   env:"LISTEN_PORT"`
+	Name       string `json:"connector_name"                env:"NAME"`
+	ListenHost string `json:"listen_host"                   env:"LISTEN_HOST"`
+	ListenPort int    `json:"listen_port"                   env:"LISTEN_PORT"`
+	ListenUrl  string `json:"listen_url"`
 
-	Url                  string        `json:"url"                           env:"URL"`
+	Url string `json:"url"                           env:"URL"`
 
-	OtelServiceName      string        `json:"otel_service_name"             env:"OTEL_SERVICE_NAME"`
-	OtelServiceNamespace string        `json:"otel_service_namespace"        env:"OTEL_SERVICE_NAMESPACE"`
-	OtelServiceVersion   string        `json:"otel_service_version"          env:"OTEL_SERVICE_VERSION"`
-	OtlpEndpointGrpc     string        `json:"otlp_endpoint_grpc"            env:"OTLP_ENDPOINT_GRPC"`
+	OtelServiceName      string `json:"otel_service_name"             env:"OTEL_SERVICE_NAME"`
+	OtelServiceNamespace string `json:"otel_service_namespace"        env:"OTEL_SERVICE_NAMESPACE"`
+	OtelServiceVersion   string `json:"otel_service_version"          env:"OTEL_SERVICE_VERSION"`
+	OtlpEndpointGrpc     string `json:"otlp_endpoint_grpc"            env:"OTLP_ENDPOINT_GRPC"`
 
-	LogLevel  string                   `json:"log_level"                     env:"LOG_LEVEL"`
-	LogFormat string                   `json:"log_format"                    env:"LOG_FORMAT"`
+	LogLevel  string `json:"log_level"                     env:"LOG_LEVEL"`
+	LogFormat string `json:"log_format"                    env:"LOG_FORMAT"`
 
-	HealthCheckIntervalSeconds int     `json:"health_check_interval_seconds" env:"HEALTH_CHECK_INTERVAL_SECONDS"`
-	HealthRetryIntervalSeconds int     `json:"health_retry_interval_seconds" env:"HEALTH_RETRY_INTERVAL_SECONDS"`
-	
+	HealthCheckIntervalSeconds int `json:"health_check_interval_seconds" env:"HEALTH_CHECK_INTERVAL_SECONDS"`
+	HealthRetryIntervalSeconds int `json:"health_retry_interval_seconds" env:"HEALTH_RETRY_INTERVAL_SECONDS"`
 	Healthy                    *bool
 	HealthJobID                *string
 	HealthNextCheck            *string
 	HealthLastCheck            *string
+
+	TorrentActionsIntervalSeconds int `json:"torrent_actions_interval_seconds" env:"TORRENT_ACTIONS_INTERVAL_SECONDS"`
+	TorrentActionsJobID           *string
+	TorrentActionsNextCheck       *string
+	TorrentActionsLastCheck       *string
 }
 
 var defaultSettings = Settings{
-	Name:                             "connector-downloader",
-	ListenHost:                       "0.0.0.0",
-	ListenPort:             		  8080,
+	Name:       "connector-downloader",
+	ListenHost: "0.0.0.0",
+	ListenPort: 8080,
 
-	Url:                              "http://qbittorrent-web.qbittorrent.svc:80",
+	Url: "http://qbittorrent-web.qbittorrent.svc:80",
 
-	OtelServiceName:                  "connector-downloader",
-	OtelServiceNamespace:             "fetch-api",
-	OtelServiceVersion:               "",
-	OtlpEndpointGrpc:                 "grpc.k8s.iaminyourpc.xyz:80",
+	OtelServiceName:      "connector-downloader",
+	OtelServiceNamespace: "fetch-api",
+	OtelServiceVersion:   "",
+	OtlpEndpointGrpc:     "grpc.k8s.iaminyourpc.xyz:80",
 
-	LogLevel:                         "info",
-	LogFormat:                        "logfmt",
+	LogLevel:  "info",
+	LogFormat: "logfmt",
 
-	HealthCheckIntervalSeconds:       15,
-	HealthRetryIntervalSeconds:       5,
+	HealthCheckIntervalSeconds: 15,
+	HealthRetryIntervalSeconds: 5,
+	Healthy:                    nil,
+	HealthJobID:                nil,
 
-	Healthy:                          nil,
-	HealthJobID:                      nil,
+	TorrentActionsIntervalSeconds: 10,
+	TorrentActionsJobID:           nil,
 }
 
 var Config Settings
-
 
 func init() {
 	config, err := loadSettings()
@@ -70,7 +75,6 @@ func init() {
 
 	Config = config
 }
-
 
 func loadSettings() (Settings, error) {
 	settings := Settings{}
@@ -96,28 +100,30 @@ func loadSettings() (Settings, error) {
 		}
 
 		switch field.Kind() {
-			case reflect.String:
-				field.SetString(envVal)
+		case reflect.String:
+			field.SetString(envVal)
 
-			case reflect.Int, reflect.Int64:
-				val, err := utils.ToInt(envVal)
+		case reflect.Int, reflect.Int64:
+			val, err := utils.ToInt(envVal)
 
-				if err != nil {
-					return Settings{}, fmt.Errorf("%s got an incorrect value: %s", envName, err)
-				}
+			if err != nil {
+				return Settings{}, fmt.Errorf("%s got an incorrect value: %s", envName, err)
+			}
 
-				field.SetInt(val)
+			field.SetInt(val)
 
-			case reflect.Bool:
-				val, err := utils.ToBool(envVal)
+		case reflect.Bool:
+			val, err := utils.ToBool(envVal)
 
-				if err != nil {
-					return Settings{}, fmt.Errorf("%s got an incorrect value: %s", envName, err)
-				}
+			if err != nil {
+				return Settings{}, fmt.Errorf("%s got an incorrect value: %s", envName, err)
+			}
 
-				field.SetBool(val)
+			field.SetBool(val)
 		}
 	}
+
+	settings.ListenUrl = fmt.Sprintf("http://%s:%d", settings.ListenHost, settings.ListenPort)
 
 	if settings.OtelServiceVersion == "" {
 		_, currentFile, _, ok := runtime.Caller(0)
@@ -136,5 +142,5 @@ func loadSettings() (Settings, error) {
 		}
 	}
 
-    return settings, nil
+	return settings, nil
 }

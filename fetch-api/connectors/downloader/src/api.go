@@ -34,6 +34,7 @@ func init() {
 
 	LoadQBittorrentClient()
 	LoadHealthChecker()
+	LoadActionChecker()
 	LoadRoutes(app)
 
 	t.Log.Info("Starting Fiber..",
