@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  # Frontend
+  downloader-frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: downloader-frontend
+    ports:
+      - "3000:80"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 3

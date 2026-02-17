@@ -1,0 +1,143 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f9fafb;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+@keyframes tabPanelIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tab-panel-enter {
+  animation: tabPanelIn 220ms ease-out;
+}
+
+@keyframes buttonSplashIn {
+  0% {
+    clip-path: polygon(0 0, 0 0, 0 0, 0 0);
+    animation-timing-function: cubic-bezier(0.16, 0.9, 0.3, 1);
+  }
+  72% {
+    clip-path: polygon(0 0, 58% 0, 42% 100%, 0 100%);
+    animation-timing-function: cubic-bezier(0.4, 0, 1, 1);
+  }
+  100% {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+  }
+}
+
+@keyframes buttonSplashOut {
+  0% {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+    animation-timing-function: cubic-bezier(0.25, 0.8, 0.35, 1);
+  }
+  45% {
+    clip-path: polygon(58% 0, 100% 0, 100% 100%, 42% 100%);
+  }
+  100% {
+    clip-path: polygon(100% 0, 100% 0, 100% 100%, 100% 100%);
+  }
+}
+
+.btn-splash-in {
+  animation: buttonSplashIn 560ms forwards;
+}
+
+.btn-splash-out {
+  animation: buttonSplashOut 220ms forwards;
+}
+
+.btn-splash-reset {
+  clip-path: polygon(0 0, 0 0, 0 0, 0 0);
+}
+
+.btn-splash-full {
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+}
+
+@keyframes btnSplashDown {
+  0% {
+    clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
+  }
+  22% {
+    clip-path: polygon(0 0, 100% 0, 100% 50%, 0 50%);
+  }
+  78% {
+    clip-path: polygon(0 0, 100% 0, 100% 50%, 0 50%);
+  }
+  100% {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+  }
+}
+
+.btn-splash-down {
+  animation: btnSplashDown 900ms ease-out forwards;
+}
+
+@keyframes btnSpinnerRotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.btn-spinner {
+  width: 14px;
+  height: 14px;
+  border-radius: 9999px;
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  border-top-color: transparent;
+  animation: btnSpinnerRotate 0.7s linear infinite;
+}
+
+.json-key {
+  color: #93c5fd;
+}
+
+.json-string {
+  color: #86efac;
+}
+
+.json-number {
+  color: #fca5a5;
+}
+
+.json-boolean {
+  color: #f9a8d4;
+}
+
+.json-null {
+  color: #fcd34d;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tab-panel-enter {
+    animation: none;
+  }
+
+  .btn-splash-in,
+  .btn-splash-out,
+  .btn-splash-down,
+  .btn-spinner {
+    animation: none;
+  }
+}
