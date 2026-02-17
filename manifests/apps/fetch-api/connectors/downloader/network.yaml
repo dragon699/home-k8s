@@ -1,0 +1,16 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: connector-downloader
+  namespace: fetch-api
+  labels:
+    env: home
+spec:
+  type: ClusterIP
+  ports:
+  - name: connector-downloader
+    port: 9069
+    targetPort: 9069
+  selector:
+    app: connector-downloader

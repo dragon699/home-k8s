@@ -1,0 +1,54 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: connector-downloader
+  namespace: fetch-api
+  labels:
+    app: connector-downloader
+    env: home
+spec:
+  replicas: 1
+  revisionHistoryLimit: 0
+  selector:
+    matchLabels:
+      app: connector-downloader
+  template:
+    metadata:
+      labels:
+        app: connector-downloader
+        env: home
+    spec:
+      restartPolicy: Always
+      imagePullSecrets:
+        - name: registry-fetch-api
+      # volumes:
+      #   - name: script-health-probe
+      #     configMap:
+      #       name: script-health-probe
+      #       defaultMode: 0755
+      containers:
+        - name: connector-downloader
+          image: ghcr.io/dragon699/home-k8s/fetch-api/connectors/downloader:0.0.1
+          imagePullPolicy: Always
+          # volumeMounts:
+          #   - name: script-health-probe
+          #     mountPath: /home/health-probe.py
+          #     subPath: health-probe.py
+          ports:
+            - containerPort: 9069
+          command: ["python", "-m", "connectors.downloader.app"]
+          envFrom:
+            - secretRef:
+                name: data-connector-downloader
+            - configMapRef:
+                name: config-connector-downloader
+          # livenessProbe:
+          #   exec:
+          #     command:
+          #       - python
+          #       - /home/health-probe.py
+          #   initialDelaySeconds: 5
+          #   periodSeconds: 10
+          #   timeoutSeconds: 3
+          #   failureThreshold: 3

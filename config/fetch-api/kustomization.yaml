@@ -13,6 +13,8 @@ configMapGenerator:
   envs: ['fetch_api/config.env']
 - name: config-connector-grafana
   envs: ['connectors/grafana/config.env']
+- name: config-connector-downloader
+  envs: ['connectors/downloader/config.env']
 - name: config-connector-ml
   envs: ['connectors/ml/config.env']
   
