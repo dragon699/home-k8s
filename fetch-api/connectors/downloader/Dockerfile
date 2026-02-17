@@ -6,7 +6,9 @@ COPY common-go/go.mod common-go/go.sum /app/common-go/
 COPY common-go /app/common-go
 
 COPY connectors/downloader/go.mod connectors/downloader/go.sum /app/connectors/downloader/
+
 WORKDIR /app/connectors/downloader
+
 RUN go mod download
 
 COPY connectors/downloader /app/connectors/downloader

@@ -56,7 +56,7 @@ func (instance *ActionChecker) runActions() {
 	lastCheckTime := time.Now().Format("2006-01-02T15:04:05")
 	settings.Config.TorrentActionsLastCheck = &lastCheckTime
 
-	t.Log.Debug("Running qBittorrent action checks")
+	t.Log.Debug("Running action checks")
 
 	torrents, err := instance.getTorrents()
 
