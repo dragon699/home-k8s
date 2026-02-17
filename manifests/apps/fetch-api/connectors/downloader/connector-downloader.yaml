@@ -22,7 +22,10 @@ spec:
       restartPolicy: Always
       imagePullSecrets:
         - name: registry-fetch-api
-      # volumes:
+      volumes:
+        - name: connector-downloader-windows-data
+          persistentVolumeClaim:
+            claimName: connector-downloader-windows-data
       #   - name: script-health-probe
       #     configMap:
       #       name: script-health-probe
@@ -31,7 +34,9 @@ spec:
         - name: connector-downloader
           image: ghcr.io/dragon699/home-k8s/fetch-api/connectors/downloader:0.0.5
           imagePullPolicy: Always
-          # volumeMounts:
+          volumeMounts:
+            - name: connector-downloader-windows-data
+              mountPath: /data
           #   - name: script-health-probe
           #     mountPath: /home/health-probe.py
           #     subPath: health-probe.py

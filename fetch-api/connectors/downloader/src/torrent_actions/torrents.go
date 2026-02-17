@@ -70,11 +70,17 @@ func (instance *ActionChecker) runActions() {
 	}
 
 	for _, torrent := range torrents.Items {
-		t.Log.Debug("Checking torrent", "name", torrent.Name, "hash", torrent.Hash)
-
 		if (torrent.Meta.ManagedBy != "connector-downloader") || (torrent.ProgressPercentage < 100) {
+			t.Log.Debug(
+				"Skipping torrent",
+				"name", torrent.Name,
+				"hash", torrent.Hash,
+				"progress_percentage", torrent.ProgressPercentage,
+			)
 			continue
 		}
+
+		t.Log.Debug("Checking torrent", "name", torrent.Name, "hash", torrent.Hash)
 
 		for _, action := range torrent.Meta.ScheduledActions {
 			if ! (action.Status == "pending") {
