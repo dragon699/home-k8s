@@ -37,7 +37,7 @@ spec:
           #     subPath: health-probe.py
           ports:
             - containerPort: 9069
-          command: ["python", "-m", "connectors.downloader.app"]
+          command: ["/app/downloader"]
           envFrom:
             - secretRef:
                 name: data-connector-downloader
