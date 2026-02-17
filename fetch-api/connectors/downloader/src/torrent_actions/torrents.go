@@ -113,10 +113,9 @@ func (instance *ActionChecker) runActions() {
 						destPath := path.Join(torrent.SavePath, filePath)
 						destFile := path.Join(destPath, fileNameNew)
 
-						err := os.Rename(
-							srcFile,
-							destFile,
-						)
+						fmt.Printf("src: %s\ndest: %s\n", srcFile, destFile)
+
+						err := os.Rename(srcFile, destFile)
 
 						if err != nil {
 							t.Log.Error("Failed to rename file", "error", err.Error())
