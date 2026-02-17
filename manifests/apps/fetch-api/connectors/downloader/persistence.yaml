@@ -22,7 +22,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: connector-downloader-windows-data
-  namespace: connector-downloader
+  namespace: fetch-api
   labels:
     app: connector-downloader
     env: home
