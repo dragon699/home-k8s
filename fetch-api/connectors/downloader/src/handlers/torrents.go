@@ -37,7 +37,7 @@ func ListTorrents(ctx *fiber.Ctx) error {
 			Category:           torrentSrc["category"].(string),
 			Tags:               strings.Split(torrentSrc["tags"].(string), ", "),
 			Status:             torrentSrc["state"].(string),
-			ProgressPercentage: utils.RoundToTwoDecimals(torrentSrc["progress"].(float64) * 100),
+			ProgressPercentage: utils.ProgressToPercentage(torrentSrc["progress"].(float64)),
 			EtaMinutes:         utils.SecondsToMinutes(int64(torrentSrc["eta"].(float64))),
 			MagnetURI:          torrentSrc["magnet_uri"].(string),
 			Leechers:           int64(torrentSrc["num_leechs"].(float64)),

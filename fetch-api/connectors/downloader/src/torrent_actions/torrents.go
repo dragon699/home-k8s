@@ -1,10 +1,13 @@
 package action_scheduler
 
 import (
+	"common/utils"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
+	"os"
+	"path"
 	"time"
 
 	"connector-downloader/settings"
@@ -96,10 +99,19 @@ func (instance *ActionChecker) runActions() {
 						if int64(file["progress"].(float64)) < 1 {
 							continue
 						}
+
+						filePath := path.Dir(file["name"].(string))
+						fileName := path.Base(file["name"].(string))
+						fileExt := path.Ext(fileName)
+						fileNameRenamed := utils.BeautifyMovieName(fileName)
+
+						os.Rename(
+							fmt.Sprintf("%s/%s", torrent.SavePath, file["name"].(string)),
+							fmt.Sprintf("%s/%s/%s%s", torrent.SavePath, fileNameRenamed, filePath, fileExt),
+						)
+
+						// filePath := fmt.Sprintf("%s/%s", torrent.SavePath, file["name"].(string))
 					}
-					// 	filePath := fmt.Sprintf("%s/%s", torrent.SavePath, file["name"].(string))
-						
-					// }
 
 					qbittorrent.Client.AddTorrentTags(
 						torrent.Hash,
