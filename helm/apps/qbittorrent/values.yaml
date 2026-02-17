@@ -7,6 +7,15 @@ qbittorrent:
   extraEnv: []
   extraEnvFrom: []
 
+  volumes:
+  - name: qbittorrent-windows-data
+    persistentVolumeClaim:
+      claimName: qbittorrent-windows-data
+
+  volumeMounts:
+  - name: qbittorrent-windows-data
+    mountPath: /data
+
   config:
     persistence:
       enabled: true
