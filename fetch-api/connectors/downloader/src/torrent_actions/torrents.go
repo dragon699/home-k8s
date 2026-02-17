@@ -105,10 +105,19 @@ func (instance *ActionChecker) runActions() {
 						fileExt := path.Ext(fileName)
 						fileNameRenamed := utils.BeautifyMovieName(fileName)
 
-						os.Rename(
+						// os.Rename(
+							// fmt.Sprintf("%s/%s", torrent.SavePath, file["name"].(string)),
+							// fmt.Sprintf("%s/%s/%s%s", torrent.SavePath, fileNameRenamed, filePath, fileExt),
+						// )
+
+						err := os.Rename(
 							fmt.Sprintf("%s/%s", torrent.SavePath, file["name"].(string)),
 							fmt.Sprintf("%s/%s/%s%s", torrent.SavePath, fileNameRenamed, filePath, fileExt),
 						)
+						if err != nil {
+							t.Log.Error("Failed to rename file", "error", err.Error())
+							continue
+						}
 
 						// filePath := fmt.Sprintf("%s/%s", torrent.SavePath, file["name"].(string))
 					}
