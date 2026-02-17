@@ -86,8 +86,6 @@ func (instance *ActionChecker) runActions() {
 			if action.Category == "jellyfin" {
 				switch action.Name {
 				case "rename":
-					t.Log.Info(fmt.Sprintf("Edited! %s", torrent.Name))
-
 					torrentContent, err := qbittorrent.Client.GetTorrentContent(torrent.Hash)
 					
 					if err != nil {
@@ -95,43 +93,61 @@ func (instance *ActionChecker) runActions() {
 						continue
 					}
 
+					var renameFailed bool = false
+
 					for _, file := range torrentContent {
-						if int64(file["progress"].(float64)) < 1 {
+						if file["progress"].(float64) < 1 {
 							continue
 						}
 
 						filePath := path.Dir(file["name"].(string))
 						fileName := path.Base(file["name"].(string))
 						fileExt := path.Ext(fileName)
-						fileNameRenamed := utils.BeautifyMovieName(fileName)
+						fileNameNew := fmt.Sprintf(
+							"%s%s",
+							utils.BeautifyMovieName(fileName),
+							fileExt,
+						)
 
-						// os.Rename(
-							// fmt.Sprintf("%s/%s", torrent.SavePath, file["name"].(string)),
-							// fmt.Sprintf("%s/%s/%s%s", torrent.SavePath, fileNameRenamed, filePath, fileExt),
-						// )
+						srcFile := path.Join(torrent.SavePath, file["name"].(string))
+						destPath := path.Join(torrent.SavePath, filePath)
+						destFile := path.Join(destPath, fileNameNew)
 
 						err := os.Rename(
-							fmt.Sprintf("%s/%s", torrent.SavePath, file["name"].(string)),
-							fmt.Sprintf("%s/%s/%s%s", torrent.SavePath, fileNameRenamed, filePath, fileExt),
+							srcFile,
+							destFile,
 						)
+
 						if err != nil {
 							t.Log.Error("Failed to rename file", "error", err.Error())
+							renameFailed = true
+
 							continue
 						}
+					}
 
-						// filePath := fmt.Sprintf("%s/%s", torrent.SavePath, file["name"].(string))
+					qbittorrent.Client.RemoveTorrentTags(
+						torrent.Hash,
+						[]string{
+							"jellyfin:pending=rename",
+						},
+					)
+
+					if renameFailed {
+						qbittorrent.Client.AddTorrentTags(
+							torrent.Hash,
+							[]string{
+								"jellyfin:failed=rename",
+							},
+						)
+
+						continue
 					}
 
 					qbittorrent.Client.AddTorrentTags(
 						torrent.Hash,
 						[]string{
 							"jellyfin:completed=rename",
-						},
-					)
-					qbittorrent.Client.RemoveTorrentTags(
-						torrent.Hash,
-						[]string{
-							"jellyfin:pending=rename",
 						},
 					)
 				}
