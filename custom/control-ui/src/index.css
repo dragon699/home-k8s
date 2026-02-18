@@ -115,6 +115,43 @@ code {
   animation: btnPendingBreath 950ms ease-in-out infinite;
 }
 
+@keyframes inputFocusIn {
+  from {
+    box-shadow: 0 0 0 0 rgba(107, 95, 218, 0);
+    border-color: #d1d5db;
+  }
+  to {
+    box-shadow: 0 0 0 3px rgba(107, 95, 218, 0.25);
+    border-color: #6b5fda;
+  }
+}
+
+@keyframes inputFocusOut {
+  from {
+    box-shadow: 0 0 0 3px rgba(107, 95, 218, 0.25);
+    border-color: #6b5fda;
+  }
+  to {
+    box-shadow: 0 0 0 0 rgba(107, 95, 218, 0);
+    border-color: #d1d5db;
+  }
+}
+
+.animated-focus-input {
+  transition: border-color 180ms ease, box-shadow 180ms ease;
+  animation: inputFocusOut 160ms ease;
+}
+
+.animated-focus-input:focus {
+  animation: inputFocusIn 180ms ease forwards;
+  border-color: #6b5fda;
+  box-shadow: 0 0 0 3px rgba(107, 95, 218, 0.25);
+}
+
+.animated-focus-input:disabled {
+  box-shadow: none;
+}
+
 .json-key {
   color: #93c5fd;
 }
@@ -142,7 +179,9 @@ code {
 
   .btn-icon-enter,
   .btn-icon-exit,
-  .btn-pending-dot {
+  .btn-pending-dot,
+  .animated-focus-input,
+  .animated-focus-input:focus {
     animation: none;
   }
 }

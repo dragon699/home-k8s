@@ -221,9 +221,10 @@ export default function FetchApiActions() {
               }}
               className={`w-full px-4 py-2 border rounded-lg outline-none transition-colors ${
                 urlError
-                  ? 'border-[#6b5fda] focus:ring-2 focus:ring-[#6b5fda] focus:border-[#6b5fda]'
-                  : 'border-gray-300 focus:ring-2 focus:ring-[#6b5fda] focus:border-transparent'
-              } disabled:cursor-not-allowed disabled:opacity-60`}
+                  ? 'border-[#6b5fda]'
+                  : 'border-gray-300'
+              } animated-focus-input disabled:cursor-not-allowed disabled:opacity-60`}
+              placeholder="Magnet or link"
             />
             {urlError && <p className="mt-2 text-sm text-[#6b5fda]">{urlError}</p>}
           </div>
@@ -235,7 +236,7 @@ export default function FetchApiActions() {
               value={saveLocation}
               disabled={isSubmitting}
               onChange={(e) => setSaveLocation(e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg outline-none transition-colors border-gray-300 focus:ring-2 focus:ring-[#6b5fda] focus:border-transparent disabled:cursor-not-allowed disabled:opacity-60"
+              className="w-full px-4 py-2 border rounded-lg outline-none transition-colors border-gray-300 animated-focus-input disabled:cursor-not-allowed disabled:opacity-60"
               placeholder={DEFAULT_SAVE_LOCATION}
             />
           </div>
@@ -247,7 +248,7 @@ export default function FetchApiActions() {
               value={qbittorrentCategory}
               disabled={isSubmitting}
               onChange={(e) => setQbittorrentCategory(e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg outline-none transition-colors border-gray-300 focus:ring-2 focus:ring-[#6b5fda] focus:border-transparent disabled:cursor-not-allowed disabled:opacity-60"
+              className="w-full px-4 py-2 border rounded-lg outline-none transition-colors border-gray-300 animated-focus-input disabled:cursor-not-allowed disabled:opacity-60"
               placeholder={DEFAULT_CATEGORY}
             />
           </div>
@@ -259,7 +260,7 @@ export default function FetchApiActions() {
               value={qbittorrentTags}
               disabled={isSubmitting}
               onChange={(e) => setQbittorrentTags(e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg outline-none transition-colors border-gray-300 focus:ring-2 focus:ring-[#6b5fda] focus:border-transparent disabled:cursor-not-allowed disabled:opacity-60"
+              className="w-full px-4 py-2 border rounded-lg outline-none transition-colors border-gray-300 animated-focus-input disabled:cursor-not-allowed disabled:opacity-60"
               placeholder={DEFAULT_TAGS_PLACEHOLDER}
             />
           </div>
