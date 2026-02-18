@@ -137,7 +137,7 @@ func (instance *QBittorrentClient) Ping() (string, int, error) {
 		return "not_ok", 0, err
 	}
 
-	if !(resp.StatusCode >= 200) && (resp.StatusCode < 300) {
+	if ! (resp.StatusCode >= 200) && (resp.StatusCode < 300) {
 		return "not_ok", resp.StatusCode, fmt.Errorf("unexpected status code: %d, body: %s", resp.StatusCode, string(body))
 	}
 
@@ -151,31 +151,100 @@ func (instance *QBittorrentClient) ListTorrents() ([]any, error) {
 		nil,
 	)
 	if err != nil {
-		return nil, newConnectionError("failed to create request", err)
+		return nil, newConnectionError("Failed to create HTTP request", err)
 	}
 
 	resp, err := instance.Client.Do(req)
 	if err != nil {
-		return nil, newConnectionError("failed to call qbittorrent", err)
+		return nil, newConnectionError("Failed to create HTTP request", err)
 	}
 
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, newConnectionError("failed to read qbittorrent response", err)
+		return nil, newConnectionError("Failed to read HTTP response", err)
 	}
 
-	if !(resp.StatusCode >= 200 && resp.StatusCode < 300) {
-		return nil, newUpstreamError("qbittorrent returned non-2xx status", resp.StatusCode, body, nil)
+	if ! (resp.StatusCode >= 200 && resp.StatusCode < 300) {
+		return nil, newUpstreamError("qBittorrent returned a non-2xx status", resp.StatusCode, body, nil)
 	}
 
 	var torrents []any
 	if err := json.Unmarshal(body, &torrents); err != nil {
-		return nil, newUpstreamError("failed to unmarshal qbittorrent response", resp.StatusCode, body, err)
+		return nil, newUpstreamError("qBittorrent returned an invalid response", resp.StatusCode, body, err)
 	}
 
 	return torrents, nil
+}
+
+func (instance *QBittorrentClient) GetTorrentContent(torrent_hash string) ([]map[string]any, error) {
+	reqParams := url.Values{}
+	reqParams.Set("hash", torrent_hash)
+
+	req, err := http.NewRequest(
+		http.MethodGet,
+		fmt.Sprintf("%s/api/v2/torrents/files?%s", settings.Config.QBittorrentUrl, reqParams.Encode()),
+		nil,
+	)
+	if err != nil {
+		return nil, newConnectionError("Failed to create HTTP request", err)
+	}
+
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	resp, err := instance.Client.Do(req)
+	if err != nil {
+		return nil, newConnectionError("Failed to create HTTP request", err)
+	}
+
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, newConnectionError("Failed to read HTTP response", err)
+	}
+
+	if ! (resp.StatusCode >= 200 && resp.StatusCode < 300) {
+		return nil, newUpstreamError("qBittorrent returned a non-2xx status", resp.StatusCode, body, nil)
+	}
+
+	var files []map[string]any
+	if err := json.Unmarshal(body, &files); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal response: %w", err)
+	}
+
+	return files, nil
+}
+
+func (instance *QBittorrentClient) StopTorrent(torrent_hash string) error {
+	reqParams := url.Values{}
+	reqParams.Set("hashes", torrent_hash)
+
+	req, err := http.NewRequest(
+		http.MethodPost,
+		fmt.Sprintf("%s/api/v2/torrents/stop", settings.Config.QBittorrentUrl),
+		strings.NewReader(reqParams.Encode()),
+	)
+	if err != nil {
+		return newConnectionError("Failed to create HTTP request", err)
+	}
+
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	resp, err := instance.Client.Do(req)
+	if err != nil {
+		return newConnectionError("Failed to create HTTP request", err)
+	}
+
+	defer resp.Body.Close()
+
+	if ! (resp.StatusCode >= 200 && resp.StatusCode < 300) {
+		body, _ := io.ReadAll(resp.Body)
+		return newUpstreamError("qBittorrent returned a non-2xx status", resp.StatusCode, body, nil)
+	}
+
+	return nil
 }
 
 func (instance *QBittorrentClient) AddTorrent(torrentURL string, category string, tags []string, savePath string) error {
@@ -191,32 +260,31 @@ func (instance *QBittorrentClient) AddTorrent(torrentURL string, category string
 		strings.NewReader(reqParams.Encode()),
 	)
 	if err != nil {
-		return newConnectionError("failed to create request", err)
+		return newConnectionError("Failed to create HTTP request", err)
 	}
 
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	resp, err := instance.Client.Do(req)
 	if err != nil {
-		return newConnectionError("failed to call qbittorrent", err)
+		return newConnectionError("Failed to create HTTP request", err)
 	}
 
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return newConnectionError("failed to read qbittorrent response", err)
+		return newConnectionError("Failed to read HTTP response", err)
 	}
 
-	if !(resp.StatusCode >= 200 && resp.StatusCode < 300) {
-		return newUpstreamError("qbittorrent returned non-2xx status", resp.StatusCode, body, nil)
+	if ! (resp.StatusCode >= 200 && resp.StatusCode < 300) {
+		return newUpstreamError("qBittorrent returned a non-2xx status", resp.StatusCode, body, nil)
 	}
 
 	if strings.Contains(strings.ToLower(string(body)), "fails") {
-		return newUpstreamError("qbittorrent returned failure message", 502, body, nil)
+		return newUpstreamError("Invalid torrent parameters", 502, body, nil)
 	}
 
-	fmt.Println(string(body))
 	return nil
 }
 
@@ -231,24 +299,23 @@ func (instance *QBittorrentClient) AddTorrentTags(torrent_hash string, tags []st
 		strings.NewReader(reqParams.Encode()),
 	)
 	if err != nil {
-		return err
+		return newConnectionError("Failed to create HTTP request", err)
 	}
 
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	resp, err := instance.Client.Do(req)
 	if err != nil {
-		return err
+		return newConnectionError("Failed to create HTTP request", err)
 	}
 
 	defer resp.Body.Close()
 
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return err
+	if ! (resp.StatusCode >= 200 && resp.StatusCode < 300) {
+		body, _ := io.ReadAll(resp.Body)
+		return newUpstreamError("qBittorrent returned a non-2xx status", resp.StatusCode, body, nil)
 	}
 
-	fmt.Println(string(body))
 	return nil
 }
 
@@ -263,89 +330,22 @@ func (instance *QBittorrentClient) RemoveTorrentTags(torrent_hash string, tags [
 		strings.NewReader(reqParams.Encode()),
 	)
 	if err != nil {
-		return err
+		return newConnectionError("Failed to create HTTP request", err)
 	}
 
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	resp, err := instance.Client.Do(req)
 	if err != nil {
-		return err
+		return newConnectionError("Failed to create HTTP request", err)
 	}
 
 	defer resp.Body.Close()
 
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return err
+	if ! (resp.StatusCode >= 200 && resp.StatusCode < 300) {
+		body, _ := io.ReadAll(resp.Body)
+		return newUpstreamError("qBittorrent returned a non-2xx status", resp.StatusCode, body, nil)
 	}
 
-	fmt.Println(string(body))
 	return nil
-}
-
-func (instance *QBittorrentClient) StopTorrent(torrent_hash string) error {
-	reqParams := url.Values{}
-	reqParams.Set("hashes", torrent_hash)
-
-	req, err := http.NewRequest(
-		http.MethodPost,
-		fmt.Sprintf("%s/api/v2/torrents/stop", settings.Config.QBittorrentUrl),
-		strings.NewReader(reqParams.Encode()),
-	)
-	if err != nil {
-		return err
-	}
-
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-
-	resp, err := instance.Client.Do(req)
-	if err != nil {
-		return err
-	}
-
-	defer resp.Body.Close()
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return err
-	}
-
-	fmt.Println(string(body))
-	return nil
-}
-
-func (instance *QBittorrentClient) GetTorrentContent(torrent_hash string) ([]map[string]any, error) {
-	reqParams := url.Values{}
-	reqParams.Set("hash", torrent_hash)
-
-	req, err := http.NewRequest(
-		http.MethodGet,
-		fmt.Sprintf("%s/api/v2/torrents/files?%s", settings.Config.QBittorrentUrl, reqParams.Encode()),
-		nil,
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-
-	resp, err := instance.Client.Do(req)
-	if err != nil {
-		return nil, err
-	}
-
-	defer resp.Body.Close()
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	var files []map[string]any
-	if err := json.Unmarshal(body, &files); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal response: %w", err)
-	}
-
-	return files, nil
 }
