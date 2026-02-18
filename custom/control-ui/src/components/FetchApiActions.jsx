@@ -37,6 +37,8 @@ export default function FetchApiActions() {
   const [iconTransition, setIconTransition] = useState(null)
   const timersRef = useRef([])
   const typingTimersRef = useRef([])
+  const iconFlowRef = useRef(0)
+  const buttonIconRef = useRef('arrows')
 
   useEffect(() => {
     return () => {
@@ -47,9 +49,11 @@ export default function FetchApiActions() {
     }
   }, [])
 
-  const queueTimeout = (fn, delay) => {
-    const id = setTimeout(fn, delay)
-    timersRef.current.push(id)
+  const wait = (delay) => {
+    return new Promise((resolve) => {
+      const id = setTimeout(resolve, delay)
+      timersRef.current.push(id)
+    })
   }
 
   const clearTypingTimers = () => {
@@ -71,20 +75,22 @@ export default function FetchApiActions() {
     })
   }
 
-  const transitionButtonIcon = (nextIcon, onDone) => {
-    const currentIcon = iconTransition?.to || buttonIcon
+  const transitionButtonIcon = async (nextIcon, flowId) => {
+    const currentIcon = buttonIconRef.current
     if (currentIcon === nextIcon) {
-      if (onDone) onDone()
       return
     }
 
     setIconTransition({ from: currentIcon, to: nextIcon })
-    const id = setTimeout(() => {
-      setButtonIcon(nextIcon)
-      setIconTransition(null)
-      if (onDone) onDone()
-    }, ICON_TRANSITION_MS)
-    timersRef.current.push(id)
+    await wait(ICON_TRANSITION_MS)
+
+    if (flowId !== iconFlowRef.current) {
+      return
+    }
+
+    buttonIconRef.current = nextIcon
+    setButtonIcon(nextIcon)
+    setIconTransition(null)
   }
 
   const renderButtonIcon = (iconName) => {
@@ -120,8 +126,11 @@ export default function FetchApiActions() {
 
     setUrlError('')
     setButtonState('pending')
-    transitionButtonIcon('pending')
+    const flowId = iconFlowRef.current + 1
+    iconFlowRef.current = flowId
+    await transitionButtonIcon('pending', flowId)
 
+    let requestSucceeded = false
     try {
       const tags = qbittorrentTags
         .split(',')
@@ -139,21 +148,27 @@ export default function FetchApiActions() {
 
       const response = await addTorrent(payload)
       animateJsonOutput(response)
+      requestSucceeded = true
     } catch (error) {
       clearTypingTimers()
       animateJsonOutput({ error: error.message || 'Request failed' })
-      transitionButtonIcon('arrows')
-      setButtonState('idle')
-      setMovieName('')
-      return
     }
     setMovieName('')
-    transitionButtonIcon('check', () => {
-      queueTimeout(() => {
-        transitionButtonIcon('arrows')
+
+    if (!requestSucceeded) {
+      await transitionButtonIcon('arrows', flowId)
+      if (flowId === iconFlowRef.current) {
         setButtonState('idle')
-      }, SUCCESS_ICON_HOLD_MS)
-    })
+      }
+      return
+    }
+
+    await transitionButtonIcon('check', flowId)
+    await wait(SUCCESS_ICON_HOLD_MS)
+    await transitionButtonIcon('arrows', flowId)
+    if (flowId === iconFlowRef.current) {
+      setButtonState('idle')
+    }
   }
 
   return (
@@ -188,12 +203,12 @@ export default function FetchApiActions() {
               }}
               className={`w-full px-4 py-2 border rounded-lg outline-none transition-colors ${
                 urlError
-                  ? 'border-red-500 focus:ring-2 focus:ring-red-500 focus:border-red-500'
+                  ? 'border-[#6b5fda] focus:ring-2 focus:ring-[#6b5fda] focus:border-[#6b5fda]'
                   : 'border-gray-300 focus:ring-2 focus:ring-[#6b5fda] focus:border-transparent'
               }`}
               placeholder="Torrent URL"
             />
-            {urlError && <p className="mt-2 text-sm text-red-600">{urlError}</p>}
+            {urlError && <p className="mt-2 text-sm text-[#6b5fda]">{urlError}</p>}
           </div>
 
           <div>

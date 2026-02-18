@@ -11,7 +11,7 @@ export default function ActionCenter({ activeTab, setActiveTab }) {
       {/* Header */}
       <div className="bg-white shadow-[0_6px_14px_rgba(15,23,42,0.12)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-start">
             <span
               aria-label="Section icon"
               className="block w-8 h-8"
@@ -29,6 +29,21 @@ export default function ActionCenter({ activeTab, setActiveTab }) {
                 maskPosition: 'center',
               }}
             />
+          </div>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-28">
+        <div key={activeTab} className="tab-panel-enter">
+          {activeTab === 'fetch-api' && <FetchApiActions />}
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white shadow-[0_-6px_14px_rgba(15,23,42,0.12)] z-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex items-center justify-end">
             <div className="flex space-x-2">
               <button
                 onClick={() => setActiveTab('fetch-api')}
@@ -46,13 +61,6 @@ export default function ActionCenter({ activeTab, setActiveTab }) {
               </button>
             </div>
           </div>
-        </div>
-      </div>
-
-      {/* Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div key={activeTab} className="tab-panel-enter">
-          {activeTab === 'fetch-api' && <FetchApiActions />}
         </div>
       </div>
     </div>
