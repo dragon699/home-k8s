@@ -121,14 +121,7 @@ func (instance *ActionChecker) runActions() {
 
 						fmt.Printf("src: %s\ndest: %s\n", srcFile, destFile)
 
-						err := os.Rename(srcFile, destFile)
-
-						if err != nil {
-							t.Log.Error("Failed to rename file", "error", err.Error())
-							renameFailed = true
-
-							continue
-						}
+						os.Rename(srcFile, destFile)
 					}
 
 					qbittorrent.Client.RemoveTorrentTags(
