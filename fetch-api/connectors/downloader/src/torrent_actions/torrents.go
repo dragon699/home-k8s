@@ -21,11 +21,11 @@ import (
 	"github.com/go-co-op/gocron"
 )
 
-type ActionChecker struct {
+type ActionsRunner struct {
 	Scheduler *gocron.Scheduler
 }
 
-func (instance *ActionChecker) CreateSchedule() {
+func (instance *ActionsRunner) CreateSchedule() {
 	t.Log.Info("Scheduling qBittorrent action checks..")
 	instance.runActions()
 
@@ -44,7 +44,7 @@ func (instance *ActionChecker) CreateSchedule() {
 	}
 }
 
-func (instance *ActionChecker) getNextCheckTime() string {
+func (instance *ActionsRunner) getNextCheckTime() string {
 	ts := time.Now().Add(
 		time.Duration(
 			settings.Config.TorrentActionsIntervalSeconds,
@@ -54,7 +54,7 @@ func (instance *ActionChecker) getNextCheckTime() string {
 	return ts.Format("2006-01-02T15:04:05")
 }
 
-func (instance *ActionChecker) runActions() {
+func (instance *ActionsRunner) runActions() {
 	lastCheckTime := time.Now().Format("2006-01-02T15:04:05")
 	settings.Config.TorrentActionsLastCheck = &lastCheckTime
 
@@ -169,7 +169,7 @@ func (instance *ActionChecker) runActions() {
 	}
 }
 
-func (instance *ActionChecker) getTorrents() (*response.BaseResponse[response.Torrent], error) {
+func (instance *ActionsRunner) getTorrents() (*response.BaseResponse[response.Torrent], error) {
 	httpClient := &http.Client{
 		Timeout: 10 * time.Second,
 	}
