@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { getHealth } from '../services/api'
+import { addTorrent } from '../services/api'
 
 function syntaxHighlightJson(rawJsonText) {
   const escaped = rawJsonText
@@ -21,6 +21,7 @@ function syntaxHighlightJson(rawJsonText) {
 
 export default function FetchApiActions() {
   const jellyfinUrl = import.meta.env.VITE_JELLYFIN_URL || 'https://watch.k8s.iaminyourpc.xyz'
+  const jellyfinAccent = '#6b5fda'
   const [movieName, setMovieName] = useState('')
   const [saveLocation, setSaveLocation] = useState('')
   const [qbittorrentCategory, setQbittorrentCategory] = useState('')
@@ -90,11 +91,25 @@ export default function FetchApiActions() {
     setButtonState('pending')
 
     try {
-      const response = await getHealth()
+      const tags = qbittorrentTags
+        .split(',')
+        .map((tag) => tag.trim())
+        .filter(Boolean)
+
+      const payload = {
+        url: value,
+        save_path: saveLocation.trim(),
+        category: qbittorrentCategory.trim(),
+        tags,
+        manage,
+        find_subs: findSubs,
+      }
+
+      const response = await addTorrent(payload)
       animateJsonOutput(response)
     } catch (error) {
       clearTypingTimers()
-      setJsonText('{}')
+      animateJsonOutput({ error: error.message || 'Request failed' })
       setButtonState('idle')
       return
     }
@@ -137,7 +152,7 @@ export default function FetchApiActions() {
               className={`w-full px-4 py-2 border rounded-lg outline-none transition-colors ${
                 urlError
                   ? 'border-red-500 focus:ring-2 focus:ring-red-500 focus:border-red-500'
-                  : 'border-gray-300 focus:ring-2 focus:ring-orange-500 focus:border-transparent'
+                  : 'border-gray-300 focus:ring-2 focus:ring-[#6b5fda] focus:border-transparent'
               }`}
               placeholder="Torrent URL"
             />
@@ -149,7 +164,7 @@ export default function FetchApiActions() {
               type="text"
               value={saveLocation}
               onChange={(e) => setSaveLocation(e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg outline-none transition-colors border-gray-300 focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+              className="w-full px-4 py-2 border rounded-lg outline-none transition-colors border-gray-300 focus:ring-2 focus:ring-[#6b5fda] focus:border-transparent"
               placeholder="Save Location"
             />
           </div>
@@ -159,7 +174,7 @@ export default function FetchApiActions() {
               type="text"
               value={qbittorrentCategory}
               onChange={(e) => setQbittorrentCategory(e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg outline-none transition-colors border-gray-300 focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+              className="w-full px-4 py-2 border rounded-lg outline-none transition-colors border-gray-300 focus:ring-2 focus:ring-[#6b5fda] focus:border-transparent"
               placeholder="qBittorrent Category"
             />
           </div>
@@ -169,8 +184,8 @@ export default function FetchApiActions() {
               type="text"
               value={qbittorrentTags}
               onChange={(e) => setQbittorrentTags(e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg outline-none transition-colors border-gray-300 focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-              placeholder="qBittorrent Tags"
+              className="w-full px-4 py-2 border rounded-lg outline-none transition-colors border-gray-300 focus:ring-2 focus:ring-[#6b5fda] focus:border-transparent"
+              placeholder="Comma-separated qBittorrent Tags"
             />
           </div>
 
@@ -180,34 +195,13 @@ export default function FetchApiActions() {
                 <button
                   type="button"
                   role="switch"
-                  aria-checked={findSubs}
-                  aria-label="Find subs"
-                  onClick={() => setFindSubs((prev) => !prev)}
-                  className={`relative h-7 w-12 shrink-0 overflow-hidden rounded-full border transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-1 ${
-                    findSubs ? 'bg-orange-700 border-orange-700' : 'bg-slate-300 border-slate-300'
-                  }`}
-                >
-                  <span
-                    className={`absolute left-[2px] top-0.5 h-[23px] w-[23px] rounded-full bg-white shadow-md transition-transform duration-300 ${
-                      findSubs ? 'translate-x-[21px]' : 'translate-x-0'
-                    }`}
-                  />
-                </button>
-                <span className={`text-sm font-medium transition-colors duration-200 ${findSubs ? 'text-orange-800' : 'text-gray-800'}`}>
-                  Find subs
-                </span>
-              </div>
-
-              <div className="inline-flex items-center select-none gap-3">
-                <button
-                  type="button"
-                  role="switch"
                   aria-checked={manage}
                   aria-label="Manage"
                   onClick={() => setManage((prev) => !prev)}
-                  className={`relative h-7 w-12 shrink-0 overflow-hidden rounded-full border transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-1 ${
-                    manage ? 'bg-orange-700 border-orange-700' : 'bg-slate-300 border-slate-300'
+                  className={`relative h-7 w-12 shrink-0 overflow-hidden rounded-full border transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-[#6b5fda] focus:ring-offset-1 ${
+                    manage ? '' : 'bg-slate-300 border-slate-300'
                   }`}
+                  style={manage ? { backgroundColor: jellyfinAccent, borderColor: jellyfinAccent } : undefined}
                 >
                   <span
                     className={`absolute left-[2px] top-0.5 h-[23px] w-[23px] rounded-full bg-white shadow-md transition-transform duration-300 ${
@@ -215,8 +209,31 @@ export default function FetchApiActions() {
                     }`}
                   />
                 </button>
-                <span className={`text-sm font-medium transition-colors duration-200 ${manage ? 'text-orange-800' : 'text-gray-800'}`}>
+                <span className={`text-sm font-medium transition-colors duration-200 ${manage ? 'text-[#6b5fda]' : 'text-gray-800'}`}>
                   Manage
+                </span>
+              </div>
+
+              <div className="inline-flex items-center select-none gap-3">
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={findSubs}
+                  aria-label="Find subs"
+                  onClick={() => setFindSubs((prev) => !prev)}
+                  className={`relative h-7 w-12 shrink-0 overflow-hidden rounded-full border transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-[#6b5fda] focus:ring-offset-1 ${
+                    findSubs ? '' : 'bg-slate-300 border-slate-300'
+                  }`}
+                  style={findSubs ? { backgroundColor: jellyfinAccent, borderColor: jellyfinAccent } : undefined}
+                >
+                  <span
+                    className={`absolute left-[2px] top-0.5 h-[23px] w-[23px] rounded-full bg-white shadow-md transition-transform duration-300 ${
+                      findSubs ? 'translate-x-[21px]' : 'translate-x-0'
+                    }`}
+                  />
+                </button>
+                <span className={`text-sm font-medium transition-colors duration-200 ${findSubs ? 'text-[#6b5fda]' : 'text-gray-800'}`}>
+                  Find subs
                 </span>
               </div>
             </div>
@@ -226,9 +243,10 @@ export default function FetchApiActions() {
               disabled={buttonState === 'pending'}
               className={`relative w-[30%] min-w-[170px] overflow-hidden rounded-lg font-medium py-3 px-4 flex items-center justify-center transition-all duration-300 shadow-[inset_0_1px_0_rgba(255,255,255,0.26),inset_0_-2px_6px_rgba(0,0,0,0.2)] ${
                 buttonState === 'success'
-                  ? 'bg-orange-700 text-gray-900'
-                  : 'bg-orange-700 text-white'
+                  ? 'text-gray-900'
+                  : 'text-white'
               }`}
+              style={{ backgroundColor: jellyfinAccent }}
             >
               {buttonState === 'success' && (
                 <span className="btn-splash-down absolute inset-0 bg-[#4fd68f]" />
