@@ -19,6 +19,93 @@ type QBittorrentClient struct {
 	Client *http.Client
 }
 
+type ClientErrorKind string
+
+const (
+	ClientErrorConnection ClientErrorKind = "connection"
+	ClientErrorUpstream   ClientErrorKind = "upstream_api"
+)
+
+type ClientError struct {
+	Kind       ClientErrorKind
+	Message    string
+	StatusCode int
+	Body       string
+	ParsedJSON any
+	Err        error
+}
+
+func (e *ClientError) Error() string {
+	if e == nil {
+		return ""
+	}
+	if e.Err != nil {
+		return fmt.Sprintf("%s: %v", e.Message, e.Err)
+	}
+	return e.Message
+}
+
+func (e *ClientError) Unwrap() error {
+	if e == nil {
+		return nil
+	}
+	return e.Err
+}
+
+func (e *ClientError) UpstreamResponse() map[string]any {
+	if e == nil {
+		return nil
+	}
+
+	resp := map[string]any{
+		"error_type": string(e.Kind),
+	}
+
+	if e.StatusCode > 0 {
+		resp["status_code"] = e.StatusCode
+	}
+
+	if e.Body != "" {
+		resp["body"] = e.Body
+	}
+
+	if e.ParsedJSON != nil {
+		resp["json"] = e.ParsedJSON
+	}
+
+	return resp
+}
+
+func parseJSONBody(body []byte) any {
+	var parsed any
+	if len(body) == 0 {
+		return nil
+	}
+	if err := json.Unmarshal(body, &parsed); err != nil {
+		return nil
+	}
+	return parsed
+}
+
+func newConnectionError(message string, err error) error {
+	return &ClientError{
+		Kind:    ClientErrorConnection,
+		Message: message,
+		Err:     err,
+	}
+}
+
+func newUpstreamError(message string, statusCode int, body []byte, err error) error {
+	return &ClientError{
+		Kind:       ClientErrorUpstream,
+		Message:    message,
+		StatusCode: statusCode,
+		Body:       string(body),
+		ParsedJSON: parseJSONBody(body),
+		Err:        err,
+	}
+}
+
 func (instance *QBittorrentClient) Init() error {
 	client := &http.Client{
 		Timeout: 10 * time.Second,
@@ -50,7 +137,7 @@ func (instance *QBittorrentClient) Ping() (string, int, error) {
 		return "not_ok", 0, err
 	}
 
-	if !(resp.StatusCode >= 200 && resp.StatusCode < 300) {
+	if !(resp.StatusCode >= 200) && (resp.StatusCode < 300) {
 		return "not_ok", resp.StatusCode, fmt.Errorf("unexpected status code: %d, body: %s", resp.StatusCode, string(body))
 	}
 
@@ -64,28 +151,28 @@ func (instance *QBittorrentClient) ListTorrents() ([]any, error) {
 		nil,
 	)
 	if err != nil {
-		return nil, err
+		return nil, newConnectionError("failed to create request", err)
 	}
 
 	resp, err := instance.Client.Do(req)
 	if err != nil {
-		return nil, err
+		return nil, newConnectionError("failed to call qbittorrent", err)
 	}
 
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, err
+		return nil, newConnectionError("failed to read qbittorrent response", err)
 	}
 
 	if !(resp.StatusCode >= 200 && resp.StatusCode < 300) {
-		return nil, fmt.Errorf("unexpected status code: %d, body: %s", resp.StatusCode, string(body))
+		return nil, newUpstreamError("qbittorrent returned non-2xx status", resp.StatusCode, body, nil)
 	}
 
 	var torrents []any
 	if err := json.Unmarshal(body, &torrents); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal response: %w", err)
+		return nil, newUpstreamError("failed to unmarshal qbittorrent response", resp.StatusCode, body, err)
 	}
 
 	return torrents, nil
@@ -104,21 +191,25 @@ func (instance *QBittorrentClient) AddTorrent(torrentURL string, category string
 		strings.NewReader(reqParams.Encode()),
 	)
 	if err != nil {
-		return err
+		return newConnectionError("failed to create request", err)
 	}
 
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	resp, err := instance.Client.Do(req)
 	if err != nil {
-		return err
+		return newConnectionError("failed to call qbittorrent", err)
 	}
 
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return err
+		return newConnectionError("failed to read qbittorrent response", err)
+	}
+
+	if !(resp.StatusCode >= 200 && resp.StatusCode < 300) {
+		return newUpstreamError("qbittorrent returned non-2xx status", resp.StatusCode, body, nil)
 	}
 
 	fmt.Println(string(body))

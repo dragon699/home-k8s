@@ -1,4 +1,4 @@
-package action_scheduler
+package torrent_actions
 
 import (
 	"common/utils"

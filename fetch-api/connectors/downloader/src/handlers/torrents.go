@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"errors"
 	"fmt"
 	"slices"
 	"strings"
@@ -14,11 +15,20 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-
 func ListTorrents(ctx *fiber.Ctx) error {
 	torrents, err := qbittorrent.Client.ListTorrents()
 
 	if err != nil {
+		var clientErr *qbittorrent.ClientError
+		if errors.As(err, &clientErr) {
+			return ctx.Status(502).JSON(
+				response.ErrorResponse{
+					Error:            err.Error(),
+					UpstreamResponse: clientErr.UpstreamResponse(),
+				},
+			)
+		}
+
 		return ctx.Status(500).JSON(
 			response.ErrorResponse{
 				Error: err.Error(),
@@ -69,7 +79,7 @@ func ListTorrents(ctx *fiber.Ctx) error {
 		if slices.Contains(torrentData.Tags, "fetch-api") {
 			torrentMeta.ManagedBy = "connector-downloader"
 
-			if (torrentData.Category == "jellyfin") && ! (utils.HasItemWithPrefix(torrentData.Tags, "jellyfin:")) {
+			if (torrentData.Category == "jellyfin") && !(utils.HasItemWithPrefix(torrentData.Tags, "jellyfin:")) {
 				qbittorrent.Client.AddTorrentTags(
 					torrentData.Hash,
 					[]string{"jellyfin:pending=rename"},
@@ -115,7 +125,7 @@ func ListTorrents(ctx *fiber.Ctx) error {
 
 			tagCategory := tagParts[0]
 			tagOpStatus := tagOpParts[0]
-			tagOpName   := tagOpParts[1]
+			tagOpName := tagOpParts[1]
 
 			if (tagCategory == "jellyfin") && (tagOpName == "rename") {
 				switch tagOpStatus {
@@ -128,8 +138,8 @@ func ListTorrents(ctx *fiber.Ctx) error {
 				}
 			}
 
-			tagAction.Name =     tagOpName
-			tagAction.Status =   tagOpStatus
+			tagAction.Name = tagOpName
+			tagAction.Status = tagOpStatus
 			tagAction.Category = tagCategory
 
 			if (tagAction.Name != "") && (tagAction.Status != "") {
@@ -146,7 +156,6 @@ func ListTorrents(ctx *fiber.Ctx) error {
 		Items:      result,
 	})
 }
-
 
 func AddTorrent(ctx *fiber.Ctx) error {
 	var reqPayload request.AddTorrentPayload
@@ -185,7 +194,7 @@ func AddTorrent(ctx *fiber.Ctx) error {
 		manage = *reqPayload.Manage
 	}
 
-	if manage && ! slices.Contains(reqPayload.Tags, "fetch-api") {
+	if (manage) && ! (slices.Contains(reqPayload.Tags, "fetch-api")) {
 		reqPayload.Tags = append(reqPayload.Tags, "fetch-api")
 	}
 
@@ -197,6 +206,16 @@ func AddTorrent(ctx *fiber.Ctx) error {
 	)
 
 	if err != nil {
+		var clientErr *qbittorrent.ClientError
+		if errors.As(err, &clientErr) {
+			return ctx.Status(502).JSON(
+				response.ErrorResponse{
+					Error:            err.Error(),
+					UpstreamResponse: clientErr.UpstreamResponse(),
+				},
+			)
+		}
+
 		return ctx.Status(500).JSON(
 			response.ErrorResponse{
 				Error: err.Error(),
