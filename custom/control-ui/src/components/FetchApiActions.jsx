@@ -174,11 +174,11 @@ export default function FetchApiActions() {
     }
 
     await transitionButtonIcon('check', flowId)
-    await wait(SUCCESS_ICON_HOLD_MS)
-    await transitionButtonIcon('arrows', flowId)
     if (flowId === iconFlowRef.current) {
       setButtonState('idle')
     }
+    await wait(SUCCESS_ICON_HOLD_MS)
+    await transitionButtonIcon('arrows', flowId)
   }
 
   return (
