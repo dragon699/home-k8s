@@ -110,7 +110,7 @@ The frontend connects to the backend API through environment variables:
 
 ### Environment Variables
 
-- `VITE_API_URL`: Base URL for the API (default: `http://localhost:8080`)
+- `VITE_API_URL`: API URL used for dev proxy and runtime nginx upstream for `/api` and `/torrents` in the production container (required at runtime in production)
 
 ## Available Scripts
 
