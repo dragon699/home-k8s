@@ -208,7 +208,6 @@ export default function FetchApiActions() {
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <p className="mb-2 text-sm font-medium text-gray-700">URL</p>
             <input
               type="text"
               value={movieName}
