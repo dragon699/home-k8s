@@ -24,7 +24,7 @@ spec:
         - name: registry-control-ui
       containers:
         - name: control-ui
-          image: ghcr.io/dragon699/home-k8s/control-ui/control-ui:0.0.16
+          image: ghcr.io/dragon699/home-k8s/control-ui/control-ui:0.0.17
           imagePullPolicy: Always
           ports:
             - containerPort: 80
