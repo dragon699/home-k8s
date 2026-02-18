@@ -22,7 +22,11 @@ function syntaxHighlightJson(rawJsonText) {
 export default function FetchApiActions() {
   const jellyfinUrl = import.meta.env.VITE_JELLYFIN_URL || 'https://watch.k8s.iaminyourpc.xyz'
   const [movieName, setMovieName] = useState('')
+  const [saveLocation, setSaveLocation] = useState('')
+  const [qbittorrentCategory, setQbittorrentCategory] = useState('')
+  const [qbittorrentTags, setQbittorrentTags] = useState('')
   const [findSubs, setFindSubs] = useState(false)
+  const [manage, setManage] = useState(true)
   const [urlError, setUrlError] = useState('')
   const [jsonText, setJsonText] = useState('{}')
   const [buttonState, setButtonState] = useState('idle') // idle | pending | success
@@ -140,67 +144,123 @@ export default function FetchApiActions() {
             {urlError && <p className="mt-2 text-sm text-red-600">Invalid URL</p>}
           </div>
 
-          <div className="inline-flex items-center select-none gap-3">
-            <button
-              type="button"
-              role="switch"
-              aria-checked={findSubs}
-              aria-label="Find subs"
-              onClick={() => setFindSubs((prev) => !prev)}
-              className={`relative h-7 w-12 shrink-0 overflow-hidden rounded-full border transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-1 ${
-                findSubs ? 'bg-orange-700 border-orange-700' : 'bg-slate-300 border-slate-300'
-              }`}
-            >
-              <span
-                className={`absolute left-[2px] top-0.5 h-[23px] w-[23px] rounded-full bg-white shadow-md transition-transform duration-300 ${
-                  findSubs ? 'translate-x-[21px]' : 'translate-x-0'
-                }`}
-              />
-            </button>
-            <span className={`text-sm font-medium transition-colors duration-200 ${findSubs ? 'text-orange-800' : 'text-gray-800'}`}>
-              Find subs
-            </span>
+          <div>
+            <input
+              type="text"
+              value={saveLocation}
+              onChange={(e) => setSaveLocation(e.target.value)}
+              className="w-full px-4 py-2 border rounded-lg outline-none transition-colors border-gray-300 focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+              placeholder="Save Location"
+            />
           </div>
 
-          <button
-            type="submit"
-            disabled={buttonState === 'pending'}
-            className={`relative w-[30%] overflow-hidden rounded-lg font-medium py-3 px-4 flex items-center justify-center transition-all duration-300 shadow-[inset_0_1px_0_rgba(255,255,255,0.26),inset_0_-2px_6px_rgba(0,0,0,0.2)] ${
-              buttonState === 'success'
-                ? 'bg-orange-700 text-gray-900'
-                : 'bg-orange-700 text-white'
-            }`}
-          >
-            {buttonState === 'success' && (
-              <span className="btn-splash-down absolute inset-0 bg-[#4fd68f]" />
-            )}
-            <span className="relative z-10 block w-full h-6">
-              {buttonState === 'success' ? (
-                <span className="absolute inset-0 flex items-center justify-center gap-2">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-                  </svg>
-                  <span>Success</span>
+          <div>
+            <input
+              type="text"
+              value={qbittorrentCategory}
+              onChange={(e) => setQbittorrentCategory(e.target.value)}
+              className="w-full px-4 py-2 border rounded-lg outline-none transition-colors border-gray-300 focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+              placeholder="qBittorrent Category"
+            />
+          </div>
+
+          <div>
+            <input
+              type="text"
+              value={qbittorrentTags}
+              onChange={(e) => setQbittorrentTags(e.target.value)}
+              className="w-full px-4 py-2 border rounded-lg outline-none transition-colors border-gray-300 focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+              placeholder="qBittorrent Tags"
+            />
+          </div>
+
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-5">
+              <div className="inline-flex items-center select-none gap-3">
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={findSubs}
+                  aria-label="Find subs"
+                  onClick={() => setFindSubs((prev) => !prev)}
+                  className={`relative h-7 w-12 shrink-0 overflow-hidden rounded-full border transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-1 ${
+                    findSubs ? 'bg-orange-700 border-orange-700' : 'bg-slate-300 border-slate-300'
+                  }`}
+                >
+                  <span
+                    className={`absolute left-[2px] top-0.5 h-[23px] w-[23px] rounded-full bg-white shadow-md transition-transform duration-300 ${
+                      findSubs ? 'translate-x-[21px]' : 'translate-x-0'
+                    }`}
+                  />
+                </button>
+                <span className={`text-sm font-medium transition-colors duration-200 ${findSubs ? 'text-orange-800' : 'text-gray-800'}`}>
+                  Find subs
                 </span>
-              ) : buttonState === 'pending' ? (
-                <span className="absolute inset-0">
-                  <span className="absolute left-[16.67%] top-1/2 -translate-y-1/2 -translate-x-1/2">Fire</span>
-                  <span className="btn-spinner absolute right-[9px]" aria-hidden="true" />
+              </div>
+
+              <div className="inline-flex items-center select-none gap-3">
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={manage}
+                  aria-label="Manage"
+                  onClick={() => setManage((prev) => !prev)}
+                  className={`relative h-7 w-12 shrink-0 overflow-hidden rounded-full border transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-1 ${
+                    manage ? 'bg-orange-700 border-orange-700' : 'bg-slate-300 border-slate-300'
+                  }`}
+                >
+                  <span
+                    className={`absolute left-[2px] top-0.5 h-[23px] w-[23px] rounded-full bg-white shadow-md transition-transform duration-300 ${
+                      manage ? 'translate-x-[21px]' : 'translate-x-0'
+                    }`}
+                  />
+                </button>
+                <span className={`text-sm font-medium transition-colors duration-200 ${manage ? 'text-orange-800' : 'text-gray-800'}`}>
+                  Manage
                 </span>
-              ) : (
-                <>
-                  <span className="absolute left-[16.67%] top-1/2 -translate-y-1/2 -translate-x-1/2">Fire</span>
-                  <svg className="absolute right-[9px] top-1/2 -translate-y-1/2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M7 7l5 5-5 5M12 7l5 5-5 5" />
-                  </svg>
-                </>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={buttonState === 'pending'}
+              className={`relative w-[30%] min-w-[170px] overflow-hidden rounded-lg font-medium py-3 px-4 flex items-center justify-center transition-all duration-300 shadow-[inset_0_1px_0_rgba(255,255,255,0.26),inset_0_-2px_6px_rgba(0,0,0,0.2)] ${
+                buttonState === 'success'
+                  ? 'bg-orange-700 text-gray-900'
+                  : 'bg-orange-700 text-white'
+              }`}
+            >
+              {buttonState === 'success' && (
+                <span className="btn-splash-down absolute inset-0 bg-[#4fd68f]" />
               )}
-            </span>
-          </button>
+              <span className="relative z-10 block w-full h-6">
+                {buttonState === 'success' ? (
+                  <span className="absolute inset-0 flex items-center justify-center gap-2">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span>Success</span>
+                  </span>
+                ) : buttonState === 'pending' ? (
+                  <span className="absolute inset-0">
+                    <span className="absolute left-[16.67%] top-1/2 -translate-y-1/2 -translate-x-1/2">Fire</span>
+                    <span className="btn-spinner absolute right-[9px]" aria-hidden="true" />
+                  </span>
+                ) : (
+                  <>
+                    <span className="absolute left-[16.67%] top-1/2 -translate-y-1/2 -translate-x-1/2">Fire</span>
+                    <svg className="absolute right-[9px] top-1/2 -translate-y-1/2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M7 7l5 5-5 5M12 7l5 5-5 5" />
+                    </svg>
+                  </>
+                )}
+              </span>
+            </button>
+          </div>
 
           <div className="mt-6 w-full rounded-xl bg-black p-4 min-h-[220px] border border-gray-800">
             <pre
-              className="text-[11px] leading-5 font-mono whitespace-pre-wrap break-all text-slate-300"
+              className="text-[12px] leading-5 font-mono whitespace-pre-wrap break-all text-slate-300"
               dangerouslySetInnerHTML={{ __html: syntaxHighlightJson(jsonText) }}
             />
           </div>
