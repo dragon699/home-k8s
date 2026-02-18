@@ -39,6 +39,7 @@ export default function FetchApiActions() {
   const typingTimersRef = useRef([])
   const iconFlowRef = useRef(0)
   const buttonIconRef = useRef('arrows')
+  const isSubmitting = buttonState === 'pending'
 
   useEffect(() => {
     return () => {
@@ -121,6 +122,9 @@ export default function FetchApiActions() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    if (buttonState === 'pending') {
+      return
+    }
     const value = movieName.trim()
 
     if (!value) {
@@ -201,6 +205,7 @@ export default function FetchApiActions() {
             <input
               type="text"
               value={movieName}
+              disabled={isSubmitting}
               onChange={(e) => {
                 setMovieName(e.target.value)
                 if (urlError) {
@@ -211,7 +216,7 @@ export default function FetchApiActions() {
                 urlError
                   ? 'border-[#6b5fda] focus:ring-2 focus:ring-[#6b5fda] focus:border-[#6b5fda]'
                   : 'border-gray-300 focus:ring-2 focus:ring-[#6b5fda] focus:border-transparent'
-              }`}
+              } disabled:cursor-not-allowed disabled:opacity-60`}
               placeholder="Torrent URL"
             />
             {urlError && <p className="mt-2 text-sm text-[#6b5fda]">{urlError}</p>}
@@ -221,8 +226,9 @@ export default function FetchApiActions() {
             <input
               type="text"
               value={saveLocation}
+              disabled={isSubmitting}
               onChange={(e) => setSaveLocation(e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg outline-none transition-colors border-gray-300 focus:ring-2 focus:ring-[#6b5fda] focus:border-transparent"
+              className="w-full px-4 py-2 border rounded-lg outline-none transition-colors border-gray-300 focus:ring-2 focus:ring-[#6b5fda] focus:border-transparent disabled:cursor-not-allowed disabled:opacity-60"
               placeholder="Save Location"
             />
           </div>
@@ -231,8 +237,9 @@ export default function FetchApiActions() {
             <input
               type="text"
               value={qbittorrentCategory}
+              disabled={isSubmitting}
               onChange={(e) => setQbittorrentCategory(e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg outline-none transition-colors border-gray-300 focus:ring-2 focus:ring-[#6b5fda] focus:border-transparent"
+              className="w-full px-4 py-2 border rounded-lg outline-none transition-colors border-gray-300 focus:ring-2 focus:ring-[#6b5fda] focus:border-transparent disabled:cursor-not-allowed disabled:opacity-60"
               placeholder="qBittorrent Category"
             />
           </div>
@@ -241,8 +248,9 @@ export default function FetchApiActions() {
             <input
               type="text"
               value={qbittorrentTags}
+              disabled={isSubmitting}
               onChange={(e) => setQbittorrentTags(e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg outline-none transition-colors border-gray-300 focus:ring-2 focus:ring-[#6b5fda] focus:border-transparent"
+              className="w-full px-4 py-2 border rounded-lg outline-none transition-colors border-gray-300 focus:ring-2 focus:ring-[#6b5fda] focus:border-transparent disabled:cursor-not-allowed disabled:opacity-60"
               placeholder="Comma-separated qBittorrent Tags"
             />
           </div>
@@ -253,10 +261,11 @@ export default function FetchApiActions() {
                 <button
                   type="button"
                   role="switch"
+                  disabled={isSubmitting}
                   aria-checked={manage}
                   aria-label="Manage"
                   onClick={() => setManage((prev) => !prev)}
-                  className={`relative h-7 w-12 shrink-0 overflow-hidden rounded-full border transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-[#6b5fda] focus:ring-offset-1 ${
+                  className={`relative h-7 w-12 shrink-0 overflow-hidden rounded-full border transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-[#6b5fda] focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-60 ${
                     manage ? '' : 'bg-slate-300 border-slate-300'
                   }`}
                   style={manage ? { backgroundColor: jellyfinAccent, borderColor: jellyfinAccent } : undefined}
@@ -276,10 +285,11 @@ export default function FetchApiActions() {
                 <button
                   type="button"
                   role="switch"
+                  disabled={isSubmitting}
                   aria-checked={findSubs}
                   aria-label="Find subs"
                   onClick={() => setFindSubs((prev) => !prev)}
-                  className={`relative h-7 w-12 shrink-0 overflow-hidden rounded-full border transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-[#6b5fda] focus:ring-offset-1 ${
+                  className={`relative h-7 w-12 shrink-0 overflow-hidden rounded-full border transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-[#6b5fda] focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-60 ${
                     findSubs ? '' : 'bg-slate-300 border-slate-300'
                   }`}
                   style={findSubs ? { backgroundColor: jellyfinAccent, borderColor: jellyfinAccent } : undefined}
