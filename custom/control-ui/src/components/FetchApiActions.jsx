@@ -22,15 +22,16 @@ function syntaxHighlightJson(rawJsonText) {
 export default function FetchApiActions() {
   const ICON_TRANSITION_MS = 240
   const SUCCESS_ICON_HOLD_MS = 2000
-  const DEFAULT_SAVE_LOCATION = '/data/Windows/Moviesdata/Windows/Movies'
+  const DEFAULT_SAVE_LOCATION = '/data/Windows/Movies'
   const DEFAULT_CATEGORY = 'jellyfin'
-  const DEFAULT_TAGS = 'fetch-api,another tag'
+  const DEFAULT_TAGS_PLACEHOLDER = 'fetch-api,another tag'
+  const DEFAULT_TAGS_FALLBACK = 'fetch-api'
   const jellyfinUrl = import.meta.env.VITE_JELLYFIN_URL || 'https://watch.k8s.iaminyourpc.xyz'
   const jellyfinAccent = '#6b5fda'
   const [movieName, setMovieName] = useState('')
-  const [saveLocation, setSaveLocation] = useState(DEFAULT_SAVE_LOCATION)
-  const [qbittorrentCategory, setQbittorrentCategory] = useState(DEFAULT_CATEGORY)
-  const [qbittorrentTags, setQbittorrentTags] = useState(DEFAULT_TAGS)
+  const [saveLocation, setSaveLocation] = useState('')
+  const [qbittorrentCategory, setQbittorrentCategory] = useState('')
+  const [qbittorrentTags, setQbittorrentTags] = useState('')
   const [findSubs, setFindSubs] = useState(false)
   const [manage, setManage] = useState(true)
   const [urlError, setUrlError] = useState('')
@@ -147,7 +148,7 @@ export default function FetchApiActions() {
     try {
       const effectiveSaveLocation = saveLocation.trim() || DEFAULT_SAVE_LOCATION
       const effectiveCategory = qbittorrentCategory.trim() || DEFAULT_CATEGORY
-      const effectiveTags = (qbittorrentTags.trim() || DEFAULT_TAGS)
+      const effectiveTags = (qbittorrentTags.trim() || DEFAULT_TAGS_FALLBACK)
         .split(',')
         .map((tag) => tag.trim())
         .filter(Boolean)
@@ -235,7 +236,7 @@ export default function FetchApiActions() {
               disabled={isSubmitting}
               onChange={(e) => setSaveLocation(e.target.value)}
               className="w-full px-4 py-2 border rounded-lg outline-none transition-colors border-gray-300 focus:ring-2 focus:ring-[#6b5fda] focus:border-transparent disabled:cursor-not-allowed disabled:opacity-60"
-              placeholder="Save Location"
+              placeholder={DEFAULT_SAVE_LOCATION}
             />
           </div>
 
@@ -247,7 +248,7 @@ export default function FetchApiActions() {
               disabled={isSubmitting}
               onChange={(e) => setQbittorrentCategory(e.target.value)}
               className="w-full px-4 py-2 border rounded-lg outline-none transition-colors border-gray-300 focus:ring-2 focus:ring-[#6b5fda] focus:border-transparent disabled:cursor-not-allowed disabled:opacity-60"
-              placeholder="Category"
+              placeholder={DEFAULT_CATEGORY}
             />
           </div>
 
@@ -259,7 +260,7 @@ export default function FetchApiActions() {
               disabled={isSubmitting}
               onChange={(e) => setQbittorrentTags(e.target.value)}
               className="w-full px-4 py-2 border rounded-lg outline-none transition-colors border-gray-300 focus:ring-2 focus:ring-[#6b5fda] focus:border-transparent disabled:cursor-not-allowed disabled:opacity-60"
-              placeholder="Tags"
+              placeholder={DEFAULT_TAGS_PLACEHOLDER}
             />
           </div>
 
