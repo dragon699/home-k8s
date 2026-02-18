@@ -20,6 +20,8 @@ function syntaxHighlightJson(rawJsonText) {
 }
 
 export default function FetchApiActions() {
+  const ICON_TRANSITION_MS = 240
+  const SUCCESS_ICON_HOLD_MS = 2000
   const jellyfinUrl = import.meta.env.VITE_JELLYFIN_URL || 'https://watch.k8s.iaminyourpc.xyz'
   const jellyfinAccent = '#6b5fda'
   const [movieName, setMovieName] = useState('')
@@ -30,7 +32,9 @@ export default function FetchApiActions() {
   const [manage, setManage] = useState(true)
   const [urlError, setUrlError] = useState('')
   const [jsonText, setJsonText] = useState('{}')
-  const [buttonState, setButtonState] = useState('idle') // idle | pending | success
+  const [buttonState, setButtonState] = useState('idle') // idle | pending
+  const [buttonIcon, setButtonIcon] = useState('arrows') // arrows | pending | check
+  const [iconTransition, setIconTransition] = useState(null)
   const timersRef = useRef([])
   const typingTimersRef = useRef([])
 
@@ -67,6 +71,42 @@ export default function FetchApiActions() {
     })
   }
 
+  const transitionButtonIcon = (nextIcon, onDone) => {
+    const currentIcon = iconTransition?.to || buttonIcon
+    if (currentIcon === nextIcon) {
+      if (onDone) onDone()
+      return
+    }
+
+    setIconTransition({ from: currentIcon, to: nextIcon })
+    const id = setTimeout(() => {
+      setButtonIcon(nextIcon)
+      setIconTransition(null)
+      if (onDone) onDone()
+    }, ICON_TRANSITION_MS)
+    timersRef.current.push(id)
+  }
+
+  const renderButtonIcon = (iconName) => {
+    if (iconName === 'check') {
+      return (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+        </svg>
+      )
+    }
+
+    if (iconName === 'pending') {
+      return <span className="btn-pending-dot" />
+    }
+
+    return (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M7 7l5 5-5 5M12 7l5 5-5 5" />
+      </svg>
+    )
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     const value = movieName.trim()
@@ -80,6 +120,7 @@ export default function FetchApiActions() {
 
     setUrlError('')
     setButtonState('pending')
+    transitionButtonIcon('pending')
 
     try {
       const tags = qbittorrentTags
@@ -101,13 +142,16 @@ export default function FetchApiActions() {
     } catch (error) {
       clearTypingTimers()
       animateJsonOutput({ error: error.message || 'Request failed' })
+      transitionButtonIcon('arrows')
       setButtonState('idle')
       return
     }
-    setButtonState('success')
-    queueTimeout(() => {
-      setButtonState('idle')
-    }, 1000)
+    transitionButtonIcon('check', () => {
+      queueTimeout(() => {
+        transitionButtonIcon('arrows')
+        setButtonState('idle')
+      }, SUCCESS_ICON_HOLD_MS)
+    })
   }
 
   return (
@@ -232,37 +276,21 @@ export default function FetchApiActions() {
             <button
               type="submit"
               disabled={buttonState === 'pending'}
-              className={`relative w-[30%] min-w-[170px] overflow-hidden rounded-lg font-medium py-3 px-4 flex items-center justify-center transition-all duration-300 shadow-[inset_0_1px_0_rgba(255,255,255,0.26),inset_0_-2px_6px_rgba(0,0,0,0.2)] ${
-                buttonState === 'success'
-                  ? 'text-gray-900'
-                  : 'text-white'
-              }`}
+              className="relative w-[30%] min-w-[170px] overflow-hidden rounded-lg font-medium py-3 px-4 flex items-center justify-center transition-all duration-300 shadow-[inset_0_1px_0_rgba(255,255,255,0.26),inset_0_-2px_6px_rgba(0,0,0,0.2)] text-white"
               style={{ backgroundColor: jellyfinAccent }}
             >
-              {buttonState === 'success' && (
-                <span className="btn-splash-down absolute inset-0 bg-[#4fd68f]" />
-              )}
-              <span className="relative z-10 block w-full h-6">
-                {buttonState === 'success' ? (
-                  <span className="absolute inset-0 flex items-center justify-center gap-2">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-                    </svg>
-                    <span>Success</span>
-                  </span>
-                ) : buttonState === 'pending' ? (
-                  <span className="absolute inset-0">
-                    <span className="absolute left-[16.67%] top-1/2 -translate-y-1/2 -translate-x-1/2">Fire</span>
-                    <span className="btn-spinner absolute right-[9px]" aria-hidden="true" />
-                  </span>
-                ) : (
-                  <>
-                    <span className="absolute left-[16.67%] top-1/2 -translate-y-1/2 -translate-x-1/2">Fire</span>
-                    <svg className="absolute right-[9px] top-1/2 -translate-y-1/2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M7 7l5 5-5 5M12 7l5 5-5 5" />
-                    </svg>
-                  </>
-                )}
+              <span className="relative z-10 inline-flex items-center justify-center gap-2">
+                <span>Import</span>
+                <span className="btn-icon-stack" aria-hidden="true">
+                  {iconTransition ? (
+                    <>
+                      <span className="btn-icon-layer btn-icon-exit">{renderButtonIcon(iconTransition.from)}</span>
+                      <span className="btn-icon-layer btn-icon-enter">{renderButtonIcon(iconTransition.to)}</span>
+                    </>
+                  ) : (
+                    <span className="btn-icon-layer">{renderButtonIcon(buttonIcon)}</span>
+                  )}
+                </span>
               </span>
             </button>
           </div>
