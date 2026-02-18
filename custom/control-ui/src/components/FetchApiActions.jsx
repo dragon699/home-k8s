@@ -192,57 +192,59 @@ export default function FetchApiActions() {
   return (
     <div>
       <div className="relative max-w-2xl bg-white rounded-xl shadow-[0_6px_14px_rgba(15,23,42,0.12)] p-6 border border-gray-100">
-        <div className="absolute top-6 right-6 flex flex-col items-end gap-1">
-          <a
-            href={jellyfinUrl}
-            target="_blank"
-            rel="noreferrer"
-            aria-label="Open Jellyfin"
-            className="inline-flex items-center gap-1.5 text-sm font-medium text-[#6b5fda]"
-          >
-            <span>Jellyfin</span>
-            <span
-              aria-hidden="true"
-              className="block w-4 h-4"
-              style={{
-                backgroundColor: '#6b5fda',
-                WebkitMaskImage: 'url(https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/jellyfin.png)',
-                maskImage: 'url(https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/jellyfin.png)',
-                WebkitMaskSize: 'contain',
-                maskSize: 'contain',
-                WebkitMaskRepeat: 'no-repeat',
-                maskRepeat: 'no-repeat',
-                WebkitMaskPosition: 'center',
-                maskPosition: 'center',
-              }}
-            />
-          </a>
-          <a
-            href={qbittorrentUrl}
-            target="_blank"
-            rel="noreferrer"
-            aria-label="Open qBittorrent"
-            className="inline-flex items-center gap-1.5 text-sm font-medium text-[#6b5fda]"
-          >
-            <span>qBittorrent</span>
-            <span
-              aria-hidden="true"
-              className="block w-4 h-4"
-              style={{
-                backgroundColor: '#6b5fda',
-                WebkitMaskImage: 'url(https://i.imgur.com/UKcKriJ.png)',
-                maskImage: 'url(https://i.imgur.com/UKcKriJ.png)',
-                WebkitMaskSize: 'contain',
-                maskSize: 'contain',
-                WebkitMaskRepeat: 'no-repeat',
-                maskRepeat: 'no-repeat',
-                WebkitMaskPosition: 'center',
-                maskPosition: 'center',
-              }}
-            />
-          </a>
+        <div className="mb-2 flex items-center justify-between">
+          <h3 className="text-xl font-semibold text-gray-900">Import to Jellyfin</h3>
+          <div className="flex items-center gap-4">
+            <a
+              href={jellyfinUrl}
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Open Jellyfin"
+              className="inline-flex items-center gap-1.5 text-sm font-medium text-[#6b5fda]"
+            >
+              <span>Jellyfin</span>
+              <span
+                aria-hidden="true"
+                className="block w-4 h-4"
+                style={{
+                  backgroundColor: '#6b5fda',
+                  WebkitMaskImage: 'url(https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/jellyfin.png)',
+                  maskImage: 'url(https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/jellyfin.png)',
+                  WebkitMaskSize: 'contain',
+                  maskSize: 'contain',
+                  WebkitMaskRepeat: 'no-repeat',
+                  maskRepeat: 'no-repeat',
+                  WebkitMaskPosition: 'center',
+                  maskPosition: 'center',
+                }}
+              />
+            </a>
+            <a
+              href={qbittorrentUrl}
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Open qBittorrent"
+              className="inline-flex items-center gap-1.5 text-sm font-medium text-[#6b5fda]"
+            >
+              <span>qBittorrent</span>
+              <span
+                aria-hidden="true"
+                className="block w-4 h-4"
+                style={{
+                  backgroundColor: '#6b5fda',
+                  WebkitMaskImage: 'url(https://i.imgur.com/UKcKriJ.png)',
+                  maskImage: 'url(https://i.imgur.com/UKcKriJ.png)',
+                  WebkitMaskSize: 'contain',
+                  maskSize: 'contain',
+                  WebkitMaskRepeat: 'no-repeat',
+                  maskRepeat: 'no-repeat',
+                  WebkitMaskPosition: 'center',
+                  maskPosition: 'center',
+                }}
+              />
+            </a>
+          </div>
         </div>
-        <h3 className="text-xl font-semibold text-gray-900 mb-2">Import to Jellyfin</h3>
 
         <form onSubmit={handleSubmit} className="mt-5 space-y-5">
           <div>
