@@ -12,7 +12,6 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-
 func ToInt(val string) (int64, error) {
 	i, err := strconv.Atoi(val)
 
@@ -218,42 +217,61 @@ func BeautifyMovieName(name string) string {
 
 		prefix := strings.TrimSpace(name[:m[0]])
 		suffix := strings.TrimSpace(name[m[1]:])
-		title := strings.TrimSpace(strings.Join([]string{prefix, suffix}, " "))
-		title = removeJunk(title)
-		title = titleCase(title)
+		prefix = titleCase(removeJunk(prefix))
+		suffix = titleCase(removeJunk(suffix))
 
-		if title == "" {
-			return fmt.Sprintf("S%02dE%02d", season, episode)
+		label := fmt.Sprintf("S%02dE%02d", season, episode)
+		if prefix == "" && suffix == "" {
+			return label
 		}
-		return fmt.Sprintf("%s S%02dE%02d", title, season, episode)
+
+		if prefix == "" {
+			return fmt.Sprintf("%s %s", label, suffix)
+		}
+		if suffix == "" {
+			return fmt.Sprintf("%s %s", prefix, label)
+		}
+		return fmt.Sprintf("%s %s %s", prefix, label, suffix)
 	}
 
 	if m := seasonOnlyRe.FindStringSubmatchIndex(name); m != nil {
 		season, _ := strconv.Atoi(name[m[2]:m[3]])
 		prefix := strings.TrimSpace(name[:m[0]])
 		suffix := strings.TrimSpace(name[m[1]:])
-		title := strings.TrimSpace(strings.Join([]string{prefix, suffix}, " "))
-		title = removeJunk(title)
-		title = titleCase(title)
+		prefix = titleCase(removeJunk(prefix))
+		suffix = titleCase(removeJunk(suffix))
 
-		if title == "" {
-			return fmt.Sprintf("S%02d", season)
+		label := fmt.Sprintf("S%02d", season)
+		if prefix == "" && suffix == "" {
+			return label
 		}
-		return fmt.Sprintf("%s S%02d", title, season)
+		if prefix == "" {
+			return fmt.Sprintf("%s %s", label, suffix)
+		}
+		if suffix == "" {
+			return fmt.Sprintf("%s %s", prefix, label)
+		}
+		return fmt.Sprintf("%s %s %s", prefix, label, suffix)
 	}
 
 	if m := episodeOnlyRe.FindStringSubmatchIndex(name); m != nil {
 		episode, _ := strconv.Atoi(name[m[2]:m[3]])
 		prefix := strings.TrimSpace(name[:m[0]])
 		suffix := strings.TrimSpace(name[m[1]:])
-		title := strings.TrimSpace(strings.Join([]string{prefix, suffix}, " "))
-		title = removeJunk(title)
-		title = titleCase(title)
+		prefix = titleCase(removeJunk(prefix))
+		suffix = titleCase(removeJunk(suffix))
 
-		if title == "" {
-			return fmt.Sprintf("E%02d", episode)
+		label := fmt.Sprintf("E%02d", episode)
+		if prefix == "" && suffix == "" {
+			return label
 		}
-		return fmt.Sprintf("%s E%02d", title, episode)
+		if prefix == "" {
+			return fmt.Sprintf("%s %s", label, suffix)
+		}
+		if suffix == "" {
+			return fmt.Sprintf("%s %s", prefix, label)
+		}
+		return fmt.Sprintf("%s %s %s", prefix, label, suffix)
 	}
 
 	years := yearRe.FindAllString(name, -1)

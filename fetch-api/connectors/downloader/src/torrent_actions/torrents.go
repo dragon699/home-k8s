@@ -3,13 +3,14 @@ package action_scheduler
 import (
 	"common/utils"
 	"encoding/json"
-	"path/filepath"
 	"fmt"
-	"slices"
 	"io"
 	"net/http"
 	"os"
 	"path"
+	"path/filepath"
+	"slices"
+	"strings"
 	"time"
 
 	"connector-downloader/settings"
@@ -19,7 +20,6 @@ import (
 
 	"github.com/go-co-op/gocron"
 )
-
 
 type ActionChecker struct {
 	Scheduler *gocron.Scheduler
@@ -87,7 +87,7 @@ func (instance *ActionChecker) runActions() {
 		t.Log.Debug("Checking torrent", "name", torrent.Name, "hash", torrent.Hash)
 
 		for _, action := range torrent.Meta.ScheduledActions {
-			if ! (action.Status == "pending") {
+			if !(action.Status == "pending") {
 				continue
 			}
 
@@ -97,7 +97,7 @@ func (instance *ActionChecker) runActions() {
 				switch action.Name {
 				case "rename":
 					torrentContent, err := qbittorrent.Client.GetTorrentContent(torrent.Hash)
-					
+
 					if err != nil {
 						t.Log.Error("Failed to get torrent content", "error", err.Error())
 						continue
@@ -119,14 +119,16 @@ func (instance *ActionChecker) runActions() {
 						filePath := path.Dir(file["name"].(string))
 						fileName := path.Base(file["name"].(string))
 						fileExt := path.Ext(fileName)
-						
-						if ! slices.Contains(allowedExtensions, fileExt) {
+
+						if !slices.Contains(allowedExtensions, fileExt) {
 							continue
 						}
 
+						fileNameBase := strings.TrimSuffix(fileName, fileExt)
+
 						fileNameNew := fmt.Sprintf(
 							"%s%s",
-							utils.BeautifyMovieName(fileName),
+							utils.BeautifyMovieName(fileNameBase),
 							fileExt,
 						)
 
@@ -146,7 +148,7 @@ func (instance *ActionChecker) runActions() {
 						dirPath,
 						utils.BeautifyMovieName(dirName),
 					)
-					
+
 					err = os.Rename(torrent.FilesPath, dirPathNew)
 					if err != nil {
 						renameFailed = true
