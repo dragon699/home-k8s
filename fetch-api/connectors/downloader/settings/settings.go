@@ -17,7 +17,9 @@ type Settings struct {
 	ListenPort int    `json:"listen_port"                   env:"LISTEN_PORT"`
 	ListenUrl  string `json:"listen_url"`
 
-	Url string `json:"url"                           env:"URL"`
+	QBittorrentUrl                string `json:"qbittorrent_url"                env:"QBITTORRENT_URL"`
+	QBittorrentPublicUrl          string `json:"qbittorrent_public_url"         env:"QBITTORRENT_PUBLIC_URL"`
+	QBittorrentDefaultSavePath    string `json:"qbittorrent_default_save_path" env:"QBITTORRENT_DEFAULT_SAVE_PATH"`
 
 	OtelServiceName      string `json:"otel_service_name"             env:"OTEL_SERVICE_NAME"`
 	OtelServiceNamespace string `json:"otel_service_namespace"        env:"OTEL_SERVICE_NAMESPACE"`
@@ -45,7 +47,9 @@ var defaultSettings = Settings{
 	ListenHost: "0.0.0.0",
 	ListenPort: 8080,
 
-	Url: "http://qbittorrent-web.qbittorrent.svc:80",
+	QBittorrentUrl: "http://qbittorrent-web.qbittorrent.svc:80",
+	QBittorrentPublicUrl: "https://qb.k8s.iaminyourpc.xyz",
+	QBittorrentDefaultSavePath: "/data/Windows/Movies",
 
 	OtelServiceName:      "connector-downloader",
 	OtelServiceNamespace: "fetch-api",

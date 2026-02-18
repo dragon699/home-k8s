@@ -53,6 +53,7 @@ func LoadRoutes(app fiber.Router) {
 
 	// /torrents routes
 	routes.ListTorrents(app)
+	routes.AddTorrent(app)
 
 	// Swagger routes
 	docs.SwaggerInfo.Host = fmt.Sprintf("%s:%d", settings.Config.ListenHost, settings.Config.ListenPort)

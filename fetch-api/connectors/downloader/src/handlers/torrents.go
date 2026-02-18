@@ -1,10 +1,13 @@
 package handlers
 
 import (
+	"fmt"
 	"slices"
 	"strings"
 
 	"common/utils"
+	"connector-downloader/settings"
+	"connector-downloader/src/dto/request"
 	"connector-downloader/src/dto/response"
 	"connector-downloader/src/qbittorrent"
 
@@ -142,4 +145,69 @@ func ListTorrents(ctx *fiber.Ctx) error {
 		TotalItems: len(result),
 		Items:      result,
 	})
+}
+
+
+func AddTorrent(ctx *fiber.Ctx) error {
+	var reqPayload request.AddTorrentPayload
+
+	if err := ctx.BodyParser(&reqPayload); err != nil {
+		return ctx.Status(400).JSON(
+			response.ErrorResponse{
+				Error: "Invalid request payload",
+			},
+		)
+	}
+
+	if reqPayload.URL == "" {
+		return ctx.Status(400).JSON(
+			response.ErrorResponse{
+				Error: "url is required",
+			},
+		)
+	}
+
+	if reqPayload.Category == "" {
+		reqPayload.Category = "jellyfin"
+	}
+
+	if len(reqPayload.Tags) == 0 {
+		reqPayload.Tags = []string{}
+	}
+
+	if reqPayload.SavePath == "" {
+		reqPayload.SavePath = settings.Config.QBittorrentDefaultSavePath
+	}
+
+	manage := true
+
+	if reqPayload.Manage != nil {
+		manage = *reqPayload.Manage
+	}
+
+	if manage && ! slices.Contains(reqPayload.Tags, "fetch-api") {
+		reqPayload.Tags = append(reqPayload.Tags, "fetch-api")
+	}
+
+	err := qbittorrent.Client.AddTorrent(
+		reqPayload.URL,
+		reqPayload.Category,
+		reqPayload.Tags,
+		reqPayload.SavePath,
+	)
+
+	if err != nil {
+		return ctx.Status(500).JSON(
+			response.ErrorResponse{
+				Error: err.Error(),
+			},
+		)
+	}
+
+	return ctx.JSON(
+		response.SuccessResponse{
+			Success: true,
+			Message: fmt.Sprintf("Torrent added successfully and will begin downloading shortly -> %s", settings.Config.QBittorrentPublicUrl),
+		},
+	)
 }

@@ -6,6 +6,11 @@ type BaseResponse[Item any] struct {
 	Items   []Item `json:"items"`
 }
 
+type SuccessResponse struct {
+	Success bool   `json:"success"`
+	Message string `json:"message,omitempty"`
+}
+
 type ErrorResponse struct {
 	Error string `json:"error"`
 }

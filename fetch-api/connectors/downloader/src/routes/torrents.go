@@ -22,3 +22,19 @@ func ListTorrents(router fiber.Router) {
 	api := router.Group(torrentsRouterName)
 	api.Get("/", handlers.ListTorrents)
 }
+
+
+// AddTorrent godoc
+// @Summary      Add a torrent to qBittorrent
+// @Description  Adds a torrent to qBittorrent using a torrent link.
+// @Tags         torrents
+// @Accept       json
+// @Produce      json
+// @Success      200      {object}  response.SuccessResponse
+// @Failure      400      {object}  response.ErrorResponse
+// @Failure      500      {object}  response.ErrorResponse
+// @Router       /torrents [post]
+func AddTorrent(router fiber.Router) {
+	api := router.Group(torrentsRouterName)
+	api.Post("/", handlers.AddTorrent)
+}
