@@ -32,6 +32,7 @@ export default function FetchApiActions() {
   const [saveLocation, setSaveLocation] = useState('')
   const [qbittorrentCategory, setQbittorrentCategory] = useState('')
   const [qbittorrentTags, setQbittorrentTags] = useState('')
+  const [showOptions, setShowOptions] = useState(false)
   const [findSubs, setFindSubs] = useState(false)
   const [manage, setManage] = useState(true)
   const [urlError, setUrlError] = useState('')
@@ -229,40 +230,65 @@ export default function FetchApiActions() {
             {urlError && <p className="mt-2 text-sm text-[#6b5fda]">{urlError}</p>}
           </div>
 
-          <div>
-            <p className="mb-2 text-sm font-medium text-gray-700">Save Location</p>
-            <input
-              type="text"
-              value={saveLocation}
+          <div className="space-y-3">
+            <button
+              type="button"
               disabled={isSubmitting}
-              onChange={(e) => setSaveLocation(e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg outline-none transition-colors border-gray-300 animated-focus-input disabled:cursor-not-allowed disabled:opacity-60"
-              placeholder={DEFAULT_SAVE_LOCATION}
-            />
-          </div>
+              onClick={() => setShowOptions((prev) => !prev)}
+              className="inline-flex items-center gap-2 text-sm font-semibold text-[#6b5fda] disabled:opacity-60 disabled:cursor-not-allowed"
+              aria-expanded={showOptions}
+              aria-controls="import-options"
+            >
+              <svg
+                className={`w-4 h-4 transition-transform duration-250 ${showOptions ? 'rotate-180' : 'rotate-0'}`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 9l6 6 6-6" />
+              </svg>
+              <span>Options</span>
+            </button>
 
-          <div>
-            <p className="mb-2 text-sm font-medium text-gray-700">Category</p>
-            <input
-              type="text"
-              value={qbittorrentCategory}
-              disabled={isSubmitting}
-              onChange={(e) => setQbittorrentCategory(e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg outline-none transition-colors border-gray-300 animated-focus-input disabled:cursor-not-allowed disabled:opacity-60"
-              placeholder={DEFAULT_CATEGORY}
-            />
-          </div>
+            <div id="import-options" className={`options-panel ${showOptions ? 'options-panel-open' : ''}`}>
+              <div className="options-panel-inner space-y-5">
+                <div>
+                  <p className="mb-2 text-sm font-medium text-gray-700">Save Location</p>
+                  <input
+                    type="text"
+                    value={saveLocation}
+                    disabled={isSubmitting}
+                    onChange={(e) => setSaveLocation(e.target.value)}
+                    className="w-full px-4 py-2 border rounded-lg outline-none transition-colors border-gray-300 animated-focus-input disabled:cursor-not-allowed disabled:opacity-60"
+                    placeholder={DEFAULT_SAVE_LOCATION}
+                  />
+                </div>
 
-          <div>
-            <p className="mb-2 text-sm font-medium text-gray-700">Tags</p>
-            <input
-              type="text"
-              value={qbittorrentTags}
-              disabled={isSubmitting}
-              onChange={(e) => setQbittorrentTags(e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg outline-none transition-colors border-gray-300 animated-focus-input disabled:cursor-not-allowed disabled:opacity-60"
-              placeholder={DEFAULT_TAGS_PLACEHOLDER}
-            />
+                <div>
+                  <p className="mb-2 text-sm font-medium text-gray-700">Category</p>
+                  <input
+                    type="text"
+                    value={qbittorrentCategory}
+                    disabled={isSubmitting}
+                    onChange={(e) => setQbittorrentCategory(e.target.value)}
+                    className="w-full px-4 py-2 border rounded-lg outline-none transition-colors border-gray-300 animated-focus-input disabled:cursor-not-allowed disabled:opacity-60"
+                    placeholder={DEFAULT_CATEGORY}
+                  />
+                </div>
+
+                <div>
+                  <p className="mb-2 text-sm font-medium text-gray-700">Tags</p>
+                  <input
+                    type="text"
+                    value={qbittorrentTags}
+                    disabled={isSubmitting}
+                    onChange={(e) => setQbittorrentTags(e.target.value)}
+                    className="w-full px-4 py-2 border rounded-lg outline-none transition-colors border-gray-300 animated-focus-input disabled:cursor-not-allowed disabled:opacity-60"
+                    placeholder={DEFAULT_TAGS_PLACEHOLDER}
+                  />
+                </div>
+              </div>
+            </div>
           </div>
 
           <div className="flex items-center justify-between gap-4">
@@ -275,7 +301,7 @@ export default function FetchApiActions() {
                   aria-checked={manage}
                   aria-label="Manage"
                   onClick={() => setManage((prev) => !prev)}
-                  className={`relative h-7 w-12 shrink-0 overflow-hidden rounded-full border transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-[#6b5fda] focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-60 ${
+                  className={`relative h-7 w-12 shrink-0 overflow-hidden rounded-full border transition-colors duration-300 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60 ${
                     manage ? '' : 'bg-slate-300 border-slate-300'
                   }`}
                   style={manage ? { backgroundColor: jellyfinAccent, borderColor: jellyfinAccent } : undefined}
@@ -299,7 +325,7 @@ export default function FetchApiActions() {
                   aria-checked={findSubs}
                   aria-label="Find subs"
                   onClick={() => setFindSubs((prev) => !prev)}
-                  className={`relative h-7 w-12 shrink-0 overflow-hidden rounded-full border transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-[#6b5fda] focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-60 ${
+                  className={`relative h-7 w-12 shrink-0 overflow-hidden rounded-full border transition-colors duration-300 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60 ${
                     findSubs ? '' : 'bg-slate-300 border-slate-300'
                   }`}
                   style={findSubs ? { backgroundColor: jellyfinAccent, borderColor: jellyfinAccent } : undefined}
@@ -319,8 +345,8 @@ export default function FetchApiActions() {
             <button
               type="submit"
               disabled={buttonState === 'pending'}
-              className="relative w-[30%] min-w-[170px] overflow-hidden rounded-lg font-medium py-3 px-4 flex items-center justify-center transition-all duration-300 shadow-[inset_0_1px_0_rgba(255,255,255,0.26),inset_0_-2px_6px_rgba(0,0,0,0.2)] text-white"
-              style={{ backgroundColor: jellyfinAccent }}
+              className="btn-import-elevated relative w-[30%] min-w-[170px] overflow-hidden rounded-lg font-medium py-3 px-4 flex items-center justify-center text-white disabled:cursor-not-allowed disabled:opacity-70"
+              style={{ '--import-btn-accent': jellyfinAccent }}
             >
               <span className="relative z-10 inline-flex items-center justify-center gap-2">
                 <span className="btn-label-stack" aria-hidden="true">
