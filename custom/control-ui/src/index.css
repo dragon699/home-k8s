@@ -73,6 +73,13 @@ code {
   overflow: hidden;
 }
 
+.btn-label-stack {
+  position: relative;
+  width: 72px;
+  height: 20px;
+  overflow: hidden;
+}
+
 .btn-icon-layer {
   position: absolute;
   left: 50%;
@@ -80,6 +87,15 @@ code {
   display: flex;
   align-items: center;
   justify-content: center;
+  transform: translate(-50%, -50%);
+}
+
+.btn-label-layer {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 100%;
+  text-align: center;
   transform: translate(-50%, -50%);
 }
 

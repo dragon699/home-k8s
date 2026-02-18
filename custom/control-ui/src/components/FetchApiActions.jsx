@@ -113,6 +113,12 @@ export default function FetchApiActions() {
     )
   }
 
+  const labelForState = (stateName) => {
+    if (stateName === 'pending') return 'Importing'
+    if (stateName === 'check') return 'Imported'
+    return 'Import'
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     const value = movieName.trim()
@@ -297,7 +303,16 @@ export default function FetchApiActions() {
               style={{ backgroundColor: jellyfinAccent }}
             >
               <span className="relative z-10 inline-flex items-center justify-center gap-2">
-                <span>Import</span>
+                <span className="btn-label-stack" aria-hidden="true">
+                  {iconTransition ? (
+                    <>
+                      <span className="btn-label-layer btn-icon-exit">{labelForState(iconTransition.from)}</span>
+                      <span className="btn-label-layer btn-icon-enter">{labelForState(iconTransition.to)}</span>
+                    </>
+                  ) : (
+                    <span className="btn-label-layer">{labelForState(buttonIcon)}</span>
+                  )}
+                </span>
                 <span className="btn-icon-stack" aria-hidden="true">
                   {iconTransition ? (
                     <>
