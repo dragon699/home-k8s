@@ -152,30 +152,15 @@ func (instance *ActionChecker) runActions() {
 						renameFailed = true
 					}
 
-					qbittorrent.Client.RemoveTorrentTags(
-						torrent.Hash,
-						[]string{
-							"jellyfin:pending=rename",
-						},
-					)
+					qbittorrent.Client.RemoveTorrentTags(torrent.Hash, []string{"jellyfin:pending=rename"})
 
 					if renameFailed {
-						qbittorrent.Client.AddTorrentTags(
-							torrent.Hash,
-							[]string{
-								"jellyfin:failed=rename",
-							},
-						)
+						qbittorrent.Client.AddTorrentTags(torrent.Hash, []string{"jellyfin:failed=rename"})
 
 						continue
 					}
 
-					qbittorrent.Client.AddTorrentTags(
-						torrent.Hash,
-						[]string{
-							"jellyfin:completed=rename",
-						},
-					)
+					qbittorrent.Client.AddTorrentTags(torrent.Hash, []string{"jellyfin:completed=rename"})
 				}
 			}
 		}

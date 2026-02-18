@@ -2,15 +2,16 @@ package utils
 
 import (
 	"fmt"
-	"strings"
 	"math"
 	"os"
-	"strconv"
-	"time"
 	"regexp"
+	"strconv"
+	"strings"
+	"time"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
+
 
 func ToInt(val string) (int64, error) {
 	i, err := strconv.Atoi(val)
@@ -126,11 +127,9 @@ func SecondsToMinutes(seconds int64) int64 {
 	return seconds / 60
 }
 
-
-
-
-
-var tvRe = regexp.MustCompile(`(?i)\bS(\d{1,2})\s*E(\d{1,2})\b`)
+var seasonEpisodeRe = regexp.MustCompile(`(?i)\b(?:S(?:eason)?\s*(\d{1,2})\s*(?:E(?:pisode)?\s*(\d{1,2}))|E(?:pisode)?\s*(\d{1,2})\s*S(?:eason)?\s*(\d{1,2}))\b`)
+var seasonOnlyRe = regexp.MustCompile(`(?i)\bS(?:eason)?\s*(\d{1,2})\b`)
+var episodeOnlyRe = regexp.MustCompile(`(?i)\bE(?:pisode)?\s*(\d{1,2})\b`)
 var yearRe = regexp.MustCompile(`\b(19|20)\d{2}\b`)
 var collectionRangeRe = regexp.MustCompile(`\b(\d{1,2})\s*-\s*(\d{1,2})\b`)
 var collectionWordRe = regexp.MustCompile(`(?i)\bcollection\b`)
@@ -205,17 +204,56 @@ func BeautifyMovieName(name string) string {
 	rawName := name
 	name = normalize(name)
 
-	if m := tvRe.FindStringSubmatch(name); m != nil {
-		season, _ := strconv.Atoi(m[1])
-		episode, _ := strconv.Atoi(m[2])
+	if m := seasonEpisodeRe.FindStringSubmatchIndex(name); m != nil {
+		season := 0
+		episode := 0
 
-		loc := tvRe.FindStringIndex(name)
-		title := strings.TrimSpace(name[:loc[0]])
+		if m[2] != -1 && m[3] != -1 && m[4] != -1 && m[5] != -1 {
+			season, _ = strconv.Atoi(name[m[2]:m[3]])
+			episode, _ = strconv.Atoi(name[m[4]:m[5]])
+		} else if m[6] != -1 && m[7] != -1 && m[8] != -1 && m[9] != -1 {
+			episode, _ = strconv.Atoi(name[m[6]:m[7]])
+			season, _ = strconv.Atoi(name[m[8]:m[9]])
+		}
 
+		prefix := strings.TrimSpace(name[:m[0]])
+		suffix := strings.TrimSpace(name[m[1]:])
+		title := strings.TrimSpace(strings.Join([]string{prefix, suffix}, " "))
 		title = removeJunk(title)
 		title = titleCase(title)
 
-		return fmt.Sprintf("%s S%02d E%02d", title, season, episode)
+		if title == "" {
+			return fmt.Sprintf("S%02dE%02d", season, episode)
+		}
+		return fmt.Sprintf("%s S%02dE%02d", title, season, episode)
+	}
+
+	if m := seasonOnlyRe.FindStringSubmatchIndex(name); m != nil {
+		season, _ := strconv.Atoi(name[m[2]:m[3]])
+		prefix := strings.TrimSpace(name[:m[0]])
+		suffix := strings.TrimSpace(name[m[1]:])
+		title := strings.TrimSpace(strings.Join([]string{prefix, suffix}, " "))
+		title = removeJunk(title)
+		title = titleCase(title)
+
+		if title == "" {
+			return fmt.Sprintf("S%02d", season)
+		}
+		return fmt.Sprintf("%s S%02d", title, season)
+	}
+
+	if m := episodeOnlyRe.FindStringSubmatchIndex(name); m != nil {
+		episode, _ := strconv.Atoi(name[m[2]:m[3]])
+		prefix := strings.TrimSpace(name[:m[0]])
+		suffix := strings.TrimSpace(name[m[1]:])
+		title := strings.TrimSpace(strings.Join([]string{prefix, suffix}, " "))
+		title = removeJunk(title)
+		title = titleCase(title)
+
+		if title == "" {
+			return fmt.Sprintf("E%02d", episode)
+		}
+		return fmt.Sprintf("%s E%02d", title, episode)
 	}
 
 	years := yearRe.FindAllString(name, -1)
