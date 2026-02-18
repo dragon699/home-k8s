@@ -111,6 +111,8 @@ The frontend connects to the backend API through environment variables:
 ### Environment Variables
 
 - `VITE_API_URL`: API URL used for dev proxy and runtime nginx upstream for `/api` and `/torrents` in the production container (required at runtime in production)
+- `VITE_JELLYFIN_URL`: Jellyfin link URL used by the card header icon
+- `VITE_QBITTORRENT_URL`: qBittorrent link URL used by the card header icon
 
 ## Available Scripts
 

@@ -27,6 +27,7 @@ export default function FetchApiActions() {
   const DEFAULT_TAGS_PLACEHOLDER = 'fetch-api,another tag'
   const DEFAULT_TAGS_FALLBACK = 'fetch-api'
   const jellyfinUrl = import.meta.env.VITE_JELLYFIN_URL || 'https://watch.k8s.iaminyourpc.xyz'
+  const qbittorrentUrl = import.meta.env.VITE_QBITTORRENT_URL || 'http://localhost:8080'
   const jellyfinAccent = '#6b5fda'
   const [movieName, setMovieName] = useState('')
   const [saveLocation, setSaveLocation] = useState('')
@@ -191,19 +192,32 @@ export default function FetchApiActions() {
   return (
     <div>
       <div className="relative max-w-2xl bg-white rounded-xl shadow-[0_6px_14px_rgba(15,23,42,0.12)] p-6 border border-gray-100">
-        <a
-          href={jellyfinUrl}
-          target="_blank"
-          rel="noreferrer"
-          className="absolute top-6 right-6"
-          aria-label="Open Jellyfin"
-        >
-          <img
-            src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/jellyfin.png"
-            alt="Jellyfin"
-            className="w-8 h-8"
-          />
-        </a>
+        <div className="absolute top-6 right-6 flex items-center gap-2">
+          <a
+            href={qbittorrentUrl}
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Open qBittorrent"
+          >
+            <img
+              src="https://coolify.io/docs/images/services/qbittorrent-logo.svg"
+              alt="qBittorrent"
+              className="w-4 h-4"
+            />
+          </a>
+          <a
+            href={jellyfinUrl}
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Open Jellyfin"
+          >
+            <img
+              src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/jellyfin.png"
+              alt="Jellyfin"
+              className="w-4 h-4"
+            />
+          </a>
+        </div>
         <h3 className="text-xl font-semibold text-gray-900 mb-2">Import to Jellyfin</h3>
 
         <form onSubmit={handleSubmit} className="mt-5 space-y-5">
