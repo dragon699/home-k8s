@@ -19,6 +19,9 @@ spec:
         app: connector-downloader
         env: home
     spec:
+      securityContext:
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
       restartPolicy: Always
       imagePullSecrets:
         - name: registry-fetch-api
@@ -34,6 +37,10 @@ spec:
         - name: connector-downloader
           image: ghcr.io/dragon699/home-k8s/fetch-api/connectors/downloader:0.0.8
           imagePullPolicy: Always
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            runAsNonRoot: true
           volumeMounts:
             - name: connector-downloader-windows-data
               mountPath: /data
