@@ -168,8 +168,8 @@ code {
 
 .options-panel-inner {
   overflow: hidden;
-  padding-inline: 3px;
-  margin-inline: -3px;
+  padding: 3px;
+  margin: -3px;
 }
 
 

@@ -230,8 +230,8 @@ export default function FetchApiActions() {
                 className="block w-4 h-4"
                 style={{
                   backgroundColor: '#6b5fda',
-                  WebkitMaskImage: 'url(https://i.imgur.com/aTvxgZv.png)',
-                  maskImage: 'url(https://i.imgur.com/aTvxgZv.png)',
+                  WebkitMaskImage: 'url(https://i.imgur.com/bzkRvyx.png)',
+                  maskImage: 'url(https://i.imgur.com/bzkRvyx.png)',
                   WebkitMaskSize: 'contain',
                   maskSize: 'contain',
                   WebkitMaskRepeat: 'no-repeat',
