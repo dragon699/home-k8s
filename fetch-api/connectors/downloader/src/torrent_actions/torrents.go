@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"path/filepath"
 	"fmt"
+	"slices"
 	"io"
 	"net/http"
 	"os"
@@ -102,6 +103,12 @@ func (instance *ActionChecker) runActions() {
 						continue
 					}
 
+					var allowedExtensions = []string{
+						".mkv", ".mp4", ".avi", ".mov", ".wmv", ".flv", ".webm", ".m4v",
+						".mpg", ".mpeg", ".ts", ".m2ts", ".mts", ".3gp", ".3g2", ".ogv",
+						".vob", ".asf", ".rm", ".rmvb", ".divx", ".f4v", ".mxf", ".mpv",
+						".qt", ".dat", ".amv", ".y4m",
+					}
 					var renameFailed bool = false
 
 					for _, file := range torrentContent {
@@ -112,6 +119,11 @@ func (instance *ActionChecker) runActions() {
 						filePath := path.Dir(file["name"].(string))
 						fileName := path.Base(file["name"].(string))
 						fileExt := path.Ext(fileName)
+						
+						if ! slices.Contains(allowedExtensions, fileExt) {
+							continue
+						}
+
 						fileNameNew := fmt.Sprintf(
 							"%s%s",
 							utils.BeautifyMovieName(fileName),
