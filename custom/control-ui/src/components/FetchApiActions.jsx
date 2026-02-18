@@ -290,7 +290,7 @@ export default function FetchApiActions() {
             </div>
           </div>
 
-          <div className="-mt-1 flex items-center justify-between gap-4">
+          <div className="-mt-3 flex items-center justify-between gap-4">
             <div className="flex items-center gap-5">
               <div className="inline-flex items-center select-none gap-3">
                 <button
@@ -372,7 +372,7 @@ export default function FetchApiActions() {
             </button>
           </div>
 
-          <div className="mt-4 w-full rounded-xl bg-black p-4 min-h-[220px] border border-gray-800">
+          <div className="mt-3 w-full rounded-xl bg-black p-4 min-h-[220px] border border-gray-800">
             <pre
               className="text-[12px] leading-5 font-mono whitespace-pre-wrap break-all text-slate-300"
               dangerouslySetInnerHTML={{ __html: syntaxHighlightJson(jsonText) }}
