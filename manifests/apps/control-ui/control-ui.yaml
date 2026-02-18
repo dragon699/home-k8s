@@ -1,0 +1,42 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: control-ui
+  namespace: control-ui
+  labels:
+    app: control-ui
+    env: home
+spec:
+  replicas: 1
+  revisionHistoryLimit: 0
+  selector:
+    matchLabels:
+      app: control-ui
+  template:
+    metadata:
+      labels:
+        app: control-ui
+        env: home
+    spec:
+      restartPolicy: Always
+      imagePullSecrets:
+        - name: registry-fetch-api
+      containers:
+        - name: control-ui
+          image: ghcr.io/dragon699/home-k8s/control-ui/control-ui:0.0.1
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          envFrom:
+            - configMapRef:
+                name: config-control-ui
+          livenessProbe:
+            exec:
+              command:
+                - python
+                - /home/health-probe.py
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3

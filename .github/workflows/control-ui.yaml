@@ -1,12 +1,11 @@
-name: fetch-api-connector-ml
-run-name: Deploy connector-ml
+name: control-ui
+run-name: Deploy control-ui
 
 on:
   push:
     paths:
-    - '.github/workflows/fetch-api-connector-ml.yaml'
-    - 'fetch-api/connectors/ml/**'
-    - 'fetch-api/common/**'
+    - '.github/workflows/control-ui.yaml'
+    - 'custom/control-ui/**'
 
 permissions:
   contents: write
@@ -14,10 +13,10 @@ permissions:
 
 env:
   REGISTRY: ghcr.io
-  APP_NAME: fetch-api
-  COMPONENT_PATH: fetch-api/connectors/ml
-  COMPONENT_DEPLOYMENT_FILE: manifests/apps/fetch-api/connectors/ml/connector-ml.yaml
-  IMAGE_NAME: dragon699/home-k8s/fetch-api/connectors/ml
+  APP_NAME: control-ui
+  COMPONENT_PATH: custom/control-ui
+  COMPONENT_DEPLOYMENT_FILE: manifests/apps/control-ui/control-ui.yaml
+  IMAGE_NAME: dragon699/home-k8s/control-ui/control-ui
 
 
 jobs:
@@ -56,8 +55,8 @@ jobs:
     - name: Build and push image
       uses: docker/build-push-action@v6
       with:
-        context: ./${{ env.APP_NAME }}
-        file: ./${{ env.COMPONENT_PATH }}/Dockerfile
+        context: ${{ env.COMPONENT_PATH }}
+        file: ${{ env.COMPONENT_PATH }}/Dockerfile
         push: true
         tags: |
           ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.image_version.outputs.VERSION }}
@@ -89,7 +88,7 @@ jobs:
     - name: Commit
       uses: stefanzweifel/git-auto-commit-action@v7
       with:
-        commit_message: "connector-ml: Bump to v${{ needs.package.outputs.version }}"
+        commit_message: "control-ui: Bump to v${{ needs.package.outputs.version }}"
         commit_user_name: ActionsBot
         file_pattern: ${{ env.COMPONENT_DEPLOYMENT_FILE }}
         push_options: --force-with-lease
