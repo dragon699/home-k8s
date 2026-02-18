@@ -22,12 +22,15 @@ function syntaxHighlightJson(rawJsonText) {
 export default function FetchApiActions() {
   const ICON_TRANSITION_MS = 240
   const SUCCESS_ICON_HOLD_MS = 2000
+  const DEFAULT_SAVE_LOCATION = '/data/Windows/Moviesdata/Windows/Movies'
+  const DEFAULT_CATEGORY = 'jellyfin'
+  const DEFAULT_TAGS = 'fetch-api,another tag'
   const jellyfinUrl = import.meta.env.VITE_JELLYFIN_URL || 'https://watch.k8s.iaminyourpc.xyz'
   const jellyfinAccent = '#6b5fda'
   const [movieName, setMovieName] = useState('')
-  const [saveLocation, setSaveLocation] = useState('')
-  const [qbittorrentCategory, setQbittorrentCategory] = useState('')
-  const [qbittorrentTags, setQbittorrentTags] = useState('')
+  const [saveLocation, setSaveLocation] = useState(DEFAULT_SAVE_LOCATION)
+  const [qbittorrentCategory, setQbittorrentCategory] = useState(DEFAULT_CATEGORY)
+  const [qbittorrentTags, setQbittorrentTags] = useState(DEFAULT_TAGS)
   const [findSubs, setFindSubs] = useState(false)
   const [manage, setManage] = useState(true)
   const [urlError, setUrlError] = useState('')
@@ -142,16 +145,18 @@ export default function FetchApiActions() {
 
     let requestSucceeded = false
     try {
-      const tags = qbittorrentTags
+      const effectiveSaveLocation = saveLocation.trim() || DEFAULT_SAVE_LOCATION
+      const effectiveCategory = qbittorrentCategory.trim() || DEFAULT_CATEGORY
+      const effectiveTags = (qbittorrentTags.trim() || DEFAULT_TAGS)
         .split(',')
         .map((tag) => tag.trim())
         .filter(Boolean)
 
       const payload = {
         url: value,
-        save_path: saveLocation.trim(),
-        category: qbittorrentCategory.trim(),
-        tags,
+        save_path: effectiveSaveLocation,
+        category: effectiveCategory,
+        tags: effectiveTags,
         manage,
         find_subs: findSubs,
       }
@@ -202,6 +207,7 @@ export default function FetchApiActions() {
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
+            <p className="mb-2 text-sm font-medium text-gray-700">URL</p>
             <input
               type="text"
               value={movieName}
@@ -217,12 +223,12 @@ export default function FetchApiActions() {
                   ? 'border-[#6b5fda] focus:ring-2 focus:ring-[#6b5fda] focus:border-[#6b5fda]'
                   : 'border-gray-300 focus:ring-2 focus:ring-[#6b5fda] focus:border-transparent'
               } disabled:cursor-not-allowed disabled:opacity-60`}
-              placeholder="Torrent URL"
             />
             {urlError && <p className="mt-2 text-sm text-[#6b5fda]">{urlError}</p>}
           </div>
 
           <div>
+            <p className="mb-2 text-sm font-medium text-gray-700">Save Location</p>
             <input
               type="text"
               value={saveLocation}
@@ -234,24 +240,26 @@ export default function FetchApiActions() {
           </div>
 
           <div>
+            <p className="mb-2 text-sm font-medium text-gray-700">Category</p>
             <input
               type="text"
               value={qbittorrentCategory}
               disabled={isSubmitting}
               onChange={(e) => setQbittorrentCategory(e.target.value)}
               className="w-full px-4 py-2 border rounded-lg outline-none transition-colors border-gray-300 focus:ring-2 focus:ring-[#6b5fda] focus:border-transparent disabled:cursor-not-allowed disabled:opacity-60"
-              placeholder="qBittorrent Category"
+              placeholder="Category"
             />
           </div>
 
           <div>
+            <p className="mb-2 text-sm font-medium text-gray-700">Tags</p>
             <input
               type="text"
               value={qbittorrentTags}
               disabled={isSubmitting}
               onChange={(e) => setQbittorrentTags(e.target.value)}
               className="w-full px-4 py-2 border rounded-lg outline-none transition-colors border-gray-300 focus:ring-2 focus:ring-[#6b5fda] focus:border-transparent disabled:cursor-not-allowed disabled:opacity-60"
-              placeholder="Comma-separated qBittorrent Tags"
+              placeholder="Tags"
             />
           </div>
 
