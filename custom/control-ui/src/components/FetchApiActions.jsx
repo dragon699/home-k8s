@@ -200,9 +200,8 @@ export default function FetchApiActions() {
               target="_blank"
               rel="noreferrer"
               aria-label="Open Jellyfin"
-              className="inline-flex items-center gap-1.5 text-sm font-medium text-[#6b5fda]"
+              className="inline-flex items-center text-sm font-medium text-[#6b5fda]"
             >
-              <span>Jellyfin</span>
               <span
                 aria-hidden="true"
                 className="block w-4 h-4"
@@ -224,16 +223,15 @@ export default function FetchApiActions() {
               target="_blank"
               rel="noreferrer"
               aria-label="Open qBittorrent"
-              className="inline-flex items-center gap-1.5 text-sm font-medium text-[#6b5fda]"
+              className="inline-flex items-center text-sm font-medium text-[#6b5fda]"
             >
-              <span>qBittorrent</span>
               <span
                 aria-hidden="true"
                 className="block w-4 h-4"
                 style={{
                   backgroundColor: '#6b5fda',
-                  WebkitMaskImage: 'url(https://i.imgur.com/UKcKriJ.png)',
-                  maskImage: 'url(https://i.imgur.com/UKcKriJ.png)',
+                  WebkitMaskImage: 'url(https://i.imgur.com/aTvxgZv.png)',
+                  maskImage: 'url(https://i.imgur.com/aTvxgZv.png)',
                   WebkitMaskSize: 'contain',
                   maskSize: 'contain',
                   WebkitMaskRepeat: 'no-repeat',
