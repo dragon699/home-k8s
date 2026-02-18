@@ -132,6 +132,8 @@ func SecondsToMinutes(seconds int64) int64 {
 
 var tvRe = regexp.MustCompile(`(?i)\bS(\d{1,2})\s*E(\d{1,2})\b`)
 var yearRe = regexp.MustCompile(`\b(19|20)\d{2}\b`)
+var collectionRangeRe = regexp.MustCompile(`\b(\d{1,2})\s*-\s*(\d{1,2})\b`)
+var collectionWordRe = regexp.MustCompile(`(?i)\bcollection\b`)
 
 var junkWords = map[string]struct{}{
 	"1080p": {}, "720p": {}, "480p": {},
@@ -200,11 +202,12 @@ func titleCase(s string) string {
 }
 
 func BeautifyMovieName(name string) string {
+	rawName := name
 	name = normalize(name)
 
 	if m := tvRe.FindStringSubmatch(name); m != nil {
-		season := m[1]
-		episode := m[2]
+		season, _ := strconv.Atoi(m[1])
+		episode, _ := strconv.Atoi(m[2])
 
 		loc := tvRe.FindStringIndex(name)
 		title := strings.TrimSpace(name[:loc[0]])
@@ -224,6 +227,20 @@ func BeautifyMovieName(name string) string {
 	if year != "" {
 		loc := yearRe.FindStringIndex(name)
 		title := strings.TrimSpace(name[:loc[0]])
+
+		if cm := collectionRangeRe.FindStringSubmatch(rawName); cm != nil {
+			start := cm[1]
+			end := cm[2]
+
+			rangeInTitleRe := regexp.MustCompile(`\b` + regexp.QuoteMeta(start) + `\s+` + regexp.QuoteMeta(end) + `\b`)
+			title = rangeInTitleRe.ReplaceAllString(title, " ")
+			title = collectionWordRe.ReplaceAllString(title, " ")
+			title = strings.Join(strings.Fields(title), " ")
+			title = removeJunk(title)
+			title = titleCase(title)
+
+			return fmt.Sprintf("%s %s-%s (%s)", title, start, end, year)
+		}
 
 		title = removeJunk(title)
 		title = titleCase(title)

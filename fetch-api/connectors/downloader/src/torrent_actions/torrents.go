@@ -57,8 +57,6 @@ func (instance *ActionChecker) runActions() {
 	lastCheckTime := time.Now().Format("2006-01-02T15:04:05")
 	settings.Config.TorrentActionsLastCheck = &lastCheckTime
 
-	t.Log.Debug("Running action checks")
-
 	torrents, err := instance.getTorrents()
 
 	if err != nil {
