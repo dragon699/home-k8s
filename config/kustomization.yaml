@@ -5,6 +5,7 @@ resources:
 - monitoring
 - vault
 - glance
-- fetch-api
 - krakend
 - postgresql-shared
+- fetch-api
+- control-ui
