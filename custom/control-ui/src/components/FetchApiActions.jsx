@@ -43,15 +43,6 @@ export default function FetchApiActions() {
     }
   }, [])
 
-  const isValidUrl = (value) => {
-    try {
-      const parsed = new URL(value)
-      return parsed.protocol === 'http:' || parsed.protocol === 'https:'
-    } catch {
-      return false
-    }
-  }
-
   const queueTimeout = (fn, delay) => {
     const id = setTimeout(fn, delay)
     timersRef.current.push(id)
@@ -80,8 +71,8 @@ export default function FetchApiActions() {
     e.preventDefault()
     const value = movieName.trim()
 
-    if (!isValidUrl(value)) {
-      setUrlError('Invalid URL')
+    if (!value) {
+      setUrlError('URL is required')
       clearTypingTimers()
       setJsonText('{}')
       return
@@ -156,7 +147,7 @@ export default function FetchApiActions() {
               }`}
               placeholder="Torrent URL"
             />
-            {urlError && <p className="mt-2 text-sm text-red-600">Invalid URL</p>}
+            {urlError && <p className="mt-2 text-sm text-red-600">{urlError}</p>}
           </div>
 
           <div>
