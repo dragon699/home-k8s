@@ -144,8 +144,10 @@ export default function FetchApiActions() {
       animateJsonOutput({ error: error.message || 'Request failed' })
       transitionButtonIcon('arrows')
       setButtonState('idle')
+      setMovieName('')
       return
     }
+    setMovieName('')
     transitionButtonIcon('check', () => {
       queueTimeout(() => {
         transitionButtonIcon('arrows')
