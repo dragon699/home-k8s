@@ -3,6 +3,7 @@ package action_scheduler
 import (
 	"common/utils"
 	"encoding/json"
+	"path/filepath"
 	"fmt"
 	"io"
 	"net/http"
@@ -70,9 +71,13 @@ func (instance *ActionChecker) runActions() {
 	}
 
 	for _, torrent := range torrents.Items {
-		if (torrent.Meta.ManagedBy != "connector-downloader") || (torrent.ProgressPercentage < 100) {
+		if torrent.Meta.ManagedBy != "connector-downloader" {
+			continue
+		}
+
+		if torrent.ProgressPercentage < 100 {
 			t.Log.Debug(
-				"Skipping torrent",
+				"Torrent not fully downloaded yet, skipping..",
 				"name", torrent.Name,
 				"hash", torrent.Hash,
 				"progress_percentage", torrent.ProgressPercentage,
@@ -119,9 +124,22 @@ func (instance *ActionChecker) runActions() {
 						destPath := path.Join(torrent.SavePath, filePath)
 						destFile := path.Join(destPath, fileNameNew)
 
-						fmt.Printf("src: %s\ndest: %s\n", srcFile, destFile)
+						err := os.Rename(srcFile, destFile)
+						if err != nil {
+							renameFailed = true
+						}
+					}
 
-						os.Rename(srcFile, destFile)
+					dirPath := filepath.Dir(torrent.FilesPath)
+					dirName := filepath.Base(torrent.FilesPath)
+					dirPathNew := path.Join(
+						dirPath,
+						utils.BeautifyMovieName(dirName),
+					)
+					
+					err = os.Rename(torrent.FilesPath, dirPathNew)
+					if err != nil {
+						renameFailed = true
 					}
 
 					qbittorrent.Client.RemoveTorrentTags(

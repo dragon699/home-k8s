@@ -65,6 +65,14 @@ func ListTorrents(ctx *fiber.Ctx) error {
 
 		if slices.Contains(torrentData.Tags, "fetch-api") {
 			torrentMeta.ManagedBy = "connector-downloader"
+
+			if (torrentData.Category == "jellyfin") && ! (utils.HasItemWithPrefix(torrentData.Tags, "jellyfin:")) {
+				qbittorrent.Client.AddTorrentTags(
+					torrentData.Hash,
+					[]string{"jellyfin:pending=rename"},
+				)
+				torrentData.Tags = append(torrentData.Tags, "jellyfin:pending=rename")
+			}
 		} else {
 			torrentMeta.ManagedBy = "qBittorrent"
 		}
@@ -85,16 +93,6 @@ func ListTorrents(ctx *fiber.Ctx) error {
 			torrentData.EtaMinutes = 0
 		} else {
 			torrentData.DateCompleted = ""
-		}
-
-		if (torrentData.Category == "jellyfin") && ! (utils.HasItemWithPrefix(torrentData.Tags, "jellyfin:")) {
-			qbittorrent.Client.AddTorrentTags(
-				torrentData.Hash,
-				[]string{
-					"jellyfin:pending=rename",
-				},
-			)
-			torrentData.Tags = append(torrentData.Tags, "jellyfin:pending=rename")
 		}
 
 		for _, tag := range torrentData.Tags {

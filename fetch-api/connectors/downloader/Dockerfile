@@ -13,7 +13,11 @@ RUN go mod download
 
 COPY connectors/downloader /app/connectors/downloader
 
-RUN CGO_ENABLED=0 GOOS=linux go build -o /app/bin/downloader app.go
+RUN CGO_ENABLED=0 \
+    GOOS=linux \
+    go build \
+    -o /app/bin/downloader \
+    app.go
 
 
 
