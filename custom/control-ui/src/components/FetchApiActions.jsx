@@ -205,7 +205,6 @@ export default function FetchApiActions() {
           />
         </a>
         <h3 className="text-xl font-semibold text-gray-900 mb-2">Import to Jellyfin</h3>
-        <p className="text-gray-600 text-sm mb-6">Your movie/show will be waiting for you.</p>
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
@@ -291,7 +290,7 @@ export default function FetchApiActions() {
             </div>
           </div>
 
-          <div className="flex items-center justify-between gap-4">
+          <div className="-mt-1 flex items-center justify-between gap-4">
             <div className="flex items-center gap-5">
               <div className="inline-flex items-center select-none gap-3">
                 <button
@@ -345,8 +344,8 @@ export default function FetchApiActions() {
             <button
               type="submit"
               disabled={buttonState === 'pending'}
-              className="btn-import-elevated relative w-[30%] min-w-[170px] overflow-hidden rounded-lg font-medium py-3 px-4 flex items-center justify-center text-white disabled:cursor-not-allowed disabled:opacity-70"
-              style={{ '--import-btn-accent': jellyfinAccent }}
+              className="relative w-[30%] min-w-[170px] overflow-hidden rounded-lg font-medium py-3 px-4 flex items-center justify-center transition-all duration-300 shadow-[inset_0_1px_0_rgba(255,255,255,0.26),inset_0_-2px_6px_rgba(0,0,0,0.2)] text-white disabled:cursor-not-allowed disabled:opacity-70"
+              style={{ backgroundColor: jellyfinAccent }}
             >
               <span className="relative z-10 inline-flex items-center justify-center gap-2">
                 <span className="btn-label-stack" aria-hidden="true">
@@ -373,7 +372,7 @@ export default function FetchApiActions() {
             </button>
           </div>
 
-          <div className="mt-6 w-full rounded-xl bg-black p-4 min-h-[220px] border border-gray-800">
+          <div className="mt-4 w-full rounded-xl bg-black p-4 min-h-[220px] border border-gray-800">
             <pre
               className="text-[12px] leading-5 font-mono whitespace-pre-wrap break-all text-slate-300"
               dangerouslySetInnerHTML={{ __html: syntaxHighlightJson(jsonText) }}

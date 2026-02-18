@@ -170,34 +170,6 @@ code {
   overflow: hidden;
 }
 
-.btn-import-elevated {
-  border: 1px solid rgba(255, 255, 255, 0.36);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0) 46%),
-    linear-gradient(135deg, #7a6fee 0%, var(--import-btn-accent) 70%);
-  box-shadow:
-    0 10px 18px -10px rgba(55, 45, 120, 0.55),
-    inset 0 1px 0 rgba(255, 255, 255, 0.42),
-    inset 0 -2px 7px rgba(0, 0, 0, 0.22);
-  transition: transform 180ms ease, box-shadow 180ms ease, filter 180ms ease;
-}
-
-.btn-import-elevated:hover:not(:disabled) {
-  transform: translateY(-1px);
-  filter: saturate(1.08);
-  box-shadow:
-    0 14px 22px -10px rgba(55, 45, 120, 0.62),
-    inset 0 1px 0 rgba(255, 255, 255, 0.48),
-    inset 0 -2px 7px rgba(0, 0, 0, 0.24);
-}
-
-.btn-import-elevated:active:not(:disabled) {
-  transform: translateY(0);
-  box-shadow:
-    0 8px 14px -10px rgba(55, 45, 120, 0.5),
-    inset 0 1px 0 rgba(255, 255, 255, 0.34),
-    inset 0 -1px 5px rgba(0, 0, 0, 0.28);
-}
 
 .json-key {
   color: #93c5fd;
@@ -229,8 +201,7 @@ code {
   .btn-pending-dot,
   .animated-focus-input,
   .animated-focus-input:focus,
-  .options-panel,
-  .btn-import-elevated {
+  .options-panel {
     animation: none;
     transition: none;
   }
