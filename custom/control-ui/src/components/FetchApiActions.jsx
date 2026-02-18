@@ -206,7 +206,7 @@ export default function FetchApiActions() {
         </a>
         <h3 className="text-xl font-semibold text-gray-900 mb-2">Import to Jellyfin</h3>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit} className="mt-5 space-y-5">
           <div>
             <input
               type="text"
