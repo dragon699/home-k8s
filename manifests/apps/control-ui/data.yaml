@@ -32,3 +32,24 @@ spec:
       conversionStrategy: Default
       decodingStrategy: None
       metadataPolicy: None
+
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: auth-control-ui
+  namespace: control-ui
+spec:
+  refreshInterval: 5m0s
+  secretStoreRef:
+    name: home-vault
+    kind: ClusterSecretStore
+  target:
+    name: auth-control-ui
+    creationPolicy: Owner
+  dataFrom:
+  - extract:
+      key: home/control-ui/auth-control-ui
+      conversionStrategy: Default
+      decodingStrategy: None
+      metadataPolicy: None
