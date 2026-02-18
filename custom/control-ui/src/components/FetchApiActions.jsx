@@ -26,8 +26,8 @@ export default function FetchApiActions() {
   const DEFAULT_CATEGORY = 'jellyfin'
   const DEFAULT_TAGS_PLACEHOLDER = 'fetch-api,another tag'
   const DEFAULT_TAGS_FALLBACK = 'fetch-api'
-  const jellyfinUrl = import.meta.env.VITE_JELLYFIN_URL || 'https://watch.k8s.iaminyourpc.xyz'
-  const qbittorrentUrl = import.meta.env.VITE_QBITTORRENT_URL || 'http://localhost:8080'
+  const jellyfinUrl = '/__jellyfin__'
+  const qbittorrentUrl = '/__qbittorrent__'
   const jellyfinAccent = '#6b5fda'
   const [movieName, setMovieName] = useState('')
   const [saveLocation, setSaveLocation] = useState('')
@@ -202,7 +202,7 @@ export default function FetchApiActions() {
             <img
               src="https://coolify.io/docs/images/services/qbittorrent-logo.svg"
               alt="qBittorrent"
-              className="w-4 h-4"
+              className="w-5 h-5"
             />
           </a>
           <a
@@ -214,7 +214,7 @@ export default function FetchApiActions() {
             <img
               src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/jellyfin.png"
               alt="Jellyfin"
-              className="w-4 h-4"
+              className="w-5 h-5"
             />
           </a>
         </div>
