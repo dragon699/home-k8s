@@ -11,7 +11,7 @@ export default function ActionCenter({ activeTab, setActiveTab }) {
       {/* Header */}
       <div className="bg-white shadow-[0_6px_14px_rgba(15,23,42,0.12)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-start">
+          <div className="flex items-center justify-center">
             <span
               aria-label="Section icon"
               className="block w-8 h-8"
@@ -43,7 +43,7 @@ export default function ActionCenter({ activeTab, setActiveTab }) {
       {/* Footer */}
       <div className="fixed bottom-0 left-0 right-0 bg-white shadow-[0_-6px_14px_rgba(15,23,42,0.12)] z-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-end">
+          <div className="flex items-center justify-center">
             <div className="flex space-x-2">
               <button
                 onClick={() => setActiveTab('fetch-api')}
