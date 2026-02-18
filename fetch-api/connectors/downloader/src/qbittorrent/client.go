@@ -212,6 +212,10 @@ func (instance *QBittorrentClient) AddTorrent(torrentURL string, category string
 		return newUpstreamError("qbittorrent returned non-2xx status", resp.StatusCode, body, nil)
 	}
 
+	if strings.Contains(strings.ToLower(string(body)), "fails") {
+		return newUpstreamError("qbittorrent returned failure message", 502, body, nil)
+	}
+
 	fmt.Println(string(body))
 	return nil
 }
