@@ -32,11 +32,18 @@ spec:
             - configMapRef:
                 name: config-control-ui
           livenessProbe:
-            exec:
-              command:
-                - python
-                - /home/health-probe.py
+            httpGet:
+              path: /
+              port: 80
             initialDelaySeconds: 5
             periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 3
+            periodSeconds: 5
             timeoutSeconds: 3
             failureThreshold: 3
