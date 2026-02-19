@@ -141,11 +141,14 @@ func (instance *ActionsRunner) runActions() {
 
 		t.Log.Debug("Running tag actions against completed torrent", "name", torrent.Name, "hash", torrent.Hash)
 
+		hasPendingActions := false
+
 		for _, action := range torrent.Meta.ScheduledActions {
 			if ! (action.Status == "pending") {
 				continue
 			}
 
+			hasPendingActions = true
 			qbittorrent.Client.StopTorrent(torrent.Hash)
 
 			if action.Category == "jellyfin" {
@@ -195,7 +198,6 @@ func (instance *ActionsRunner) runActions() {
 						err := os.Rename(srcFile, destFile)
 						if err != nil {
 							renameFailed = true
-							t.Log.Error("Failed to rename file for a torrent", "error", err.Error(), "file", srcFile, "dest", destFile)
 						}
 					}
 
@@ -209,7 +211,6 @@ func (instance *ActionsRunner) runActions() {
 					err = os.Rename(torrent.FilesPath, dirPathNew)
 					if err != nil {
 						renameFailed = true
-						t.Log.Error("Failed to rename directory for a torrent", "error", err.Error(), "dir", torrent.FilesPath, "dest", dirPathNew)
 					}
 
 					qbittorrent.Client.RemoveTorrentTags(torrent.Hash, []string{"jellyfin:rename=pending"})
@@ -223,6 +224,10 @@ func (instance *ActionsRunner) runActions() {
 					qbittorrent.Client.AddTorrentTags(torrent.Hash, []string{"jellyfin:rename=completed"})
 				}
 			}
+		}
+
+		if ! hasPendingActions {
+			qbittorrent.Client.RemoveTorrent(torrent.Hash, false)
 		}
 	}
 }

@@ -137,7 +137,7 @@ func (instance *QBittorrentClient) Ping() (string, int, error) {
 		return "not_ok", 0, err
 	}
 
-	if ! (resp.StatusCode >= 200) && (resp.StatusCode < 300) {
+	if !(resp.StatusCode >= 200) && (resp.StatusCode < 300) {
 		return "not_ok", resp.StatusCode, fmt.Errorf("unexpected status code: %d, body: %s", resp.StatusCode, string(body))
 	}
 
@@ -166,7 +166,7 @@ func (instance *QBittorrentClient) ListTorrents() ([]any, error) {
 		return nil, newConnectionError("Failed to read HTTP response", err)
 	}
 
-	if ! (resp.StatusCode >= 200 && resp.StatusCode < 300) {
+	if !(resp.StatusCode >= 200 && resp.StatusCode < 300) {
 		return nil, newUpstreamError("qBittorrent returned a non-2xx status", resp.StatusCode, body, nil)
 	}
 
@@ -178,9 +178,9 @@ func (instance *QBittorrentClient) ListTorrents() ([]any, error) {
 	return torrents, nil
 }
 
-func (instance *QBittorrentClient) GetTorrentContent(torrent_hash string) ([]map[string]any, error) {
+func (instance *QBittorrentClient) GetTorrentContent(torrentHash string) ([]map[string]any, error) {
 	reqParams := url.Values{}
-	reqParams.Set("hash", torrent_hash)
+	reqParams.Set("hash", torrentHash)
 
 	req, err := http.NewRequest(
 		http.MethodGet,
@@ -205,7 +205,7 @@ func (instance *QBittorrentClient) GetTorrentContent(torrent_hash string) ([]map
 		return nil, newConnectionError("Failed to read HTTP response", err)
 	}
 
-	if ! (resp.StatusCode >= 200 && resp.StatusCode < 300) {
+	if !(resp.StatusCode >= 200 && resp.StatusCode < 300) {
 		return nil, newUpstreamError("qBittorrent returned a non-2xx status", resp.StatusCode, body, nil)
 	}
 
@@ -217,9 +217,9 @@ func (instance *QBittorrentClient) GetTorrentContent(torrent_hash string) ([]map
 	return files, nil
 }
 
-func (instance *QBittorrentClient) StopTorrent(torrent_hash string) error {
+func (instance *QBittorrentClient) StopTorrent(torrentHash string) error {
 	reqParams := url.Values{}
-	reqParams.Set("hashes", torrent_hash)
+	reqParams.Set("hashes", torrentHash)
 
 	req, err := http.NewRequest(
 		http.MethodPost,
@@ -239,7 +239,7 @@ func (instance *QBittorrentClient) StopTorrent(torrent_hash string) error {
 
 	defer resp.Body.Close()
 
-	if ! (resp.StatusCode >= 200 && resp.StatusCode < 300) {
+	if !(resp.StatusCode >= 200 && resp.StatusCode < 300) {
 		body, _ := io.ReadAll(resp.Body)
 		return newUpstreamError("qBittorrent returned a non-2xx status", resp.StatusCode, body, nil)
 	}
@@ -277,7 +277,7 @@ func (instance *QBittorrentClient) AddTorrent(torrentURL string, category string
 		return newConnectionError("Failed to read HTTP response", err)
 	}
 
-	if ! (resp.StatusCode >= 200 && resp.StatusCode < 300) {
+	if !(resp.StatusCode >= 200 && resp.StatusCode < 300) {
 		return newUpstreamError("qBittorrent returned a non-2xx status", resp.StatusCode, body, nil)
 	}
 
@@ -288,9 +288,38 @@ func (instance *QBittorrentClient) AddTorrent(torrentURL string, category string
 	return nil
 }
 
-func (instance *QBittorrentClient) AddTorrentTags(torrent_hash string, tags []string) error {
+func (instance *QBittorrentClient) RemoveTorrent(torrentHash string, deleteFiles bool) error {
 	reqParams := url.Values{}
-	reqParams.Set("hashes", torrent_hash)
+	reqParams.Set("hashes", torrentHash)
+	reqParams.Set("deleteFiles", fmt.Sprintf("%t", deleteFiles))
+
+	req, err := http.NewRequest(
+		http.MethodPost,
+		fmt.Sprintf("%s/api/v2/torrents/delete?%s", settings.Config.QBittorrentUrl, reqParams.Encode()),
+		nil,
+	)
+	if err != nil {
+		return newConnectionError("Failed to create HTTP request", err)
+	}
+
+	resp, err := instance.Client.Do(req)
+	if err != nil {
+		return newConnectionError("Failed to create HTTP request", err)
+	}
+
+	defer resp.Body.Close()
+
+	if !(resp.StatusCode >= 200 && resp.StatusCode < 300) {
+		body, _ := io.ReadAll(resp.Body)
+		return newUpstreamError("qBittorrent returned a non-2xx status", resp.StatusCode, body, nil)
+	}
+
+	return nil
+}
+
+func (instance *QBittorrentClient) AddTorrentTags(torrentHash string, tags []string) error {
+	reqParams := url.Values{}
+	reqParams.Set("hashes", torrentHash)
 	reqParams.Set("tags", strings.Join(tags, ","))
 
 	req, err := http.NewRequest(
@@ -311,7 +340,7 @@ func (instance *QBittorrentClient) AddTorrentTags(torrent_hash string, tags []st
 
 	defer resp.Body.Close()
 
-	if ! (resp.StatusCode >= 200 && resp.StatusCode < 300) {
+	if !(resp.StatusCode >= 200 && resp.StatusCode < 300) {
 		body, _ := io.ReadAll(resp.Body)
 		return newUpstreamError("qBittorrent returned a non-2xx status", resp.StatusCode, body, nil)
 	}
@@ -319,9 +348,9 @@ func (instance *QBittorrentClient) AddTorrentTags(torrent_hash string, tags []st
 	return nil
 }
 
-func (instance *QBittorrentClient) RemoveTorrentTags(torrent_hash string, tags []string) error {
+func (instance *QBittorrentClient) RemoveTorrentTags(torrentHash string, tags []string) error {
 	reqParams := url.Values{}
-	reqParams.Set("hashes", torrent_hash)
+	reqParams.Set("hashes", torrentHash)
 	reqParams.Set("tags", strings.Join(tags, ","))
 
 	req, err := http.NewRequest(
@@ -342,7 +371,7 @@ func (instance *QBittorrentClient) RemoveTorrentTags(torrent_hash string, tags [
 
 	defer resp.Body.Close()
 
-	if ! (resp.StatusCode >= 200 && resp.StatusCode < 300) {
+	if !(resp.StatusCode >= 200 && resp.StatusCode < 300) {
 		body, _ := io.ReadAll(resp.Body)
 		return newUpstreamError("qBittorrent returned a non-2xx status", resp.StatusCode, body, nil)
 	}
