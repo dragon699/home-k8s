@@ -232,8 +232,8 @@ export default function FetchApiActions() {
                 className="block w-4 h-4"
                 style={{
                   backgroundColor: '#6b5fda',
-                  WebkitMaskImage: 'url(https://i.imgur.com/Pt6e9Lv.png)',
-                  maskImage: 'url(https://i.imgur.com/Pt6e9Lv.png)',
+                  WebkitMaskImage: 'url(https://i.imgur.com/3uMVbI9.png)',
+                  maskImage: 'url(https://i.imgur.com/3uMVbI9.png)',
                   WebkitMaskSize: 'contain',
                   maskSize: 'contain',
                   WebkitMaskRepeat: 'no-repeat',
@@ -330,74 +330,77 @@ export default function FetchApiActions() {
           </div>
 
           <div className="-mt-3 flex items-center justify-between gap-4">
-            <div className="flex flex-col gap-3">
-              <div className="flex items-center gap-5">
-                <div className="inline-flex items-center select-none gap-3">
-                  <button
-                    type="button"
-                    role="checkbox"
-                    disabled={isSubmitting}
-                    aria-checked={manage}
-                    aria-label="Manage"
-                    onClick={() => setManage((prev) => !prev)}
-                    className={`option-check ${manage ? 'option-check-on' : ''}`}
-                    style={manage ? { backgroundColor: jellyfinAccent, borderColor: jellyfinAccent } : { borderColor: 'rgba(107, 95, 218, 0.55)' }}
-                  >
+            <div className="option-list" style={{ '--option-accent': jellyfinAccent }}>
+              <button
+                type="button"
+                role="checkbox"
+                disabled={isSubmitting}
+                aria-checked={manage}
+                aria-label="Manage"
+                onClick={() => setManage((prev) => !prev)}
+                className="option-row-btn"
+              >
+                <span className="option-check-shell">
+                  <span className={`option-check ${manage ? 'option-check-on' : ''}`}>
                     <svg viewBox="0 0 16 16" className={`option-check-mark ${manage ? 'option-check-mark-on' : ''}`} aria-hidden="true">
                       <path d="M3.4 8.4 6.6 11.4 12.6 4.9" />
                     </svg>
-                  </button>
-                  <span className={`text-sm font-medium transition-colors duration-200 ${manage ? 'text-[#6b5fda]' : 'text-gray-800'}`}>
-                    Manage
                   </span>
-                </div>
+                </span>
+                <span className="option-copy">
+                  <span className="option-title">Manage</span>
+                  {manage && <span className="option-subtitle">Auto rename and delete torrent</span>}
+                </span>
+              </button>
 
-                <div className="inline-flex items-center select-none gap-3">
-                  <button
-                    type="button"
-                    role="checkbox"
-                    disabled={isSubmitting}
-                    aria-checked={notify}
-                    aria-label="Notify"
-                    onClick={() => setNotify((prev) => !prev)}
-                    className={`option-check ${notify ? 'option-check-on' : ''}`}
-                    style={notify ? { backgroundColor: jellyfinAccent, borderColor: jellyfinAccent } : { borderColor: 'rgba(107, 95, 218, 0.55)' }}
-                  >
+              <button
+                type="button"
+                role="checkbox"
+                disabled={isSubmitting}
+                aria-checked={notify}
+                aria-label="Notify"
+                onClick={() => setNotify((prev) => !prev)}
+                className="option-row-btn"
+              >
+                <span className="option-check-shell">
+                  <span className={`option-check ${notify ? 'option-check-on' : ''}`}>
                     <svg viewBox="0 0 16 16" className={`option-check-mark ${notify ? 'option-check-mark-on' : ''}`} aria-hidden="true">
                       <path d="M3.4 8.4 6.6 11.4 12.6 4.9" />
                     </svg>
-                  </button>
-                  <span className={`text-sm font-medium transition-colors duration-200 ${notify ? 'text-[#6b5fda]' : 'text-gray-800'}`}>
-                    Notify
                   </span>
-                </div>
-              </div>
-
-              <div className="inline-flex items-center select-none gap-3">
-                <button
-                  type="button"
-                  role="checkbox"
-                  disabled={isSubmitting}
-                  aria-checked={findSubs}
-                  aria-label="Find subs"
-                  onClick={() => setFindSubs((prev) => !prev)}
-                  className={`option-check ${findSubs ? 'option-check-on' : ''}`}
-                  style={findSubs ? { backgroundColor: jellyfinAccent, borderColor: jellyfinAccent } : { borderColor: 'rgba(107, 95, 218, 0.55)' }}
-                >
-                  <svg viewBox="0 0 16 16" className={`option-check-mark ${findSubs ? 'option-check-mark-on' : ''}`} aria-hidden="true">
-                    <path d="M3.4 8.4 6.6 11.4 12.6 4.9" />
-                  </svg>
-                </button>
-                <span className={`text-sm font-medium transition-colors duration-200 ${findSubs ? 'text-[#6b5fda]' : 'text-gray-800'}`}>
-                  Find subs
                 </span>
-              </div>
+                <span className="option-copy">
+                  <span className="option-title">Notify</span>
+                  {notify && <span className="option-subtitle">In Slack when downloaded</span>}
+                </span>
+              </button>
+
+              <button
+                type="button"
+                role="checkbox"
+                disabled={isSubmitting}
+                aria-checked={findSubs}
+                aria-label="Find subs"
+                onClick={() => setFindSubs((prev) => !prev)}
+                className="option-row-btn"
+              >
+                <span className="option-check-shell">
+                  <span className={`option-check ${findSubs ? 'option-check-on' : ''}`}>
+                    <svg viewBox="0 0 16 16" className={`option-check-mark ${findSubs ? 'option-check-mark-on' : ''}`} aria-hidden="true">
+                      <path d="M3.4 8.4 6.6 11.4 12.6 4.9" />
+                    </svg>
+                  </span>
+                </span>
+                <span className="option-copy">
+                  <span className="option-title">Find Subs</span>
+                </span>
+              </button>
             </div>
 
             <button
               type="submit"
               disabled={buttonState === 'pending'}
-              className="relative w-[30%] min-w-[170px] overflow-hidden rounded-md font-medium py-3 px-4 flex items-center justify-center transition-all duration-300 shadow-[inset_0_1px_0_rgba(255,255,255,0.26),inset_0_-2px_6px_rgba(0,0,0,0.2)] text-white disabled:cursor-not-allowed disabled:opacity-70"
+              className="import-action-btn relative w-[30%] min-w-[170px] overflow-hidden rounded-md font-medium py-3 px-4 flex items-center justify-center transition-all duration-300 shadow-[inset_0_1px_0_rgba(255,255,255,0.26),inset_0_-2px_6px_rgba(0,0,0,0.2)] text-white disabled:cursor-not-allowed disabled:opacity-70"
               style={{ backgroundColor: jellyfinAccent }}
             >
               <span className="relative z-10 inline-flex items-center justify-center gap-2">

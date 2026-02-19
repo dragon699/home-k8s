@@ -1,12 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 body {
   margin: 0;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Google Sans', 'Google Sans Text', 'Product Sans', 'Segoe UI', Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: #f9fafb;
@@ -172,11 +170,46 @@ code {
   margin: -3px;
 }
 
+.option-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.option-row-btn {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  text-align: left;
+  color: inherit;
+}
+
+.option-row-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.option-check-shell {
+  width: 42px;
+  height: 42px;
+  border-radius: 8px;
+  background: rgba(107, 95, 218, 0.1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
 .option-check {
-  width: 20px;
-  height: 20px;
+  width: 30px;
+  height: 30px;
   border-radius: 4px;
-  border: 2px solid #9ca3af;
+  border: 2px solid rgba(107, 95, 218, 0.55);
   position: relative;
   overflow: hidden;
   display: inline-flex;
@@ -184,6 +217,11 @@ code {
   justify-content: center;
   background-color: #ffffff;
   transition: background-color 220ms ease, border-color 220ms ease, transform 120ms ease;
+}
+
+.option-check-on {
+  background-color: var(--option-accent, #6b5fda);
+  border-color: var(--option-accent, #6b5fda);
 }
 
 .option-check::after {
@@ -223,19 +261,34 @@ code {
   animation: checkboxSplash 280ms ease-out;
 }
 
+.option-row-btn:hover:not(:disabled) .option-check {
+  transform: translateY(-1px);
+}
+
+.option-row-btn:active:not(:disabled) .option-check {
+  transform: scale(0.95);
+}
+
+.option-row-btn:active:not(:disabled) .option-check::after {
+  animation: checkboxSplash 280ms ease-out;
+}
+
+.option-row-btn:focus-visible {
+  outline: none;
+}
+
+.option-row-btn:focus-visible .option-check {
+  box-shadow: 0 0 0 3px rgba(107, 95, 218, 0.25);
+}
+
 .option-check:focus-visible {
   outline: none;
   box-shadow: 0 0 0 3px rgba(107, 95, 218, 0.25);
 }
 
-.option-check:disabled {
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
 .option-check-mark {
-  width: 12px;
-  height: 12px;
+  width: 14px;
+  height: 14px;
 }
 
 .option-check-mark path {
@@ -251,6 +304,54 @@ code {
 
 .option-check-mark-on path {
   stroke-dashoffset: 0;
+}
+
+.option-copy {
+  display: flex;
+  flex-direction: column;
+  min-height: 42px;
+  justify-content: center;
+}
+
+.option-title {
+  font-size: 14px;
+  line-height: 1.2;
+  font-weight: 700;
+  color: #111827;
+}
+
+.option-subtitle {
+  margin-top: 4px;
+  font-size: 12px;
+  line-height: 1.2;
+  font-weight: 500;
+  color: var(--option-accent, #6b5fda);
+}
+
+.import-action-btn::after {
+  content: "";
+  position: absolute;
+  width: 220%;
+  height: 220%;
+  left: 50%;
+  top: 50%;
+  border-radius: 9999px;
+  pointer-events: none;
+  transform: translate(-50%, -50%) scale(0.05);
+  opacity: 0;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.42) 0%, rgba(255, 255, 255, 0) 72%);
+}
+
+.import-action-btn:hover:not(:disabled)::after {
+  animation: checkboxSplash 340ms ease-out;
+}
+
+.import-action-btn:active:not(:disabled) {
+  transform: scale(0.985);
+}
+
+.import-action-btn:active:not(:disabled)::after {
+  animation: checkboxSplash 300ms ease-out;
 }
 
 
@@ -287,7 +388,9 @@ code {
   .options-panel,
   .option-check,
   .option-check-mark path,
-  .option-check::after {
+  .option-check::after,
+  .import-action-btn::after,
+  .import-action-btn {
     animation: none;
     transition: none;
   }

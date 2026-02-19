@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"errors"
-	"fmt"
 	"slices"
 	"strings"
 
@@ -248,7 +247,7 @@ func AddTorrent(ctx *fiber.Ctx) error {
 	return ctx.JSON(
 		response.SuccessResponse{
 			Success: true,
-			Message: fmt.Sprintf("Torrent added successfully and will begin downloading shortly -> %s", settings.Config.QBittorrentPublicUrl),
+			Message: "Request sent to qBittorrent!",
 		},
 	)
 }
