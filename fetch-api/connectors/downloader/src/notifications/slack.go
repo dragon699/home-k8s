@@ -17,6 +17,7 @@ type NotificationTorrentsVars struct {
 	JellyfinURL     string  `json:"jellyfin_url,omitempty"`
 }
 
+//go:embed templates/torrents/*.json
 var templateFiles embed.FS
 
 func SendSlackNotification(url string, templatePath string, vars any) error {
