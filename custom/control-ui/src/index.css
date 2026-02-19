@@ -1,18 +1,24 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --card-accent: #4f6df6;
+  --card-accent-rgb: 79, 109, 246;
+}
+
 body {
   margin: 0;
-  font-family: 'Google Sans', 'Google Sans Text', 'Product Sans', 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Manrope', 'Segoe UI', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: #f9fafb;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family: inherit;
 }
 
 @keyframes tabPanelIn {
@@ -115,22 +121,22 @@ code {
 
 @keyframes inputFocusIn {
   from {
-    box-shadow: 0 0 0 0 rgba(107, 95, 218, 0);
+    box-shadow: 0 0 0 0 rgba(var(--card-accent-rgb, 79, 109, 246), 0);
     border-color: #d1d5db;
   }
   to {
-    box-shadow: 0 0 0 3px rgba(107, 95, 218, 0.25);
-    border-color: #6b5fda;
+    box-shadow: 0 0 0 3px rgba(var(--card-accent-rgb, 79, 109, 246), 0.25);
+    border-color: var(--card-accent, #4f6df6);
   }
 }
 
 @keyframes inputFocusOut {
   from {
-    box-shadow: 0 0 0 3px rgba(107, 95, 218, 0.25);
-    border-color: #6b5fda;
+    box-shadow: 0 0 0 3px rgba(var(--card-accent-rgb, 79, 109, 246), 0.25);
+    border-color: var(--card-accent, #4f6df6);
   }
   to {
-    box-shadow: 0 0 0 0 rgba(107, 95, 218, 0);
+    box-shadow: 0 0 0 0 rgba(var(--card-accent-rgb, 79, 109, 246), 0);
     border-color: #d1d5db;
   }
 }
@@ -142,8 +148,8 @@ code {
 
 .animated-focus-input:focus {
   animation: inputFocusIn 180ms ease forwards;
-  border-color: #6b5fda;
-  box-shadow: 0 0 0 3px rgba(107, 95, 218, 0.25);
+  border-color: var(--card-accent, #4f6df6);
+  box-shadow: 0 0 0 3px rgba(var(--card-accent-rgb, 79, 109, 246), 0.25);
 }
 
 .animated-focus-input:disabled {
@@ -195,10 +201,10 @@ code {
 }
 
 .option-check-shell {
-  width: 42px;
-  height: 42px;
+  width: 30px;
+  height: 30px;
   border-radius: 8px;
-  background: rgba(107, 95, 218, 0.1);
+  background: rgba(var(--card-accent-rgb, 79, 109, 246), 0.1);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -206,10 +212,10 @@ code {
 }
 
 .option-check {
-  width: 30px;
-  height: 30px;
+  width: 20px;
+  height: 20px;
   border-radius: 4px;
-  border: 2px solid rgba(107, 95, 218, 0.55);
+  border: 2px solid rgba(var(--card-accent-rgb, 79, 109, 246), 0.55);
   position: relative;
   overflow: hidden;
   display: inline-flex;
@@ -220,8 +226,8 @@ code {
 }
 
 .option-check-on {
-  background-color: var(--option-accent, #6b5fda);
-  border-color: var(--option-accent, #6b5fda);
+  background-color: var(--option-accent, var(--card-accent, #4f6df6));
+  border-color: var(--option-accent, var(--card-accent, #4f6df6));
 }
 
 .option-check::after {
@@ -278,17 +284,17 @@ code {
 }
 
 .option-row-btn:focus-visible .option-check {
-  box-shadow: 0 0 0 3px rgba(107, 95, 218, 0.25);
+  box-shadow: 0 0 0 3px rgba(var(--card-accent-rgb, 79, 109, 246), 0.25);
 }
 
 .option-check:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(107, 95, 218, 0.25);
+  box-shadow: 0 0 0 3px rgba(var(--card-accent-rgb, 79, 109, 246), 0.25);
 }
 
 .option-check-mark {
-  width: 14px;
-  height: 14px;
+  width: 11px;
+  height: 11px;
 }
 
 .option-check-mark path {
@@ -309,23 +315,41 @@ code {
 .option-copy {
   display: flex;
   flex-direction: column;
-  min-height: 42px;
+  min-height: 30px;
   justify-content: center;
 }
 
 .option-title {
   font-size: 14px;
   line-height: 1.2;
-  font-weight: 700;
+  font-weight: 800;
   color: #111827;
+  transform: translateY(0);
+  transition: transform 220ms ease;
 }
 
 .option-subtitle {
-  margin-top: 4px;
+  margin-top: 0;
   font-size: 12px;
   line-height: 1.2;
-  font-weight: 500;
-  color: var(--option-accent, #6b5fda);
+  font-weight: 600;
+  color: var(--option-accent, var(--card-accent, #4f6df6));
+  max-height: 0;
+  opacity: 0;
+  transform: translateY(-5px);
+  transition: max-height 220ms ease, opacity 200ms ease, transform 220ms ease, margin-top 220ms ease;
+  overflow: hidden;
+}
+
+.option-copy-with-subtitle .option-title {
+  transform: translateY(-1px);
+}
+
+.option-subtitle-visible {
+  margin-top: 4px;
+  max-height: 20px;
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .import-action-btn::after {
@@ -340,10 +364,6 @@ code {
   transform: translate(-50%, -50%) scale(0.05);
   opacity: 0;
   background: radial-gradient(circle, rgba(255, 255, 255, 0.42) 0%, rgba(255, 255, 255, 0) 72%);
-}
-
-.import-action-btn:hover:not(:disabled)::after {
-  animation: checkboxSplash 340ms ease-out;
 }
 
 .import-action-btn:active:not(:disabled) {

@@ -28,7 +28,8 @@ export default function FetchApiActions() {
   const DEFAULT_TAGS_FALLBACK = 'fetch-api'
   const jellyfinUrl = '/__jellyfin__'
   const qbittorrentUrl = '/__qbittorrent__'
-  const jellyfinAccent = '#6b5fda'
+  const jellyfinAccent = '#4f6df6'
+  const jellyfinAccentRgb = '79, 109, 246'
   const [movieName, setMovieName] = useState('')
   const [saveLocation, setSaveLocation] = useState('')
   const [qbittorrentCategory, setQbittorrentCategory] = useState('')
@@ -193,7 +194,10 @@ export default function FetchApiActions() {
 
   return (
     <div>
-      <div className="relative max-w-2xl bg-white rounded-xl shadow-[0_6px_14px_rgba(15,23,42,0.12)] p-6 border border-gray-100">
+      <div
+        className="relative max-w-2xl bg-white rounded-xl shadow-[0_6px_14px_rgba(15,23,42,0.12)] p-6 border border-gray-100"
+        style={{ '--card-accent': jellyfinAccent, '--card-accent-rgb': jellyfinAccentRgb }}
+      >
         <div className="mb-2 flex items-center justify-between">
           <h3 className="text-xl font-semibold text-gray-900">Import to Jellyfin</h3>
           <div className="flex items-center gap-4">
@@ -202,13 +206,14 @@ export default function FetchApiActions() {
               target="_blank"
               rel="noreferrer"
               aria-label="Open Jellyfin"
-              className="inline-flex items-center text-sm font-medium text-[#6b5fda]"
+              className="inline-flex items-center text-sm font-medium"
+              style={{ color: jellyfinAccent }}
             >
               <span
                 aria-hidden="true"
                 className="block w-4 h-4"
                 style={{
-                  backgroundColor: '#6b5fda',
+                  backgroundColor: jellyfinAccent,
                   WebkitMaskImage: 'url(https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/jellyfin.png)',
                   maskImage: 'url(https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/jellyfin.png)',
                   WebkitMaskSize: 'contain',
@@ -225,13 +230,14 @@ export default function FetchApiActions() {
               target="_blank"
               rel="noreferrer"
               aria-label="Open qBittorrent"
-              className="inline-flex items-center text-sm font-medium text-[#6b5fda]"
+              className="inline-flex items-center text-sm font-medium"
+              style={{ color: jellyfinAccent }}
             >
               <span
                 aria-hidden="true"
                 className="block w-4 h-4"
                 style={{
-                  backgroundColor: '#6b5fda',
+                  backgroundColor: jellyfinAccent,
                   WebkitMaskImage: 'url(https://i.imgur.com/3uMVbI9.png)',
                   maskImage: 'url(https://i.imgur.com/3uMVbI9.png)',
                   WebkitMaskSize: 'contain',
@@ -258,14 +264,11 @@ export default function FetchApiActions() {
                   setUrlError('')
                 }
               }}
-              className={`w-full px-4 py-2 border rounded-md outline-none transition-colors ${
-                urlError
-                  ? 'border-[#6b5fda]'
-                  : 'border-gray-300'
-              } animated-focus-input disabled:cursor-not-allowed disabled:opacity-60`}
+              className="w-full px-4 py-2 border rounded-md outline-none transition-colors border-gray-300 animated-focus-input disabled:cursor-not-allowed disabled:opacity-60"
+              style={urlError ? { borderColor: jellyfinAccent } : undefined}
               placeholder="Magnet or link"
             />
-            {urlError && <p className="mt-2 text-sm text-[#6b5fda]">{urlError}</p>}
+            {urlError && <p className="mt-2 text-sm" style={{ color: jellyfinAccent }}>{urlError}</p>}
           </div>
 
           <div className="space-y-3">
@@ -273,7 +276,8 @@ export default function FetchApiActions() {
               type="button"
               disabled={isSubmitting}
               onClick={() => setShowOptions((prev) => !prev)}
-              className="inline-flex items-center gap-2 text-sm font-semibold text-[#6b5fda] disabled:opacity-60 disabled:cursor-not-allowed"
+              className="inline-flex items-center gap-2 text-sm font-semibold disabled:opacity-60 disabled:cursor-not-allowed"
+              style={{ color: jellyfinAccent }}
               aria-expanded={showOptions}
               aria-controls="import-options"
             >
@@ -347,9 +351,9 @@ export default function FetchApiActions() {
                     </svg>
                   </span>
                 </span>
-                <span className="option-copy">
+                <span className={`option-copy ${manage ? 'option-copy-with-subtitle' : ''}`}>
                   <span className="option-title">Manage</span>
-                  {manage && <span className="option-subtitle">Auto rename and delete torrent</span>}
+                  <span className={`option-subtitle ${manage ? 'option-subtitle-visible' : ''}`}>Auto rename and delete torrent</span>
                 </span>
               </button>
 
@@ -369,9 +373,9 @@ export default function FetchApiActions() {
                     </svg>
                   </span>
                 </span>
-                <span className="option-copy">
+                <span className={`option-copy ${notify ? 'option-copy-with-subtitle' : ''}`}>
                   <span className="option-title">Notify</span>
-                  {notify && <span className="option-subtitle">In Slack when downloaded</span>}
+                  <span className={`option-subtitle ${notify ? 'option-subtitle-visible' : ''}`}>In Slack when downloaded</span>
                 </span>
               </button>
 
@@ -430,7 +434,7 @@ export default function FetchApiActions() {
 
           <div className="mt-3 w-full rounded-lg bg-black p-4 min-h-[220px] border border-gray-800">
             <pre
-              className="text-[12px] leading-5 font-mono whitespace-pre-wrap break-all text-slate-300"
+              className="text-[12px] leading-5 whitespace-pre-wrap break-all text-slate-300"
               dangerouslySetInnerHTML={{ __html: syntaxHighlightJson(jsonText) }}
             />
           </div>
