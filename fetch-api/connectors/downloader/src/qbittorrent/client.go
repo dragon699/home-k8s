@@ -295,12 +295,14 @@ func (instance *QBittorrentClient) RemoveTorrent(torrentHash string, deleteFiles
 
 	req, err := http.NewRequest(
 		http.MethodPost,
-		fmt.Sprintf("%s/api/v2/torrents/delete?%s", settings.Config.QBittorrentUrl, reqParams.Encode()),
-		nil,
+		fmt.Sprintf("%s/api/v2/torrents/delete", settings.Config.QBittorrentUrl),
+		strings.NewReader(reqParams.Encode()),
 	)
 	if err != nil {
 		return newConnectionError("Failed to create HTTP request", err)
 	}
+
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	resp, err := instance.Client.Do(req)
 	if err != nil {
