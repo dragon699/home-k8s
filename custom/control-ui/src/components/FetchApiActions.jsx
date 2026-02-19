@@ -36,7 +36,6 @@ export default function FetchApiActions() {
   const [qbittorrentTags, setQbittorrentTags] = useState('')
   const [showOptions, setShowOptions] = useState(false)
   const [findSubs, setFindSubs] = useState(false)
-  const [manage, setManage] = useState(true)
   const [notify, setNotify] = useState(true)
   const [urlError, setUrlError] = useState('')
   const [jsonText, setJsonText] = useState('{}')
@@ -174,7 +173,6 @@ export default function FetchApiActions() {
         save_path: effectiveSaveLocation,
         category: effectiveCategory,
         tags: effectiveTags,
-        manage,
         notify,
         subtitles: findSubs,
       }
@@ -351,28 +349,6 @@ export default function FetchApiActions() {
                 type="button"
                 role="checkbox"
                 disabled={isSubmitting}
-                aria-checked={manage}
-                aria-label="Manage"
-                onClick={() => setManage((prev) => !prev)}
-                className="option-row-btn"
-              >
-                <span className="option-check-shell">
-                  <span className={`option-check ${manage ? 'option-check-on' : ''}`}>
-                    <svg viewBox="0 0 16 16" className={`option-check-mark ${manage ? 'option-check-mark-on' : ''}`} aria-hidden="true">
-                      <path d="M3.4 8.4 6.6 11.4 12.6 4.9" />
-                    </svg>
-                  </span>
-                </span>
-                <span className={`option-copy ${manage ? 'option-copy-with-subtitle' : ''}`}>
-                  <span className="option-title">Manage</span>
-                  <span className={`option-subtitle ${manage ? 'option-subtitle-visible' : ''}`}>Automatically when completed</span>
-                </span>
-              </button>
-
-              <button
-                type="button"
-                role="checkbox"
-                disabled={isSubmitting}
                 aria-checked={notify}
                 aria-label="Notify"
                 onClick={() => setNotify((prev) => !prev)}
@@ -391,11 +367,11 @@ export default function FetchApiActions() {
                 </span>
               </button>
 
-              <div className="pt-2">
+              <div className="pt-4">
                 <button
                   type="button"
                   role="checkbox"
-                  disabled={isSubmitting || !manage}
+                  disabled={isSubmitting}
                   aria-checked={findSubs}
                   aria-label="Subtitles"
                   onClick={() => setFindSubs((prev) => !prev)}
@@ -410,7 +386,7 @@ export default function FetchApiActions() {
                   </span>
                   <span className={`option-copy ${findSubs ? 'option-copy-with-subtitle' : ''}`}>
                     <span className="option-title">Subtitles</span>
-                    <span className={`option-subtitle ${findSubs ? 'option-subtitle-visible' : ''}`}>Find and download</span>
+                    <span className={`option-subtitle ${findSubs ? 'option-subtitle-visible' : ''}`}>Find and download when completed</span>
                   </span>
                 </button>
               </div>
@@ -419,7 +395,7 @@ export default function FetchApiActions() {
             <button
               type="submit"
               disabled={buttonState === 'pending'}
-              className="import-action-btn relative w-[30%] min-w-[130px] overflow-hidden rounded-md font-semibold py-2 px-3 flex items-center justify-center transition-all duration-300 text-white disabled:cursor-not-allowed disabled:opacity-70"
+              className="import-action-btn relative w-[30%] min-w-[130px] overflow-hidden rounded-md font-semibold py-2.5 px-3 flex items-center justify-center transition-all duration-300 text-white disabled:cursor-not-allowed disabled:opacity-70"
               style={{ backgroundColor: jellyfinAccent }}
             >
               <span className="relative z-10 inline-flex items-center justify-center gap-2">
