@@ -176,7 +176,7 @@ export default function FetchApiActions() {
         tags: effectiveTags,
         manage,
         notify,
-        find_subs: findSubs,
+        subtitles: findSubs,
       }
 
       const response = await addTorrent(payload)
@@ -372,28 +372,6 @@ export default function FetchApiActions() {
               <button
                 type="button"
                 role="checkbox"
-                disabled={isSubmitting || !manage}
-                aria-checked={findSubs}
-                aria-label="Subtitles"
-                onClick={() => setFindSubs((prev) => !prev)}
-                className="option-row-btn"
-              >
-                <span className="option-check-shell">
-                  <span className={`option-check ${findSubs ? 'option-check-on' : ''}`}>
-                    <svg viewBox="0 0 16 16" className={`option-check-mark ${findSubs ? 'option-check-mark-on' : ''}`} aria-hidden="true">
-                      <path d="M3.4 8.4 6.6 11.4 12.6 4.9" />
-                    </svg>
-                  </span>
-                </span>
-                <span className={`option-copy ${findSubs ? 'option-copy-with-subtitle' : ''}`}>
-                  <span className="option-title">Subtitles</span>
-                  <span className={`option-subtitle ${findSubs ? 'option-subtitle-visible' : ''}`}>Find and download</span>
-                </span>
-              </button>
-
-              <button
-                type="button"
-                role="checkbox"
                 disabled={isSubmitting}
                 aria-checked={notify}
                 aria-label="Notify"
@@ -412,6 +390,30 @@ export default function FetchApiActions() {
                   <span className={`option-subtitle ${notify ? 'option-subtitle-visible' : ''}`}>In Slack when completed</span>
                 </span>
               </button>
+
+              <div className="pt-2">
+                <button
+                  type="button"
+                  role="checkbox"
+                  disabled={isSubmitting || !manage}
+                  aria-checked={findSubs}
+                  aria-label="Subtitles"
+                  onClick={() => setFindSubs((prev) => !prev)}
+                  className="option-row-btn"
+                >
+                  <span className="option-check-shell">
+                    <span className={`option-check ${findSubs ? 'option-check-on' : ''}`}>
+                      <svg viewBox="0 0 16 16" className={`option-check-mark ${findSubs ? 'option-check-mark-on' : ''}`} aria-hidden="true">
+                        <path d="M3.4 8.4 6.6 11.4 12.6 4.9" />
+                      </svg>
+                    </span>
+                  </span>
+                  <span className={`option-copy ${findSubs ? 'option-copy-with-subtitle' : ''}`}>
+                    <span className="option-title">Subtitles</span>
+                    <span className={`option-subtitle ${findSubs ? 'option-subtitle-visible' : ''}`}>Find and download</span>
+                  </span>
+                </button>
+              </div>
             </div>
 
             <button
