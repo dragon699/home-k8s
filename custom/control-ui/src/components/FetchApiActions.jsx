@@ -116,9 +116,21 @@ export default function FetchApiActions() {
     }
 
     return (
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M7 7l5 5-5 5M12 7l5 5-5 5" />
-      </svg>
+      <span
+        aria-hidden="true"
+        className="block w-5 h-5"
+        style={{
+          backgroundColor: 'currentColor',
+          WebkitMaskImage: 'url(https://i.imgur.com/aefU0eB.png)',
+          maskImage: 'url(https://i.imgur.com/aefU0eB.png)',
+          WebkitMaskSize: 'contain',
+          maskSize: 'contain',
+          WebkitMaskRepeat: 'no-repeat',
+          maskRepeat: 'no-repeat',
+          WebkitMaskPosition: 'center',
+          maskPosition: 'center',
+        }}
+      />
     )
   }
 
@@ -136,7 +148,7 @@ export default function FetchApiActions() {
     const value = movieName.trim()
 
     if (!value) {
-      setUrlError('URL is required')
+      setUrlError('* Torrent URL is required')
       clearTypingTimers()
       setJsonText('{}')
       return
@@ -264,7 +276,7 @@ export default function FetchApiActions() {
                   setUrlError('')
                 }
               }}
-              className="w-full px-4 py-2 border rounded-md outline-none transition-colors border-gray-300 animated-focus-input disabled:cursor-not-allowed disabled:opacity-60"
+              className="w-full px-4 py-[7px] text-[14px] border rounded-md outline-none transition-colors border-gray-300 animated-focus-input disabled:cursor-not-allowed disabled:opacity-60"
               style={urlError ? { borderColor: jellyfinAccent } : undefined}
               placeholder="Magnet or link"
             />
@@ -301,7 +313,7 @@ export default function FetchApiActions() {
                     value={saveLocation}
                     disabled={isSubmitting}
                     onChange={(e) => setSaveLocation(e.target.value)}
-                    className="w-full px-4 py-2 border rounded-md outline-none transition-colors border-gray-300 animated-focus-input disabled:cursor-not-allowed disabled:opacity-60"
+                    className="w-full px-4 py-[7px] text-[14px] border rounded-md outline-none transition-colors border-gray-300 animated-focus-input disabled:cursor-not-allowed disabled:opacity-60"
                     placeholder={DEFAULT_SAVE_LOCATION}
                   />
                 </div>
@@ -313,7 +325,7 @@ export default function FetchApiActions() {
                     value={qbittorrentCategory}
                     disabled={isSubmitting}
                     onChange={(e) => setQbittorrentCategory(e.target.value)}
-                    className="w-full px-4 py-2 border rounded-md outline-none transition-colors border-gray-300 animated-focus-input disabled:cursor-not-allowed disabled:opacity-60"
+                    className="w-full px-4 py-[7px] text-[14px] border rounded-md outline-none transition-colors border-gray-300 animated-focus-input disabled:cursor-not-allowed disabled:opacity-60"
                     placeholder={DEFAULT_CATEGORY}
                   />
                 </div>
@@ -325,7 +337,7 @@ export default function FetchApiActions() {
                     value={qbittorrentTags}
                     disabled={isSubmitting}
                     onChange={(e) => setQbittorrentTags(e.target.value)}
-                    className="w-full px-4 py-2 border rounded-md outline-none transition-colors border-gray-300 animated-focus-input disabled:cursor-not-allowed disabled:opacity-60"
+                    className="w-full px-4 py-[7px] text-[14px] border rounded-md outline-none transition-colors border-gray-300 animated-focus-input disabled:cursor-not-allowed disabled:opacity-60"
                     placeholder={DEFAULT_TAGS_PLACEHOLDER}
                   />
                 </div>
