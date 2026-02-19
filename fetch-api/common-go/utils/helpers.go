@@ -2,12 +2,14 @@ package utils
 
 import (
 	"fmt"
+	"bytes"
 	"math"
 	"os"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
+	"text/template"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -52,6 +54,28 @@ func ReadFile(path string) (string, error) {
 
 func WriteFile(path string, content string) error {
 	return os.WriteFile(path, []byte(content), 0644)
+}
+
+func RenderTemplate(templatePath string, vars any) (string, error) {
+	tplBytes, err := os.ReadFile(templatePath)
+
+	if err != nil {
+		return "", err
+	}
+
+	tpl, err := template.New("default").Parse(string(tplBytes))
+
+	if err != nil {
+		return "", err
+	}
+
+	var tplOut bytes.Buffer
+
+	if err := tpl.Execute(&tplOut, vars); err != nil {
+		return "", err
+	}
+
+	return tplOut.String(), nil
 }
 
 func TrimKubeTime(time metav1.Time) string {

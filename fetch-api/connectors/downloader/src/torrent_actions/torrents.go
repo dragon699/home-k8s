@@ -16,6 +16,7 @@ import (
 	"connector-downloader/settings"
 	"connector-downloader/src/dto/response"
 	"connector-downloader/src/qbittorrent"
+	"connector-downloader/src/notifications"
 	t "connector-downloader/src/telemetry"
 
 	"github.com/go-co-op/gocron"
@@ -70,24 +71,88 @@ func (instance *ActionsRunner) runActions() {
 	}
 
 	for _, torrent := range torrents.Items {
+		if torrent.ProgressPercentage < 100 {
+			for _, action := range torrent.Meta.ScheduledActions {
+				if (action.Category == "slack") && (action.Name == "notify") && (action.Status == "pending") {
+					vars := notifications.NotificationTorrentsVars{
+						TorrentName: torrent.Name,
+						QBittorrentURL: settings.Config.ListenUrl,
+						JellyfinURL: settings.Config.JellyfinUrl,
+					}
+
+					payload, err := utils.RenderTemplate("src/notifications/templates/torrents/slack_initial.json", vars)
+					if err != nil {
+						t.Log.Error("Failed to render slack notification for a torrent!", "error", err.Error())
+						
+						qbittorrent.Client.RemoveTorrentTags(torrent.Hash, []string{"slack:notify=pending"})
+						qbittorrent.Client.AddTorrentTags(torrent.Hash, []string{"slack:notify=failed"})
+
+						break
+					}
+
+					err = notifications.SendSlackNotification(settings.Config.SlackNotificationsWebhookUrl, string(payload))
+					if err != nil {
+						t.Log.Error("Failed to send slack notification for a torrent!", "error", err.Error())
+
+						qbittorrent.Client.RemoveTorrentTags(torrent.Hash, []string{"slack:notify=pending"})
+						qbittorrent.Client.AddTorrentTags(torrent.Hash, []string{"slack:notify=failed"})
+
+						break
+					}
+
+					qbittorrent.Client.RemoveTorrentTags(torrent.Hash, []string{"slack:notify=pending"})
+					qbittorrent.Client.AddTorrentTags(torrent.Hash, []string{"slack:notify=initial"})
+
+					break
+				}
+			}
+
+			continue
+		} else {
+			for _, action := range torrent.Meta.ScheduledActions {
+				if (action.Category == "slack") && (action.Name == "notify") && (action.Status == "initial") {
+					vars := notifications.NotificationTorrentsVars{
+						TorrentName: torrent.Name,
+						QBittorrentURL: settings.Config.ListenUrl,
+						JellyfinURL: settings.Config.JellyfinUrl,
+					}
+
+					payload, err := utils.RenderTemplate("src/notifications/templates/torrents/slack_completed.json", vars)
+					if err != nil {
+						t.Log.Error("Failed to render slack notification for a completed torrent!", "error", err.Error())
+						
+						qbittorrent.Client.RemoveTorrentTags(torrent.Hash, []string{"slack:notify=initial"})
+						qbittorrent.Client.AddTorrentTags(torrent.Hash, []string{"slack:notify=failed"})
+
+						break
+					}
+
+					err = notifications.SendSlackNotification(settings.Config.SlackNotificationsWebhookUrl, string(payload))
+					if err != nil {
+						t.Log.Error("Failed to send slack notification for a completed torrent!", "error", err.Error())
+
+						qbittorrent.Client.RemoveTorrentTags(torrent.Hash, []string{"slack:notify=initial"})
+						qbittorrent.Client.AddTorrentTags(torrent.Hash, []string{"slack:notify=failed"})
+
+						break
+					}
+
+					qbittorrent.Client.RemoveTorrentTags(torrent.Hash, []string{"slack:notify=initial"})
+					qbittorrent.Client.AddTorrentTags(torrent.Hash, []string{"slack:notify=completed"})
+
+					break
+				}
+			}
+		}
+
 		if torrent.Meta.ManagedBy != "connector-downloader" {
 			continue
 		}
 
-		if torrent.ProgressPercentage < 100 {
-			t.Log.Debug(
-				"Torrent not fully downloaded yet, skipping..",
-				"name", torrent.Name,
-				"hash", torrent.Hash,
-				"progress_percentage", torrent.ProgressPercentage,
-			)
-			continue
-		}
-
-		t.Log.Debug("Checking torrent", "name", torrent.Name, "hash", torrent.Hash)
+		t.Log.Debug("Running tag actions against completed torrent", "name", torrent.Name, "hash", torrent.Hash)
 
 		for _, action := range torrent.Meta.ScheduledActions {
-			if !(action.Status == "pending") {
+			if ! (action.Status == "pending") {
 				continue
 			}
 
@@ -154,15 +219,15 @@ func (instance *ActionsRunner) runActions() {
 						renameFailed = true
 					}
 
-					qbittorrent.Client.RemoveTorrentTags(torrent.Hash, []string{"jellyfin:pending=rename"})
+					qbittorrent.Client.RemoveTorrentTags(torrent.Hash, []string{"jellyfin:rename=pending"})
 
 					if renameFailed {
-						qbittorrent.Client.AddTorrentTags(torrent.Hash, []string{"jellyfin:failed=rename"})
+						qbittorrent.Client.AddTorrentTags(torrent.Hash, []string{"jellyfin:rename=failed"})
 
 						continue
 					}
 
-					qbittorrent.Client.AddTorrentTags(torrent.Hash, []string{"jellyfin:completed=rename"})
+					qbittorrent.Client.AddTorrentTags(torrent.Hash, []string{"jellyfin:rename=completed"})
 				}
 			}
 		}

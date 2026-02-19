@@ -1,0 +1,43 @@
+{
+	"attachments": [
+		{
+			"color": "#00b389",
+			"blocks": [
+				{
+					"type": "section",
+					"text": {
+						"type": "mrkdwn",
+						"text": "*{{ .TorrentName }}*\nDownload completed!"
+					}
+				},
+				{
+					"type": "actions",
+					"elements": [
+						{
+							"type": "button",
+							"text": {
+								"type": "plain_text",
+								"text": "Open in qBittorrent 🡕",
+								"emoji": true
+							},
+							"value": "Open qBittorrent",
+							"url": "{{ .QBittorrentURL }}"
+						}
+						{{ if eq .Category "jellyfin" }}
+						,{
+							"type": "button",
+							"text": {
+								"type": "plain_text",
+								"text": "Open in Jellyfin 🡕",
+								"emoji": true
+							},
+							"value": "Open in Jellyfin",
+							"url": "{{ .JellyfinURL }}"
+						}
+						{{ end }}
+					]
+				}
+			]
+		}
+	]
+}

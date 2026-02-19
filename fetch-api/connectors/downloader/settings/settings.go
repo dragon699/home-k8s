@@ -17,9 +17,11 @@ type Settings struct {
 	ListenPort int    `json:"listen_port"                   env:"LISTEN_PORT"`
 	ListenUrl  string `json:"listen_url"`
 
-	QBittorrentUrl                string `json:"qbittorrent_url"                env:"QBITTORRENT_URL"`
-	QBittorrentPublicUrl          string `json:"qbittorrent_public_url"         env:"QBITTORRENT_PUBLIC_URL"`
-	QBittorrentDefaultSavePath    string `json:"qbittorrent_default_save_path" env:"QBITTORRENT_DEFAULT_SAVE_PATH"`
+	QBittorrentUrl                string `json:"qbittorrent_url"                 env:"QBITTORRENT_URL"`
+	QBittorrentPublicUrl          string `json:"qbittorrent_public_url"          env:"QBITTORRENT_PUBLIC_URL"`
+	QBittorrentDefaultSavePath    string `json:"qbittorrent_default_save_path"   env:"QBITTORRENT_DEFAULT_SAVE_PATH"`
+	JellyfinUrl                   string `json:"jellyfin_url"                    env:"JELLYFIN_URL"`
+	SlackNotificationsWebhookUrl  string `json:"slack_notifications_webhook_url" env:"SLACK_NOTIFICATIONS_WEBHOOK_URL"`
 
 	OtelServiceName      string `json:"otel_service_name"             env:"OTEL_SERVICE_NAME"`
 	OtelServiceNamespace string `json:"otel_service_namespace"        env:"OTEL_SERVICE_NAMESPACE"`

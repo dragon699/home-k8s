@@ -79,12 +79,12 @@ func ListTorrents(ctx *fiber.Ctx) error {
 		if slices.Contains(torrentData.Tags, "fetch-api") {
 			torrentMeta.ManagedBy = "connector-downloader"
 
-			if (torrentData.Category == "jellyfin") && !(utils.HasItemWithPrefix(torrentData.Tags, "jellyfin:")) {
+			if (torrentData.Category == "jellyfin") && ! (utils.HasItemWithPrefix(torrentData.Tags, "jellyfin:")) {
 				qbittorrent.Client.AddTorrentTags(
 					torrentData.Hash,
-					[]string{"jellyfin:pending=rename"},
+					[]string{"jellyfin:rename=pending"},
 				)
-				torrentData.Tags = append(torrentData.Tags, "jellyfin:pending=rename")
+				torrentData.Tags = append(torrentData.Tags, "jellyfin:rename=pending")
 			}
 		} else {
 			torrentMeta.ManagedBy = "qBittorrent"
@@ -124,8 +124,8 @@ func ListTorrents(ctx *fiber.Ctx) error {
 			tagAction := response.TorrentMetaScheduledAction{}
 
 			tagCategory := tagParts[0]
-			tagOpStatus := tagOpParts[0]
-			tagOpName := tagOpParts[1]
+			tagOpName := tagOpParts[0]
+			tagOpStatus := tagOpParts[1]
 
 			if (tagCategory == "jellyfin") && (tagOpName == "rename") {
 				switch tagOpStatus {
@@ -135,6 +135,19 @@ func ListTorrents(ctx *fiber.Ctx) error {
 					tagAction.Description = "Torrent dir/files renamed to match Jellyfin library structure."
 				case "failed":
 					tagAction.Description = "[!] Something went wrong while renaming Torrent's content."
+				}
+			}
+
+			if (tagCategory == "slack") && (tagOpName == "notify") {
+				switch tagOpStatus {
+				case "pending":
+					tagAction.Description = "Slack notification still not sent."
+				case "initial":
+					tagAction.Description = "Initial Slack notification already sent, awaiting for torrent completion."
+				case "completed":
+					tagAction.Description = "Slack notifications sent."
+				case "failed":
+					tagAction.Description = "[!] Something went wrong while sending notifications to Slack."
 				}
 			}
 
@@ -176,6 +189,9 @@ func AddTorrent(ctx *fiber.Ctx) error {
 		)
 	}
 
+	manage := true
+	notify := true
+
 	if reqPayload.Category == "" {
 		reqPayload.Category = "jellyfin"
 	}
@@ -188,14 +204,20 @@ func AddTorrent(ctx *fiber.Ctx) error {
 		reqPayload.SavePath = settings.Config.QBittorrentDefaultSavePath
 	}
 
-	manage := true
-
 	if reqPayload.Manage != nil {
 		manage = *reqPayload.Manage
 	}
 
 	if (manage) && ! (slices.Contains(reqPayload.Tags, "fetch-api")) {
 		reqPayload.Tags = append(reqPayload.Tags, "fetch-api")
+	}
+
+	if reqPayload.Notify != nil {
+		notify = *reqPayload.Notify
+	}
+
+	if (notify) && ! (slices.Contains(reqPayload.Tags, "slack:notify=pending")) {
+		reqPayload.Tags = append(reqPayload.Tags, "slack:notify=pending")
 	}
 
 	err := qbittorrent.Client.AddTorrent(

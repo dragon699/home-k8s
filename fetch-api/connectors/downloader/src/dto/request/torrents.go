@@ -7,4 +7,5 @@ type AddTorrentPayload struct {
 	Tags      []string  `json:"tags,omitempty"`
 	SavePath  string    `json:"save_path,omitempty"`
 	Manage    *bool     `json:"manage,omitempty"`
+	Notify    *bool     `json:"notify,omitempty"`
 }

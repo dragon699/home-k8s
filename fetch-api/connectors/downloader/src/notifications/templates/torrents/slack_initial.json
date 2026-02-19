@@ -1,0 +1,31 @@
+{
+	"attachments": [
+		{
+			"color": "#00b389",
+			"blocks": [
+				{
+					"type": "section",
+					"text": {
+						"type": "mrkdwn",
+						"text": "*{{ .TorrentName }}*\nNow downloading"
+					}
+				},
+				{
+					"type": "actions",
+					"elements": [
+						{
+							"type": "button",
+							"text": {
+								"type": "plain_text",
+								"text": "Open in qBittorrent 🡕",
+								"emoji": true
+							},
+							"value": "Open qBittorrent",
+							"url": "{{ .QBittorrentURL }}"
+						}
+					]
+				}
+			]
+		}
+	]
+}
