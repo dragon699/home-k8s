@@ -211,7 +211,7 @@ export default function FetchApiActions() {
         style={{ '--card-accent': jellyfinAccent, '--card-accent-rgb': jellyfinAccentRgb }}
       >
         <div className="mb-2 flex items-center justify-between">
-          <h3 className="text-xl font-semibold text-gray-900">Import to Jellyfin</h3>
+          <h3 className="text-xl font-semibold text-gray-900">Add to Jellyfin</h3>
           <div className="flex items-center gap-4">
             <a
               href={jellyfinUrl}
@@ -278,7 +278,7 @@ export default function FetchApiActions() {
               }}
               className="w-full px-4 py-[7px] text-[14px] border rounded-md outline-none transition-colors border-gray-300 animated-focus-input disabled:cursor-not-allowed disabled:opacity-60"
               style={urlError ? { borderColor: jellyfinAccent } : undefined}
-              placeholder="Magnet or link"
+              placeholder="Magnet or url"
             />
             {urlError && <p className="mt-2 text-sm font-semibold" style={{ color: jellyfinAccent }}>{urlError}</p>}
           </div>
@@ -365,7 +365,29 @@ export default function FetchApiActions() {
                 </span>
                 <span className={`option-copy ${manage ? 'option-copy-with-subtitle' : ''}`}>
                   <span className="option-title">Manage</span>
-                  <span className={`option-subtitle ${manage ? 'option-subtitle-visible' : ''}`}>Auto rename and delete torrent</span>
+                  <span className={`option-subtitle ${manage ? 'option-subtitle-visible' : ''}`}>Automatically when completed</span>
+                </span>
+              </button>
+
+              <button
+                type="button"
+                role="checkbox"
+                disabled={isSubmitting || !manage}
+                aria-checked={findSubs}
+                aria-label="Subtitles"
+                onClick={() => setFindSubs((prev) => !prev)}
+                className="option-row-btn"
+              >
+                <span className="option-check-shell">
+                  <span className={`option-check ${findSubs ? 'option-check-on' : ''}`}>
+                    <svg viewBox="0 0 16 16" className={`option-check-mark ${findSubs ? 'option-check-mark-on' : ''}`} aria-hidden="true">
+                      <path d="M3.4 8.4 6.6 11.4 12.6 4.9" />
+                    </svg>
+                  </span>
+                </span>
+                <span className={`option-copy ${findSubs ? 'option-copy-with-subtitle' : ''}`}>
+                  <span className="option-title">Subtitles</span>
+                  <span className={`option-subtitle ${findSubs ? 'option-subtitle-visible' : ''}`}>Find and download</span>
                 </span>
               </button>
 
@@ -387,28 +409,7 @@ export default function FetchApiActions() {
                 </span>
                 <span className={`option-copy ${notify ? 'option-copy-with-subtitle' : ''}`}>
                   <span className="option-title">Notify</span>
-                  <span className={`option-subtitle ${notify ? 'option-subtitle-visible' : ''}`}>In Slack when downloaded</span>
-                </span>
-              </button>
-
-              <button
-                type="button"
-                role="checkbox"
-                disabled={isSubmitting}
-                aria-checked={findSubs}
-                aria-label="Find subs"
-                onClick={() => setFindSubs((prev) => !prev)}
-                className="option-row-btn"
-              >
-                <span className="option-check-shell">
-                  <span className={`option-check ${findSubs ? 'option-check-on' : ''}`}>
-                    <svg viewBox="0 0 16 16" className={`option-check-mark ${findSubs ? 'option-check-mark-on' : ''}`} aria-hidden="true">
-                      <path d="M3.4 8.4 6.6 11.4 12.6 4.9" />
-                    </svg>
-                  </span>
-                </span>
-                <span className="option-copy">
-                  <span className="option-title">Find Subs</span>
+                  <span className={`option-subtitle ${notify ? 'option-subtitle-visible' : ''}`}>In Slack when completed</span>
                 </span>
               </button>
             </div>
@@ -416,7 +417,7 @@ export default function FetchApiActions() {
             <button
               type="submit"
               disabled={buttonState === 'pending'}
-              className="import-action-btn relative w-[30%] min-w-[170px] overflow-hidden rounded-md font-semibold py-3 px-4 flex items-center justify-center transition-all duration-300 text-white disabled:cursor-not-allowed disabled:opacity-70"
+              className="import-action-btn relative w-[30%] min-w-[130px] overflow-hidden rounded-md font-semibold py-2 px-3 flex items-center justify-center transition-all duration-300 text-white disabled:cursor-not-allowed disabled:opacity-70"
               style={{ backgroundColor: jellyfinAccent }}
             >
               <span className="relative z-10 inline-flex items-center justify-center gap-2">
