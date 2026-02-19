@@ -258,7 +258,7 @@ export default function FetchApiActions() {
                   setUrlError('')
                 }
               }}
-              className={`w-full px-4 py-2 border rounded-lg outline-none transition-colors ${
+              className={`w-full px-4 py-2 border rounded-md outline-none transition-colors ${
                 urlError
                   ? 'border-[#6b5fda]'
                   : 'border-gray-300'
@@ -297,7 +297,7 @@ export default function FetchApiActions() {
                     value={saveLocation}
                     disabled={isSubmitting}
                     onChange={(e) => setSaveLocation(e.target.value)}
-                    className="w-full px-4 py-2 border rounded-lg outline-none transition-colors border-gray-300 animated-focus-input disabled:cursor-not-allowed disabled:opacity-60"
+                    className="w-full px-4 py-2 border rounded-md outline-none transition-colors border-gray-300 animated-focus-input disabled:cursor-not-allowed disabled:opacity-60"
                     placeholder={DEFAULT_SAVE_LOCATION}
                   />
                 </div>
@@ -309,7 +309,7 @@ export default function FetchApiActions() {
                     value={qbittorrentCategory}
                     disabled={isSubmitting}
                     onChange={(e) => setQbittorrentCategory(e.target.value)}
-                    className="w-full px-4 py-2 border rounded-lg outline-none transition-colors border-gray-300 animated-focus-input disabled:cursor-not-allowed disabled:opacity-60"
+                    className="w-full px-4 py-2 border rounded-md outline-none transition-colors border-gray-300 animated-focus-input disabled:cursor-not-allowed disabled:opacity-60"
                     placeholder={DEFAULT_CATEGORY}
                   />
                 </div>
@@ -321,7 +321,7 @@ export default function FetchApiActions() {
                     value={qbittorrentTags}
                     disabled={isSubmitting}
                     onChange={(e) => setQbittorrentTags(e.target.value)}
-                    className="w-full px-4 py-2 border rounded-lg outline-none transition-colors border-gray-300 animated-focus-input disabled:cursor-not-allowed disabled:opacity-60"
+                    className="w-full px-4 py-2 border rounded-md outline-none transition-colors border-gray-300 animated-focus-input disabled:cursor-not-allowed disabled:opacity-60"
                     placeholder={DEFAULT_TAGS_PLACEHOLDER}
                   />
                 </div>
@@ -397,7 +397,7 @@ export default function FetchApiActions() {
             <button
               type="submit"
               disabled={buttonState === 'pending'}
-              className="relative w-[30%] min-w-[170px] overflow-hidden rounded-lg font-medium py-3 px-4 flex items-center justify-center transition-all duration-300 shadow-[inset_0_1px_0_rgba(255,255,255,0.26),inset_0_-2px_6px_rgba(0,0,0,0.2)] text-white disabled:cursor-not-allowed disabled:opacity-70"
+              className="relative w-[30%] min-w-[170px] overflow-hidden rounded-md font-medium py-3 px-4 flex items-center justify-center transition-all duration-300 shadow-[inset_0_1px_0_rgba(255,255,255,0.26),inset_0_-2px_6px_rgba(0,0,0,0.2)] text-white disabled:cursor-not-allowed disabled:opacity-70"
               style={{ backgroundColor: jellyfinAccent }}
             >
               <span className="relative z-10 inline-flex items-center justify-center gap-2">
@@ -425,7 +425,7 @@ export default function FetchApiActions() {
             </button>
           </div>
 
-          <div className="mt-3 w-full rounded-xl bg-black p-4 min-h-[220px] border border-gray-800">
+          <div className="mt-3 w-full rounded-lg bg-black p-4 min-h-[220px] border border-gray-800">
             <pre
               className="text-[12px] leading-5 font-mono whitespace-pre-wrap break-all text-slate-300"
               dangerouslySetInnerHTML={{ __html: syntaxHighlightJson(jsonText) }}
