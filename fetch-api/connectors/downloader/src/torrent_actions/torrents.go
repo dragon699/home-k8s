@@ -141,7 +141,7 @@ func (instance *ActionsRunner) runActions() {
 
 		t.Log.Debug("Running tag actions against completed torrent", "name", torrent.Name, "hash", torrent.Hash)
 
-		hasPendingActions := false
+		var hasPendingActions bool = false
 
 		for _, action := range torrent.Meta.ScheduledActions {
 			if ! (action.Status == "pending") {
@@ -228,6 +228,10 @@ func (instance *ActionsRunner) runActions() {
 
 		if ! hasPendingActions {
 			qbittorrent.Client.RemoveTorrent(torrent.Hash, false)
+
+			if torrent.Category == "jellyfin" {
+				instance.RefreshJellyfinLibrary()
+			}
 		}
 	}
 }
@@ -250,6 +254,7 @@ func (instance *ActionsRunner) getTorrents() (*response.BaseResponse[response.To
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch response: %w", err)
 	}
+
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
@@ -257,7 +262,7 @@ func (instance *ActionsRunner) getTorrents() (*response.BaseResponse[response.To
 		return nil, fmt.Errorf("failed to read response: %w", err)
 	}
 
-	if !(resp.StatusCode >= 200 && resp.StatusCode < 300) {
+	if ! (resp.StatusCode >= 200 && resp.StatusCode < 300) {
 		return nil, fmt.Errorf("unexpected status code: %d, body: %s", resp.StatusCode, string(body))
 	}
 
@@ -267,4 +272,40 @@ func (instance *ActionsRunner) getTorrents() (*response.BaseResponse[response.To
 	}
 
 	return &torrents, nil
+}
+
+func (instance *ActionsRunner) RefreshJellyfinLibrary() error {
+	httpClient := &http.Client{
+		Timeout: 10 * time.Second,
+	}
+
+	req, err := http.NewRequest(
+		http.MethodPost,
+		fmt.Sprintf("%s/Library/Refresh", settings.Config.JellyfinUrl),
+		nil,
+	)
+	if err != nil {
+		return fmt.Errorf("failed to create request: %w", err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("X-Emby-Token", settings.Config.JellyfinAPIKey)
+
+	resp, err := httpClient.Do(req)
+	if err != nil {
+		return fmt.Errorf("failed to fetch response: %w", err)
+	}
+
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return fmt.Errorf("failed to read response: %w", err)
+	}
+
+	if ! (resp.StatusCode >= 200 && resp.StatusCode < 300) {
+		return fmt.Errorf("unexpected status code: %d, body: %s", resp.StatusCode, string(body))
+	}
+
+	return nil
 }

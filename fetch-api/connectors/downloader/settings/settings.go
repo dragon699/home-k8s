@@ -21,6 +21,7 @@ type Settings struct {
 	QBittorrentPublicUrl          string `json:"qbittorrent_public_url"          env:"QBITTORRENT_PUBLIC_URL"`
 	QBittorrentDefaultSavePath    string `json:"qbittorrent_default_save_path"   env:"QBITTORRENT_DEFAULT_SAVE_PATH"`
 	JellyfinUrl                   string `json:"jellyfin_url"                    env:"JELLYFIN_URL"`
+	JellyfinAPIKey                string `json:"jellyfin_api_key"                env:"JELLYFIN_API_KEY"`
 	SlackNotificationsWebhookUrl  string `json:"slack_notifications_webhook_url" env:"SLACK_NOTIFICATIONS_WEBHOOK_URL"`
 
 	OtelServiceName      string `json:"otel_service_name"             env:"OTEL_SERVICE_NAME"`
