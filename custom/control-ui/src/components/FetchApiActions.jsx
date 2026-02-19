@@ -335,21 +335,17 @@ export default function FetchApiActions() {
                 <div className="inline-flex items-center select-none gap-3">
                   <button
                     type="button"
-                    role="switch"
+                    role="checkbox"
                     disabled={isSubmitting}
                     aria-checked={manage}
                     aria-label="Manage"
                     onClick={() => setManage((prev) => !prev)}
-                    className={`relative h-7 w-12 shrink-0 overflow-hidden rounded-full border transition-colors duration-300 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60 ${
-                      manage ? '' : 'bg-slate-300 border-slate-300'
-                    }`}
-                    style={manage ? { backgroundColor: jellyfinAccent, borderColor: jellyfinAccent } : undefined}
+                    className={`option-check ${manage ? 'option-check-on' : ''}`}
+                    style={manage ? { backgroundColor: jellyfinAccent, borderColor: jellyfinAccent } : { borderColor: 'rgba(107, 95, 218, 0.55)' }}
                   >
-                    <span
-                      className={`absolute left-[2px] top-0.5 h-[23px] w-[23px] rounded-full bg-white shadow-md transition-transform duration-300 ${
-                        manage ? 'translate-x-[21px]' : 'translate-x-0'
-                      }`}
-                    />
+                    <svg viewBox="0 0 16 16" className={`option-check-mark ${manage ? 'option-check-mark-on' : ''}`} aria-hidden="true">
+                      <path d="M3.4 8.4 6.6 11.4 12.6 4.9" />
+                    </svg>
                   </button>
                   <span className={`text-sm font-medium transition-colors duration-200 ${manage ? 'text-[#6b5fda]' : 'text-gray-800'}`}>
                     Manage
@@ -359,21 +355,17 @@ export default function FetchApiActions() {
                 <div className="inline-flex items-center select-none gap-3">
                   <button
                     type="button"
-                    role="switch"
+                    role="checkbox"
                     disabled={isSubmitting}
                     aria-checked={notify}
                     aria-label="Notify"
                     onClick={() => setNotify((prev) => !prev)}
-                    className={`relative h-7 w-12 shrink-0 overflow-hidden rounded-full border transition-colors duration-300 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60 ${
-                      notify ? '' : 'bg-slate-300 border-slate-300'
-                    }`}
-                    style={notify ? { backgroundColor: jellyfinAccent, borderColor: jellyfinAccent } : undefined}
+                    className={`option-check ${notify ? 'option-check-on' : ''}`}
+                    style={notify ? { backgroundColor: jellyfinAccent, borderColor: jellyfinAccent } : { borderColor: 'rgba(107, 95, 218, 0.55)' }}
                   >
-                    <span
-                      className={`absolute left-[2px] top-0.5 h-[23px] w-[23px] rounded-full bg-white shadow-md transition-transform duration-300 ${
-                        notify ? 'translate-x-[21px]' : 'translate-x-0'
-                      }`}
-                    />
+                    <svg viewBox="0 0 16 16" className={`option-check-mark ${notify ? 'option-check-mark-on' : ''}`} aria-hidden="true">
+                      <path d="M3.4 8.4 6.6 11.4 12.6 4.9" />
+                    </svg>
                   </button>
                   <span className={`text-sm font-medium transition-colors duration-200 ${notify ? 'text-[#6b5fda]' : 'text-gray-800'}`}>
                     Notify
@@ -384,21 +376,17 @@ export default function FetchApiActions() {
               <div className="inline-flex items-center select-none gap-3">
                 <button
                   type="button"
-                  role="switch"
+                  role="checkbox"
                   disabled={isSubmitting}
                   aria-checked={findSubs}
                   aria-label="Find subs"
                   onClick={() => setFindSubs((prev) => !prev)}
-                  className={`relative h-7 w-12 shrink-0 overflow-hidden rounded-full border transition-colors duration-300 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60 ${
-                    findSubs ? '' : 'bg-slate-300 border-slate-300'
-                  }`}
-                  style={findSubs ? { backgroundColor: jellyfinAccent, borderColor: jellyfinAccent } : undefined}
+                  className={`option-check ${findSubs ? 'option-check-on' : ''}`}
+                  style={findSubs ? { backgroundColor: jellyfinAccent, borderColor: jellyfinAccent } : { borderColor: 'rgba(107, 95, 218, 0.55)' }}
                 >
-                  <span
-                    className={`absolute left-[2px] top-0.5 h-[23px] w-[23px] rounded-full bg-white shadow-md transition-transform duration-300 ${
-                      findSubs ? 'translate-x-[21px]' : 'translate-x-0'
-                    }`}
-                  />
+                  <svg viewBox="0 0 16 16" className={`option-check-mark ${findSubs ? 'option-check-mark-on' : ''}`} aria-hidden="true">
+                    <path d="M3.4 8.4 6.6 11.4 12.6 4.9" />
+                  </svg>
                 </button>
                 <span className={`text-sm font-medium transition-colors duration-200 ${findSubs ? 'text-[#6b5fda]' : 'text-gray-800'}`}>
                   Find subs
