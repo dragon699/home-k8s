@@ -121,8 +121,8 @@ export default function FetchApiActions() {
         className="block w-5 h-5"
         style={{
           backgroundColor: 'currentColor',
-          WebkitMaskImage: 'url(https://i.imgur.com/aefU0eB.png)',
-          maskImage: 'url(https://i.imgur.com/aefU0eB.png)',
+          WebkitMaskImage: 'url(https://i.imgur.com/QHbctJc.png)',
+          maskImage: 'url(https://i.imgur.com/QHbctJc.png)',
           WebkitMaskSize: 'contain',
           maskSize: 'contain',
           WebkitMaskRepeat: 'no-repeat',
@@ -345,7 +345,7 @@ export default function FetchApiActions() {
             </div>
           </div>
 
-          <div className="-mt-3 flex items-center justify-between gap-4">
+          <div className="-mt-3 flex items-start justify-between gap-4">
             <div className="option-list" style={{ '--option-accent': jellyfinAccent }}>
               <button
                 type="button"
