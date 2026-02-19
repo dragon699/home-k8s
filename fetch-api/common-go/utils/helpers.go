@@ -63,7 +63,11 @@ func RenderTemplate(templatePath string, vars any) (string, error) {
 		return "", err
 	}
 
-	tpl, err := template.New("default").Parse(string(tplBytes))
+	return RenderTemplateContent(templatePath, string(tplBytes), vars)
+}
+
+func RenderTemplateContent(templateName string, templateContent string, vars any) (string, error) {
+	tpl, err := template.New(templateName).Parse(templateContent)
 
 	if err != nil {
 		return "", err

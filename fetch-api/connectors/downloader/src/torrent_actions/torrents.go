@@ -80,17 +80,11 @@ func (instance *ActionsRunner) runActions() {
 						JellyfinURL: settings.Config.JellyfinUrl,
 					}
 
-					payload, err := utils.RenderTemplate("src/notifications/templates/torrents/slack_initial.json", vars)
-					if err != nil {
-						t.Log.Error("Failed to render slack notification for a torrent!", "error", err.Error())
-						
-						qbittorrent.Client.RemoveTorrentTags(torrent.Hash, []string{"slack:notify=pending"})
-						qbittorrent.Client.AddTorrentTags(torrent.Hash, []string{"slack:notify=failed"})
-
-						break
-					}
-
-					err = notifications.SendSlackNotification(settings.Config.SlackNotificationsWebhookUrl, string(payload))
+					err = notifications.SendSlackNotification(
+						settings.Config.SlackNotificationsWebhookUrl,
+						"templates/torrents/slack_initial.json",
+						vars,
+					)
 					if err != nil {
 						t.Log.Error("Failed to send slack notification for a torrent!", "error", err.Error())
 
@@ -117,17 +111,11 @@ func (instance *ActionsRunner) runActions() {
 						JellyfinURL: settings.Config.JellyfinUrl,
 					}
 
-					payload, err := utils.RenderTemplate("src/notifications/templates/torrents/slack_completed.json", vars)
-					if err != nil {
-						t.Log.Error("Failed to render slack notification for a completed torrent!", "error", err.Error())
-						
-						qbittorrent.Client.RemoveTorrentTags(torrent.Hash, []string{"slack:notify=initial"})
-						qbittorrent.Client.AddTorrentTags(torrent.Hash, []string{"slack:notify=failed"})
-
-						break
-					}
-
-					err = notifications.SendSlackNotification(settings.Config.SlackNotificationsWebhookUrl, string(payload))
+					err = notifications.SendSlackNotification(
+						settings.Config.SlackNotificationsWebhookUrl,
+						"templates/torrents/slack_completed.json",
+						vars,
+					)
 					if err != nil {
 						t.Log.Error("Failed to send slack notification for a completed torrent!", "error", err.Error())
 

@@ -1,6 +1,8 @@
 package notifications
 
 import (
+	"common/utils"
+	"embed"
 	"fmt"
 	"io"
 	"net/http"
@@ -15,8 +17,19 @@ type NotificationTorrentsVars struct {
 	JellyfinURL     string  `json:"jellyfin_url,omitempty"`
 }
 
+var templateFiles embed.FS
 
-func SendSlackNotification(url string, payload string) error {
+func SendSlackNotification(url string, templatePath string, vars any) error {
+	tplBytes, err := templateFiles.ReadFile(templatePath)
+	if err != nil {
+		return fmt.Errorf("failed to read embedded slack template: %w", err)
+	}
+
+	payload, err := utils.RenderTemplateContent(templatePath, string(tplBytes), vars)
+	if err != nil {
+		return fmt.Errorf("failed to render embedded slack template: %w", err)
+	}
+
 	client := &http.Client{
 		Timeout: 10 * time.Second,
 	}
