@@ -1,7 +1,7 @@
 {
 	"attachments": [
 		{
-			"color": "#00b389",
+			"color": "#00baed",
 			"blocks": [
 				{
 					"type": "section",
@@ -17,10 +17,10 @@
 							"type": "button",
 							"text": {
 								"type": "plain_text",
-								"text": "Open in qBittorrent 🡕",
+								"text": "Open qBittorrent 🡕",
 								"emoji": true
 							},
-							"value": "Open qBittorrent",
+							"value": "qBittorrent",
 							"url": "{{ .QBittorrentURL }}"
 						}
 					]

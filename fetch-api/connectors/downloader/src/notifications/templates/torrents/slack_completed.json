@@ -17,10 +17,10 @@
 							"type": "button",
 							"text": {
 								"type": "plain_text",
-								"text": "Open in qBittorrent 🡕",
+								"text": "Open qBittorrent 🡕",
 								"emoji": true
 							},
-							"value": "Open qBittorrent",
+							"value": "qBittorrent",
 							"url": "{{ .QBittorrentURL }}"
 						}
 						{{ if eq .Category "jellyfin" }}
@@ -28,10 +28,10 @@
 							"type": "button",
 							"text": {
 								"type": "plain_text",
-								"text": "Open in Jellyfin 🡕",
+								"text": "Open Jellyfin 🡕",
 								"emoji": true
 							},
-							"value": "Open in Jellyfin",
+							"value": "Jellyfin",
 							"url": "{{ .JellyfinURL }}"
 						}
 						{{ end }}

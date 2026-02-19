@@ -190,7 +190,7 @@ func AddTorrent(ctx *fiber.Ctx) error {
 	}
 
 	manage := true
-	notify := true
+	notify := false
 
 	if reqPayload.Category == "" {
 		reqPayload.Category = "jellyfin"

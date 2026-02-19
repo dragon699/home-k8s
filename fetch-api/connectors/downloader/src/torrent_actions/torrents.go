@@ -76,6 +76,7 @@ func (instance *ActionsRunner) runActions() {
 				if (action.Category == "slack") && (action.Name == "notify") && (action.Status == "pending") {
 					vars := notifications.NotificationTorrentsVars{
 						TorrentName: torrent.Name,
+						Category: torrent.Category,
 						QBittorrentURL: settings.Config.ListenUrl,
 						JellyfinURL: settings.Config.JellyfinUrl,
 					}
@@ -107,6 +108,7 @@ func (instance *ActionsRunner) runActions() {
 				if (action.Category == "slack") && (action.Name == "notify") && (action.Status == "initial") {
 					vars := notifications.NotificationTorrentsVars{
 						TorrentName: torrent.Name,
+						Category: torrent.Category,
 						QBittorrentURL: settings.Config.ListenUrl,
 						JellyfinURL: settings.Config.JellyfinUrl,
 					}
