@@ -15,6 +15,7 @@
 					"elements": [
 						{
 							"type": "button",
+							"value": "open_qbittorrent",
 							"text": {
 								"type": "plain_text",
 								"text": "qBittorrent 🡕",

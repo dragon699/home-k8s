@@ -195,6 +195,7 @@ func (instance *ActionsRunner) runActions() {
 						err := os.Rename(srcFile, destFile)
 						if err != nil {
 							renameFailed = true
+							t.Log.Error("Failed to rename file for a torrent", "error", err.Error(), "file", srcFile, "dest", destFile)
 						}
 					}
 
@@ -208,6 +209,7 @@ func (instance *ActionsRunner) runActions() {
 					err = os.Rename(torrent.FilesPath, dirPathNew)
 					if err != nil {
 						renameFailed = true
+						t.Log.Error("Failed to rename directory for a torrent", "error", err.Error(), "dir", torrent.FilesPath, "dest", dirPathNew)
 					}
 
 					qbittorrent.Client.RemoveTorrentTags(torrent.Hash, []string{"jellyfin:rename=pending"})
