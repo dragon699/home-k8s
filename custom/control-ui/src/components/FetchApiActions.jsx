@@ -268,7 +268,7 @@ export default function FetchApiActions() {
               style={urlError ? { borderColor: jellyfinAccent } : undefined}
               placeholder="Magnet or link"
             />
-            {urlError && <p className="mt-2 text-sm" style={{ color: jellyfinAccent }}>{urlError}</p>}
+            {urlError && <p className="mt-2 text-sm font-semibold" style={{ color: jellyfinAccent }}>{urlError}</p>}
           </div>
 
           <div className="space-y-3">
@@ -404,7 +404,7 @@ export default function FetchApiActions() {
             <button
               type="submit"
               disabled={buttonState === 'pending'}
-              className="import-action-btn relative w-[30%] min-w-[170px] overflow-hidden rounded-md font-medium py-3 px-4 flex items-center justify-center transition-all duration-300 shadow-[inset_0_1px_0_rgba(255,255,255,0.26),inset_0_-2px_6px_rgba(0,0,0,0.2)] text-white disabled:cursor-not-allowed disabled:opacity-70"
+              className="import-action-btn relative w-[30%] min-w-[170px] overflow-hidden rounded-md font-semibold py-3 px-4 flex items-center justify-center transition-all duration-300 text-white disabled:cursor-not-allowed disabled:opacity-70"
               style={{ backgroundColor: jellyfinAccent }}
             >
               <span className="relative z-10 inline-flex items-center justify-center gap-2">

@@ -201,10 +201,10 @@ code {
 }
 
 .option-check-shell {
-  width: 30px;
-  height: 30px;
+  width: 26px;
+  height: 26px;
   border-radius: 8px;
-  background: rgba(var(--card-accent-rgb, 79, 109, 246), 0.1);
+  background: rgba(var(--card-accent-rgb, 79, 109, 246), 0.08);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -315,14 +315,14 @@ code {
 .option-copy {
   display: flex;
   flex-direction: column;
-  min-height: 30px;
+  min-height: 26px;
   justify-content: center;
 }
 
 .option-title {
   font-size: 14px;
   line-height: 1.2;
-  font-weight: 800;
+  font-weight: 700;
   color: #111827;
   transform: translateY(0);
   transition: transform 220ms ease;
@@ -364,6 +364,13 @@ code {
   transform: translate(-50%, -50%) scale(0.05);
   opacity: 0;
   background: radial-gradient(circle, rgba(255, 255, 255, 0.42) 0%, rgba(255, 255, 255, 0) 72%);
+}
+
+.import-action-btn {
+  box-shadow:
+    0 0 0 3px rgba(var(--card-accent-rgb, 79, 109, 246), 0.1),
+    inset 0 1px 0 rgba(255,255,255,0.26),
+    inset 0 -2px 6px rgba(0,0,0,0.2);
 }
 
 .import-action-btn:active:not(:disabled) {
