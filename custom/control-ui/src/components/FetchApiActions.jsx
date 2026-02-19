@@ -36,6 +36,7 @@ export default function FetchApiActions() {
   const [showOptions, setShowOptions] = useState(false)
   const [findSubs, setFindSubs] = useState(false)
   const [manage, setManage] = useState(true)
+  const [notify, setNotify] = useState(true)
   const [urlError, setUrlError] = useState('')
   const [jsonText, setJsonText] = useState('{}')
   const [buttonState, setButtonState] = useState('idle') // idle | pending
@@ -161,6 +162,7 @@ export default function FetchApiActions() {
         category: effectiveCategory,
         tags: effectiveTags,
         manage,
+        notify,
         find_subs: findSubs,
       }
 
@@ -328,29 +330,55 @@ export default function FetchApiActions() {
           </div>
 
           <div className="-mt-3 flex items-center justify-between gap-4">
-            <div className="flex items-center gap-5">
-              <div className="inline-flex items-center select-none gap-3">
-                <button
-                  type="button"
-                  role="switch"
-                  disabled={isSubmitting}
-                  aria-checked={manage}
-                  aria-label="Manage"
-                  onClick={() => setManage((prev) => !prev)}
-                  className={`relative h-7 w-12 shrink-0 overflow-hidden rounded-full border transition-colors duration-300 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60 ${
-                    manage ? '' : 'bg-slate-300 border-slate-300'
-                  }`}
-                  style={manage ? { backgroundColor: jellyfinAccent, borderColor: jellyfinAccent } : undefined}
-                >
-                  <span
-                    className={`absolute left-[2px] top-0.5 h-[23px] w-[23px] rounded-full bg-white shadow-md transition-transform duration-300 ${
-                      manage ? 'translate-x-[21px]' : 'translate-x-0'
+            <div className="flex flex-col gap-3">
+              <div className="flex items-center gap-5">
+                <div className="inline-flex items-center select-none gap-3">
+                  <button
+                    type="button"
+                    role="switch"
+                    disabled={isSubmitting}
+                    aria-checked={manage}
+                    aria-label="Manage"
+                    onClick={() => setManage((prev) => !prev)}
+                    className={`relative h-7 w-12 shrink-0 overflow-hidden rounded-full border transition-colors duration-300 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60 ${
+                      manage ? '' : 'bg-slate-300 border-slate-300'
                     }`}
-                  />
-                </button>
-                <span className={`text-sm font-medium transition-colors duration-200 ${manage ? 'text-[#6b5fda]' : 'text-gray-800'}`}>
-                  Manage
-                </span>
+                    style={manage ? { backgroundColor: jellyfinAccent, borderColor: jellyfinAccent } : undefined}
+                  >
+                    <span
+                      className={`absolute left-[2px] top-0.5 h-[23px] w-[23px] rounded-full bg-white shadow-md transition-transform duration-300 ${
+                        manage ? 'translate-x-[21px]' : 'translate-x-0'
+                      }`}
+                    />
+                  </button>
+                  <span className={`text-sm font-medium transition-colors duration-200 ${manage ? 'text-[#6b5fda]' : 'text-gray-800'}`}>
+                    Manage
+                  </span>
+                </div>
+
+                <div className="inline-flex items-center select-none gap-3">
+                  <button
+                    type="button"
+                    role="switch"
+                    disabled={isSubmitting}
+                    aria-checked={notify}
+                    aria-label="Notify"
+                    onClick={() => setNotify((prev) => !prev)}
+                    className={`relative h-7 w-12 shrink-0 overflow-hidden rounded-full border transition-colors duration-300 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60 ${
+                      notify ? '' : 'bg-slate-300 border-slate-300'
+                    }`}
+                    style={notify ? { backgroundColor: jellyfinAccent, borderColor: jellyfinAccent } : undefined}
+                  >
+                    <span
+                      className={`absolute left-[2px] top-0.5 h-[23px] w-[23px] rounded-full bg-white shadow-md transition-transform duration-300 ${
+                        notify ? 'translate-x-[21px]' : 'translate-x-0'
+                      }`}
+                    />
+                  </button>
+                  <span className={`text-sm font-medium transition-colors duration-200 ${notify ? 'text-[#6b5fda]' : 'text-gray-800'}`}>
+                    Notify
+                  </span>
+                </div>
               </div>
 
               <div className="inline-flex items-center select-none gap-3">
