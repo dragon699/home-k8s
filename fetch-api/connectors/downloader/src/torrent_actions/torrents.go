@@ -77,7 +77,7 @@ func (instance *ActionsRunner) runActions() {
 					vars := notifications.NotificationTorrentsVars{
 						TorrentName: torrent.Name,
 						Category: torrent.Category,
-						QBittorrentURL: settings.Config.ListenUrl,
+						QBittorrentURL: settings.Config.QBittorrentPublicUrl,
 						JellyfinURL: settings.Config.JellyfinUrl,
 					}
 
@@ -109,7 +109,7 @@ func (instance *ActionsRunner) runActions() {
 					vars := notifications.NotificationTorrentsVars{
 						TorrentName: torrent.Name,
 						Category: torrent.Category,
-						QBittorrentURL: settings.Config.ListenUrl,
+						QBittorrentURL: settings.Config.QBittorrentPublicUrl,
 						JellyfinURL: settings.Config.JellyfinUrl,
 					}
 
@@ -168,6 +168,7 @@ func (instance *ActionsRunner) runActions() {
 
 					for _, file := range torrentContent {
 						if file["progress"].(float64) < 1 {
+							os.Remove(path.Join(torrent.SavePath, file["name"].(string)))
 							continue
 						}
 
