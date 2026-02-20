@@ -125,6 +125,8 @@ func ListTorrents(ctx *fiber.Ctx) error {
 						tagAction.Description = "Subtitles will be fetched from OpenSubtitles in Jellyfin for this torrent media."
 					case "completed":
 						tagAction.Description = "Subtitles fetched in Jellyfin."
+					case "partially_completed":
+						tagAction.Description = "Subtitles fetched for some of the media in Jellyfin."
 					case "failed":
 						tagAction.Description = "[!] Something went wrong while fetching subtitles from OpenSubtitles in Jellyfin for this torrent media."
 					}

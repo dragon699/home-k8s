@@ -160,6 +160,8 @@ func (instance *ActionsRunner) runActions() {
 					continue
 				}
 
+				var torrentContentFiles = []map[string]any{}
+				var torrentContentFileNames = []string{}
 				var allowedExtensions = []string{
 					".mkv", ".mp4", ".avi", ".mov", ".wmv", ".flv", ".webm", ".m4v",
 					".mpg", ".mpeg", ".ts", ".m2ts", ".mts", ".3gp", ".3g2", ".ogv",
@@ -170,70 +172,22 @@ func (instance *ActionsRunner) runActions() {
 				for _, file := range torrentContent {
 					if file["progress"].(float64) < 1 {
 						os.Remove(path.Join(torrent.SavePath, file["name"].(string)))
-						continue
+					} else {
+						torrentContentFiles = append(torrentContentFiles, file)
+						torrentContentFileNames = append(torrentContentFileNames, file["name"].(string))
 					}
 				}
 
 				switch action.Name {
-				case "find_subs":
-					var findSubsFailed bool = false
-
-					instance.refreshJellyfinLibrary()
-					time.Sleep(2 * time.Second)
-
-					jellyfinTorrentFolders, err := instance.getJellyfinItemFolders(
-						utils.BeautifyMovieName(filepath.Base(torrent.FilesPath)),
-					)
-					if err != nil {
-						t.Log.Error("Failed to get Jellyfin items for torrent folder", "error", err.Error())
-						qbittorrent.Client.RemoveTorrentTags(torrent.Hash, []string{"jellyfin:find_subs=pending"})
-						qbittorrent.Client.AddTorrentTags(torrent.Hash, []string{"jellyfin:find_subs=failed"})
-
-						continue
-					}
-
-					jellyfinTorrentFolderID := jellyfinTorrentFolders[0]["Id"].(string)
-
-					jellyfinItems, err := instance.getJellyfinItems(jellyfinTorrentFolderID)
-					if err != nil {
-						t.Log.Error("Failed to get Jellyfin items for torrent folder", "error", err.Error())
-						qbittorrent.Client.RemoveTorrentTags(torrent.Hash, []string{"jellyfin:find_subs=pending"})
-						qbittorrent.Client.AddTorrentTags(torrent.Hash, []string{"jellyfin:find_subs=failed"})
-
-						continue
-					}
-
-					for _, item := range jellyfinItems {
-						if item["HasSubtitles"].(bool) {
-							continue
-						}
-
-						err = instance.downloadSubtitlesInJellyfin(item["Id"].(string), "english")
-						if err != nil {
-							t.Log.Error("Failed to download subtitles in Jellyfin", "error", err.Error())
-							findSubsFailed = true
-
-							continue
-						}
-					}
-
-					if findSubsFailed {
-						qbittorrent.Client.RemoveTorrentTags(torrent.Hash, []string{"jellyfin:find_subs=pending"})
-						qbittorrent.Client.AddTorrentTags(torrent.Hash, []string{"jellyfin:find_subs=failed"})
-					}
-
-					qbittorrent.Client.RemoveTorrentTags(torrent.Hash, []string{"jellyfin:find_subs=pending"})
-					qbittorrent.Client.AddTorrentTags(torrent.Hash, []string{"jellyfin:find_subs=completed"})
-
 				case "rename":
 					var renameFailed bool = false
 
-					for _, file := range torrentContent {
+					for _, file := range torrentContentFiles {
 						filePath := path.Dir(file["name"].(string))
 						fileName := path.Base(file["name"].(string))
 						fileExt := path.Ext(fileName)
 
-						if !slices.Contains(allowedExtensions, fileExt) {
+						if ! slices.Contains(allowedExtensions, fileExt) {
 							continue
 						}
 
@@ -276,6 +230,49 @@ func (instance *ActionsRunner) runActions() {
 					}
 
 					qbittorrent.Client.AddTorrentTags(torrent.Hash, []string{"jellyfin:rename=completed"})
+
+				case "find_subs":
+					var subsDownloadedCount int = 0
+					var subsAlreadyPresentCount int = 0
+
+					instance.refreshJellyfinLibrary()
+					time.Sleep(2 * time.Second)
+
+					jellyfinItems, err := instance.getJellyfinItems()
+					if err != nil {
+						t.Log.Error("Failed to get Jellyfin items", "error", err.Error())
+						qbittorrent.Client.RemoveTorrentTags(torrent.Hash, []string{"jellyfin:find_subs=pending"})
+						qbittorrent.Client.AddTorrentTags(torrent.Hash, []string{"jellyfin:find_subs=failed"})
+
+						continue
+					}
+
+					for _, item := range jellyfinItems {
+						if hasSubtitles, ok := item["HasSubtitles"].(bool); ok && hasSubtitles {
+							subsAlreadyPresentCount += 1
+							continue
+						}
+
+						itemFile := filepath.Base(item["Path"].(string))
+
+						if slices.Contains(torrentContentFileNames, itemFile) {
+							err = instance.downloadSubtitlesInJellyfin(item["Id"].(string), "english")
+							if err != nil {
+								t.Log.Error("Failed to download subtitles in Jellyfin", "error", err.Error())
+								continue
+							}
+
+							subsDownloadedCount += 1
+						}
+					}
+
+					qbittorrent.Client.RemoveTorrentTags(torrent.Hash, []string{"jellyfin:find_subs=pending"})
+
+					if (subsDownloadedCount + subsAlreadyPresentCount) == len(torrentContentFiles) {
+						qbittorrent.Client.AddTorrentTags(torrent.Hash, []string{"jellyfin:find_subs=completed"})
+					} else {
+						qbittorrent.Client.AddTorrentTags(torrent.Hash, []string{"jellyfin:find_subs=partially_completed"})
+					}
 				}
 			}
 		}
@@ -364,65 +361,67 @@ func (instance *ActionsRunner) refreshJellyfinLibrary() error {
 	return nil
 }
 
-func (instance *ActionsRunner) getJellyfinItemFolders(searchText string) ([]map[string]any, error) {
+// func (instance *ActionsRunner) getJellyfinItemFolders(searchText string) ([]map[string]any, error) {
+// 	httpClient := &http.Client{
+// 		Timeout: 10 * time.Second,
+// 	}
+
+// 	reqParams := url.Values{}
+// 	reqParams.Set("Recursive", "true")
+// 	reqParams.Set("searchTerm", searchText)
+// 	reqParams.Set("IncludeItemTypes", "Folder")
+
+// 	req, err := http.NewRequest(
+// 		http.MethodGet,
+// 		fmt.Sprintf("%s/Items?%s", settings.Config.JellyfinUrl, reqParams.Encode()),
+// 		nil,
+// 	)
+// 	if err != nil {
+// 		return nil, fmt.Errorf("failed to create request: %w", err)
+// 	}
+
+// 	req.Header.Set("X-Emby-Token", settings.Config.JellyfinAPIKey)
+
+// 	resp, err := httpClient.Do(req)
+// 	if err != nil {
+// 		return nil, fmt.Errorf("failed to fetch response: %w", err)
+// 	}
+
+// 	defer resp.Body.Close()
+
+// 	body, err := io.ReadAll(resp.Body)
+// 	if err != nil {
+// 		return nil, fmt.Errorf("failed to read response: %w", err)
+// 	}
+
+// 	if !(resp.StatusCode >= 200 && resp.StatusCode < 300) {
+// 		return nil, fmt.Errorf("unexpected status code: %d, body: %s", resp.StatusCode, string(body))
+// 	}
+
+// 	var result struct {
+// 		Items []map[string]any `json:"Items"`
+// 	}
+// 	if err := json.Unmarshal(body, &result); err != nil {
+// 		return nil, fmt.Errorf("failed to unmarshal response: %w", err)
+// 	}
+
+// 	if len(result.Items) == 0 {
+// 		return nil, fmt.Errorf("no items found in Jellyfin with search term: %s", searchText)
+// 	}
+
+// 	return result.Items, nil
+// }
+
+func (instance *ActionsRunner) getJellyfinItems() ([]map[string]any, error) {
 	httpClient := &http.Client{
 		Timeout: 10 * time.Second,
 	}
 
 	reqParams := url.Values{}
 	reqParams.Set("Recursive", "true")
-	reqParams.Set("searchTerm", searchText)
-	reqParams.Set("IncludeItemTypes", "Folder")
-
-	req, err := http.NewRequest(
-		http.MethodGet,
-		fmt.Sprintf("%s/Items?%s", settings.Config.JellyfinUrl, reqParams.Encode()),
-		nil,
-	)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create request: %w", err)
-	}
-
-	req.Header.Set("X-Emby-Token", settings.Config.JellyfinAPIKey)
-
-	resp, err := httpClient.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("failed to fetch response: %w", err)
-	}
-
-	defer resp.Body.Close()
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read response: %w", err)
-	}
-
-	if !(resp.StatusCode >= 200 && resp.StatusCode < 300) {
-		return nil, fmt.Errorf("unexpected status code: %d, body: %s", resp.StatusCode, string(body))
-	}
-
-	var result struct {
-		Items []map[string]any `json:"Items"`
-	}
-	if err := json.Unmarshal(body, &result); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal response: %w", err)
-	}
-
-	if len(result.Items) == 0 {
-		return nil, fmt.Errorf("no items found in Jellyfin with search term: %s", searchText)
-	}
-
-	return result.Items, nil
-}
-
-func (instance *ActionsRunner) getJellyfinItems(parentID string) ([]map[string]any, error) {
-	httpClient := &http.Client{
-		Timeout: 10 * time.Second,
-	}
-
-	reqParams := url.Values{}
-	reqParams.Set("Recursive", "true")
-	reqParams.Set("ParentId", parentID)
+	reqParams.Set("Fields", "Path,DateCreated")
+	reqParams.Set("sortBy", "DateCreated")
+	reqParams.Set("sortOrder", "Descending")
 	reqParams.Set("IncludeItemTypes", "Episode,Movie,Series,Trailer,Video")
 
 	req, err := http.NewRequest(
