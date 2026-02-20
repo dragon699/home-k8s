@@ -173,6 +173,10 @@ func (instance *ActionsRunner) runActions() {
 					if file["progress"].(float64) < 1 {
 						os.Remove(path.Join(torrent.SavePath, file["name"].(string)))
 					} else {
+						if ! slices.Contains(allowedExtensions, path.Ext(file["name"].(string))) {
+							continue
+						}
+
 						torrentContentFiles = append(torrentContentFiles, file)
 						torrentContentFileNames = append(torrentContentFileNames, file["name"].(string))
 					}
@@ -186,10 +190,6 @@ func (instance *ActionsRunner) runActions() {
 						filePath := path.Dir(file["name"].(string))
 						fileName := path.Base(file["name"].(string))
 						fileExt := path.Ext(fileName)
-
-						if ! slices.Contains(allowedExtensions, fileExt) {
-							continue
-						}
 
 						fileNameBase := strings.TrimSuffix(fileName, fileExt)
 
