@@ -181,7 +181,9 @@ func (instance *ActionsRunner) runActions() {
 					instance.refreshJellyfinLibrary()
 					time.Sleep(2 * time.Second)
 
-					jellyfinTorrentFolders, err := instance.getJellyfinItemFolders(filepath.Base(torrent.FilesPath))
+					jellyfinTorrentFolders, err := instance.getJellyfinItemFolders(
+						utils.BeautifyMovieName(filepath.Base(torrent.FilesPath)),
+					)
 					if err != nil {
 						t.Log.Error("Failed to get Jellyfin items for torrent folder", "error", err.Error())
 						qbittorrent.Client.RemoveTorrentTags(torrent.Hash, []string{"jellyfin:find_subs=pending"})
@@ -278,7 +280,7 @@ func (instance *ActionsRunner) runActions() {
 			}
 		}
 
-		if !hasPendingActions {
+		if ! hasPendingActions {
 			qbittorrent.Client.RemoveTorrent(torrent.Hash, false)
 
 			if torrent.Category == "jellyfin" {
