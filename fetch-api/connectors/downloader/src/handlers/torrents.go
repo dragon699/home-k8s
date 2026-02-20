@@ -102,13 +102,13 @@ func ListTorrents(ctx *fiber.Ctx) error {
 		for _, tag := range torrentData.Tags {
 			tagParts := strings.Split(tag, ":")
 
-			if ! (len(tagParts) > 1) {
+			if !(len(tagParts) > 1) {
 				continue
 			}
 
 			tagOpParts := strings.Split(tagParts[1], "=")
 
-			if ! (len(tagOpParts) > 1) {
+			if !(len(tagOpParts) > 1) {
 				continue
 			}
 
@@ -119,7 +119,7 @@ func ListTorrents(ctx *fiber.Ctx) error {
 			tagOpStatus := tagOpParts[1]
 
 			if tagCategory == "jellyfin" {
-				if tagOpName == "get_subs" {
+				if tagOpName == "find_subs" {
 					switch tagOpStatus {
 					case "pending":
 						tagAction.Description = "Subtitles will be fetched from OpenSubtitles in Jellyfin for this torrent media."
@@ -203,7 +203,7 @@ func AddTorrent(ctx *fiber.Ctx) error {
 		reqPayload.Category = "jellyfin"
 	}
 
-	if (reqPayload.Category == "jellyfin") && ! (slices.Contains(reqPayload.Tags, "jellyfin:rename=pending")) {
+	if (reqPayload.Category == "jellyfin") && !(slices.Contains(reqPayload.Tags, "jellyfin:rename=pending")) {
 		reqPayload.Tags = append(reqPayload.Tags, "jellyfin:rename=pending")
 	}
 
@@ -219,7 +219,7 @@ func AddTorrent(ctx *fiber.Ctx) error {
 		manage = *reqPayload.Manage
 	}
 
-	if (manage) && ! (slices.Contains(reqPayload.Tags, "fetch-api")) {
+	if (manage) && !(slices.Contains(reqPayload.Tags, "fetch-api")) {
 		reqPayload.Tags = append(reqPayload.Tags, "fetch-api")
 	}
 
@@ -227,7 +227,7 @@ func AddTorrent(ctx *fiber.Ctx) error {
 		findSubs = *reqPayload.FindSubs
 	}
 
-	if (findSubs) && ! (slices.Contains(reqPayload.Tags, "jellyfin:get_subs=pending")) {
+	if findSubs {
 		if reqPayload.Category != "jellyfin" {
 			return ctx.Status(400).JSON(
 				response.ErrorResponse{
@@ -236,14 +236,14 @@ func AddTorrent(ctx *fiber.Ctx) error {
 			)
 		}
 
-		reqPayload.Tags = append([]string{"jellyfin:get_subs=pending"}, reqPayload.Tags...)
+		reqPayload.Tags = append([]string{"jellyfin:find_subs=pending"}, reqPayload.Tags...)
 	}
 
 	if reqPayload.Notify != nil {
 		notify = *reqPayload.Notify
 	}
 
-	if (notify) && ! (slices.Contains(reqPayload.Tags, "slack:notify=pending")) {
+	if (notify) && !(slices.Contains(reqPayload.Tags, "slack:notify=pending")) {
 		reqPayload.Tags = append(reqPayload.Tags, "slack:notify=pending")
 	}
 

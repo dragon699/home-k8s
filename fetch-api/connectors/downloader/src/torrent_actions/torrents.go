@@ -184,8 +184,8 @@ func (instance *ActionsRunner) runActions() {
 					jellyfinTorrentFolders, err := instance.getJellyfinItemFolders(filepath.Base(torrent.FilesPath))
 					if err != nil {
 						t.Log.Error("Failed to get Jellyfin items for torrent folder", "error", err.Error())
-						qbittorrent.Client.RemoveTorrentTags(torrent.Hash, []string{"jellyfin:get_subs=pending"})
-						qbittorrent.Client.AddTorrentTags(torrent.Hash, []string{"jellyfin:get_subs=failed"})
+						qbittorrent.Client.RemoveTorrentTags(torrent.Hash, []string{"jellyfin:find_subs=pending"})
+						qbittorrent.Client.AddTorrentTags(torrent.Hash, []string{"jellyfin:find_subs=failed"})
 
 						continue
 					}
@@ -195,8 +195,8 @@ func (instance *ActionsRunner) runActions() {
 					jellyfinItems, err := instance.getJellyfinItems(jellyfinTorrentFolderID)
 					if err != nil {
 						t.Log.Error("Failed to get Jellyfin items for torrent folder", "error", err.Error())
-						qbittorrent.Client.RemoveTorrentTags(torrent.Hash, []string{"jellyfin:get_subs=pending"})
-						qbittorrent.Client.AddTorrentTags(torrent.Hash, []string{"jellyfin:get_subs=failed"})
+						qbittorrent.Client.RemoveTorrentTags(torrent.Hash, []string{"jellyfin:find_subs=pending"})
+						qbittorrent.Client.AddTorrentTags(torrent.Hash, []string{"jellyfin:find_subs=failed"})
 
 						continue
 					}
@@ -216,12 +216,12 @@ func (instance *ActionsRunner) runActions() {
 					}
 
 					if findSubsFailed {
-						qbittorrent.Client.RemoveTorrentTags(torrent.Hash, []string{"jellyfin:get_subs=pending"})
-						qbittorrent.Client.AddTorrentTags(torrent.Hash, []string{"jellyfin:get_subs=failed"})
+						qbittorrent.Client.RemoveTorrentTags(torrent.Hash, []string{"jellyfin:find_subs=pending"})
+						qbittorrent.Client.AddTorrentTags(torrent.Hash, []string{"jellyfin:find_subs=failed"})
 					}
 
-					qbittorrent.Client.RemoveTorrentTags(torrent.Hash, []string{"jellyfin:get_subs=pending"})
-					qbittorrent.Client.AddTorrentTags(torrent.Hash, []string{"jellyfin:get_subs=completed"})
+					qbittorrent.Client.RemoveTorrentTags(torrent.Hash, []string{"jellyfin:find_subs=pending"})
+					qbittorrent.Client.AddTorrentTags(torrent.Hash, []string{"jellyfin:find_subs=completed"})
 
 				case "rename":
 					var renameFailed bool = false
@@ -395,7 +395,7 @@ func (instance *ActionsRunner) getJellyfinItemFolders(searchText string) ([]map[
 		return nil, fmt.Errorf("failed to read response: %w", err)
 	}
 
-	if ! (resp.StatusCode >= 200 && resp.StatusCode < 300) {
+	if !(resp.StatusCode >= 200 && resp.StatusCode < 300) {
 		return nil, fmt.Errorf("unexpected status code: %d, body: %s", resp.StatusCode, string(body))
 	}
 
@@ -446,7 +446,7 @@ func (instance *ActionsRunner) getJellyfinItems(parentID string) ([]map[string]a
 		return nil, fmt.Errorf("failed to read response: %w", err)
 	}
 
-	if ! (resp.StatusCode >= 200 && resp.StatusCode < 300) {
+	if !(resp.StatusCode >= 200 && resp.StatusCode < 300) {
 		return nil, fmt.Errorf("unexpected status code: %d, body: %s", resp.StatusCode, string(body))
 	}
 
@@ -468,7 +468,7 @@ func (instance *ActionsRunner) downloadSubtitlesInJellyfin(itemID string, langua
 	httpClient := &http.Client{
 		Timeout: 10 * time.Second,
 	}
-	
+
 	req, err := http.NewRequest(
 		http.MethodGet,
 		fmt.Sprintf("%s/Items/%s/RemoteSearch/Subtitles/%s", settings.Config.JellyfinUrl, itemID, language),
@@ -492,7 +492,7 @@ func (instance *ActionsRunner) downloadSubtitlesInJellyfin(itemID string, langua
 		return fmt.Errorf("failed to read response: %w", err)
 	}
 
-	if ! (resp.StatusCode >= 200 && resp.StatusCode < 300) {
+	if !(resp.StatusCode >= 200 && resp.StatusCode < 300) {
 		return fmt.Errorf("unexpected status code: %d, body: %s", resp.StatusCode, string(body))
 	}
 
@@ -532,7 +532,7 @@ func (instance *ActionsRunner) downloadSubtitlesInJellyfin(itemID string, langua
 		return fmt.Errorf("failed to read response: %w", err)
 	}
 
-	if ! (resp.StatusCode >= 200 && resp.StatusCode < 300) {
+	if !(resp.StatusCode >= 200 && resp.StatusCode < 300) {
 		return fmt.Errorf("unexpected status code: %d, body: %s", resp.StatusCode, string(body))
 	}
 
