@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"os"
 	"path"
 	"path/filepath"
@@ -15,8 +16,8 @@ import (
 
 	"connector-downloader/settings"
 	"connector-downloader/src/dto/response"
-	"connector-downloader/src/qbittorrent"
 	"connector-downloader/src/notifications"
+	"connector-downloader/src/qbittorrent"
 	t "connector-downloader/src/telemetry"
 
 	"github.com/go-co-op/gocron"
@@ -75,10 +76,10 @@ func (instance *ActionsRunner) runActions() {
 			for _, action := range torrent.Meta.ScheduledActions {
 				if (action.Category == "slack") && (action.Name == "notify") && (action.Status == "pending") {
 					vars := notifications.NotificationTorrentsVars{
-						TorrentName: torrent.Name,
-						Category: torrent.Category,
+						TorrentName:    torrent.Name,
+						Category:       torrent.Category,
 						QBittorrentURL: settings.Config.QBittorrentPublicUrl,
-						JellyfinURL: settings.Config.JellyfinUrl,
+						JellyfinURL:    settings.Config.JellyfinUrl,
 					}
 
 					err = notifications.SendSlackNotification(
@@ -107,10 +108,10 @@ func (instance *ActionsRunner) runActions() {
 			for _, action := range torrent.Meta.ScheduledActions {
 				if (action.Category == "slack") && (action.Name == "notify") && (action.Status == "initial") {
 					vars := notifications.NotificationTorrentsVars{
-						TorrentName: torrent.Name,
-						Category: torrent.Category,
+						TorrentName:    torrent.Name,
+						Category:       torrent.Category,
 						QBittorrentURL: settings.Config.QBittorrentPublicUrl,
-						JellyfinURL: settings.Config.JellyfinUrl,
+						JellyfinURL:    settings.Config.JellyfinUrl,
 					}
 
 					err = notifications.SendSlackNotification(
@@ -144,7 +145,7 @@ func (instance *ActionsRunner) runActions() {
 		var hasPendingActions bool = false
 
 		for _, action := range torrent.Meta.ScheduledActions {
-			if ! (action.Status == "pending") {
+			if !(action.Status == "pending") {
 				continue
 			}
 
@@ -152,29 +153,80 @@ func (instance *ActionsRunner) runActions() {
 			qbittorrent.Client.StopTorrent(torrent.Hash)
 
 			if action.Category == "jellyfin" {
-				switch action.Name {
-				case "rename":
-					torrentContent, err := qbittorrent.Client.GetTorrentContent(torrent.Hash)
+				torrentContent, err := qbittorrent.Client.GetTorrentContent(torrent.Hash)
 
+				if err != nil {
+					t.Log.Error("Failed to get torrent content", "error", err.Error())
+					continue
+				}
+
+				var allowedExtensions = []string{
+					".mkv", ".mp4", ".avi", ".mov", ".wmv", ".flv", ".webm", ".m4v",
+					".mpg", ".mpeg", ".ts", ".m2ts", ".mts", ".3gp", ".3g2", ".ogv",
+					".vob", ".asf", ".rm", ".rmvb", ".divx", ".f4v", ".mxf", ".mpv",
+					".qt", ".dat", ".amv", ".y4m",
+				}
+
+				for _, file := range torrentContent {
+					if file["progress"].(float64) < 1 {
+						os.Remove(path.Join(torrent.SavePath, file["name"].(string)))
+						continue
+					}
+				}
+
+				switch action.Name {
+				case "find_subs":
+					var findSubsFailed bool = false
+
+					instance.refreshJellyfinLibrary()
+					time.Sleep(2 * time.Second)
+
+					jellyfinTorrentFolders, err := instance.getJellyfinItemFolders(filepath.Base(torrent.FilesPath))
 					if err != nil {
-						t.Log.Error("Failed to get torrent content", "error", err.Error())
+						t.Log.Error("Failed to get Jellyfin items for torrent folder", "error", err.Error())
+						qbittorrent.Client.RemoveTorrentTags(torrent.Hash, []string{"jellyfin:get_subs=pending"})
+						qbittorrent.Client.AddTorrentTags(torrent.Hash, []string{"jellyfin:get_subs=failed"})
+
 						continue
 					}
 
-					var allowedExtensions = []string{
-						".mkv", ".mp4", ".avi", ".mov", ".wmv", ".flv", ".webm", ".m4v",
-						".mpg", ".mpeg", ".ts", ".m2ts", ".mts", ".3gp", ".3g2", ".ogv",
-						".vob", ".asf", ".rm", ".rmvb", ".divx", ".f4v", ".mxf", ".mpv",
-						".qt", ".dat", ".amv", ".y4m",
-					}
-					var renameFailed bool = false
+					jellyfinTorrentFolderID := jellyfinTorrentFolders[0]["Id"].(string)
 
-					for _, file := range torrentContent {
-						if file["progress"].(float64) < 1 {
-							os.Remove(path.Join(torrent.SavePath, file["name"].(string)))
+					jellyfinItems, err := instance.getJellyfinItems(jellyfinTorrentFolderID)
+					if err != nil {
+						t.Log.Error("Failed to get Jellyfin items for torrent folder", "error", err.Error())
+						qbittorrent.Client.RemoveTorrentTags(torrent.Hash, []string{"jellyfin:get_subs=pending"})
+						qbittorrent.Client.AddTorrentTags(torrent.Hash, []string{"jellyfin:get_subs=failed"})
+
+						continue
+					}
+
+					for _, item := range jellyfinItems {
+						if item["HasSubtitles"].(bool) {
 							continue
 						}
 
+						err = instance.downloadSubtitlesInJellyfin(item["Id"].(string), "english")
+						if err != nil {
+							t.Log.Error("Failed to download subtitles in Jellyfin", "error", err.Error())
+							findSubsFailed = true
+
+							continue
+						}
+					}
+
+					if findSubsFailed {
+						qbittorrent.Client.RemoveTorrentTags(torrent.Hash, []string{"jellyfin:get_subs=pending"})
+						qbittorrent.Client.AddTorrentTags(torrent.Hash, []string{"jellyfin:get_subs=failed"})
+					}
+
+					qbittorrent.Client.RemoveTorrentTags(torrent.Hash, []string{"jellyfin:get_subs=pending"})
+					qbittorrent.Client.AddTorrentTags(torrent.Hash, []string{"jellyfin:get_subs=completed"})
+
+				case "rename":
+					var renameFailed bool = false
+
+					for _, file := range torrentContent {
 						filePath := path.Dir(file["name"].(string))
 						fileName := path.Base(file["name"].(string))
 						fileExt := path.Ext(fileName)
@@ -226,11 +278,11 @@ func (instance *ActionsRunner) runActions() {
 			}
 		}
 
-		if ! hasPendingActions {
+		if !hasPendingActions {
 			qbittorrent.Client.RemoveTorrent(torrent.Hash, false)
 
 			if torrent.Category == "jellyfin" {
-				instance.RefreshJellyfinLibrary()
+				instance.refreshJellyfinLibrary()
 			}
 		}
 	}
@@ -262,7 +314,7 @@ func (instance *ActionsRunner) getTorrents() (*response.BaseResponse[response.To
 		return nil, fmt.Errorf("failed to read response: %w", err)
 	}
 
-	if ! (resp.StatusCode >= 200 && resp.StatusCode < 300) {
+	if !(resp.StatusCode >= 200 && resp.StatusCode < 300) {
 		return nil, fmt.Errorf("unexpected status code: %d, body: %s", resp.StatusCode, string(body))
 	}
 
@@ -274,7 +326,7 @@ func (instance *ActionsRunner) getTorrents() (*response.BaseResponse[response.To
 	return &torrents, nil
 }
 
-func (instance *ActionsRunner) RefreshJellyfinLibrary() error {
+func (instance *ActionsRunner) refreshJellyfinLibrary() error {
 	httpClient := &http.Client{
 		Timeout: 10 * time.Second,
 	}
@@ -299,6 +351,183 @@ func (instance *ActionsRunner) RefreshJellyfinLibrary() error {
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return fmt.Errorf("failed to read response: %w", err)
+	}
+
+	if !(resp.StatusCode >= 200 && resp.StatusCode < 300) {
+		return fmt.Errorf("unexpected status code: %d, body: %s", resp.StatusCode, string(body))
+	}
+
+	return nil
+}
+
+func (instance *ActionsRunner) getJellyfinItemFolders(searchText string) ([]map[string]any, error) {
+	httpClient := &http.Client{
+		Timeout: 10 * time.Second,
+	}
+
+	reqParams := url.Values{}
+	reqParams.Set("Recursive", "true")
+	reqParams.Set("searchTerm", searchText)
+	reqParams.Set("IncludeItemTypes", "Folder")
+
+	req, err := http.NewRequest(
+		http.MethodGet,
+		fmt.Sprintf("%s/Items?%s", settings.Config.JellyfinUrl, reqParams.Encode()),
+		nil,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create request: %w", err)
+	}
+
+	req.Header.Set("X-Emby-Token", settings.Config.JellyfinAPIKey)
+
+	resp, err := httpClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch response: %w", err)
+	}
+
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read response: %w", err)
+	}
+
+	if ! (resp.StatusCode >= 200 && resp.StatusCode < 300) {
+		return nil, fmt.Errorf("unexpected status code: %d, body: %s", resp.StatusCode, string(body))
+	}
+
+	var result struct {
+		Items []map[string]any `json:"Items"`
+	}
+	if err := json.Unmarshal(body, &result); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal response: %w", err)
+	}
+
+	if len(result.Items) == 0 {
+		return nil, fmt.Errorf("no items found in Jellyfin with search term: %s", searchText)
+	}
+
+	return result.Items, nil
+}
+
+func (instance *ActionsRunner) getJellyfinItems(parentID string) ([]map[string]any, error) {
+	httpClient := &http.Client{
+		Timeout: 10 * time.Second,
+	}
+
+	reqParams := url.Values{}
+	reqParams.Set("Recursive", "true")
+	reqParams.Set("ParentId", parentID)
+	reqParams.Set("IncludeItemTypes", "Episode,Movie,Series,Trailer,Video")
+
+	req, err := http.NewRequest(
+		http.MethodGet,
+		fmt.Sprintf("%s/Items?%s", settings.Config.JellyfinUrl, reqParams.Encode()),
+		nil,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create request: %w", err)
+	}
+
+	req.Header.Set("X-Emby-Token", settings.Config.JellyfinAPIKey)
+
+	resp, err := httpClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch response: %w", err)
+	}
+
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read response: %w", err)
+	}
+
+	if ! (resp.StatusCode >= 200 && resp.StatusCode < 300) {
+		return nil, fmt.Errorf("unexpected status code: %d, body: %s", resp.StatusCode, string(body))
+	}
+
+	var result struct {
+		Items []map[string]any `json:"Items"`
+	}
+	if err := json.Unmarshal(body, &result); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal response: %w", err)
+	}
+
+	if len(result.Items) == 0 {
+		return nil, fmt.Errorf("no items found in Jellyfin")
+	}
+
+	return result.Items, nil
+}
+
+func (instance *ActionsRunner) downloadSubtitlesInJellyfin(itemID string, language string) error {
+	httpClient := &http.Client{
+		Timeout: 10 * time.Second,
+	}
+	
+	req, err := http.NewRequest(
+		http.MethodGet,
+		fmt.Sprintf("%s/Items/%s/RemoteSearch/Subtitles/%s", settings.Config.JellyfinUrl, itemID, language),
+		nil,
+	)
+	if err != nil {
+		return fmt.Errorf("failed to create request: %w", err)
+	}
+
+	req.Header.Set("X-Emby-Token", settings.Config.JellyfinAPIKey)
+
+	resp, err := httpClient.Do(req)
+	if err != nil {
+		return fmt.Errorf("failed to fetch response: %w", err)
+	}
+
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return fmt.Errorf("failed to read response: %w", err)
+	}
+
+	if ! (resp.StatusCode >= 200 && resp.StatusCode < 300) {
+		return fmt.Errorf("unexpected status code: %d, body: %s", resp.StatusCode, string(body))
+	}
+
+	var result struct {
+		Items []map[string]any `json:"Items"`
+	}
+	if err := json.Unmarshal(body, &result); err != nil {
+		return fmt.Errorf("failed to unmarshal response: %w", err)
+	}
+
+	if len(result.Items) == 0 {
+		return fmt.Errorf("no subtitles found in Jellyfin for item ID: %s and language: %s", itemID, language)
+	}
+
+	jellyfinSubtitlesID := result.Items[0]["Id"].(string)
+
+	req, err = http.NewRequest(
+		http.MethodPost,
+		fmt.Sprintf("%s/Items/%s/RemoteSearch/Subtitles/%s", settings.Config.JellyfinUrl, itemID, jellyfinSubtitlesID),
+		nil,
+	)
+	if err != nil {
+		return fmt.Errorf("failed to create request: %w", err)
+	}
+
+	req.Header.Set("X-Emby-Token", settings.Config.JellyfinAPIKey)
+
+	resp, err = httpClient.Do(req)
+	if err != nil {
+		return fmt.Errorf("failed to fetch response: %w", err)
+	}
+
+	defer resp.Body.Close()
+
+	body, err = io.ReadAll(resp.Body)
 	if err != nil {
 		return fmt.Errorf("failed to read response: %w", err)
 	}

@@ -77,14 +77,6 @@ func ListTorrents(ctx *fiber.Ctx) error {
 
 		if slices.Contains(torrentData.Tags, "fetch-api") {
 			torrentMeta.ManagedBy = "connector-downloader"
-
-			if (torrentData.Category == "jellyfin") && ! (utils.HasItemWithPrefix(torrentData.Tags, "jellyfin:")) {
-				qbittorrent.Client.AddTorrentTags(
-					torrentData.Hash,
-					[]string{"jellyfin:rename=pending"},
-				)
-				torrentData.Tags = append(torrentData.Tags, "jellyfin:rename=pending")
-			}
 		} else {
 			torrentMeta.ManagedBy = "qBittorrent"
 		}
@@ -126,27 +118,42 @@ func ListTorrents(ctx *fiber.Ctx) error {
 			tagOpName := tagOpParts[0]
 			tagOpStatus := tagOpParts[1]
 
-			if (tagCategory == "jellyfin") && (tagOpName == "rename") {
-				switch tagOpStatus {
-				case "pending":
-					tagAction.Description = "Torrent dir/files will be renamed to match Jellyfin library structure once completed."
-				case "completed":
-					tagAction.Description = "Torrent dir/files renamed to match Jellyfin library structure."
-				case "failed":
-					tagAction.Description = "[!] Something went wrong while renaming Torrent's content."
+			if tagCategory == "jellyfin" {
+				if tagOpName == "get_subs" {
+					switch tagOpStatus {
+					case "pending":
+						tagAction.Description = "Subtitles will be fetched from OpenSubtitles in Jellyfin for this torrent media."
+					case "completed":
+						tagAction.Description = "Subtitles fetched in Jellyfin."
+					case "failed":
+						tagAction.Description = "[!] Something went wrong while fetching subtitles from OpenSubtitles in Jellyfin for this torrent media."
+					}
+				}
+
+				if tagOpName == "rename" {
+					switch tagOpStatus {
+					case "pending":
+						tagAction.Description = "Torrent dir/files will be renamed to match Jellyfin library structure once completed."
+					case "completed":
+						tagAction.Description = "Torrent dir/files renamed to match Jellyfin library structure."
+					case "failed":
+						tagAction.Description = "[!] Something went wrong while renaming Torrent's content."
+					}
 				}
 			}
 
-			if (tagCategory == "slack") && (tagOpName == "notify") {
-				switch tagOpStatus {
-				case "pending":
-					tagAction.Description = "Slack notification still not sent."
-				case "initial":
-					tagAction.Description = "Initial Slack notification already sent, awaiting for torrent completion."
-				case "completed":
-					tagAction.Description = "Slack notifications sent."
-				case "failed":
-					tagAction.Description = "[!] Something went wrong while sending notifications to Slack."
+			if tagCategory == "slack" {
+				if tagOpName == "notify" {
+					switch tagOpStatus {
+					case "pending":
+						tagAction.Description = "Slack notification still not sent."
+					case "initial":
+						tagAction.Description = "Initial Slack notification already sent, awaiting for torrent completion."
+					case "completed":
+						tagAction.Description = "Slack notifications sent."
+					case "failed":
+						tagAction.Description = "[!] Something went wrong while sending notifications to Slack."
+					}
 				}
 			}
 
@@ -189,10 +196,15 @@ func AddTorrent(ctx *fiber.Ctx) error {
 	}
 
 	manage := true
+	findSubs := false
 	notify := false
 
 	if reqPayload.Category == "" {
 		reqPayload.Category = "jellyfin"
+	}
+
+	if (reqPayload.Category == "jellyfin") && ! (slices.Contains(reqPayload.Tags, "jellyfin:rename=pending")) {
+		reqPayload.Tags = append(reqPayload.Tags, "jellyfin:rename=pending")
 	}
 
 	if len(reqPayload.Tags) == 0 {
@@ -209,6 +221,22 @@ func AddTorrent(ctx *fiber.Ctx) error {
 
 	if (manage) && ! (slices.Contains(reqPayload.Tags, "fetch-api")) {
 		reqPayload.Tags = append(reqPayload.Tags, "fetch-api")
+	}
+
+	if reqPayload.FindSubs != nil {
+		findSubs = *reqPayload.FindSubs
+	}
+
+	if (findSubs) && ! (slices.Contains(reqPayload.Tags, "jellyfin:get_subs=pending")) {
+		if reqPayload.Category != "jellyfin" {
+			return ctx.Status(400).JSON(
+				response.ErrorResponse{
+					Error: "find_subs can only be true when `category` is jellyfin",
+				},
+			)
+		}
+
+		reqPayload.Tags = append([]string{"jellyfin:get_subs=pending"}, reqPayload.Tags...)
 	}
 
 	if reqPayload.Notify != nil {
