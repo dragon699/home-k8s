@@ -268,7 +268,9 @@ func (instance *ActionsRunner) runActions() {
 
 					qbittorrent.Client.RemoveTorrentTags(torrent.Hash, []string{"jellyfin:find_subs=pending"})
 
-					if (subsDownloadedCount + subsAlreadyPresentCount) == len(torrentContentFiles) {
+					if subsAlreadyPresentCount == len(torrentContentFiles) {
+						qbittorrent.Client.AddTorrentTags(torrent.Hash, []string{"jellyfin:find_subs=not_needed"})
+					} else if (subsDownloadedCount + subsAlreadyPresentCount) == len(torrentContentFiles) {
 						qbittorrent.Client.AddTorrentTags(torrent.Hash, []string{"jellyfin:find_subs=completed"})
 					} else {
 						qbittorrent.Client.AddTorrentTags(torrent.Hash, []string{"jellyfin:find_subs=partially_completed"})
