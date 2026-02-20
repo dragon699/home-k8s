@@ -174,7 +174,7 @@ export default function FetchApiActions() {
         category: effectiveCategory,
         tags: effectiveTags,
         notify,
-        subtitles: findSubs,
+        find_subs: findSubs,
       }
 
       const response = await addTorrent(payload)
