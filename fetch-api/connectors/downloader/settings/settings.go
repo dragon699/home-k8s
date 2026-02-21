@@ -17,12 +17,13 @@ type Settings struct {
 	ListenPort int    `json:"listen_port"                   env:"LISTEN_PORT"`
 	ListenUrl  string `json:"listen_url"`
 
-	QBittorrentUrl                string `json:"qbittorrent_url"                 env:"QBITTORRENT_URL"`
-	QBittorrentPublicUrl          string `json:"qbittorrent_public_url"          env:"QBITTORRENT_PUBLIC_URL"`
-	QBittorrentDefaultSavePath    string `json:"qbittorrent_default_save_path"   env:"QBITTORRENT_DEFAULT_SAVE_PATH"`
-	JellyfinUrl                   string `json:"jellyfin_url"                    env:"JELLYFIN_URL"`
-	JellyfinAPIKey                string `json:"jellyfin_api_key"                env:"JELLYFIN_API_KEY"`
-	SlackNotificationsWebhookUrl  string `json:"slack_notifications_webhook_url" env:"SLACK_NOTIFICATIONS_WEBHOOK_URL"`
+	QBittorrentUrl                   string `json:"qbittorrent_url"                     env:"QBITTORRENT_URL"`
+	QBittorrentPublicUrl             string `json:"qbittorrent_public_url"              env:"QBITTORRENT_PUBLIC_URL"`
+	QBittorrentDefaultSavePath       string `json:"qbittorrent_default_save_path"       env:"QBITTORRENT_DEFAULT_SAVE_PATH"`
+	JellyfinUrl                      string `json:"jellyfin_url"                        env:"JELLYFIN_URL"`
+	JellyfinAPIKey                   string `json:"jellyfin_api_key"                    env:"JELLYFIN_API_KEY"`
+	JellyfinSubtitlesDefaultLanguage string `json:"jellyfin_subtitles_default_language" env:"JELLYFIN_SUBTITLES_DEFAULT_LANGUAGE"`
+	SlackNotificationsWebhookUrl     string `json:"slack_notifications_webhook_url"     env:"SLACK_NOTIFICATIONS_WEBHOOK_URL"`
 
 	OtelServiceName      string `json:"otel_service_name"             env:"OTEL_SERVICE_NAME"`
 	OtelServiceNamespace string `json:"otel_service_namespace"        env:"OTEL_SERVICE_NAMESPACE"`
@@ -53,6 +54,8 @@ var defaultSettings = Settings{
 	QBittorrentUrl: "http://qbittorrent-web.qbittorrent.svc:80",
 	QBittorrentPublicUrl: "https://qb.k8s.iaminyourpc.xyz",
 	QBittorrentDefaultSavePath: "/data/Windows/Movies",
+	JellyfinUrl: "https://watch.k8s.iaminyourpc.xyz",
+	JellyfinSubtitlesDefaultLanguage: "english",
 
 	OtelServiceName:      "connector-downloader",
 	OtelServiceNamespace: "fetch-api",

@@ -249,14 +249,29 @@ func (instance *ActionsRunner) runActions() {
 
 					for _, item := range jellyfinItems {
 						if hasSubtitles, ok := item["HasSubtitles"].(bool); ok && hasSubtitles {
-							subsAlreadyPresentCount += 1
-							continue
+							var subtitlesFound bool = false
+
+							if mediaStreams, ok := item["MediaStreams"].([]map[string]any); ok {
+								for _, stream := range mediaStreams {
+									if stream["Type"] == "Subtitle" {
+										if subtitleLanguage, ok := stream["Language"].(string); ok && subtitleLanguage == settings.Config.JellyfinSubtitlesDefaultLanguage[:3] {
+											subtitlesFound = true
+											break
+										}
+									}
+								}
+							}
+
+							if subtitlesFound {
+								subsAlreadyPresentCount += 1
+								continue
+							}
 						}
 
 						itemFile := filepath.Base(item["Path"].(string))
 
 						if slices.Contains(torrentContentFileNames, itemFile) {
-							err = instance.downloadSubtitlesInJellyfin(item["Id"].(string), "english")
+							err = instance.downloadSubtitlesInJellyfin(item["Id"].(string), settings.Config.JellyfinSubtitlesDefaultLanguage)
 							if err != nil {
 								t.Log.Error("Failed to download subtitles in Jellyfin", "error", err.Error())
 								continue
@@ -363,57 +378,6 @@ func (instance *ActionsRunner) refreshJellyfinLibrary() error {
 	return nil
 }
 
-// func (instance *ActionsRunner) getJellyfinItemFolders(searchText string) ([]map[string]any, error) {
-// 	httpClient := &http.Client{
-// 		Timeout: 10 * time.Second,
-// 	}
-
-// 	reqParams := url.Values{}
-// 	reqParams.Set("Recursive", "true")
-// 	reqParams.Set("searchTerm", searchText)
-// 	reqParams.Set("IncludeItemTypes", "Folder")
-
-// 	req, err := http.NewRequest(
-// 		http.MethodGet,
-// 		fmt.Sprintf("%s/Items?%s", settings.Config.JellyfinUrl, reqParams.Encode()),
-// 		nil,
-// 	)
-// 	if err != nil {
-// 		return nil, fmt.Errorf("failed to create request: %w", err)
-// 	}
-
-// 	req.Header.Set("X-Emby-Token", settings.Config.JellyfinAPIKey)
-
-// 	resp, err := httpClient.Do(req)
-// 	if err != nil {
-// 		return nil, fmt.Errorf("failed to fetch response: %w", err)
-// 	}
-
-// 	defer resp.Body.Close()
-
-// 	body, err := io.ReadAll(resp.Body)
-// 	if err != nil {
-// 		return nil, fmt.Errorf("failed to read response: %w", err)
-// 	}
-
-// 	if !(resp.StatusCode >= 200 && resp.StatusCode < 300) {
-// 		return nil, fmt.Errorf("unexpected status code: %d, body: %s", resp.StatusCode, string(body))
-// 	}
-
-// 	var result struct {
-// 		Items []map[string]any `json:"Items"`
-// 	}
-// 	if err := json.Unmarshal(body, &result); err != nil {
-// 		return nil, fmt.Errorf("failed to unmarshal response: %w", err)
-// 	}
-
-// 	if len(result.Items) == 0 {
-// 		return nil, fmt.Errorf("no items found in Jellyfin with search term: %s", searchText)
-// 	}
-
-// 	return result.Items, nil
-// }
-
 func (instance *ActionsRunner) getJellyfinItems() ([]map[string]any, error) {
 	httpClient := &http.Client{
 		Timeout: 10 * time.Second,
@@ -421,7 +385,7 @@ func (instance *ActionsRunner) getJellyfinItems() ([]map[string]any, error) {
 
 	reqParams := url.Values{}
 	reqParams.Set("Recursive", "true")
-	reqParams.Set("Fields", "Path,DateCreated")
+	reqParams.Set("Fields", "Path,DateCreated,MediaStreams")
 	reqParams.Set("sortBy", "DateCreated")
 	reqParams.Set("sortOrder", "Descending")
 	reqParams.Set("IncludeItemTypes", "Episode,Movie,Series,Trailer,Video")
