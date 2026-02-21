@@ -202,8 +202,8 @@ export default function FetchApiActions() {
         aria-hidden="true"
         className="block flex-shrink-0"
         style={{
-          width: '17px',
-          height: '17px',
+          width: '15px',
+          height: '15px',
           backgroundColor: 'currentColor',
           WebkitMaskImage: 'url(https://i.imgur.com/lrTz6dE.png)',
           maskImage: 'url(https://i.imgur.com/lrTz6dE.png)',
@@ -583,11 +583,13 @@ export default function FetchApiActions() {
                       <div className={`torrent-item-inner${idx < displayTorrents.length - 1 ? ' pb-5' : ''}`}>
                       <div className="flex gap-3">
                         {/* Left icon */}
-                        <div className="flex items-start flex-shrink-0 pt-0.5">
+                        <div className="flex items-center flex-shrink-0">
                           <span
                             aria-hidden="true"
-                            className="block w-5 h-5 flex-shrink-0 transition-colors duration-300"
+                            className="block flex-shrink-0 transition-colors duration-300"
                             style={{
+                              width: '16px',
+                              height: '16px',
                               backgroundColor: iconColor,
                               WebkitMaskImage: 'url(https://i.imgur.com/5LstlCU.png)',
                               maskImage: 'url(https://i.imgur.com/5LstlCU.png)',
