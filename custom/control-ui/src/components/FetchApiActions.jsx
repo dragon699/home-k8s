@@ -565,30 +565,59 @@ export default function FetchApiActions() {
                   return (
                     <div key={torrent.hash} className={animClass}>
                       <div className={`torrent-item-inner${idx < displayTorrents.length - 1 ? ' pb-4' : ''}`}>
-                        {/* Name + speed */}
+                        {/* Name + icons */}
                         <div className="flex items-center justify-between gap-3 mb-1.5">
                           <div
                             className={`name-clip${isNameHovered ? ' name-clip-expanded' : ''}`}
                             onMouseEnter={() => setHoveredNameHash(torrent.hash)}
                             onMouseLeave={() => setHoveredNameHash(null)}
                           >
-                            <span className="text-sm font-semibold text-gray-800 whitespace-nowrap">{torrent.name}</span>
+                            <span className="text-sm font-bold text-gray-900 whitespace-nowrap">{torrent.name}</span>
                           </div>
-                          {isDownloading && (torrent.speed_download_mbps > 0 || torrent.speed_upload_mbps > 0) && (
-                            <span className="text-xs font-semibold whitespace-nowrap flex-shrink-0 flex items-center gap-1" style={{ color: jellyfinAccent }}>
-                              {torrent.speed_download_mbps > 0 && (
-                                <>
-                                  &#8595;&nbsp;<span key={`${torrent.hash}-dl-${torrent.speed_download_mbps}`} className="stat-value">{torrent.speed_download_mbps} mb/s</span>
-                                </>
+                          {/* Subtitle icon + gear icon */}
+                          <div className="flex items-center gap-2 flex-shrink-0">
+                            <div
+                              className="flex items-center gap-1"
+                              onMouseEnter={() => subsHoverable && setHoveredSubsHash(torrent.hash)}
+                              onMouseLeave={() => subsHoverable && setHoveredSubsHash(null)}
+                            >
+                              {subsDisplayText && (
+                                <span
+                                  key={`${torrent.hash}-subs-${isSubsHovered ? 'hov' : 'def'}`}
+                                  className="toggle-subtext text-xs font-semibold whitespace-nowrap"
+                                  style={{ color: subsDisplayColor, cursor: subsHoverable && isSubsHovered ? 'pointer' : 'default' }}
+                                >
+                                  {subsDisplayText}
+                                </span>
                               )}
-                              {torrent.speed_download_mbps > 0 && torrent.speed_upload_mbps > 0 && <span>&nbsp;&nbsp;</span>}
-                              {torrent.speed_upload_mbps > 0 && (
-                                <>
-                                  &#8593;&nbsp;<span key={`${torrent.hash}-ul-${torrent.speed_upload_mbps}`} className="stat-value">{torrent.speed_upload_mbps} mb/s</span>
-                                </>
-                              )}
-                            </span>
-                          )}
+                              <span
+                                aria-hidden="true"
+                                className="block flex-shrink-0"
+                                style={{
+                                  width: '15px',
+                                  height: '15px',
+                                  backgroundColor: subsIconColor,
+                                  transition: 'background-color 200ms ease',
+                                  WebkitMaskImage: 'url(https://i.imgur.com/2SzFid0.png)',
+                                  maskImage: 'url(https://i.imgur.com/2SzFid0.png)',
+                                  WebkitMaskSize: 'contain',
+                                  maskSize: 'contain',
+                                  WebkitMaskRepeat: 'no-repeat',
+                                  maskRepeat: 'no-repeat',
+                                  WebkitMaskPosition: 'center',
+                                  maskPosition: 'center',
+                                }}
+                              />
+                            </div>
+                            <svg
+                              aria-hidden="true"
+                              style={{ width: '15px', height: '15px', color: '#9ca3af', flexShrink: 0 }}
+                              fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"
+                            >
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                          </div>
                         </div>
                         {/* Progress bar */}
                         <div className="h-1 w-full rounded-full bg-gray-100 overflow-hidden">
@@ -623,52 +652,22 @@ export default function FetchApiActions() {
                               <span key="completed" className="toggle-subtext text-xs font-semibold" style={{ color: '#1DB954' }}>Completed</span>
                             )}
                           </div>
-                          {/* Right: subtitle icon + gear icon */}
-                          <div className="flex items-center gap-2 flex-shrink-0">
-                            {/* Subtitles */}
-                            <div
-                              className="flex items-center gap-1"
-                              onMouseEnter={() => subsHoverable && setHoveredSubsHash(torrent.hash)}
-                              onMouseLeave={() => subsHoverable && setHoveredSubsHash(null)}
-                            >
-                              {subsDisplayText && (
-                                <span
-                                  key={`${torrent.hash}-subs-${isSubsHovered ? 'hov' : 'def'}`}
-                                  className="toggle-subtext text-xs font-semibold whitespace-nowrap"
-                                  style={{ color: subsDisplayColor, cursor: subsHoverable && isSubsHovered ? 'pointer' : 'default' }}
-                                >
-                                  {subsDisplayText}
-                                </span>
+                          {/* Right: down/up speed */}
+                          {isDownloading && (torrent.speed_download_mbps > 0 || torrent.speed_upload_mbps > 0) && (
+                            <span className="text-xs font-semibold whitespace-nowrap flex-shrink-0 flex items-center gap-1" style={{ color: jellyfinAccent }}>
+                              {torrent.speed_download_mbps > 0 && (
+                                <>
+                                  &#8595;&nbsp;<span key={`${torrent.hash}-dl-${torrent.speed_download_mbps}`} className="stat-value">{torrent.speed_download_mbps} mb/s</span>
+                                </>
                               )}
-                              <span
-                                aria-hidden="true"
-                                className="block flex-shrink-0"
-                                style={{
-                                  width: '14px',
-                                  height: '14px',
-                                  backgroundColor: subsIconColor,
-                                  transition: 'background-color 200ms ease',
-                                  WebkitMaskImage: 'url(https://i.imgur.com/2SzFid0.png)',
-                                  maskImage: 'url(https://i.imgur.com/2SzFid0.png)',
-                                  WebkitMaskSize: 'contain',
-                                  maskSize: 'contain',
-                                  WebkitMaskRepeat: 'no-repeat',
-                                  maskRepeat: 'no-repeat',
-                                  WebkitMaskPosition: 'center',
-                                  maskPosition: 'center',
-                                }}
-                              />
-                            </div>
-                            {/* Gear icon */}
-                            <svg
-                              aria-hidden="true"
-                              style={{ width: '14px', height: '14px', color: '#9ca3af', flexShrink: 0 }}
-                              fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"
-                            >
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                            </svg>
-                          </div>
+                              {torrent.speed_download_mbps > 0 && torrent.speed_upload_mbps > 0 && <span>&nbsp;&nbsp;</span>}
+                              {torrent.speed_upload_mbps > 0 && (
+                                <>
+                                  &#8593;&nbsp;<span key={`${torrent.hash}-ul-${torrent.speed_upload_mbps}`} className="stat-value">{torrent.speed_upload_mbps} mb/s</span>
+                                </>
+                              )}
+                            </span>
+                          )}
                         </div>
                     </div>
                     </div>
