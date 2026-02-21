@@ -164,7 +164,7 @@ func (instance *ActionsRunner) runActions() {
 				}
 
 				var torrentContentFiles = []map[string]any{}
-				var torrentContentFileNames = []string{}
+				var torrentContentNewFileNames = []string{}
 				var allowedExtensions = []string{
 					".mkv", ".mp4", ".avi", ".mov", ".wmv", ".flv", ".webm", ".m4v",
 					".mpg", ".mpeg", ".ts", ".m2ts", ".mts", ".3gp", ".3g2", ".ogv",
@@ -181,7 +181,14 @@ func (instance *ActionsRunner) runActions() {
 						}
 
 						torrentContentFiles = append(torrentContentFiles, file)
-						torrentContentFileNames = append(torrentContentFileNames, utils.BeautifyMovieName(path.Base(file["name"].(string))))
+						torrentContentNewFileNames = append(
+							torrentContentNewFileNames,
+							fmt.Sprintf(
+								"%s%s",
+								utils.BeautifyMovieName(path.Base(file["name"].(string))),
+								path.Ext(file["name"].(string)),
+							),
+						)
 					}
 				}
 
@@ -193,7 +200,6 @@ func (instance *ActionsRunner) runActions() {
 						filePath := path.Dir(file["name"].(string))
 						fileName := path.Base(file["name"].(string))
 						fileExt := path.Ext(fileName)
-
 						fileNameBase := strings.TrimSuffix(fileName, fileExt)
 
 						fileNameNew := fmt.Sprintf(
@@ -212,11 +218,19 @@ func (instance *ActionsRunner) runActions() {
 						}
 					}
 
+					var dirNameNew string
 					dirPath := filepath.Dir(torrent.FilesPath)
 					dirName := filepath.Base(torrent.FilesPath)
+
+					if len(torrentContentNewFileNames) == 1 {
+						dirNameNew = strings.TrimSuffix(torrentContentNewFileNames[0], path.Ext(torrentContentNewFileNames[0]))
+					} else {
+						dirNameNew = utils.BeautifyMovieName(dirName)
+					}
+
 					dirPathNew := path.Join(
 						dirPath,
-						utils.BeautifyMovieName(dirName),
+						dirNameNew,
 					)
 
 					err = os.Rename(torrent.FilesPath, dirPathNew)
@@ -276,7 +290,7 @@ func (instance *ActionsRunner) runActions() {
 
 						itemFile := filepath.Base(item["Path"].(string))
 
-						if slices.Contains(torrentContentFileNames, itemFile) {
+						if slices.Contains(torrentContentNewFileNames, itemFile) {
 							// DEBUG
 							fmt.Printf("Trying subs download for for %s -> %s\n", item["Id"].(string), item["Path"].(string))
 							// END DEBUG
@@ -292,9 +306,9 @@ func (instance *ActionsRunner) runActions() {
 
 					qbittorrent.Client.RemoveTorrentTags(torrent.Hash, []string{"jellyfin:find_subs=pending"})
 
-					if subsAlreadyPresentCount == len(torrentContentFileNames) {
+					if subsAlreadyPresentCount == len(torrentContentNewFileNames) {
 						qbittorrent.Client.AddTorrentTags(torrent.Hash, []string{"jellyfin:find_subs=already_present"})
-					} else if (subsDownloadedCount + subsAlreadyPresentCount) == len(torrentContentFileNames) {
+					} else if (subsDownloadedCount + subsAlreadyPresentCount) == len(torrentContentNewFileNames) {
 						qbittorrent.Client.AddTorrentTags(torrent.Hash, []string{"jellyfin:find_subs=completed"})
 					} else {
 						qbittorrent.Client.AddTorrentTags(torrent.Hash, []string{"jellyfin:find_subs=partially_completed"})
