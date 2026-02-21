@@ -463,18 +463,16 @@ func (instance *ActionsRunner) downloadSubtitlesInJellyfin(itemID string, langua
 		return fmt.Errorf("unexpected status code: %d, body: %s", resp.StatusCode, string(body))
 	}
 
-	var result struct {
-		Items []map[string]any `json:"Items"`
-	}
+	var result []map[string]any
 	if err := json.Unmarshal(body, &result); err != nil {
 		return fmt.Errorf("failed to unmarshal response: %w", err)
 	}
 
-	if len(result.Items) == 0 {
+	if len(result) == 0 {
 		return fmt.Errorf("no subtitles found in Jellyfin for item ID: %s and language: %s", itemID, language)
 	}
 
-	jellyfinSubtitlesID := result.Items[0]["Id"].(string)
+	jellyfinSubtitlesID := result[0]["Id"].(string)
 
 	req, err = http.NewRequest(
 		http.MethodPost,
