@@ -57,6 +57,7 @@ export default function FetchApiActions() {
   const [hoveredSubsHash, setHoveredSubsHash] = useState(null)
   const [subsTextHoveredHash, setSubsTextHoveredHash] = useState(null)
   const [hoveredNameHash, setHoveredNameHash] = useState(null)
+  const [inputAnimPhase, setInputAnimPhase] = useState(false)
 
   useEffect(() => {
     return () => {
@@ -205,6 +206,9 @@ export default function FetchApiActions() {
     }
 
     setUrlError('')
+    setInputAnimPhase(true)
+    const animTimer = setTimeout(() => { setMovieName(''); setInputAnimPhase(false) }, 1750)
+    timersRef.current.push(animTimer)
     setButtonState('pending')
     const flowId = iconFlowRef.current + 1
     iconFlowRef.current = flowId
@@ -234,7 +238,6 @@ export default function FetchApiActions() {
     } catch (error) {
       setJsonOutput({ error: error.message || 'Request failed' })
     }
-    setMovieName('')
 
     if (!requestSucceeded) {
       await transitionButtonIcon('arrows', flowId)
@@ -313,18 +316,20 @@ export default function FetchApiActions() {
           {/* Input */}
           <div>
             <label className="block text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: jellyfinAccent }}>Torrent</label>
-            <input
-              type="text"
-              value={movieName}
-              disabled={isSubmitting}
-              onChange={(e) => {
-                setMovieName(e.target.value)
-                if (urlError) setUrlError('')
-              }}
-              className="flat-input"
-              style={urlError ? { borderBottomColor: jellyfinAccent } : undefined}
-              placeholder="Magnet or url"
-            />
+            <div className="flat-input-wrap">
+              <input
+                type="text"
+                value={movieName}
+                disabled={isSubmitting}
+                onChange={(e) => {
+                  setMovieName(e.target.value)
+                  if (urlError) setUrlError('')
+                }}
+                className={`flat-input${inputAnimPhase ? ' flat-input-text-out' : ''}`}
+                placeholder="Magnet or url"
+              />
+              <div className={`flat-input-line${urlError ? ' flat-input-line-error' : ''}${inputAnimPhase ? ' flat-input-line-anim' : ''}`} />
+            </div>
             {urlError && <p key={urlErrorKey} className="toggle-subtext mt-2 text-xs font-semibold" style={{ color: jellyfinAccent }}>{urlError}</p>}
           </div>
 
@@ -349,7 +354,7 @@ export default function FetchApiActions() {
                 />
                 <div>
                   <p className="text-sm font-bold text-gray-900 cursor-pointer select-none" onClick={() => setNotify(prev => !prev)}>Notify</p>
-                  <p key={`notify-${notify}`} className={`toggle-subtext text-xs font-semibold mt-0.5 ${notify ? '' : 'text-gray-400'}`} style={notify ? { color: jellyfinAccent } : undefined}>
+                  <p key={`notify-${notify}`} className={`toggle-subtext text-xs font-semibold mt-0.5 cursor-pointer select-none ${notify ? '' : 'text-gray-400'}`} style={notify ? { color: jellyfinAccent } : undefined} onClick={() => setNotify(prev => !prev)}>
                     {notify ? "Notify me in Slack when it's ready" : "Don't send me notifications"}
                   </p>
                 </div>
@@ -385,7 +390,7 @@ export default function FetchApiActions() {
                 />
                 <div>
                   <p className="text-sm font-bold text-gray-900 cursor-pointer select-none" onClick={() => setFindSubs(prev => !prev)}>Subtitles</p>
-                  <p key={`subs-${findSubs}`} className={`toggle-subtext text-xs font-semibold mt-0.5 ${findSubs ? '' : 'text-gray-400'}`} style={findSubs ? { color: jellyfinAccent } : undefined}>
+                  <p key={`subs-${findSubs}`} className={`toggle-subtext text-xs font-semibold mt-0.5 cursor-pointer select-none ${findSubs ? '' : 'text-gray-400'}`} style={findSubs ? { color: jellyfinAccent } : undefined} onClick={() => setFindSubs(prev => !prev)}>
                     {findSubs ? 'Search and download subtitles' : "Don't search for subtitles"}
                   </p>
                 </div>
@@ -549,26 +554,26 @@ export default function FetchApiActions() {
                   } else if (isPaused) {
                     subsIconColor = '#9ca3af'; subsIconOpacity = 1; subsClickable = true
                     if (findSubsTag === 'jellyfin:find_subs=pending') {
-                      subsTextA = 'Will download subtitles once completed'; subsTextAColor = '#9ca3af'
-                      subsTextB = 'Cancel'; subsTextBColor = '#ef4444'
+                      subsTextA = 'Will download subtitles'; subsTextAColor = '#111827'
+                      subsTextB = 'Cancel'; subsTextBColor = '#e00000'
                     } else if (findSubsTag === 'jellyfin:find_subs=completed') {
-                      subsTextA = 'Subtitles downloaded'; subsTextAColor = '#9ca3af'
+                      subsTextA = 'Subtitles downloaded'; subsTextAColor = '#111827'
                     } else if (findSubsTag === 'jellyfin:find_subs=partially_completed') {
-                      subsTextA = 'Subtitles may not be present in all episodes/movies'; subsTextAColor = '#9ca3af'
+                      subsTextA = 'Subtitles may not be present in all episodes/movies'; subsTextAColor = '#111827'
                     } else if (findSubsTag === 'jellyfin:find_subs=already_present') {
-                      subsTextA = 'Subtitles included with torrent'; subsTextAColor = '#9ca3af'
+                      subsTextA = 'Subtitles included with torrent'; subsTextAColor = '#111827'
                     } else if (findSubsTag === 'jellyfin:find_subs=failed') {
-                      subsTextA = 'Failed to find and/or download subtitles'; subsTextAColor = '#ef4444'
+                      subsTextA = 'Failed to find and/or download subtitles'; subsTextAColor = '#e00000'
                     } else {
-                      subsTextA = 'Will not download subtitles'; subsTextAColor = '#9ca3af'
+                      subsTextA = 'Will not download subtitles'; subsTextAColor = '#111827'
                       subsTextB = 'Download'; subsTextBColor = jellyfinAccent
                     }
                   } else if (isDownloading || isCompleted) {
                     subsClickable = true
                     if (findSubsTag === 'jellyfin:find_subs=pending') {
                       subsIconColor = jellyfinAccent; subsIconOpacity = 1
-                      subsTextA = 'Will download subtitles once completed'; subsTextAColor = jellyfinAccent
-                      subsTextB = 'Cancel'; subsTextBColor = '#ef4444'
+                      subsTextA = 'Will download subtitles'; subsTextAColor = jellyfinAccent
+                      subsTextB = 'Cancel'; subsTextBColor = '#e00000'
                     } else if (findSubsTag === 'jellyfin:find_subs=completed') {
                       subsIconColor = jellyfinAccent; subsIconOpacity = 1
                       subsTextA = 'Subtitles downloaded'; subsTextAColor = '#1DB954'
@@ -579,8 +584,8 @@ export default function FetchApiActions() {
                       subsIconColor = jellyfinAccent; subsIconOpacity = 1
                       subsTextA = 'Subtitles already included with torrent'; subsTextAColor = '#1DB954'
                     } else if (findSubsTag === 'jellyfin:find_subs=failed') {
-                      subsIconColor = '#ef4444'; subsIconOpacity = 1
-                      subsTextA = 'Failed to find and/or download subtitles'; subsTextAColor = '#ef4444'
+                      subsIconColor = '#e00000'; subsIconOpacity = 1
+                      subsTextA = 'Failed to find and/or download subtitles'; subsTextAColor = '#e00000'
                     } else {
                       subsIconColor = '#9ca3af'; subsIconOpacity = isSubsHovered ? 1 : 0.5
                       subsTextA = 'Will not download subtitles'; subsTextAColor = '#111827'
@@ -618,8 +623,8 @@ export default function FetchApiActions() {
                                 aria-hidden="true"
                                 className="block flex-shrink-0"
                                 style={{
-                                  width: '20px',
-                                  height: '20px',
+                                  width: '22px',
+                                  height: '22px',
                                   backgroundColor: subsIconColor,
                                   opacity: subsIconOpacity,
                                   transition: 'background-color 200ms ease, opacity 200ms ease',
@@ -643,16 +648,16 @@ export default function FetchApiActions() {
                                   {isSubsTextHovered && subsTextB ? (
                                     <span
                                       key={`${torrent.hash}-subs-b`}
-                                      className="subs-text-swap text-xs font-semibold whitespace-nowrap"
-                                      style={{ color: subsTextBColor }}
+                                      className="subs-text-swap subs-bubble"
+                                      style={{ backgroundColor: subsTextBColor, fontSize: '15px' }}
                                     >
                                       {subsTextB}
                                     </span>
                                   ) : (
                                     <span
                                       key={`${torrent.hash}-subs-a`}
-                                      className="text-xs font-semibold whitespace-nowrap"
-                                      style={{ color: subsTextAColor }}
+                                      className="subs-bubble"
+                                      style={{ backgroundColor: subsTextAColor, fontSize: '15px' }}
                                     >
                                       {subsTextA}
                                     </span>
@@ -663,7 +668,7 @@ export default function FetchApiActions() {
                             {/* Gear icon */}
                             <svg
                               aria-hidden="true"
-                              style={{ width: '20px', height: '20px', color: '#9ca3af', flexShrink: 0 }}
+                              style={{ width: '22px', height: '22px', color: '#9ca3af', flexShrink: 0 }}
                               fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"
                             >
                               <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />

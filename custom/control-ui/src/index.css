@@ -478,6 +478,18 @@ code {
   animation: subsTextFadeDown 180ms ease forwards;
 }
 
+.subs-bubble {
+  display: inline-block;
+  color: white;
+  font-weight: 600;
+  white-space: nowrap;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  line-height: 1.5;
+  position: relative;
+  top: -2px;
+}
+
 .toggle-switch {
   position: relative;
   width: 48px;
@@ -528,15 +540,9 @@ code {
   font-size: 14px;
   font-family: inherit;
   border: none;
-  border-bottom: 1.5px solid #e5e7eb;
   outline: none;
   background: transparent;
-  transition: border-color 180ms ease;
   color: #111827;
-}
-
-.flat-input:focus {
-  border-bottom-color: var(--card-accent, #8b5cf6);
 }
 
 .flat-input::placeholder {
@@ -546,6 +552,60 @@ code {
 .flat-input:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+.flat-input-wrap {
+  position: relative;
+}
+
+.flat-input-line {
+  height: 1.5px;
+  background: #e5e7eb;
+  position: relative;
+  overflow: hidden;
+  transition: background-color 180ms ease;
+}
+
+.flat-input-wrap:focus-within .flat-input-line:not(.flat-input-line-anim) {
+  background: var(--card-accent, #8b5cf6);
+}
+
+.flat-input-line-error {
+  background: var(--card-accent, #8b5cf6);
+}
+
+.flat-input-line::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: #f472b6;
+  opacity: 0;
+  transform: scaleX(1);
+  transform-origin: center;
+  pointer-events: none;
+}
+
+.flat-input-line-anim::after {
+  animation: pinkLineAnim 1.9s ease forwards;
+}
+
+@keyframes pinkLineAnim {
+  0%   { opacity: 0; transform: scaleX(1); }
+  10%  { opacity: 1; transform: scaleX(1); }
+  58%  { opacity: 1; transform: scaleX(0.97); }
+  78%  { opacity: 1; transform: scaleX(0.45); }
+  100% { opacity: 0; transform: scaleX(0); }
+}
+
+@keyframes inputTextFade {
+  0%   { opacity: 1; transform: translateY(0); }
+  35%  { opacity: 0.78; transform: translateY(1px); }
+  100% { opacity: 0; transform: translateY(7px); }
+}
+
+.flat-input-text-out {
+  animation: inputTextFade 1.6s cubic-bezier(0.78, 0.05, 1, 1) forwards;
+  pointer-events: none;
 }
 
 
