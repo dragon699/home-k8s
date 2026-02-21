@@ -271,6 +271,9 @@ func (instance *ActionsRunner) runActions() {
 						itemFile := filepath.Base(item["Path"].(string))
 
 						if slices.Contains(torrentContentFileNames, itemFile) {
+							// DEBUG
+							fmt.Printf("Trying subs download for for %s -> %s\n", item["Id"].(string), item["Path"].(string))
+							// END DEBUG
 							err = instance.downloadSubtitlesInJellyfin(item["Id"].(string), settings.Config.JellyfinSubtitlesDefaultLanguage)
 							if err != nil {
 								t.Log.Error("Failed to download subtitles in Jellyfin", "error", err.Error())
