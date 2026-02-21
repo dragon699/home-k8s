@@ -63,8 +63,8 @@ export default function FetchApiActions() {
     }
   }, [])
 
-  const ENTER_MS = 700
-  const EXIT_MS = 500
+  const ENTER_MS = 1000
+  const EXIT_MS = 1000
 
   useEffect(() => {
     const fetchTorrents = async () => {
@@ -506,9 +506,10 @@ export default function FetchApiActions() {
                   const barColor = isError ? '#ef4444' : (isPaused || isUnknown) ? '#9ca3af' : jellyfinAccent
                   const isEntering = enteringHashes.has(torrent.hash)
                   const isExiting = exitingTorrents.some(et => et.hash === torrent.hash)
-                  const animClass = isEntering ? 'torrent-item-enter' : isExiting ? 'torrent-item-exit' : ''
+                  const animClass = isEntering ? 'torrent-item-enter' : isExiting ? 'torrent-item-exit' : 'torrent-item-outer'
                   return (
-                    <div key={torrent.hash} className={`${animClass} ${idx < displayTorrents.length - 1 ? 'mb-5' : ''}`}>
+                    <div key={torrent.hash} className={animClass}>
+                      <div className={`torrent-item-inner${idx < displayTorrents.length - 1 ? ' pb-5' : ''}`}>
                       {/* Name + speed */}
                       <div className="flex items-center justify-between gap-3 mb-1.5">
                         <span className="text-sm font-semibold text-gray-800 truncate">{torrent.name}</span>
@@ -582,6 +583,7 @@ export default function FetchApiActions() {
                           </span>
                         )}
                       </div>
+                    </div>
                     </div>
                   )
                 })}
