@@ -58,6 +58,8 @@ export default function FetchApiActions() {
   const [subsTextHoveredHash, setSubsTextHoveredHash] = useState(null)
   const [hoveredNameHash, setHoveredNameHash] = useState(null)
   const [inputAnimPhase, setInputAnimPhase] = useState(false)
+  const [inputShake, setInputShake] = useState(false)
+  const [inputApiError, setInputApiError] = useState(false)
 
   useEffect(() => {
     return () => {
@@ -206,9 +208,7 @@ export default function FetchApiActions() {
     }
 
     setUrlError('')
-    setInputAnimPhase(true)
-    const animTimer = setTimeout(() => { setMovieName(''); setInputAnimPhase(false) }, 1750)
-    timersRef.current.push(animTimer)
+    setInputApiError(false)
     setButtonState('pending')
     const flowId = iconFlowRef.current + 1
     iconFlowRef.current = flowId
@@ -240,12 +240,20 @@ export default function FetchApiActions() {
     }
 
     if (!requestSucceeded) {
+      setInputApiError(true)
+      setInputShake(true)
+      const shakeTimer = setTimeout(() => setInputShake(false), 500)
+      timersRef.current.push(shakeTimer)
       await transitionButtonIcon('arrows', flowId)
       if (flowId === iconFlowRef.current) {
         setButtonState('idle')
       }
       return
     }
+
+    setInputAnimPhase(true)
+    const animTimer = setTimeout(() => { setMovieName(''); setInputAnimPhase(false) }, 1750)
+    timersRef.current.push(animTimer)
 
     await transitionButtonIcon('check', flowId)
     if (flowId === iconFlowRef.current) {
@@ -316,7 +324,7 @@ export default function FetchApiActions() {
           {/* Input */}
           <div>
             <label className="block text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: jellyfinAccent }}>Torrent</label>
-            <div className="flat-input-wrap">
+            <div className={`flat-input-wrap${inputShake ? ' flat-input-wrap-shake' : ''}`}>
               <input
                 type="text"
                 value={movieName}
@@ -324,11 +332,12 @@ export default function FetchApiActions() {
                 onChange={(e) => {
                   setMovieName(e.target.value)
                   if (urlError) setUrlError('')
+                  if (inputApiError) setInputApiError(false)
                 }}
                 className={`flat-input${inputAnimPhase ? ' flat-input-text-out' : ''}`}
                 placeholder="Magnet or url"
               />
-              <div className={`flat-input-line${urlError ? ' flat-input-line-error' : ''}${inputAnimPhase ? ' flat-input-line-anim' : ''}`} />
+              <div className={`flat-input-line${urlError ? ' flat-input-line-error' : ''}${inputApiError ? ' flat-input-line-api-error' : ''}${inputAnimPhase ? ' flat-input-line-anim' : ''}`} />
             </div>
             {urlError && <p key={urlErrorKey} className="toggle-subtext mt-2 text-xs font-semibold" style={{ color: jellyfinAccent }}>{urlError}</p>}
           </div>

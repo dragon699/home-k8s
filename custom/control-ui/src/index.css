@@ -427,11 +427,9 @@ code {
 .name-clip {
   position: relative;
   overflow: hidden;
-  max-width: 50%;
-  white-space: nowrap;
-  transition: max-width 0.5s ease;
-  flex-shrink: 1;
+  flex: 1;
   min-width: 0;
+  white-space: nowrap;
 }
 
 .name-clip::after {
@@ -440,15 +438,11 @@ code {
   right: 0;
   top: 0;
   bottom: 0;
-  width: 36px;
+  width: 56px;
   background: linear-gradient(to right, transparent, white);
   opacity: 1;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.4s ease;
   pointer-events: none;
-}
-
-.name-clip-expanded {
-  max-width: 100%;
 }
 
 .name-clip-expanded::after {
@@ -556,10 +550,12 @@ code {
 
 .flat-input-wrap {
   position: relative;
+  overflow: hidden;
 }
 
 .flat-input-line {
-  height: 1.5px;
+  height: 3.5px;
+  border-radius: 1px;
   background: #e5e7eb;
   position: relative;
   overflow: hidden;
@@ -572,6 +568,10 @@ code {
 
 .flat-input-line-error {
   background: var(--card-accent, #8b5cf6);
+}
+
+.flat-input-line.flat-input-line-api-error {
+  background: #e00000;
 }
 
 .flat-input-line::after {
@@ -598,14 +598,28 @@ code {
 }
 
 @keyframes inputTextFade {
-  0%   { opacity: 1; transform: translateY(0); }
-  35%  { opacity: 0.78; transform: translateY(1px); }
-  100% { opacity: 0; transform: translateY(7px); }
+  0%   { transform: translateY(0); }
+  20%  { transform: translateY(2px); }
+  100% { transform: translateY(40px); }
 }
 
 .flat-input-text-out {
   animation: inputTextFade 1.6s cubic-bezier(0.78, 0.05, 1, 1) forwards;
   pointer-events: none;
+}
+
+@keyframes inputShake {
+  0%, 100% { transform: translateX(0); }
+  10%  { transform: translateX(-9px); }
+  28%  { transform: translateX(9px); }
+  45%  { transform: translateX(-7px); }
+  62%  { transform: translateX(7px); }
+  76%  { transform: translateX(-4px); }
+  90%  { transform: translateX(4px); }
+}
+
+.flat-input-wrap-shake {
+  animation: inputShake 0.45s ease;
 }
 
 
