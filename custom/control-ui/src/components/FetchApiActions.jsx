@@ -449,27 +449,32 @@ export default function FetchApiActions() {
           </div>
 
           {torrents.length === 0 ? (
-            <p className="mt-4 text-xl font-semibold text-gray-900">
+            <p className="mt-4 text-[15px] font-semibold" style={{ color: jellyfinAccent }}>
               Downloads will show here
             </p>
           ) : (
             <div className="mt-4 space-y-3">
+              <p className="text-[15px] font-semibold" style={{ color: jellyfinAccent }}>
+                {torrents.some((t) => t.status === 'downloading') ? 'Now downloading' : 'Downloads will show here'}
+              </p>
               {torrents.map((torrent) => (
                 <div key={torrent.hash}>
-                  <p className="mb-1 text-sm font-medium text-gray-700 truncate">{torrent.name}</p>
-                  <p className="mb-1.5 text-[12px] font-semibold" style={{ color: jellyfinAccent }}>
-                    &#8595;&nbsp;{torrent.speed_download_mbps ?? 0} mb/s&nbsp;&nbsp;&#8593;&nbsp;{torrent.speed_upload_mbps ?? 0} mb/s
-                  </p>
+                  <p className="mb-1 option-title truncate">{torrent.name}</p>
+                  {torrent.status === 'downloading' && (
+                    <p className="mb-1.5 option-subtitle" style={{ maxHeight: 'none', opacity: 1, transform: 'none', marginTop: '2px' }}>
+                      &#8595;&nbsp;{torrent.speed_download_mbps ?? 0} mb/s&nbsp;&nbsp;&#8593;&nbsp;{torrent.speed_upload_mbps ?? 0} mb/s
+                    </p>
+                  )}
                   <div
-                    className="w-full h-11 rounded-md border-2 flex items-center justify-center overflow-hidden relative"
-                    style={{ borderColor: jellyfinAccent, backgroundColor: '#ffffff' }}
+                    className="w-full h-11 rounded-md flex items-center justify-center overflow-hidden relative"
+                    style={{ borderColor: jellyfinAccent, backgroundColor: '#ffffff', border: `3px solid ${jellyfinAccent}` }}
                   >
                     {torrent.status === 'downloading' ? (
                       <div
-                        className="absolute left-0 top-0 h-full rounded-sm"
+                        className="absolute left-0 top-0 h-full"
                         style={{
                           width: `${torrent.progress_percentage ?? 0}%`,
-                          backgroundColor: `rgba(${jellyfinAccentRgb}, 0.22)`,
+                          backgroundColor: jellyfinAccent,
                           transition: 'width 800ms ease',
                         }}
                       />
