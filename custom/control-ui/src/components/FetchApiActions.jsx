@@ -60,6 +60,8 @@ export default function FetchApiActions() {
   const [inputAnimPhase, setInputAnimPhase] = useState(false)
   const [inputShake, setInputShake] = useState(false)
   const [inputApiError, setInputApiError] = useState(false)
+  const [queryMode, setQueryMode] = useState(false)
+  const [queryModeKey, setQueryModeKey] = useState(0)
 
   useEffect(() => {
     return () => {
@@ -323,7 +325,9 @@ export default function FetchApiActions() {
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Input */}
           <div>
-            <label className="block text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: jellyfinAccent }}>Torrent</label>
+            <label key={`label-${queryModeKey}`} className="toggle-subtext block text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: jellyfinAccent }}>
+              {queryMode ? 'Query' : 'Torrent'}
+            </label>
             <div className={`flat-input-wrap${inputShake ? ' flat-input-wrap-shake' : ''}`}>
               <input
                 type="text"
@@ -334,9 +338,14 @@ export default function FetchApiActions() {
                   if (urlError) setUrlError('')
                   if (inputApiError) setInputApiError(false)
                 }}
-                className={`flat-input${inputAnimPhase ? ' flat-input-text-out' : ''}`}
-                placeholder="Magnet or url"
+                className={`flat-input flat-input-no-placeholder${inputAnimPhase ? ' flat-input-text-out' : ''}`}
+                placeholder=""
               />
+              {movieName === '' && (
+                <span key={`ph-${queryModeKey}`} className="fake-placeholder toggle-subtext">
+                  {queryMode ? 'Name or keyword of movie or show' : 'Magnet or url'}
+                </span>
+              )}
               <div className={`flat-input-line${urlError ? ' flat-input-line-error' : ''}${inputApiError ? ' flat-input-line-api-error' : ''}${inputAnimPhase ? ' flat-input-line-anim' : ''}`} />
             </div>
             {urlError && <p key={urlErrorKey} className="toggle-subtext mt-2 text-xs font-semibold" style={{ color: jellyfinAccent }}>{urlError}</p>}
@@ -344,6 +353,44 @@ export default function FetchApiActions() {
 
           {/* Toggle options */}
           <div style={{ '--option-accent': jellyfinAccent }}>
+            {/* Query */}
+            <div className="flex items-center justify-between py-3">
+              <div className="flex items-start gap-3">
+                <span
+                  aria-hidden="true"
+                  className="mt-1 block w-5 h-5 flex-shrink-0 transition-colors duration-300"
+                  style={{
+                    backgroundColor: queryMode ? '#111827' : '#9ca3af',
+                    WebkitMaskImage: 'url(https://i.imgur.com/vNR0MzV.png)',
+                    maskImage: 'url(https://i.imgur.com/vNR0MzV.png)',
+                    WebkitMaskSize: 'contain',
+                    maskSize: 'contain',
+                    WebkitMaskRepeat: 'no-repeat',
+                    maskRepeat: 'no-repeat',
+                    WebkitMaskPosition: 'center',
+                    maskPosition: 'center',
+                  }}
+                />
+                <div>
+                  <p className="text-sm font-bold text-gray-900 cursor-pointer select-none" onClick={() => { setQueryMode(p => !p); setQueryModeKey(k => k + 1) }}>Query</p>
+                  <p key={`query-${queryMode}`} className={`toggle-subtext text-xs font-semibold mt-0.5 cursor-pointer select-none ${queryMode ? '' : 'text-gray-400'}`} style={queryMode ? { color: jellyfinAccent } : undefined} onClick={() => { setQueryMode(p => !p); setQueryModeKey(k => k + 1) }}>
+                    {queryMode ? 'Search for movie or show' : 'Use torrent url'}
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                role="switch"
+                disabled={isSubmitting}
+                aria-checked={queryMode}
+                aria-label="Query"
+                onClick={() => { setQueryMode(p => !p); setQueryModeKey(k => k + 1) }}
+                className="toggle-switch"
+              >
+                <span className="toggle-thumb" />
+              </button>
+            </div>
+            {/* Notify */}
             <div className="flex items-center justify-between py-3">
               <div className="flex items-start gap-3">
                 <span
@@ -445,36 +492,45 @@ export default function FetchApiActions() {
                 <div className="pt-5 space-y-5">
                 <div>
                   <p className="mb-0.5 text-sm font-medium text-gray-700">Save Location</p>
-                  <input
-                    type="text"
-                    value={saveLocation}
-                    disabled={isSubmitting}
-                    onChange={(e) => setSaveLocation(e.target.value)}
-                    className="flat-input"
-                    placeholder={DEFAULT_SAVE_LOCATION}
-                  />
+                  <div className="flat-input-wrap">
+                    <input
+                      type="text"
+                      value={saveLocation}
+                      disabled={isSubmitting}
+                      onChange={(e) => setSaveLocation(e.target.value)}
+                      className="flat-input"
+                      placeholder={DEFAULT_SAVE_LOCATION}
+                    />
+                    <div className="flat-input-line" />
+                  </div>
                 </div>
                 <div>
                   <p className="mb-0.5 text-sm font-medium text-gray-700">Category</p>
-                  <input
-                    type="text"
-                    value={qbittorrentCategory}
-                    disabled={isSubmitting}
-                    onChange={(e) => setQbittorrentCategory(e.target.value)}
-                    className="flat-input"
-                    placeholder={DEFAULT_CATEGORY}
-                  />
+                  <div className="flat-input-wrap">
+                    <input
+                      type="text"
+                      value={qbittorrentCategory}
+                      disabled={isSubmitting}
+                      onChange={(e) => setQbittorrentCategory(e.target.value)}
+                      className="flat-input"
+                      placeholder={DEFAULT_CATEGORY}
+                    />
+                    <div className="flat-input-line" />
+                  </div>
                 </div>
                 <div>
                   <p className="mb-0.5 text-sm font-medium text-gray-700">Tags</p>
-                  <input
-                    type="text"
-                    value={qbittorrentTags}
-                    disabled={isSubmitting}
-                    onChange={(e) => setQbittorrentTags(e.target.value)}
-                    className="flat-input"
-                    placeholder={DEFAULT_TAGS_PLACEHOLDER}
-                  />
+                  <div className="flat-input-wrap">
+                    <input
+                      type="text"
+                      value={qbittorrentTags}
+                      disabled={isSubmitting}
+                      onChange={(e) => setQbittorrentTags(e.target.value)}
+                      className="flat-input"
+                      placeholder={DEFAULT_TAGS_PLACEHOLDER}
+                    />
+                    <div className="flat-input-line" />
+                  </div>
                 </div>
                 </div>
               </div>
@@ -482,6 +538,8 @@ export default function FetchApiActions() {
           </div>
 
           {/* Submit button */}
+          <div className={`submit-btn-panel${queryMode ? ' submit-btn-panel-hidden' : ''}`}>
+            <div className="submit-btn-panel-inner">
           <button
             type="submit"
             disabled={buttonState === 'pending'}
@@ -511,6 +569,8 @@ export default function FetchApiActions() {
               </span>
             </span>
           </button>
+            </div>
+          </div>
 
           {/* JSON log */}
           <div className="w-full rounded-lg bg-[#0d0d0d] p-4 min-h-[180px] border border-gray-800">
@@ -608,7 +668,7 @@ export default function FetchApiActions() {
 
                   return (
                     <div key={torrent.hash} className={animClass}>
-                      <div className={`torrent-item-inner${idx < displayTorrents.length - 1 ? ' pb-4' : ''}`}>
+                      <div className={`torrent-item-inner${idx < displayTorrents.length - 1 ? ' pb-[18px]' : ''}`}>
                         {/* Name + icons */}
                         <div className="flex items-center justify-between gap-3 mb-1">
                           <div

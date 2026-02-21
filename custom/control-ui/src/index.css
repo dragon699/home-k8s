@@ -524,6 +524,39 @@ code {
   pointer-events: none;
 }
 
+.flat-input-no-placeholder::placeholder {
+  color: transparent;
+}
+
+.fake-placeholder {
+  position: absolute;
+  top: 8px;
+  left: 0;
+  color: #9ca3af;
+  font-size: 14px;
+  pointer-events: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.submit-btn-panel {
+  display: grid;
+  grid-template-rows: 1fr;
+  opacity: 1;
+  transition: grid-template-rows 480ms ease, opacity 350ms ease;
+}
+
+.submit-btn-panel-hidden {
+  grid-template-rows: 0fr;
+  opacity: 0;
+}
+
+.submit-btn-panel-inner {
+  overflow: hidden;
+}
+
 .toggle-switch[aria-checked="true"] .toggle-thumb {
   transform: translateX(20px);
 }
