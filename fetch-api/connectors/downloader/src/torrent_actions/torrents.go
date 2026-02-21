@@ -221,6 +221,9 @@ func (instance *ActionsRunner) runActions() {
 						renameFailed = true
 					}
 
+					instance.refreshJellyfinLibrary()
+					time.Sleep(2 * time.Second)
+
 					qbittorrent.Client.RemoveTorrentTags(torrent.Hash, []string{"jellyfin:rename=pending"})
 
 					if renameFailed {
