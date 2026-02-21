@@ -564,38 +564,31 @@ export default function FetchApiActions() {
 
                   return (
                     <div key={torrent.hash} className={animClass}>
-                      <div className={`torrent-item-inner${idx < displayTorrents.length - 1 ? ' pb-4 border-b border-gray-100' : ''}`}>
-                        {/* Name + speed + expand */}
-                        <div
-                          className="mb-1.5"
-                          onMouseEnter={() => setHoveredNameHash(torrent.hash)}
-                          onMouseLeave={() => setHoveredNameHash(null)}
-                        >
-                          <div className="flex items-center justify-between gap-3">
-                            <span className="text-sm font-semibold text-gray-800 truncate max-w-[50%]">{torrent.name}</span>
-                            {isDownloading && (torrent.speed_download_mbps > 0 || torrent.speed_upload_mbps > 0) && (
-                              <span className="text-xs font-semibold whitespace-nowrap flex-shrink-0 flex items-center gap-1" style={{ color: jellyfinAccent }}>
-                                {torrent.speed_download_mbps > 0 && (
-                                  <>
-                                    &#8595;&nbsp;<span key={`${torrent.hash}-dl-${torrent.speed_download_mbps}`} className="stat-value">{torrent.speed_download_mbps} mb/s</span>
-                                  </>
-                                )}
-                                {torrent.speed_download_mbps > 0 && torrent.speed_upload_mbps > 0 && <span>&nbsp;&nbsp;</span>}
-                                {torrent.speed_upload_mbps > 0 && (
-                                  <>
-                                    &#8593;&nbsp;<span key={`${torrent.hash}-ul-${torrent.speed_upload_mbps}`} className="stat-value">{torrent.speed_upload_mbps} mb/s</span>
-                                  </>
-                                )}
-                              </span>
-                            )}
+                      <div className={`torrent-item-inner${idx < displayTorrents.length - 1 ? ' pb-4' : ''}`}>
+                        {/* Name + speed */}
+                        <div className="flex items-center justify-between gap-3 mb-1.5">
+                          <div
+                            className={`name-clip${isNameHovered ? ' name-clip-expanded' : ''}`}
+                            onMouseEnter={() => setHoveredNameHash(torrent.hash)}
+                            onMouseLeave={() => setHoveredNameHash(null)}
+                          >
+                            <span className="text-sm font-semibold text-gray-800 whitespace-nowrap">{torrent.name}</span>
                           </div>
-                          <div className={`name-expand-panel${isNameHovered ? ' name-expand-open' : ''}`}>
-                            <div className="name-expand-inner">
-                              {isNameHovered && (
-                                <span className="toggle-subtext text-sm font-semibold text-gray-500 block pt-1 break-all">{torrent.name}</span>
+                          {isDownloading && (torrent.speed_download_mbps > 0 || torrent.speed_upload_mbps > 0) && (
+                            <span className="text-xs font-semibold whitespace-nowrap flex-shrink-0 flex items-center gap-1" style={{ color: jellyfinAccent }}>
+                              {torrent.speed_download_mbps > 0 && (
+                                <>
+                                  &#8595;&nbsp;<span key={`${torrent.hash}-dl-${torrent.speed_download_mbps}`} className="stat-value">{torrent.speed_download_mbps} mb/s</span>
+                                </>
                               )}
-                            </div>
-                          </div>
+                              {torrent.speed_download_mbps > 0 && torrent.speed_upload_mbps > 0 && <span>&nbsp;&nbsp;</span>}
+                              {torrent.speed_upload_mbps > 0 && (
+                                <>
+                                  &#8593;&nbsp;<span key={`${torrent.hash}-ul-${torrent.speed_upload_mbps}`} className="stat-value">{torrent.speed_upload_mbps} mb/s</span>
+                                </>
+                              )}
+                            </span>
+                          )}
                         </div>
                         {/* Progress bar */}
                         <div className="h-1 w-full rounded-full bg-gray-100 overflow-hidden">

@@ -424,19 +424,35 @@ code {
   min-height: 0;
 }
 
-.name-expand-panel {
-  display: grid;
-  grid-template-rows: 0fr;
-  transition: grid-template-rows 380ms ease;
-}
-
-.name-expand-open {
-  grid-template-rows: 1fr;
-}
-
-.name-expand-inner {
+.name-clip {
+  position: relative;
   overflow: hidden;
-  min-height: 0;
+  max-width: 50%;
+  white-space: nowrap;
+  transition: max-width 0.5s ease;
+  flex-shrink: 1;
+  min-width: 0;
+}
+
+.name-clip::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 36px;
+  background: linear-gradient(to right, transparent, white);
+  opacity: 1;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.name-clip-expanded {
+  max-width: 100%;
+}
+
+.name-clip-expanded::after {
+  opacity: 0;
 }
 
 .toggle-switch {
