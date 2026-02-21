@@ -143,6 +143,22 @@ func (instance *ActionsRunner) runActions() {
 		t.Log.Debug("Running tag actions against completed torrent", "name", torrent.Name, "hash", torrent.Hash)
 
 		var hasPendingActions bool = false
+		var actionsOrder = map[string]int{
+			"rename": 0,
+			"find_subs": 1,
+		}
+
+		slices.SortStableFunc(torrent.Meta.ScheduledActions, func(a, b response.TorrentMetaScheduledAction) int {
+			orderA, okA := actionsOrder[a.Name]
+			orderB, okB := actionsOrder[b.Name]
+			if !okA {
+				orderA = 999
+			}
+			if !okB {
+				orderB = 999
+			}
+			return orderA - orderB
+		})
 
 		for _, action := range torrent.Meta.ScheduledActions {
 			if !(action.Status == "pending") {
@@ -176,7 +192,7 @@ func (instance *ActionsRunner) runActions() {
 					if file["progress"].(float64) < 1 {
 						os.Remove(path.Join(torrent.SavePath, file["name"].(string)))
 					} else {
-						if ! slices.Contains(allowedExtensions, path.Ext(file["name"].(string))) {
+						if !slices.Contains(allowedExtensions, path.Ext(file["name"].(string))) {
 							continue
 						}
 
