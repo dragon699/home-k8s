@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { addTorrent } from '../services/api'
+import { addTorrent, getTorrents } from '../services/api'
 
 function syntaxHighlightJson(rawJsonText) {
   const escaped = rawJsonText
@@ -42,6 +42,8 @@ export default function FetchApiActions() {
   const [buttonState, setButtonState] = useState('idle') // idle | pending
   const [buttonIcon, setButtonIcon] = useState('arrows') // arrows | pending | check
   const [iconTransition, setIconTransition] = useState(null)
+  const [torrents, setTorrents] = useState([])
+  const [hasItems, setHasItems] = useState(false)
   const timersRef = useRef([])
   const typingTimersRef = useRef([])
   const iconFlowRef = useRef(0)
@@ -56,6 +58,22 @@ export default function FetchApiActions() {
       typingTimersRef.current = []
     }
   }, [])
+
+  useEffect(() => {
+    const fetchTorrents = async () => {
+      try {
+        const data = await getTorrents()
+        const items = data.items || []
+        setTorrents(items)
+        setHasItems(items.length > 0)
+      } catch (e) {
+        // silently ignore polling errors
+      }
+    }
+    fetchTorrents()
+    const id = setInterval(fetchTorrents, hasItems ? 5000 : 10000)
+    return () => clearInterval(id)
+  }, [hasItems])
 
   const wait = (delay) => {
     return new Promise((resolve) => {
@@ -429,6 +447,48 @@ export default function FetchApiActions() {
               dangerouslySetInnerHTML={{ __html: syntaxHighlightJson(jsonText) }}
             />
           </div>
+
+          {torrents.length === 0 ? (
+            <p className="mt-4 text-[13px] font-semibold text-center" style={{ color: jellyfinAccent }}>
+              Downloads will show here
+            </p>
+          ) : (
+            <div className="mt-4 space-y-3">
+              {torrents.map((torrent) => (
+                <div key={torrent.hash}>
+                  <p className="mb-1 text-sm font-medium text-gray-700 truncate">{torrent.name}</p>
+                  <p className="mb-1.5 text-[12px] font-semibold" style={{ color: jellyfinAccent }}>
+                    &#8595;&nbsp;{torrent.speed_download_mbps ?? 0} mb/s&nbsp;&nbsp;&#8593;&nbsp;{torrent.speed_upload_mbps ?? 0} mb/s
+                  </p>
+                  <div
+                    className="w-full h-11 rounded-md border-2 flex items-center justify-center overflow-hidden relative"
+                    style={{ borderColor: jellyfinAccent, backgroundColor: '#ffffff' }}
+                  >
+                    {torrent.status === 'downloading' ? (
+                      <div
+                        className="absolute left-0 top-0 h-full rounded-sm"
+                        style={{
+                          width: `${torrent.progress_percentage ?? 0}%`,
+                          backgroundColor: `rgba(${jellyfinAccentRgb}, 0.22)`,
+                          transition: 'width 800ms ease',
+                        }}
+                      />
+                    ) : torrent.status === 'paused' ? (
+                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" style={{ color: jellyfinAccent }}>
+                        <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+                      </svg>
+                    ) : (
+                      // unknown / queued — clock icon
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24" style={{ color: jellyfinAccent }}>
+                        <circle cx="12" cy="12" r="9" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 7v5l3 3" />
+                      </svg>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </form>
       </div>
     </div>
