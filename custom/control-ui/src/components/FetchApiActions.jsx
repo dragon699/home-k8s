@@ -38,6 +38,7 @@ export default function FetchApiActions() {
   const [findSubs, setFindSubs] = useState(true)
   const [notify, setNotify] = useState(true)
   const [urlError, setUrlError] = useState('')
+  const [urlErrorKey, setUrlErrorKey] = useState(0)
   const [jsonText, setJsonText] = useState('{}')
   const [buttonState, setButtonState] = useState('idle') // idle | pending
   const [buttonIcon, setButtonIcon] = useState('arrows') // arrows | pending | check
@@ -173,14 +174,15 @@ export default function FetchApiActions() {
         className="block w-5 h-5"
         style={{
           backgroundColor: 'currentColor',
-          WebkitMaskImage: 'url(https://i.imgur.com/LpkS09x.png)',
-          maskImage: 'url(https://i.imgur.com/LpkS09x.png)',
+          WebkitMaskImage: 'url(https://i.imgur.com/ZXFGAzj.png)',
+          maskImage: 'url(https://i.imgur.com/ZXFGAzj.png)',
           WebkitMaskSize: 'contain',
           maskSize: 'contain',
           WebkitMaskRepeat: 'no-repeat',
           maskRepeat: 'no-repeat',
           WebkitMaskPosition: 'center',
           maskPosition: 'center',
+          filter: 'drop-shadow(0 0 0.6px currentColor) drop-shadow(0 0 0.6px currentColor)',
         }}
       />
     )
@@ -194,9 +196,9 @@ export default function FetchApiActions() {
 
   const formatEta = (minutes) => {
     if (!minutes || minutes <= 0 || minutes >= 144000) return null
-    if (minutes < 1) return 'Less than a minute'
+    if (minutes <= 1) return '< 1 min'
     if (minutes >= 60) return `${Math.round(minutes / 60)} hrs`
-    return `${minutes} mins`
+    return `${Math.round(minutes)} mins`
   }
 
   const handleSubmit = async (e) => {
@@ -208,6 +210,7 @@ export default function FetchApiActions() {
 
     if (!value) {
       setUrlError('* Torrent URL is required')
+      setUrlErrorKey((k) => k + 1)
       clearTypingTimers()
       setJsonText('{}')
       return
@@ -335,7 +338,7 @@ export default function FetchApiActions() {
               style={urlError ? { borderBottomColor: jellyfinAccent } : undefined}
               placeholder="Magnet or url"
             />
-            {urlError && <p className="mt-2 text-sm font-semibold" style={{ color: jellyfinAccent }}>{urlError}</p>}
+            {urlError && <p key={urlErrorKey} className="toggle-subtext mt-2 text-xs font-semibold" style={{ color: jellyfinAccent }}>{urlError}</p>}
           </div>
 
           {/* Toggle options */}
