@@ -270,8 +270,6 @@ func (instance *ActionsRunner) runActions() {
 
 						itemFile := filepath.Base(item["Path"].(string))
 
-						fmt.Printf("Checking jellyfin item '%s' if in qbittorrent content files: %v\n", itemFile, torrentContentFileNames)
-
 						if slices.Contains(torrentContentFileNames, itemFile) {
 							err = instance.downloadSubtitlesInJellyfin(item["Id"].(string), settings.Config.JellyfinSubtitlesDefaultLanguage)
 							if err != nil {
@@ -470,6 +468,11 @@ func (instance *ActionsRunner) downloadSubtitlesInJellyfin(itemID string, langua
 		return fmt.Errorf("failed to unmarshal response: %w", err)
 	}
 
+	// DEBUG
+	fmt.Printf("-- SEARCH REQUEST: %s/Items/%s/RemoteSearch/Subtitles/%s\n", settings.Config.JellyfinUrl, itemID, language)
+	fmt.Printf("-- SEARCH RESPONSE: %v\n", result)
+	// END DEBUG
+
 	if len(result) == 0 {
 		return fmt.Errorf("no subtitles found in Jellyfin for item ID: %s and language: %s", itemID, language)
 	}
@@ -498,6 +501,11 @@ func (instance *ActionsRunner) downloadSubtitlesInJellyfin(itemID string, langua
 	if err != nil {
 		return fmt.Errorf("failed to read response: %w", err)
 	}
+
+	// DEBUG
+	fmt.Printf("-- DOWNLOAD REQUEST: %s/Items/%s/RemoteSearch/Subtitles/%s\n", settings.Config.JellyfinUrl, itemID, jellyfinSubtitlesID)
+	fmt.Printf("-- DOWNLOAD RESPONSE: %s\n", string(body))
+	// END DEBUG
 
 	if !(resp.StatusCode >= 200 && resp.StatusCode < 300) {
 		return fmt.Errorf("unexpected status code: %d, body: %s", resp.StatusCode, string(body))
