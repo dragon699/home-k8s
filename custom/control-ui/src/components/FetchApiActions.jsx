@@ -44,10 +44,14 @@ export default function FetchApiActions() {
   const [iconTransition, setIconTransition] = useState(null)
   const [torrents, setTorrents] = useState([])
   const [hasItems, setHasItems] = useState(false)
+  const [exitingTorrents, setExitingTorrents] = useState([])
+  const [enteringHashes, setEnteringHashes] = useState(new Set())
   const timersRef = useRef([])
   const typingTimersRef = useRef([])
   const iconFlowRef = useRef(0)
   const buttonIconRef = useRef('arrows')
+  const prevItemsRef = useRef([])
+  const isFirstFetchRef = useRef(true)
   const isSubmitting = buttonState === 'pending'
 
   useEffect(() => {
@@ -59,11 +63,42 @@ export default function FetchApiActions() {
     }
   }, [])
 
+  const ENTER_MS = 450
+  const EXIT_MS = 350
+
   useEffect(() => {
     const fetchTorrents = async () => {
       try {
         const data = await getTorrents()
         const items = data.items || []
+        if (!isFirstFetchRef.current) {
+          const currentHashes = new Set(items.map(t => t.hash))
+          const prevHashes = new Set(prevItemsRef.current.map(t => t.hash))
+          // Entering hashes
+          const entering = new Set([...currentHashes].filter(h => !prevHashes.has(h)))
+          if (entering.size > 0) {
+            setEnteringHashes(prev => new Set([...prev, ...entering]))
+            setTimeout(() => setEnteringHashes(prev => {
+              const next = new Set(prev)
+              entering.forEach(h => next.delete(h))
+              return next
+            }), ENTER_MS + 50)
+          }
+          // Exiting items
+          const exitItems = prevItemsRef.current.filter(t => !currentHashes.has(t.hash))
+          if (exitItems.length > 0) {
+            const exitHashes = new Set(exitItems.map(t => t.hash))
+            setExitingTorrents(prev => [
+              ...prev.filter(t => !exitHashes.has(t.hash)),
+              ...exitItems,
+            ])
+            setTimeout(() => {
+              setExitingTorrents(prev => prev.filter(t => !exitHashes.has(t.hash)))
+            }, EXIT_MS + 50)
+          }
+        }
+        isFirstFetchRef.current = false
+        prevItemsRef.current = items
         setTorrents(items)
         setHasItems(items.length > 0)
       } catch (e) {
@@ -226,6 +261,11 @@ export default function FetchApiActions() {
     await wait(SUCCESS_ICON_HOLD_MS)
     await transitionButtonIcon('arrows', flowId)
   }
+
+  const displayTorrents = [
+    ...torrents,
+    ...exitingTorrents.filter(et => !torrents.find(t => t.hash === et.hash)),
+  ]
 
   return (
     <div>
@@ -443,19 +483,19 @@ export default function FetchApiActions() {
           </div>
 
           {/* Active Downloads */}
-          <div>
+          <div className="pt-2">
             <div className="flex items-center justify-between mb-3">
               <span
-                key={torrents.length === 0 ? 'waiting' : 'active'}
+                key={torrents.map(t => t.hash).sort().join(',') || 'empty'}
                 className="toggle-subtext text-[10px] font-bold uppercase tracking-widest"
-                style={{ color: jellyfinAccent }}
+                style={{ color: torrents.length === 0 ? '#9ca3af' : jellyfinAccent }}
               >
                 {torrents.length === 0 ? 'Waiting for downloads' : 'Active Downloads'}
               </span>
             </div>
-            {torrents.length > 0 && (
+            {displayTorrents.length > 0 && (
               <div>
-                {torrents.map((torrent, idx) => {
+                {displayTorrents.map((torrent, idx) => {
                   const eta = formatEta(torrent.eta_minutes)
                   const progress = torrent.progress_percentage ?? 0
                   const status = torrent.status
@@ -464,8 +504,11 @@ export default function FetchApiActions() {
                   const isUnknown = status === 'unknown'
                   const isError = status === 'error'
                   const barColor = isError ? '#ef4444' : (isPaused || isUnknown) ? '#9ca3af' : jellyfinAccent
+                  const isEntering = enteringHashes.has(torrent.hash)
+                  const isExiting = exitingTorrents.some(et => et.hash === torrent.hash)
+                  const animClass = isEntering ? 'torrent-item-enter' : isExiting ? 'torrent-item-exit' : ''
                   return (
-                    <div key={torrent.hash} className={idx < torrents.length - 1 ? 'mb-5' : ''}>
+                    <div key={torrent.hash} className={`${animClass} ${idx < displayTorrents.length - 1 ? 'mb-5' : ''}`}>
                       {/* Name + speed */}
                       <div className="flex items-center justify-between gap-3 mb-1.5">
                         <span className="text-sm font-semibold text-gray-800 truncate">{torrent.name}</span>
@@ -526,7 +569,7 @@ export default function FetchApiActions() {
                             <span key="unknown" className="toggle-subtext text-xs font-semibold text-red-500 flex items-center">Unknown status</span>
                           )}
                           {isError && (
-                            <span key="error" className="toggle-subtext text-xs font-semibold text-red-500 flex items-center">Error while trying to download</span>
+                            <span key="error" className="toggle-subtext text-xs font-semibold text-red-500 flex items-center">Torrent error</span>
                           )}
                         </div>
                         {isDownloading && eta && (
