@@ -28,8 +28,8 @@ export default function FetchApiActions() {
   const DEFAULT_TAGS_FALLBACK = 'fetch-api'
   const jellyfinUrl = '/__jellyfin__'
   const qbittorrentUrl = '/__qbittorrent__'
-  const jellyfinAccent = '#4f6df6'
-  const jellyfinAccentRgb = '79, 109, 246'
+  const jellyfinAccent = '#8b5cf6'
+  const jellyfinAccentRgb = '139, 92, 246'
   const [movieName, setMovieName] = useState('')
   const [saveLocation, setSaveLocation] = useState('')
   const [qbittorrentCategory, setQbittorrentCategory] = useState('')
@@ -154,7 +154,13 @@ export default function FetchApiActions() {
   const labelForState = (stateName) => {
     if (stateName === 'pending') return 'Importing'
     if (stateName === 'check') return 'Imported'
-    return 'Import'
+    return 'Import Resource'
+  }
+
+  const formatEta = (minutes) => {
+    if (!minutes || minutes <= 0 || minutes >= 144000) return null
+    if (minutes >= 60) return `${Math.round(minutes / 60)} hrs left`
+    return `${minutes} mins left`
   }
 
   const handleSubmit = async (e) => {
@@ -226,20 +232,20 @@ export default function FetchApiActions() {
         className="relative max-w-2xl bg-white rounded-xl shadow-[0_6px_14px_rgba(15,23,42,0.12)] p-6 border border-gray-100"
         style={{ '--card-accent': jellyfinAccent, '--card-accent-rgb': jellyfinAccentRgb }}
       >
-        <div className="mb-2 flex items-center justify-between">
-          <h3 className="text-xl font-semibold text-gray-900">Add to Jellyfin</h3>
-          <div className="flex items-center gap-4">
+        {/* Header */}
+        <div className="mb-5 flex items-center justify-between">
+          <div className="flex items-center gap-3">
             <a
               href={jellyfinUrl}
               target="_blank"
               rel="noreferrer"
               aria-label="Open Jellyfin"
-              className="inline-flex items-center text-sm font-medium"
-              style={{ color: jellyfinAccent }}
+              className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
+              style={{ backgroundColor: `rgba(${jellyfinAccentRgb}, 0.12)` }}
             >
               <span
                 aria-hidden="true"
-                className="block w-4 h-4"
+                className="block w-5 h-5"
                 style={{
                   backgroundColor: jellyfinAccent,
                   WebkitMaskImage: 'url(https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/jellyfin.png)',
@@ -253,75 +259,75 @@ export default function FetchApiActions() {
                 }}
               />
             </a>
+            <h3 className="text-xl font-semibold text-gray-900">Add to Jellyfin</h3>
+          </div>
+          <div className="flex items-center gap-1">
             <a
               href={qbittorrentUrl}
               target="_blank"
               rel="noreferrer"
               aria-label="Open qBittorrent"
-              className="inline-flex items-center text-sm font-medium"
-              style={{ color: jellyfinAccent }}
+              className="inline-flex items-center justify-center w-8 h-8 rounded-md text-gray-400 hover:bg-gray-100 transition-colors"
             >
-              <span
-                aria-hidden="true"
-                className="block w-4 h-4"
-                style={{
-                  backgroundColor: jellyfinAccent,
-                  WebkitMaskImage: 'url(https://i.imgur.com/3uMVbI9.png)',
-                  maskImage: 'url(https://i.imgur.com/3uMVbI9.png)',
-                  WebkitMaskSize: 'contain',
-                  maskSize: 'contain',
-                  WebkitMaskRepeat: 'no-repeat',
-                  maskRepeat: 'no-repeat',
-                  WebkitMaskPosition: 'center',
-                  maskPosition: 'center',
-                }}
-              />
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3" />
+              </svg>
             </a>
+            <button
+              type="button"
+              aria-label="More options"
+              className="inline-flex items-center justify-center w-8 h-8 rounded-md text-gray-400 hover:bg-gray-100 transition-colors"
+            >
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <circle cx="12" cy="5" r="1.5" /><circle cx="12" cy="12" r="1.5" /><circle cx="12" cy="19" r="1.5" />
+              </svg>
+            </button>
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="mt-5 space-y-5">
+        <form onSubmit={handleSubmit} className="space-y-5">
+          {/* Input */}
           <div>
+            <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Torrent</label>
             <input
               type="text"
               value={movieName}
               disabled={isSubmitting}
               onChange={(e) => {
                 setMovieName(e.target.value)
-                if (urlError) {
-                  setUrlError('')
-                }
+                if (urlError) setUrlError('')
               }}
-              className="w-full px-4 py-[7px] text-[14px] border rounded-md outline-none transition-colors border-gray-300 animated-focus-input disabled:cursor-not-allowed disabled:opacity-60"
-              style={urlError ? { borderColor: jellyfinAccent } : undefined}
+              className="flat-input"
+              style={urlError ? { borderBottomColor: jellyfinAccent } : undefined}
               placeholder="Magnet or url"
             />
             {urlError && <p className="mt-2 text-sm font-semibold" style={{ color: jellyfinAccent }}>{urlError}</p>}
           </div>
 
-          <div className="space-y-3">
+          {/* Settings collapsible */}
+          <div>
             <button
               type="button"
               disabled={isSubmitting}
               onClick={() => setShowOptions((prev) => !prev)}
-              className="inline-flex items-center gap-2 text-sm font-semibold disabled:opacity-60 disabled:cursor-not-allowed"
-              style={{ color: jellyfinAccent }}
+              className="inline-flex items-center gap-2 text-sm font-semibold text-gray-500 disabled:opacity-60 disabled:cursor-not-allowed hover:text-gray-700 transition-colors"
               aria-expanded={showOptions}
               aria-controls="import-options"
             >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              <span>Settings</span>
               <svg
-                className={`w-4 h-4 transition-transform duration-250 ${showOptions ? 'rotate-180' : 'rotate-0'}`}
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+                className={`w-4 h-4 transition-transform duration-220 ${showOptions ? 'rotate-180' : 'rotate-0'}`}
+                fill="none" stroke="currentColor" viewBox="0 0 24 24"
               >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 9l6 6 6-6" />
               </svg>
-              <span>Options</span>
             </button>
-
             <div id="import-options" className={`options-panel ${showOptions ? 'options-panel-open' : ''}`}>
-              <div className="options-panel-inner space-y-5">
+              <div className="options-panel-inner space-y-4 pt-4">
                 <div>
                   <p className="mb-2 text-sm font-medium text-gray-700">Save Location</p>
                   <input
@@ -333,7 +339,6 @@ export default function FetchApiActions() {
                     placeholder={DEFAULT_SAVE_LOCATION}
                   />
                 </div>
-
                 <div>
                   <p className="mb-2 text-sm font-medium text-gray-700">Category</p>
                   <input
@@ -345,7 +350,6 @@ export default function FetchApiActions() {
                     placeholder={DEFAULT_CATEGORY}
                   />
                 </div>
-
                 <div>
                   <p className="mb-2 text-sm font-medium text-gray-700">Tags</p>
                   <input
@@ -361,147 +365,135 @@ export default function FetchApiActions() {
             </div>
           </div>
 
-          <div className="-mt-3 flex items-start justify-between gap-4">
-            <div className="option-list" style={{ '--option-accent': jellyfinAccent }}>
+          {/* Toggle options */}
+          <div style={{ '--option-accent': jellyfinAccent }}>
+            <div className="flex items-center justify-between py-3 border-b border-gray-100">
+              <div>
+                <p className="text-sm font-bold text-gray-900">Notification</p>
+                <p className="text-xs font-semibold mt-0.5" style={{ color: jellyfinAccent }}>Slack alerts on completion</p>
+              </div>
               <button
                 type="button"
-                role="checkbox"
+                role="switch"
                 disabled={isSubmitting}
                 aria-checked={notify}
                 aria-label="Notify"
                 onClick={() => setNotify((prev) => !prev)}
-                className="option-row-btn"
+                className="toggle-switch"
               >
-                <span className="option-check-shell">
-                  <span className={`option-check ${notify ? 'option-check-on' : ''}`}>
-                    <svg viewBox="0 0 16 16" className={`option-check-mark ${notify ? 'option-check-mark-on' : ''}`} aria-hidden="true">
-                      <path d="M3.4 8.4 6.6 11.4 12.6 4.9" />
-                    </svg>
-                  </span>
-                </span>
-                <span className={`option-copy ${notify ? 'option-copy-with-subtitle' : ''}`}>
-                  <span className="option-title">Notify</span>
-                  <span className={`option-subtitle ${notify ? 'option-subtitle-visible' : ''}`}>In Slack when completed</span>
-                </span>
+                <span className="toggle-thumb" />
               </button>
-
-              <div className="pt-4">
-                <button
-                  type="button"
-                  role="checkbox"
-                  disabled={isSubmitting}
-                  aria-checked={findSubs}
-                  aria-label="Subtitles"
-                  onClick={() => setFindSubs((prev) => !prev)}
-                  className="option-row-btn"
-                >
-                  <span className="option-check-shell">
-                    <span className={`option-check ${findSubs ? 'option-check-on' : ''}`}>
-                      <svg viewBox="0 0 16 16" className={`option-check-mark ${findSubs ? 'option-check-mark-on' : ''}`} aria-hidden="true">
-                        <path d="M3.4 8.4 6.6 11.4 12.6 4.9" />
-                      </svg>
-                    </span>
-                  </span>
-                  <span className={`option-copy ${findSubs ? 'option-copy-with-subtitle' : ''}`}>
-                    <span className="option-title">Subtitles</span>
-                    <span className={`option-subtitle ${findSubs ? 'option-subtitle-visible' : ''}`}>Find and download when completed</span>
-                  </span>
-                </button>
-              </div>
             </div>
-
-            <button
-              type="submit"
-              disabled={buttonState === 'pending'}
-              className="import-action-btn relative w-[30%] min-w-[130px] overflow-hidden rounded-md font-semibold py-2.5 px-3 flex items-center justify-center transition-all duration-300 text-white disabled:cursor-not-allowed disabled:opacity-70"
-              style={{ backgroundColor: jellyfinAccent }}
-            >
-              <span className="relative z-10 inline-flex items-center justify-center gap-2">
-                <span className="btn-label-stack" aria-hidden="true">
-                  {iconTransition ? (
-                    <>
-                      <span className="btn-label-layer btn-icon-exit">{labelForState(iconTransition.from)}</span>
-                      <span className="btn-label-layer btn-icon-enter">{labelForState(iconTransition.to)}</span>
-                    </>
-                  ) : (
-                    <span className="btn-label-layer">{labelForState(buttonIcon)}</span>
-                  )}
-                </span>
-                <span className="btn-icon-stack" aria-hidden="true">
-                  {iconTransition ? (
-                    <>
-                      <span className="btn-icon-layer btn-icon-exit">{renderButtonIcon(iconTransition.from)}</span>
-                      <span className="btn-icon-layer btn-icon-enter">{renderButtonIcon(iconTransition.to)}</span>
-                    </>
-                  ) : (
-                    <span className="btn-icon-layer">{renderButtonIcon(buttonIcon)}</span>
-                  )}
-                </span>
-              </span>
-            </button>
+            <div className="flex items-center justify-between py-3">
+              <div>
+                <p className="text-sm font-bold text-gray-900">Subtitles</p>
+                <p className="text-xs font-semibold mt-0.5" style={{ color: jellyfinAccent }}>Auto-fetch language assets</p>
+              </div>
+              <button
+                type="button"
+                role="switch"
+                disabled={isSubmitting}
+                aria-checked={findSubs}
+                aria-label="Subtitles"
+                onClick={() => setFindSubs((prev) => !prev)}
+                className="toggle-switch"
+              >
+                <span className="toggle-thumb" />
+              </button>
+            </div>
           </div>
 
-          <div className="mt-3 w-full rounded-lg bg-black p-4 min-h-[220px] border border-gray-800">
+          {/* Submit button */}
+          <button
+            type="submit"
+            disabled={buttonState === 'pending'}
+            className="import-action-btn relative w-full overflow-hidden rounded-lg font-semibold py-3 px-4 flex items-center justify-center transition-all duration-300 text-white disabled:cursor-not-allowed disabled:opacity-70"
+            style={{ backgroundColor: jellyfinAccent }}
+          >
+            <span className="relative z-10 inline-flex items-center justify-center gap-2">
+              <span className="btn-label-stack" aria-hidden="true">
+                {iconTransition ? (
+                  <>
+                    <span className="btn-label-layer btn-icon-exit">{labelForState(iconTransition.from)}</span>
+                    <span className="btn-label-layer btn-icon-enter">{labelForState(iconTransition.to)}</span>
+                  </>
+                ) : (
+                  <span className="btn-label-layer">{labelForState(buttonIcon)}</span>
+                )}
+              </span>
+              <span className="btn-icon-stack" aria-hidden="true">
+                {iconTransition ? (
+                  <>
+                    <span className="btn-icon-layer btn-icon-exit">{renderButtonIcon(iconTransition.from)}</span>
+                    <span className="btn-icon-layer btn-icon-enter">{renderButtonIcon(iconTransition.to)}</span>
+                  </>
+                ) : (
+                  <span className="btn-icon-layer">{renderButtonIcon(buttonIcon)}</span>
+                )}
+              </span>
+            </span>
+          </button>
+
+          {/* JSON log */}
+          <div className="w-full rounded-lg bg-[#0d0d0d] p-4 min-h-[180px] border border-gray-800">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-2">System Logs</p>
             <pre
               className="text-[12px] leading-5 whitespace-pre-wrap break-all text-slate-300"
               dangerouslySetInnerHTML={{ __html: syntaxHighlightJson(jsonText) }}
             />
           </div>
 
-          {torrents.length === 0 ? (
-            <p className="mt-7 text-xl font-semibold text-gray-900">
-              Downloads will show here
-            </p>
-          ) : (
-            <div className="mt-7 space-y-5">
-              <p className="text-xl font-semibold text-gray-900">
-                Now downloading
-              </p>
-              {torrents.map((torrent) => (
-                <div key={torrent.hash}>
-                  <p className="mb-1 option-title truncate">{torrent.name}</p>
-                  {torrent.status === 'downloading' && (
-                    <p className="mb-1.5 text-[12px] font-semibold" style={{ marginTop: '2px' }}>
-                      <span style={{ color: jellyfinAccent }}>&#8595;</span>
-                      <span className="text-gray-900">&nbsp;{torrent.speed_download_mbps ?? 0} mb/s</span>
-                      <span>&nbsp;&nbsp;</span>
-                      <span style={{ color: jellyfinAccent }}>&#8593;</span>
-                      <span className="text-gray-900">&nbsp;{torrent.speed_upload_mbps ?? 0} mb/s</span>
-                    </p>
-                  )}
-                  <div
-                    className="w-full h-11 rounded-lg flex items-center justify-center overflow-hidden relative"
-                    style={{
-                      backgroundColor: '#ffffff',
-                      border: `4px solid ${jellyfinAccent}`,
-                      boxShadow: `0 0 0 4px rgba(${jellyfinAccentRgb}, 0.17), inset 0 1px 0 rgba(255,255,255,0.26), inset 0 -2px 6px rgba(0,0,0,0.06)`,
-                    }}
-                  >
-                    {torrent.status === 'downloading' ? (
-                      <div
-                        className="absolute left-0 top-0 h-full"
-                        style={{
-                          width: `${torrent.progress_percentage ?? 0}%`,
-                          backgroundColor: jellyfinAccent,
-                          transition: 'width 800ms ease',
-                        }}
-                      />
-                    ) : torrent.status === 'paused' ? (
-                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" style={{ color: jellyfinAccent }}>
-                        <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
-                      </svg>
-                    ) : (
-                      // unknown / queued — clock icon
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24" style={{ color: jellyfinAccent }}>
-                        <circle cx="12" cy="12" r="9" />
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 7v5l3 3" />
-                      </svg>
-                    )}
-                  </div>
-                </div>
-              ))}
+          {/* Active Downloads */}
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Active Downloads</span>
+              {torrents.length > 0 && (
+                <span
+                  className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full text-white"
+                  style={{ backgroundColor: jellyfinAccent }}
+                >
+                  Live
+                </span>
+              )}
             </div>
-          )}
+            {torrents.length === 0 ? (
+              <p className="text-sm font-semibold text-gray-400">Downloads will show here</p>
+            ) : (
+              <div>
+                {torrents.map((torrent, idx) => {
+                  const eta = formatEta(torrent.eta_minutes)
+                  const progress = torrent.progress_percentage ?? 0
+                  const isDownloading = torrent.status === 'downloading'
+                  return (
+                    <div key={torrent.hash} className={idx < torrents.length - 1 ? 'mb-4' : ''}>
+                      <div className="flex items-center justify-between gap-3 mb-1.5">
+                        <span className="text-sm font-semibold text-gray-800 truncate">{torrent.name}</span>
+                        {isDownloading && eta && (
+                          <span className="text-xs font-semibold whitespace-nowrap flex items-center gap-1 flex-shrink-0" style={{ color: jellyfinAccent }}>
+                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+                              <circle cx="12" cy="12" r="9" />
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M12 7v5l3 3" />
+                            </svg>
+                            {eta}
+                          </span>
+                        )}
+                      </div>
+                      <div className="h-1 w-full rounded-full bg-gray-100 overflow-hidden">
+                        <div
+                          className="h-full rounded-full"
+                          style={{
+                            width: `${progress}%`,
+                            backgroundColor: jellyfinAccent,
+                            transition: 'width 800ms ease',
+                          }}
+                        />
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+          </div>
         </form>
       </div>
     </div>

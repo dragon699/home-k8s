@@ -5,8 +5,8 @@
 @tailwind utilities;
 
 :root {
-  --card-accent: #4f6df6;
-  --card-accent-rgb: 79, 109, 246;
+  --card-accent: #8b5cf6;
+  --card-accent-rgb: 139, 92, 246;
 }
 
 body {
@@ -79,7 +79,7 @@ code {
 
 .btn-label-stack {
   position: relative;
-  width: 72px;
+  width: 150px;
   height: 20px;
   overflow: hidden;
 }
@@ -379,6 +379,76 @@ code {
 
 .import-action-btn:active:not(:disabled)::after {
   animation: checkboxSplash 300ms ease-out;
+}
+
+.toggle-switch {
+  position: relative;
+  width: 48px;
+  height: 28px;
+  border-radius: 9999px;
+  border: none;
+  background: #e5e7eb;
+  cursor: pointer;
+  transition: background-color 220ms ease;
+  flex-shrink: 0;
+  padding: 0;
+  outline: none;
+}
+
+.toggle-switch[aria-checked="true"] {
+  background-color: var(--option-accent, var(--card-accent, #8b5cf6));
+}
+
+.toggle-switch:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.toggle-switch:focus-visible {
+  box-shadow: 0 0 0 3px rgba(var(--card-accent-rgb, 139, 92, 246), 0.3);
+}
+
+.toggle-thumb {
+  position: absolute;
+  left: 3px;
+  top: 3px;
+  width: 22px;
+  height: 22px;
+  border-radius: 9999px;
+  background: white;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.22);
+  transition: transform 220ms ease;
+  pointer-events: none;
+}
+
+.toggle-switch[aria-checked="true"] .toggle-thumb {
+  transform: translateX(20px);
+}
+
+.flat-input {
+  width: 100%;
+  padding: 8px 0;
+  font-size: 14px;
+  font-family: inherit;
+  border: none;
+  border-bottom: 1.5px solid #e5e7eb;
+  outline: none;
+  background: transparent;
+  transition: border-color 180ms ease;
+  color: #111827;
+}
+
+.flat-input:focus {
+  border-bottom-color: var(--card-accent, #8b5cf6);
+}
+
+.flat-input::placeholder {
+  color: #9ca3af;
+}
+
+.flat-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 
