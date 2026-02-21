@@ -63,8 +63,8 @@ export default function FetchApiActions() {
     }
   }, [])
 
-  const ENTER_MS = 1000
-  const EXIT_MS = 1000
+  const ENTER_MS = 900
+  const EXIT_MS = 900
 
   useEffect(() => {
     const fetchTorrents = async () => {
@@ -173,8 +173,8 @@ export default function FetchApiActions() {
         className="block w-5 h-5"
         style={{
           backgroundColor: 'currentColor',
-          WebkitMaskImage: 'url(https://i.imgur.com/QHbctJc.png)',
-          maskImage: 'url(https://i.imgur.com/QHbctJc.png)',
+          WebkitMaskImage: 'url(https://i.imgur.com/qsJbxPc.png)',
+          maskImage: 'url(https://i.imgur.com/qsJbxPc.png)',
           WebkitMaskSize: 'contain',
           maskSize: 'contain',
           WebkitMaskRepeat: 'no-repeat',
@@ -362,7 +362,7 @@ export default function FetchApiActions() {
               <div>
                 <p className="text-sm font-bold text-gray-900">Subtitles</p>
                 <p key={`subs-${findSubs}`} className={`toggle-subtext text-xs font-semibold mt-0.5 ${findSubs ? '' : 'text-gray-400'}`} style={findSubs ? { color: jellyfinAccent } : undefined}>
-                  {findSubs ? 'Try to find subtitles' : "Don't search for subtitles"}
+                  {findSubs ? 'Search and download subtitles' : "Don't search for subtitles"}
                 </p>
               </div>
               <button

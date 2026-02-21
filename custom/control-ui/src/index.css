@@ -161,7 +161,7 @@ code {
   grid-template-rows: 0fr;
   opacity: 0;
   transform: translateY(-4px);
-  transition: grid-template-rows 240ms ease, opacity 220ms ease, transform 220ms ease;
+  transition: grid-template-rows 500ms ease, opacity 450ms ease, transform 450ms ease;
 }
 
 .options-panel-open {
@@ -374,7 +374,7 @@ code {
 }
 
 .toggle-subtext {
-  animation: toggleSubtextEnter 320ms ease;
+  animation: toggleSubtextEnter 500ms ease;
 }
 
 .stat-value {
@@ -399,12 +399,12 @@ code {
 
 .torrent-item-enter {
   display: grid;
-  animation: torrentItemEnter 1000ms ease-out forwards;
+  animation: torrentItemEnter 900ms ease-out forwards;
 }
 
 .torrent-item-exit {
   display: grid;
-  animation: torrentItemExit 1000ms ease-in forwards;
+  animation: torrentItemExit 900ms ease-in forwards;
 }
 
 .torrent-item-inner {
