@@ -424,6 +424,21 @@ code {
   min-height: 0;
 }
 
+.name-expand-panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 380ms ease;
+}
+
+.name-expand-open {
+  grid-template-rows: 1fr;
+}
+
+.name-expand-inner {
+  overflow: hidden;
+  min-height: 0;
+}
+
 .toggle-switch {
   position: relative;
   width: 48px;
