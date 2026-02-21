@@ -119,6 +119,17 @@ func ListTorrents(ctx *fiber.Ctx) error {
 			tagOpStatus := tagOpParts[1]
 
 			if tagCategory == "jellyfin" {
+				if tagOpName == "rename" {
+					switch tagOpStatus {
+					case "pending":
+						tagAction.Description = "Torrent dir/files will be renamed to match Jellyfin library structure once completed."
+					case "completed":
+						tagAction.Description = "Torrent dir/files renamed to match Jellyfin library structure."
+					case "failed":
+						tagAction.Description = "[!] Something went wrong while renaming Torrent's content."
+					}
+				}
+
 				if tagOpName == "find_subs" {
 					switch tagOpStatus {
 					case "pending":
@@ -131,17 +142,6 @@ func ListTorrents(ctx *fiber.Ctx) error {
 						tagAction.Description = "Subtitles and preferred language already present in Jellyfin for this media."
 					case "failed":
 						tagAction.Description = "[!] Something went wrong while fetching subtitles from OpenSubtitles in Jellyfin for this torrent media."
-					}
-				}
-
-				if tagOpName == "rename" {
-					switch tagOpStatus {
-					case "pending":
-						tagAction.Description = "Torrent dir/files will be renamed to match Jellyfin library structure once completed."
-					case "completed":
-						tagAction.Description = "Torrent dir/files renamed to match Jellyfin library structure."
-					case "failed":
-						tagAction.Description = "[!] Something went wrong while renaming Torrent's content."
 					}
 				}
 			}
@@ -207,7 +207,7 @@ func AddTorrent(ctx *fiber.Ctx) error {
 		reqPayload.Category = "jellyfin"
 	}
 
-	if (reqPayload.Category == "jellyfin") && !(slices.Contains(reqPayload.Tags, "jellyfin:rename=pending")) {
+	if (reqPayload.Category == "jellyfin") && ! (slices.Contains(reqPayload.Tags, "jellyfin:rename=pending")) {
 		reqPayload.Tags = append(reqPayload.Tags, "jellyfin:rename=pending")
 	}
 
@@ -240,7 +240,7 @@ func AddTorrent(ctx *fiber.Ctx) error {
 			)
 		}
 
-		reqPayload.Tags = append([]string{"jellyfin:find_subs=pending"}, reqPayload.Tags...)
+		reqPayload.Tags = append(reqPayload.Tags, "jellyfin:find_subs=pending")
 	}
 
 	if reqPayload.Notify != nil {

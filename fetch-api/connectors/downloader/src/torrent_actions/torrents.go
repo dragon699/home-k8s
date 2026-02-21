@@ -149,6 +149,9 @@ func (instance *ActionsRunner) runActions() {
 				continue
 			}
 
+			// DEBUG
+			fmt.Printf("RUNNING ACTION %s -> %s\n", action.Name, action.Status)
+			// END DEBUG
 			hasPendingActions = true
 			qbittorrent.Client.StopTorrent(torrent.Hash)
 
@@ -173,12 +176,12 @@ func (instance *ActionsRunner) runActions() {
 					if file["progress"].(float64) < 1 {
 						os.Remove(path.Join(torrent.SavePath, file["name"].(string)))
 					} else {
-						if !slices.Contains(allowedExtensions, path.Ext(file["name"].(string))) {
+						if ! slices.Contains(allowedExtensions, path.Ext(file["name"].(string))) {
 							continue
 						}
 
 						torrentContentFiles = append(torrentContentFiles, file)
-						torrentContentFileNames = append(torrentContentFileNames, path.Base(file["name"].(string)))
+						torrentContentFileNames = append(torrentContentFileNames, utils.BeautifyMovieName(path.Base(file["name"].(string))))
 					}
 				}
 
@@ -289,9 +292,9 @@ func (instance *ActionsRunner) runActions() {
 
 					qbittorrent.Client.RemoveTorrentTags(torrent.Hash, []string{"jellyfin:find_subs=pending"})
 
-					if subsAlreadyPresentCount == len(torrentContentFiles) {
+					if subsAlreadyPresentCount == len(torrentContentFileNames) {
 						qbittorrent.Client.AddTorrentTags(torrent.Hash, []string{"jellyfin:find_subs=already_present"})
-					} else if (subsDownloadedCount + subsAlreadyPresentCount) == len(torrentContentFiles) {
+					} else if (subsDownloadedCount + subsAlreadyPresentCount) == len(torrentContentFileNames) {
 						qbittorrent.Client.AddTorrentTags(torrent.Hash, []string{"jellyfin:find_subs=completed"})
 					} else {
 						qbittorrent.Client.AddTorrentTags(torrent.Hash, []string{"jellyfin:find_subs=partially_completed"})
