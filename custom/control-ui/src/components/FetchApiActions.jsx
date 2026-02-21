@@ -35,11 +35,12 @@ export default function FetchApiActions() {
   const [qbittorrentCategory, setQbittorrentCategory] = useState('')
   const [qbittorrentTags, setQbittorrentTags] = useState('')
   const [showOptions, setShowOptions] = useState(false)
-  const [findSubs, setFindSubs] = useState(true)
+  const [findSubs, setFindSubs] = useState(false)
   const [notify, setNotify] = useState(true)
   const [urlError, setUrlError] = useState('')
   const [urlErrorKey, setUrlErrorKey] = useState(0)
   const [jsonText, setJsonText] = useState('{}')
+  const jsonTextRef = useRef('{}')
   const [buttonState, setButtonState] = useState('idle') // idle | pending
   const [buttonIcon, setButtonIcon] = useState('arrows') // arrows | pending | check
   const [iconTransition, setIconTransition] = useState(null)
@@ -126,13 +127,40 @@ export default function FetchApiActions() {
   const animateJsonOutput = (data) => {
     clearTypingTimers()
     const fullText = JSON.stringify(data ?? {}, null, 2)
-    const lines = fullText.split('\n')
-    setJsonText(lines[0] || '{}')
+    const newLines = fullText.split('\n')
+    const currentLines = jsonTextRef.current.split('\n')
+    const ERASE_MS = 38
+    const TYPE_MS = 62
 
-    lines.slice(1).forEach((line, index) => {
+    // Phase 1: erase current text bottom → top, line by line
+    let t = 0
+    for (let i = currentLines.length - 1; i > 0; i--) {
+      const snapshot = currentLines.slice(0, i).join('\n')
       const id = setTimeout(() => {
-        setJsonText((prev) => `${prev}\n${line}`)
-      }, (index + 1) * 62)
+        jsonTextRef.current = snapshot
+        setJsonText(snapshot)
+      }, t * ERASE_MS)
+      typingTimersRef.current.push(id)
+      t++
+    }
+    const eraseEnd = t * ERASE_MS
+
+    // Phase 2: type new content top → bottom
+    const startId = setTimeout(() => {
+      const first = newLines[0] || '{}'
+      jsonTextRef.current = first
+      setJsonText(first)
+    }, eraseEnd)
+    typingTimersRef.current.push(startId)
+
+    newLines.slice(1).forEach((line, index) => {
+      const id = setTimeout(() => {
+        setJsonText((prev) => {
+          const next = `${prev}\n${line}`
+          jsonTextRef.current = next
+          return next
+        })
+      }, eraseEnd + (index + 1) * TYPE_MS)
       typingTimersRef.current.push(id)
     })
   }
@@ -196,7 +224,7 @@ export default function FetchApiActions() {
 
   const formatEta = (minutes) => {
     if (!minutes || minutes <= 0 || minutes >= 144000) return null
-    if (minutes <= 1) return '< 1 min'
+    if (minutes <= 1) return 'around 1 min'
     if (minutes >= 60) return `${Math.round(minutes / 60)} hrs`
     return `${Math.round(minutes)} mins`
   }
@@ -285,13 +313,13 @@ export default function FetchApiActions() {
               rel="noreferrer"
               aria-label="Open Jellyfin"
               className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
-              style={{ backgroundColor: `rgba(${jellyfinAccentRgb}, 0.12)` }}
+              style={{ backgroundColor: 'rgba(0, 128, 255, 0.12)' }}
             >
               <span
                 aria-hidden="true"
                 className="block w-4 h-4"
                 style={{
-                  backgroundColor: jellyfinAccent,
+                  backgroundColor: '#0080ff',
                   WebkitMaskImage: 'url(https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/jellyfin.png)',
                   maskImage: 'url(https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/jellyfin.png)',
                   WebkitMaskSize: 'contain',
@@ -312,7 +340,7 @@ export default function FetchApiActions() {
               rel="noreferrer"
               aria-label="Open qBittorrent"
               className="inline-flex items-center justify-center w-8 h-8 rounded-md hover:bg-gray-100 transition-colors"
-              style={{ color: jellyfinAccent }}
+              style={{ color: '#0080ff' }}
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3" />
@@ -347,7 +375,7 @@ export default function FetchApiActions() {
               <div className="flex items-start gap-3">
                 <span
                   aria-hidden="true"
-                  className="mt-0.5 block w-5 h-5 flex-shrink-0 transition-colors duration-300"
+                  className="mt-1 block w-5 h-5 flex-shrink-0 transition-colors duration-300"
                   style={{
                     backgroundColor: notify ? '#111827' : '#9ca3af',
                     WebkitMaskImage: 'url(https://i.imgur.com/Z2E0Nz2.png)',
@@ -383,7 +411,7 @@ export default function FetchApiActions() {
               <div className="flex items-start gap-3">
                 <span
                   aria-hidden="true"
-                  className="mt-0.5 block w-5 h-5 flex-shrink-0 transition-colors duration-300"
+                  className="mt-1 block w-5 h-5 flex-shrink-0 transition-colors duration-300"
                   style={{
                     backgroundColor: findSubs ? '#111827' : '#9ca3af',
                     WebkitMaskImage: 'url(https://i.imgur.com/2SzFid0.png)',
@@ -612,15 +640,11 @@ export default function FetchApiActions() {
                             <span key="error" className="toggle-subtext text-xs font-semibold text-red-500 flex items-center">Torrent error</span>
                           )}
                           {isCompleted && (
-                            <span key="completed" className="toggle-subtext text-xs font-semibold flex items-center" style={{ color: '#1DB954' }}>Completed</span>
+                            <span key="completed" className="toggle-subtext text-xs font-semibold flex items-center" style={{ color: jellyfinAccent }}>Completed</span>
                           )}
                         </div>
                         {isDownloading && eta && (
-                          <span className="text-xs font-semibold whitespace-nowrap flex items-center gap-1 flex-shrink-0" style={{ color: jellyfinAccent }}>
-                            <svg className="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
-                              <circle cx="12" cy="12" r="9" />
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M12 7v5l3 3" />
-                            </svg>
+                          <span className="text-xs font-semibold whitespace-nowrap flex-shrink-0" style={{ color: jellyfinAccent }}>
                             <span key={`${torrent.hash}-eta-${eta}`} className="stat-value">{eta}</span>
                           </span>
                         )}
