@@ -381,7 +381,7 @@ code {
   position: relative;
   width: 48px;
   height: 28px;
-  border-radius: 12px;
+  border-radius: 5px;
   border: none;
   background: #e5e7eb;
   cursor: pointer;
@@ -410,7 +410,7 @@ code {
   top: 3px;
   width: 22px;
   height: 22px;
-  border-radius: 9px;
+  border-radius: 3px;
   background: white;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.22);
   transition: transform 220ms ease;

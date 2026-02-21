@@ -281,7 +281,7 @@ export default function FetchApiActions() {
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Input */}
           <div>
-            <label className="block text-[12px] font-bold uppercase tracking-widest mb-2" style={{ color: jellyfinAccent }}>Torrent</label>
+            <label className="block text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: jellyfinAccent }}>Torrent</label>
             <input
               type="text"
               value={movieName}
@@ -321,7 +321,7 @@ export default function FetchApiActions() {
             </button>
             <div id="import-options" className={`options-panel ${showOptions ? 'options-panel-open' : ''}`}>
               <div className="options-panel-inner">
-                <div className="pt-8 space-y-5">
+                <div className="pt-5 space-y-5">
                 <div>
                   <p className="mb-1 text-sm font-medium text-gray-700">Save Location</p>
                   <input
@@ -445,7 +445,11 @@ export default function FetchApiActions() {
           {/* Active Downloads */}
           <div>
             <div className="flex items-center justify-between mb-3">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
+              <span
+                key={torrents.length === 0 ? 'waiting' : 'active'}
+                className="toggle-subtext text-[10px] font-bold uppercase tracking-widest"
+                style={{ color: jellyfinAccent }}
+              >
                 {torrents.length === 0 ? 'Waiting for downloads' : 'Active Downloads'}
               </span>
             </div>
