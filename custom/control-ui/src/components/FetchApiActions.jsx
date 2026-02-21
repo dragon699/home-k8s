@@ -297,6 +297,48 @@ export default function FetchApiActions() {
             {urlError && <p className="mt-2 text-sm font-semibold" style={{ color: jellyfinAccent }}>{urlError}</p>}
           </div>
 
+          {/* Toggle options */}
+          <div style={{ '--option-accent': jellyfinAccent }}>
+            <div className="flex items-center justify-between py-3">
+              <div>
+                <p className="text-sm font-bold text-gray-900">Notify</p>
+                <p key={`notify-${notify}`} className={`toggle-subtext text-xs font-semibold mt-0.5 ${notify ? '' : 'text-gray-400'}`} style={notify ? { color: jellyfinAccent } : undefined}>
+                  {notify ? "Notify me in Slack when it's ready" : "Don't send me notifications"}
+                </p>
+              </div>
+              <button
+                type="button"
+                role="switch"
+                disabled={isSubmitting}
+                aria-checked={notify}
+                aria-label="Notify"
+                onClick={() => setNotify((prev) => !prev)}
+                className="toggle-switch"
+              >
+                <span className="toggle-thumb" />
+              </button>
+            </div>
+            <div className="flex items-center justify-between py-3">
+              <div>
+                <p className="text-sm font-bold text-gray-900">Subtitles</p>
+                <p key={`subs-${findSubs}`} className={`toggle-subtext text-xs font-semibold mt-0.5 ${findSubs ? '' : 'text-gray-400'}`} style={findSubs ? { color: jellyfinAccent } : undefined}>
+                  {findSubs ? 'Try to find subtitles' : "Don't search for subtitles"}
+                </p>
+              </div>
+              <button
+                type="button"
+                role="switch"
+                disabled={isSubmitting}
+                aria-checked={findSubs}
+                aria-label="Subtitles"
+                onClick={() => setFindSubs((prev) => !prev)}
+                className="toggle-switch"
+              >
+                <span className="toggle-thumb" />
+              </button>
+            </div>
+          </div>
+
           {/* Settings collapsible */}
           <div>
             <button
@@ -357,48 +399,6 @@ export default function FetchApiActions() {
                 </div>
                 </div>
               </div>
-            </div>
-          </div>
-
-          {/* Toggle options */}
-          <div style={{ '--option-accent': jellyfinAccent }}>
-            <div className="flex items-center justify-between py-3">
-              <div>
-                <p className="text-sm font-bold text-gray-900">Notify</p>
-                <p key={`notify-${notify}`} className={`toggle-subtext text-xs font-semibold mt-0.5 ${notify ? '' : 'text-gray-400'}`} style={notify ? { color: jellyfinAccent } : undefined}>
-                  {notify ? "Notify me in Slack when it's ready" : "Don't send me notifications"}
-                </p>
-              </div>
-              <button
-                type="button"
-                role="switch"
-                disabled={isSubmitting}
-                aria-checked={notify}
-                aria-label="Notify"
-                onClick={() => setNotify((prev) => !prev)}
-                className="toggle-switch"
-              >
-                <span className="toggle-thumb" />
-              </button>
-            </div>
-            <div className="flex items-center justify-between py-3">
-              <div>
-                <p className="text-sm font-bold text-gray-900">Subtitles</p>
-                <p key={`subs-${findSubs}`} className={`toggle-subtext text-xs font-semibold mt-0.5 ${findSubs ? '' : 'text-gray-400'}`} style={findSubs ? { color: jellyfinAccent } : undefined}>
-                  {findSubs ? 'Try to find subtitles' : "Don't search for subtitles"}
-                </p>
-              </div>
-              <button
-                type="button"
-                role="switch"
-                disabled={isSubmitting}
-                aria-checked={findSubs}
-                aria-label="Subtitles"
-                onClick={() => setFindSubs((prev) => !prev)}
-                className="toggle-switch"
-              >
-                <span className="toggle-thumb" />
-              </button>
             </div>
           </div>
 
@@ -470,14 +470,18 @@ export default function FetchApiActions() {
                       <div className="flex items-center justify-between gap-3 mb-1.5">
                         <span className="text-sm font-semibold text-gray-800 truncate">{torrent.name}</span>
                         {isDownloading && (torrent.speed_download_mbps > 0 || torrent.speed_upload_mbps > 0) && (
-                          <span
-                            key={`${torrent.hash}-spd-${torrent.speed_download_mbps}-${torrent.speed_upload_mbps}`}
-                            className="toggle-subtext text-[11px] font-semibold whitespace-nowrap flex-shrink-0"
-                            style={{ color: jellyfinAccent }}
-                          >
-                            {torrent.speed_download_mbps > 0 && <>&#8595; {torrent.speed_download_mbps} mb/s</>}
-                            {torrent.speed_download_mbps > 0 && torrent.speed_upload_mbps > 0 && <>&nbsp;&nbsp;</>}
-                            {torrent.speed_upload_mbps > 0 && <>&#8593; {torrent.speed_upload_mbps} mb/s</>}
+                          <span className="text-xs font-semibold whitespace-nowrap flex-shrink-0 flex items-center gap-1" style={{ color: jellyfinAccent }}>
+                            {torrent.speed_download_mbps > 0 && (
+                              <>
+                                &#8595;&nbsp;<span key={`${torrent.hash}-dl-${torrent.speed_download_mbps}`} className="stat-value">{torrent.speed_download_mbps} mb/s</span>
+                              </>
+                            )}
+                            {torrent.speed_download_mbps > 0 && torrent.speed_upload_mbps > 0 && <span>&nbsp;&nbsp;</span>}
+                            {torrent.speed_upload_mbps > 0 && (
+                              <>
+                                &#8593;&nbsp;<span key={`${torrent.hash}-ul-${torrent.speed_upload_mbps}`} className="stat-value">{torrent.speed_upload_mbps} mb/s</span>
+                              </>
+                            )}
                           </span>
                         )}
                       </div>
@@ -496,50 +500,42 @@ export default function FetchApiActions() {
                       <div className="flex items-center justify-between mt-1">
                         <div>
                           {isDownloading && (torrent.seeders > 0 || torrent.leechers > 0) && (
-                            <span
-                              key={`${torrent.hash}-sl-${torrent.seeders}-${torrent.leechers}`}
-                              className="toggle-subtext text-[11px] font-semibold flex items-center gap-1"
-                              style={{ color: jellyfinAccent }}
-                            >
+                            <span className="text-xs font-semibold flex items-center gap-1" style={{ color: jellyfinAccent }}>
                               {torrent.seeders > 0 && (
                                 <>
-                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth={2.2} viewBox="0 0 24 24">
+                                  <svg className="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth={2.2} viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 19V5m0 0-5 5m5-5 5 5" />
                                   </svg>
-                                  <span>{torrent.seeders}</span>
+                                  <span key={`${torrent.hash}-s-${torrent.seeders}`} className="stat-value">{torrent.seeders}</span>
                                 </>
                               )}
                               {torrent.leechers > 0 && (
                                 <>
-                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth={2.2} viewBox="0 0 24 24">
+                                  <svg className="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth={2.2} viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 5v14m0 0-5-5m5 5 5-5" />
                                   </svg>
-                                  <span>{torrent.leechers}</span>
+                                  <span key={`${torrent.hash}-l-${torrent.leechers}`} className="stat-value">{torrent.leechers}</span>
                                 </>
                               )}
                             </span>
                           )}
                           {isPaused && (
-                            <span key="paused" className="toggle-subtext text-[11px] font-semibold text-gray-400">Paused</span>
+                            <span key="paused" className="toggle-subtext text-xs font-semibold text-gray-400 flex items-center">Paused</span>
                           )}
                           {isUnknown && (
-                            <span key="unknown" className="toggle-subtext text-[11px] font-semibold text-red-500">Unknown status</span>
+                            <span key="unknown" className="toggle-subtext text-xs font-semibold text-red-500 flex items-center">Unknown status</span>
                           )}
                           {isError && (
-                            <span key="error" className="toggle-subtext text-[11px] font-semibold text-red-500">Error while trying to download</span>
+                            <span key="error" className="toggle-subtext text-xs font-semibold text-red-500 flex items-center">Error while trying to download</span>
                           )}
                         </div>
                         {isDownloading && eta && (
-                          <span
-                            key={`${torrent.hash}-eta-${eta}`}
-                            className="toggle-subtext text-[11px] font-semibold whitespace-nowrap flex items-center gap-1 flex-shrink-0"
-                            style={{ color: jellyfinAccent }}
-                          >
-                            <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+                          <span className="text-xs font-semibold whitespace-nowrap flex items-center gap-1 flex-shrink-0" style={{ color: jellyfinAccent }}>
+                            <svg className="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
                               <circle cx="12" cy="12" r="9" />
                               <path strokeLinecap="round" strokeLinejoin="round" d="M12 7v5l3 3" />
                             </svg>
-                            {eta}
+                            <span key={`${torrent.hash}-eta-${eta}`} className="stat-value">{eta}</span>
                           </span>
                         )}
                       </div>
