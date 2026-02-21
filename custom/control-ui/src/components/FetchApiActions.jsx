@@ -40,7 +40,7 @@ export default function FetchApiActions() {
   const [urlError, setUrlError] = useState('')
   const [urlErrorKey, setUrlErrorKey] = useState(0)
   const [jsonText, setJsonText] = useState('{}')
-  const jsonTextRef = useRef('{}')
+  const [jsonKey, setJsonKey] = useState(0)
   const [buttonState, setButtonState] = useState('idle') // idle | pending
   const [buttonIcon, setButtonIcon] = useState('arrows') // arrows | pending | check
   const [iconTransition, setIconTransition] = useState(null)
@@ -49,19 +49,21 @@ export default function FetchApiActions() {
   const [exitingTorrents, setExitingTorrents] = useState([])
   const [enteringHashes, setEnteringHashes] = useState(new Set())
   const timersRef = useRef([])
-  const typingTimersRef = useRef([])
   const iconFlowRef = useRef(0)
   const buttonIconRef = useRef('arrows')
   const prevItemsRef = useRef([])
   const isFirstFetchRef = useRef(true)
   const isSubmitting = buttonState === 'pending'
+  const [expandedHashes, setExpandedHashes] = useState(new Set())
+  const [expandTransitions, setExpandTransitions] = useState(new Map()) // hash → 'opening' | 'closing'
+  const expandTimersRef = useRef({})
 
   useEffect(() => {
     return () => {
       timersRef.current.forEach(clearTimeout)
       timersRef.current = []
-      typingTimersRef.current.forEach(clearTimeout)
-      typingTimersRef.current = []
+      Object.values(expandTimersRef.current).forEach(clearTimeout)
+      expandTimersRef.current = {}
     }
   }, [])
 
@@ -119,51 +121,9 @@ export default function FetchApiActions() {
     })
   }
 
-  const clearTypingTimers = () => {
-    typingTimersRef.current.forEach(clearInterval)
-    typingTimersRef.current = []
-  }
-
-  const animateJsonOutput = (data) => {
-    clearTypingTimers()
-    const fullText = JSON.stringify(data ?? {}, null, 2)
-    const newLines = fullText.split('\n')
-    const currentLines = jsonTextRef.current.split('\n')
-    const ERASE_MS = 90
-    const TYPE_MS = 110
-
-    // Phase 1: erase bottom → top using a single interval
-    let eraseIdx = currentLines.length - 1
-    const eraseInterval = setInterval(() => {
-      if (eraseIdx <= 0) {
-        clearInterval(eraseInterval)
-        // Phase 2: type top → bottom using a single interval
-        let typeIdx = 0
-        const first = newLines[0] || '{}'
-        jsonTextRef.current = first
-        setJsonText(first)
-        if (newLines.length === 1) return
-        const typeInterval = setInterval(() => {
-          typeIdx++
-          if (typeIdx >= newLines.length) {
-            clearInterval(typeInterval)
-            return
-          }
-          setJsonText((prev) => {
-            const next = `${prev}\n${newLines[typeIdx]}`
-            jsonTextRef.current = next
-            return next
-          })
-        }, TYPE_MS)
-        typingTimersRef.current.push(typeInterval)
-        return
-      }
-      const snapshot = currentLines.slice(0, eraseIdx).join('\n')
-      jsonTextRef.current = snapshot
-      setJsonText(snapshot)
-      eraseIdx--
-    }, ERASE_MS)
-    typingTimersRef.current.push(eraseInterval)
+  const setJsonOutput = (data) => {
+    setJsonText(JSON.stringify(data ?? {}, null, 2))
+    setJsonKey(k => k + 1)
   }
 
   const transitionButtonIcon = async (nextIcon, flowId) => {
@@ -225,6 +185,27 @@ export default function FetchApiActions() {
     return 'Add'
   }
 
+  const toggleExpand = (hash) => {
+    const currentlyExpanded = expandedHashes.has(hash)
+    const direction = currentlyExpanded ? 'closing' : 'opening'
+    if (expandTimersRef.current[hash]) clearTimeout(expandTimersRef.current[hash])
+    setExpandTransitions(prev => new Map(prev).set(hash, direction))
+    expandTimersRef.current[hash] = setTimeout(() => {
+      setExpandedHashes(prev => {
+        const next = new Set(prev)
+        if (direction === 'opening') next.add(hash)
+        else next.delete(hash)
+        return next
+      })
+      setExpandTransitions(prev => {
+        const next = new Map(prev)
+        next.delete(hash)
+        return next
+      })
+      delete expandTimersRef.current[hash]
+    }, 1200)
+  }
+
   const formatEta = (minutes) => {
     if (!minutes || minutes <= 0 || minutes >= 144000) return null
     if (minutes <= 1) return 'Around a minute'
@@ -242,7 +223,6 @@ export default function FetchApiActions() {
     if (!value) {
       setUrlError('* Torrent URL is required')
       setUrlErrorKey((k) => k + 1)
-      clearTypingTimers()
       setJsonText('{}')
       return
     }
@@ -272,11 +252,10 @@ export default function FetchApiActions() {
       }
 
       const response = await addTorrent(payload)
-      animateJsonOutput(response)
+      setJsonOutput(response)
       requestSucceeded = true
     } catch (error) {
-      clearTypingTimers()
-      animateJsonOutput({ error: error.message || 'Request failed' })
+      setJsonOutput({ error: error.message || 'Request failed' })
     }
     setMovieName('')
 
@@ -546,7 +525,8 @@ export default function FetchApiActions() {
           <div className="w-full rounded-lg bg-[#0d0d0d] p-4 min-h-[180px] border border-gray-800">
             <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-2">Response</p>
             <pre
-              className="text-[12px] leading-5 whitespace-pre-wrap break-all text-slate-300"
+              key={jsonKey}
+              className="json-fade text-[12px] leading-5 whitespace-pre-wrap break-all text-slate-300"
               dangerouslySetInnerHTML={{ __html: syntaxHighlightJson(jsonText) }}
             />
           </div>
@@ -577,105 +557,141 @@ export default function FetchApiActions() {
                   const isEntering = enteringHashes.has(torrent.hash)
                   const isExiting = exitingTorrents.some(et => et.hash === torrent.hash)
                   const animClass = isEntering ? 'torrent-item-enter' : isExiting ? 'torrent-item-exit' : 'torrent-item-outer'
-                  const iconColor = isError ? '#ef4444' : isUnknown ? '#9ca3af' : '#111827'
+                  const isExpanded = expandedHashes.has(torrent.hash)
+                  const expandDir = expandTransitions.get(torrent.hash)
+                  const iconActive = isExpanded ? expandDir !== 'closing' : expandDir === 'opening'
+                  const showNormal = !isExpanded || expandDir === 'closing'
+                  const showExpanded = isExpanded || expandDir === 'opening'
+                  const normalClass = expandDir === 'opening' ? 'ti-normal-exit' : expandDir === 'closing' ? 'ti-normal-enter' : ''
+                  const expandedClass = expandDir === 'opening' ? 'ti-expanded-enter' : expandDir === 'closing' ? 'ti-expanded-exit' : ''
                   return (
                     <div key={torrent.hash} className={animClass}>
                       <div className={`torrent-item-inner${idx < displayTorrents.length - 1 ? ' pb-5' : ''}`}>
                       <div className="flex gap-3">
-                        {/* Left icon */}
+                        {/* Left icon toggle button */}
                         <div className="flex items-center flex-shrink-0">
-                          <span
-                            aria-hidden="true"
-                            className="block flex-shrink-0 transition-colors duration-300"
-                            style={{
-                              width: '16px',
-                              height: '16px',
-                              backgroundColor: iconColor,
-                              WebkitMaskImage: 'url(https://i.imgur.com/5LstlCU.png)',
-                              maskImage: 'url(https://i.imgur.com/5LstlCU.png)',
-                              WebkitMaskSize: 'contain',
-                              maskSize: 'contain',
-                              WebkitMaskRepeat: 'no-repeat',
-                              maskRepeat: 'no-repeat',
-                              WebkitMaskPosition: 'center',
-                              maskPosition: 'center',
-                            }}
-                          />
+                          <button
+                            onClick={() => toggleExpand(torrent.hash)}
+                            className={`torrent-expand-btn${iconActive ? ' active' : ''}`}
+                            aria-label="Toggle details"
+                          >
+                            <span
+                              className="torrent-expand-icon"
+                              style={{
+                                display: 'block',
+                                width: '16px',
+                                height: '16px',
+                                WebkitMaskImage: 'url(https://i.imgur.com/5LstlCU.png)',
+                                maskImage: 'url(https://i.imgur.com/5LstlCU.png)',
+                                WebkitMaskSize: 'contain',
+                                maskSize: 'contain',
+                                WebkitMaskRepeat: 'no-repeat',
+                                maskRepeat: 'no-repeat',
+                                WebkitMaskPosition: 'center',
+                                maskPosition: 'center',
+                              }}
+                            />
+                          </button>
                         </div>
                         {/* Content */}
-                        <div className="flex-1 min-w-0">
-                      {/* Name + speed */}
-                      <div className="flex items-center justify-between gap-3 mb-1.5">
-                        <span className="text-sm font-semibold text-gray-800 truncate">{torrent.name}</span>
-                        {isDownloading && (torrent.speed_download_mbps > 0 || torrent.speed_upload_mbps > 0) && (
-                          <span className="text-xs font-semibold whitespace-nowrap flex-shrink-0 flex items-center gap-1" style={{ color: jellyfinAccent }}>
-                            {torrent.speed_download_mbps > 0 && (
-                              <>
-                                &#8595;&nbsp;<span key={`${torrent.hash}-dl-${torrent.speed_download_mbps}`} className="stat-value">{torrent.speed_download_mbps} mb/s</span>
-                              </>
-                            )}
-                            {torrent.speed_download_mbps > 0 && torrent.speed_upload_mbps > 0 && <span>&nbsp;&nbsp;</span>}
-                            {torrent.speed_upload_mbps > 0 && (
-                              <>
-                                &#8593;&nbsp;<span key={`${torrent.hash}-ul-${torrent.speed_upload_mbps}`} className="stat-value">{torrent.speed_upload_mbps} mb/s</span>
-                              </>
-                            )}
-                          </span>
-                        )}
-                      </div>
-                      {/* Progress bar */}
-                      <div className="h-1 w-full rounded-full bg-gray-100 overflow-hidden">
-                        <div
-                          className={`h-full rounded-full${isDownloading ? ' progress-bar-gradient' : ''}`}
-                          style={{
-                            width: `${progress}%`,
-                            ...(!isDownloading ? { backgroundColor: isCompleted ? '#1DB954' : barColor } : {}),
-                            transition: 'width 800ms ease, background-color 400ms ease',
-                          }}
-                        />
-                      </div>
-                      {/* Bottom row: seeders/leechers or status text left, ETA right */}
-                      <div className="flex items-center justify-between mt-1">
-                        <div>
-                          {isDownloading && (torrent.seeders > 0 || torrent.leechers > 0) && (
-                            <span className="text-xs font-semibold flex items-center gap-2" style={{ color: jellyfinAccent }}>
-                              {torrent.seeders > 0 && (
-                                <span className="flex items-center gap-0.5">
-                                  <svg className="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth={2.2} viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 19V5m0 0-5 5m5-5 5 5" />
+                        <div className="flex-1 min-w-0" style={{ position: 'relative' }}>
+                          {showNormal && (
+                            <div className={`ti-normal${normalClass ? ` ${normalClass}` : ''}`}>
+                              {/* Name + speeds row */}
+                              <div className="ti-top-row flex items-center justify-between gap-3 mb-1.5">
+                                <span className="text-sm font-semibold text-gray-800 truncate">{torrent.name}</span>
+                                {isDownloading && (torrent.speed_download_mbps > 0 || torrent.speed_upload_mbps > 0) && (
+                                  <span className="ti-speeds text-xs font-semibold whitespace-nowrap flex-shrink-0 flex items-center gap-1" style={{ color: jellyfinAccent }}>
+                                    {torrent.speed_download_mbps > 0 && (
+                                      <>
+                                        &#8595;&nbsp;<span key={`${torrent.hash}-dl-${torrent.speed_download_mbps}`} className="stat-value">{torrent.speed_download_mbps} mb/s</span>
+                                      </>
+                                    )}
+                                    {torrent.speed_download_mbps > 0 && torrent.speed_upload_mbps > 0 && <span>&nbsp;&nbsp;</span>}
+                                    {torrent.speed_upload_mbps > 0 && (
+                                      <>
+                                        &#8593;&nbsp;<span key={`${torrent.hash}-ul-${torrent.speed_upload_mbps}`} className="stat-value">{torrent.speed_upload_mbps} mb/s</span>
+                                      </>
+                                    )}
+                                  </span>
+                                )}
+                              </div>
+                              {/* Progress bar */}
+                              <div className="ti-progress-wrap h-1 w-full rounded-full bg-gray-100 overflow-hidden">
+                                <div
+                                  className={`h-full rounded-full${isDownloading ? ' progress-bar-gradient' : ''}`}
+                                  style={{
+                                    width: `${progress}%`,
+                                    ...(!isDownloading ? { backgroundColor: isCompleted ? '#1DB954' : barColor } : {}),
+                                    transition: 'width 800ms ease, background-color 400ms ease',
+                                  }}
+                                />
+                              </div>
+                              {/* Bottom row */}
+                              <div className="ti-bottom-row flex items-center justify-between mt-1">
+                                <div>
+                                  {isDownloading && (torrent.seeders > 0 || torrent.leechers > 0) && (
+                                    <span className="text-xs font-semibold flex items-center gap-2" style={{ color: jellyfinAccent }}>
+                                      {torrent.seeders > 0 && (
+                                        <span className="flex items-center gap-0.5">
+                                          <svg className="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth={2.2} viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 19V5m0 0-5 5m5-5 5 5" />
+                                          </svg>
+                                          <span key={`${torrent.hash}-s-${torrent.seeders}`} className="stat-value">{torrent.seeders}</span>
+                                        </span>
+                                      )}
+                                      {torrent.leechers > 0 && (
+                                        <span className="flex items-center gap-0.5">
+                                          <svg className="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth={2.2} viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 5v14m0 0-5-5m5 5 5-5" />
+                                          </svg>
+                                          <span key={`${torrent.hash}-l-${torrent.leechers}`} className="stat-value">{torrent.leechers}</span>
+                                        </span>
+                                      )}
+                                    </span>
+                                  )}
+                                  {isPaused && (
+                                    <span key="paused" className="toggle-subtext text-xs font-semibold text-gray-400 flex items-center">Paused</span>
+                                  )}
+                                  {isUnknown && (
+                                    <span key="unknown" className="toggle-subtext text-xs font-semibold text-red-500 flex items-center">Unknown status</span>
+                                  )}
+                                  {isError && (
+                                    <span key="error" className="toggle-subtext text-xs font-semibold text-red-500 flex items-center">Torrent error</span>
+                                  )}
+                                  {isCompleted && (
+                                    <span key="completed" className="toggle-subtext text-xs font-semibold flex items-center" style={{ color: '#1DB954' }}>Completed</span>
+                                  )}
+                                </div>
+                                {isDownloading && eta && (
+                                  <span className="text-xs font-semibold whitespace-nowrap flex-shrink-0" style={{ color: jellyfinAccent }}>
+                                    <span key={`${torrent.hash}-eta-${eta}`} className="stat-value">{eta}</span>
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          )}
+                          {showExpanded && (
+                            <div className={`ti-expanded${expandedClass ? ` ${expandedClass}` : ''}`}>
+                              {/* Tag icon row */}
+                              <div className="ti-tag-row mb-2">
+                                <button
+                                  className="inline-flex items-center justify-center rounded-md w-5 h-5 hover:bg-purple-50 transition-colors"
+                                  style={{ color: jellyfinAccent }}
+                                  aria-label="Tag"
+                                >
+                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z" />
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 6h.008v.008H6V6z" />
                                   </svg>
-                                  <span key={`${torrent.hash}-s-${torrent.seeders}`} className="stat-value">{torrent.seeders}</span>
-                                </span>
-                              )}
-                              {torrent.leechers > 0 && (
-                                <span className="flex items-center gap-0.5">
-                                  <svg className="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth={2.2} viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 5v14m0 0-5-5m5 5 5-5" />
-                                  </svg>
-                                  <span key={`${torrent.hash}-l-${torrent.leechers}`} className="stat-value">{torrent.leechers}</span>
-                                </span>
-                              )}
-                            </span>
+                                </button>
+                              </div>
+                              {/* Name only */}
+                              <div className="ti-name-only">
+                                <span className="text-sm font-semibold text-gray-800 truncate block">{torrent.name}</span>
+                              </div>
+                            </div>
                           )}
-                          {isPaused && (
-                            <span key="paused" className="toggle-subtext text-xs font-semibold text-gray-400 flex items-center">Paused</span>
-                          )}
-                          {isUnknown && (
-                            <span key="unknown" className="toggle-subtext text-xs font-semibold text-red-500 flex items-center">Unknown status</span>
-                          )}
-                          {isError && (
-                            <span key="error" className="toggle-subtext text-xs font-semibold text-red-500 flex items-center">Torrent error</span>
-                          )}
-                          {isCompleted && (
-                            <span key="completed" className="toggle-subtext text-xs font-semibold flex items-center" style={{ color: jellyfinAccent }}>Completed</span>
-                          )}
-                        </div>
-                        {isDownloading && eta && (
-                          <span className="text-xs font-semibold whitespace-nowrap flex-shrink-0" style={{ color: jellyfinAccent }}>
-                            <span key={`${torrent.hash}-eta-${eta}`} className="stat-value">{eta}</span>
-                          </span>
-                        )}
-                      </div>
                         </div>{/* end content */}
                       </div>{/* end flex gap-3 */}
                     </div>

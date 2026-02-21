@@ -495,6 +495,16 @@ code {
 }
 
 
+@keyframes jsonFadeIn {
+  0%   { opacity: 0; filter: brightness(3); }
+  35%  { opacity: 1; filter: brightness(1.6); }
+  100% { opacity: 1; filter: brightness(1); }
+}
+
+.json-fade {
+  animation: jsonFadeIn 1s ease forwards;
+}
+
 .json-key {
   color: #93c5fd;
 }
@@ -513,6 +523,116 @@ code {
 
 .json-null {
   color: #fcd34d;
+}
+
+/* ── Torrent item expand toggle ── */
+.torrent-expand-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  line-height: 0;
+}
+
+.torrent-expand-icon {
+  background-color: #9ca3af;
+  transition: transform 400ms ease, background-color 200ms ease;
+}
+
+.torrent-expand-btn:hover .torrent-expand-icon {
+  background-color: #111827;
+}
+
+.torrent-expand-btn.active .torrent-expand-icon {
+  background-color: #111827;
+  transform: rotate(180deg);
+}
+
+/* Panels */
+.ti-normal-exit,
+.ti-expanded-exit {
+  position: absolute;
+  width: 100%;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+
+/* Normal → exit (expanding: rows cross-fly, progress fades) */
+.ti-normal-exit .ti-top-row {
+  animation: tiTopRowExit 1.2s ease forwards;
+}
+.ti-normal-exit .ti-speeds {
+  animation: tiFadeOut 0.65s ease forwards;
+}
+.ti-normal-exit .ti-progress-wrap {
+  animation: tiFadeOut 0.45s ease forwards;
+}
+.ti-normal-exit .ti-bottom-row {
+  animation: tiBottomRowExit 1.2s ease forwards;
+}
+
+/* Normal → enter (collapsing: reverse cross-fly) */
+.ti-normal-enter .ti-top-row {
+  animation: tiTopRowEnter 1.2s ease forwards;
+}
+.ti-normal-enter .ti-progress-wrap {
+  animation: tiFadeIn 0.45s 0.75s ease both;
+}
+.ti-normal-enter .ti-bottom-row {
+  animation: tiBottomRowEnter 1.2s ease forwards;
+}
+
+/* Expanded → enter (expanding: slide in after cross-fly) */
+.ti-expanded-enter .ti-tag-row {
+  animation: tiSlideUpIn 0.45s 0.85s ease both;
+}
+.ti-expanded-enter .ti-name-only {
+  animation: tiSlideUpIn 0.45s 0.9s ease both;
+}
+
+/* Expanded → exit (collapsing: slide out before cross-fly) */
+.ti-expanded-exit .ti-tag-row {
+  animation: tiSlideDownOut 0.35s ease forwards;
+}
+.ti-expanded-exit .ti-name-only {
+  animation: tiSlideDownOut 0.35s 0.05s ease forwards;
+}
+
+@keyframes tiTopRowExit {
+  0%   { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(30px); }
+}
+@keyframes tiBottomRowExit {
+  0%   { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-30px); }
+}
+@keyframes tiTopRowEnter {
+  0%   { opacity: 0; transform: translateY(30px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes tiBottomRowEnter {
+  0%   { opacity: 0; transform: translateY(-30px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes tiFadeOut {
+  0%   { opacity: 1; }
+  100% { opacity: 0; }
+}
+@keyframes tiFadeIn {
+  0%   { opacity: 0; }
+  100% { opacity: 1; }
+}
+@keyframes tiSlideUpIn {
+  0%   { opacity: 0; transform: translateY(8px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes tiSlideDownOut {
+  0%   { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(8px); }
 }
 
 @media (prefers-reduced-motion: reduce) {
