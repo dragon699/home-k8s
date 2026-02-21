@@ -81,13 +81,22 @@ func ListTorrents(ctx *fiber.Ctx) error {
 			torrentMeta.ManagedBy = "qBittorrent"
 		}
 
-		statesDownloading := []string{"allocating", "downloading", "metaDL", "queuedDL", "stalledDL", "checkingDL", "forcedDL"}
-		statesPaused := []string{"pausedUP", "pausedDL"}
+		statesDownloading := []string{
+			"allocating", "downloading", "metaDL", "queuedDL", "stalledDL", "checkingDL", "forcedDL",
+		}
+		statesPaused := []string{
+			"pausedUP", "pausedDL", "stoppedDL",
+		}
+		statesError := []string{
+			"error", "missingFiles",
+		}
 
 		if slices.Contains(statesDownloading, torrentData.Status) {
 			torrentData.Status = "downloading"
 		} else if slices.Contains(statesPaused, torrentData.Status) {
 			torrentData.Status = "paused"
+		} else if slices.Contains(statesError, torrentData.Status) {
+			torrentData.Status = "error"
 		} else {
 			torrentData.Status = "unknown"
 		}
