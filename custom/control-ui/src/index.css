@@ -79,7 +79,7 @@ code {
 
 .btn-label-stack {
   position: relative;
-  width: 150px;
+  width: 90px;
   height: 20px;
   overflow: hidden;
 }
@@ -368,7 +368,6 @@ code {
 
 .import-action-btn {
   box-shadow:
-    0 0 0 4px rgba(var(--card-accent-rgb, 79, 109, 246), 0.17),
     inset 0 1px 0 rgba(255,255,255,0.26),
     inset 0 -2px 6px rgba(0,0,0,0.2);
 }
@@ -379,6 +378,15 @@ code {
 
 .import-action-btn:active:not(:disabled)::after {
   animation: checkboxSplash 300ms ease-out;
+}
+
+@keyframes toggleSubtextEnter {
+  from { opacity: 0; transform: translateY(-5px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.toggle-subtext {
+  animation: toggleSubtextEnter 180ms ease;
 }
 
 .toggle-switch {

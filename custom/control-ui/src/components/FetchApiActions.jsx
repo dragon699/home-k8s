@@ -152,9 +152,9 @@ export default function FetchApiActions() {
   }
 
   const labelForState = (stateName) => {
-    if (stateName === 'pending') return 'Importing'
-    if (stateName === 'check') return 'Imported'
-    return 'Import Resource'
+    if (stateName === 'pending') return 'Adding'
+    if (stateName === 'check') return 'Added'
+    return 'Add'
   }
 
   const formatEta = (minutes) => {
@@ -233,7 +233,7 @@ export default function FetchApiActions() {
         style={{ '--card-accent': jellyfinAccent, '--card-accent-rgb': jellyfinAccentRgb }}
       >
         {/* Header */}
-        <div className="mb-5 flex items-center justify-between">
+        <div className="mb-5 flex items-center justify-between group">
           <div className="flex items-center gap-3">
             <a
               href={jellyfinUrl}
@@ -245,7 +245,7 @@ export default function FetchApiActions() {
             >
               <span
                 aria-hidden="true"
-                className="block w-5 h-5"
+                className="block w-4 h-4"
                 style={{
                   backgroundColor: jellyfinAccent,
                   WebkitMaskImage: 'url(https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/jellyfin.png)',
@@ -273,22 +273,14 @@ export default function FetchApiActions() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3" />
               </svg>
             </a>
-            <button
-              type="button"
-              aria-label="More options"
-              className="inline-flex items-center justify-center w-8 h-8 rounded-md text-gray-400 hover:bg-gray-100 transition-colors"
-            >
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                <circle cx="12" cy="5" r="1.5" /><circle cx="12" cy="12" r="1.5" /><circle cx="12" cy="19" r="1.5" />
-              </svg>
-            </button>
+
           </div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Input */}
           <div>
-            <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Torrent</label>
+            <label className="block text-[12px] font-bold uppercase tracking-widest mb-2" style={{ color: jellyfinAccent }}>Torrent</label>
             <input
               type="text"
               value={movieName}
@@ -318,7 +310,7 @@ export default function FetchApiActions() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
-              <span>Settings</span>
+              <span>Options</span>
               <svg
                 className={`w-4 h-4 transition-transform duration-220 ${showOptions ? 'rotate-180' : 'rotate-0'}`}
                 fill="none" stroke="currentColor" viewBox="0 0 24 24"
@@ -327,7 +319,7 @@ export default function FetchApiActions() {
               </svg>
             </button>
             <div id="import-options" className={`options-panel ${showOptions ? 'options-panel-open' : ''}`}>
-              <div className="options-panel-inner space-y-4 pt-4">
+              <div className="options-panel-inner space-y-5 pt-6">
                 <div>
                   <p className="mb-2 text-sm font-medium text-gray-700">Save Location</p>
                   <input
@@ -335,7 +327,7 @@ export default function FetchApiActions() {
                     value={saveLocation}
                     disabled={isSubmitting}
                     onChange={(e) => setSaveLocation(e.target.value)}
-                    className="w-full px-4 py-[7px] text-[14px] border rounded-md outline-none transition-colors border-gray-300 animated-focus-input disabled:cursor-not-allowed disabled:opacity-60"
+                    className="flat-input"
                     placeholder={DEFAULT_SAVE_LOCATION}
                   />
                 </div>
@@ -346,7 +338,7 @@ export default function FetchApiActions() {
                     value={qbittorrentCategory}
                     disabled={isSubmitting}
                     onChange={(e) => setQbittorrentCategory(e.target.value)}
-                    className="w-full px-4 py-[7px] text-[14px] border rounded-md outline-none transition-colors border-gray-300 animated-focus-input disabled:cursor-not-allowed disabled:opacity-60"
+                    className="flat-input"
                     placeholder={DEFAULT_CATEGORY}
                   />
                 </div>
@@ -357,7 +349,7 @@ export default function FetchApiActions() {
                     value={qbittorrentTags}
                     disabled={isSubmitting}
                     onChange={(e) => setQbittorrentTags(e.target.value)}
-                    className="w-full px-4 py-[7px] text-[14px] border rounded-md outline-none transition-colors border-gray-300 animated-focus-input disabled:cursor-not-allowed disabled:opacity-60"
+                    className="flat-input"
                     placeholder={DEFAULT_TAGS_PLACEHOLDER}
                   />
                 </div>
@@ -367,10 +359,12 @@ export default function FetchApiActions() {
 
           {/* Toggle options */}
           <div style={{ '--option-accent': jellyfinAccent }}>
-            <div className="flex items-center justify-between py-3 border-b border-gray-100">
+            <div className="flex items-center justify-between py-3">
               <div>
-                <p className="text-sm font-bold text-gray-900">Notification</p>
-                <p className="text-xs font-semibold mt-0.5" style={{ color: jellyfinAccent }}>Slack alerts on completion</p>
+                <p className="text-sm font-bold text-gray-900">Notify</p>
+                <p key={`notify-${notify}`} className={`toggle-subtext text-xs font-semibold mt-0.5 ${notify ? '' : 'text-gray-400'}`} style={notify ? { color: jellyfinAccent } : undefined}>
+                  {notify ? "Notify me in Slack when it's ready" : "Don't send me notifications"}
+                </p>
               </div>
               <button
                 type="button"
@@ -387,7 +381,9 @@ export default function FetchApiActions() {
             <div className="flex items-center justify-between py-3">
               <div>
                 <p className="text-sm font-bold text-gray-900">Subtitles</p>
-                <p className="text-xs font-semibold mt-0.5" style={{ color: jellyfinAccent }}>Auto-fetch language assets</p>
+                <p key={`subs-${findSubs}`} className={`toggle-subtext text-xs font-semibold mt-0.5 ${findSubs ? '' : 'text-gray-400'}`} style={findSubs ? { color: jellyfinAccent } : undefined}>
+                  {findSubs ? 'Try to find subtitles' : "Don't search for subtitles"}
+                </p>
               </div>
               <button
                 type="button"
@@ -410,7 +406,7 @@ export default function FetchApiActions() {
             className="import-action-btn relative w-full overflow-hidden rounded-lg font-semibold py-3 px-4 flex items-center justify-center transition-all duration-300 text-white disabled:cursor-not-allowed disabled:opacity-70"
             style={{ backgroundColor: jellyfinAccent }}
           >
-            <span className="relative z-10 inline-flex items-center justify-center gap-2">
+            <span className="relative z-10 inline-flex items-center justify-center gap-1">
               <span className="btn-label-stack" aria-hidden="true">
                 {iconTransition ? (
                   <>
@@ -436,7 +432,7 @@ export default function FetchApiActions() {
 
           {/* JSON log */}
           <div className="w-full rounded-lg bg-[#0d0d0d] p-4 min-h-[180px] border border-gray-800">
-            <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-2">System Logs</p>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-2">Response</p>
             <pre
               className="text-[12px] leading-5 whitespace-pre-wrap break-all text-slate-300"
               dangerouslySetInnerHTML={{ __html: syntaxHighlightJson(jsonText) }}
@@ -446,19 +442,11 @@ export default function FetchApiActions() {
           {/* Active Downloads */}
           <div>
             <div className="flex items-center justify-between mb-3">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Active Downloads</span>
-              {torrents.length > 0 && (
-                <span
-                  className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full text-white"
-                  style={{ backgroundColor: jellyfinAccent }}
-                >
-                  Live
-                </span>
-              )}
+              <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                {torrents.length === 0 ? 'Waiting for downloads' : 'Active Downloads'}
+              </span>
             </div>
-            {torrents.length === 0 ? (
-              <p className="text-sm font-semibold text-gray-400">Downloads will show here</p>
-            ) : (
+            {torrents.length > 0 && (
               <div>
                 {torrents.map((torrent, idx) => {
                   const eta = formatEta(torrent.eta_minutes)
