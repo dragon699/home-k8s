@@ -63,8 +63,8 @@ export default function FetchApiActions() {
     }
   }, [])
 
-  const ENTER_MS = 450
-  const EXIT_MS = 350
+  const ENTER_MS = 700
+  const EXIT_MS = 500
 
   useEffect(() => {
     const fetchTorrents = async () => {
@@ -543,22 +543,22 @@ export default function FetchApiActions() {
                       <div className="flex items-center justify-between mt-1">
                         <div>
                           {isDownloading && (torrent.seeders > 0 || torrent.leechers > 0) && (
-                            <span className="text-xs font-semibold flex items-center gap-1" style={{ color: jellyfinAccent }}>
+                            <span className="text-xs font-semibold flex items-center gap-2" style={{ color: jellyfinAccent }}>
                               {torrent.seeders > 0 && (
-                                <>
+                                <span className="flex items-center gap-0.5">
                                   <svg className="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth={2.2} viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 19V5m0 0-5 5m5-5 5 5" />
                                   </svg>
                                   <span key={`${torrent.hash}-s-${torrent.seeders}`} className="stat-value">{torrent.seeders}</span>
-                                </>
+                                </span>
                               )}
                               {torrent.leechers > 0 && (
-                                <>
+                                <span className="flex items-center gap-0.5">
                                   <svg className="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth={2.2} viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 5v14m0 0-5-5m5 5 5-5" />
                                   </svg>
                                   <span key={`${torrent.hash}-l-${torrent.leechers}`} className="stat-value">{torrent.leechers}</span>
-                                </>
+                                </span>
                               )}
                             </span>
                           )}

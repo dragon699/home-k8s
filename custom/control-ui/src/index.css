@@ -383,24 +383,25 @@ code {
 }
 
 @keyframes torrentItemEnter {
-  0%   { opacity: 0; max-height: 0;     transform: translateY(-6px); }
-  45%  { max-height: 160px; }
-  100% { opacity: 1; max-height: 160px; transform: translateY(0); }
+  from { opacity: 0; transform: scaleY(0) translateY(-4px); }
+  to   { opacity: 1; transform: scaleY(1) translateY(0); }
 }
 
 @keyframes torrentItemExit {
-  0%   { opacity: 1; max-height: 160px; transform: translateY(0); }
-  100% { opacity: 0; max-height: 0;     transform: translateY(-4px); }
+  from { opacity: 1; transform: scaleY(1) translateY(0); }
+  to   { opacity: 0; transform: scaleY(0) translateY(-4px); }
 }
 
 .torrent-item-enter {
-  animation: torrentItemEnter 420ms ease-out forwards;
-  overflow: hidden;
+  animation: torrentItemEnter 700ms ease-out forwards;
+  transform-origin: top;
+  will-change: transform, opacity;
 }
 
 .torrent-item-exit {
-  animation: torrentItemExit 340ms ease-in forwards;
-  overflow: hidden;
+  animation: torrentItemExit 500ms ease-in forwards;
+  transform-origin: top;
+  will-change: transform, opacity;
 }
 
 .toggle-switch {
