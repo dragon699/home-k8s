@@ -174,8 +174,8 @@ export default function FetchApiActions() {
         className="block w-5 h-5"
         style={{
           backgroundColor: 'currentColor',
-          WebkitMaskImage: 'url(https://i.imgur.com/ZXFGAzj.png)',
-          maskImage: 'url(https://i.imgur.com/ZXFGAzj.png)',
+          WebkitMaskImage: 'url(https://i.imgur.com/elV6MUC.png)',
+          maskImage: 'url(https://i.imgur.com/elV6MUC.png)',
           WebkitMaskSize: 'contain',
           maskSize: 'contain',
           WebkitMaskRepeat: 'no-repeat',
@@ -541,6 +541,7 @@ export default function FetchApiActions() {
                   const isPaused = status === 'paused'
                   const isUnknown = status === 'unknown'
                   const isError = status === 'error'
+                  const isCompleted = status === 'completed'
                   const barColor = isError ? '#ef4444' : (isPaused || isUnknown) ? '#9ca3af' : jellyfinAccent
                   const isEntering = enteringHashes.has(torrent.hash)
                   const isExiting = exitingTorrents.some(et => et.hash === torrent.hash)
@@ -570,10 +571,10 @@ export default function FetchApiActions() {
                       {/* Progress bar */}
                       <div className="h-1 w-full rounded-full bg-gray-100 overflow-hidden">
                         <div
-                          className="h-full rounded-full"
+                          className={`h-full rounded-full${isDownloading ? ' progress-bar-gradient' : ''}`}
                           style={{
                             width: `${progress}%`,
-                            backgroundColor: barColor,
+                            ...(!isDownloading ? { backgroundColor: isCompleted ? '#1DB954' : barColor } : {}),
                             transition: 'width 800ms ease, background-color 400ms ease',
                           }}
                         />
@@ -609,6 +610,9 @@ export default function FetchApiActions() {
                           )}
                           {isError && (
                             <span key="error" className="toggle-subtext text-xs font-semibold text-red-500 flex items-center">Torrent error</span>
+                          )}
+                          {isCompleted && (
+                            <span key="completed" className="toggle-subtext text-xs font-semibold flex items-center" style={{ color: '#1DB954' }}>Completed</span>
                           )}
                         </div>
                         {isDownloading && eta && (

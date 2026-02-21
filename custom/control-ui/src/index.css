@@ -382,6 +382,18 @@ code {
   display: inline;
 }
 
+@keyframes gradientShift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.progress-bar-gradient {
+  background: linear-gradient(90deg, #8b5cf6, #0080ff, #8b5cf6);
+  background-size: 200% 100%;
+  animation: gradientShift 3s ease infinite;
+}
+
 @keyframes torrentItemEnter {
   from { grid-template-rows: 0fr; opacity: 0; }
   to   { grid-template-rows: 1fr; opacity: 1; }
