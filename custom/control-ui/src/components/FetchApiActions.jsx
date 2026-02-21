@@ -55,6 +55,7 @@ export default function FetchApiActions() {
   const isFirstFetchRef = useRef(true)
   const isSubmitting = buttonState === 'pending'
   const [hoveredSubsHash, setHoveredSubsHash] = useState(null)
+  const [subsTextHoveredHash, setSubsTextHoveredHash] = useState(null)
   const [hoveredNameHash, setHoveredNameHash] = useState(null)
 
   useEffect(() => {
@@ -536,30 +537,59 @@ export default function FetchApiActions() {
 
                   // Subtitles tag logic
                   const tags = torrent.tags || []
-                  const findSubsTag = tags.find(t => typeof t === 'string' && t.startsWith('jellyfin:find_subs'))
-                  const canShowSubs = isDownloading || isPaused || isCompleted
+                  const findSubsTag = tags.find(t => typeof t === 'string' && t.startsWith('jellyfin:find_subs='))
                   const isSubsHovered = hoveredSubsHash === torrent.hash
+                  const isSubsTextHovered = subsTextHoveredHash === torrent.hash
 
-                  let subsIconColor, subsText, subsTextColor, subsHoverText, subsHoverTextColor, subsHoverable
-                  if (!canShowSubs) {
-                    subsIconColor = '#9ca3af'; subsText = null; subsHoverable = false
-                  } else if (findSubsTag === 'jellyfin:find_subs=already_present') {
-                    subsIconColor = '#111827'; subsText = 'Included with torrent'; subsTextColor = '#1DB954'; subsHoverable = false
-                  } else if (findSubsTag === 'jellyfin:find_subs=completed') {
-                    subsIconColor = '#111827'; subsText = 'Downloaded'; subsTextColor = '#1DB954'; subsHoverable = false
-                  } else if (findSubsTag === 'jellyfin:find_subs=partially_completed') {
-                    subsIconColor = '#111827'; subsText = 'There may be missing subtitles'; subsTextColor = jellyfinAccent; subsHoverable = false
-                  } else if (findSubsTag === 'jellyfin:find_subs=pending') {
-                    subsIconColor = '#111827'; subsText = 'Will download subtitles'; subsTextColor = jellyfinAccent
-                    subsHoverText = "Don't download"; subsHoverTextColor = '#ef4444'; subsHoverable = true
+                  let subsIconColor, subsIconOpacity, subsClickable
+                  let subsTextA = null, subsTextAColor, subsTextB = null, subsTextBColor
+
+                  if (isUnknown || isError) {
+                    subsIconColor = '#9ca3af'; subsIconOpacity = 1; subsClickable = false
+                  } else if (isPaused) {
+                    subsIconColor = '#9ca3af'; subsIconOpacity = 1; subsClickable = true
+                    if (findSubsTag === 'jellyfin:find_subs=pending') {
+                      subsTextA = 'Will download subtitles once completed'; subsTextAColor = '#9ca3af'
+                      subsTextB = 'Cancel'; subsTextBColor = '#ef4444'
+                    } else if (findSubsTag === 'jellyfin:find_subs=completed') {
+                      subsTextA = 'Subtitles downloaded'; subsTextAColor = '#9ca3af'
+                    } else if (findSubsTag === 'jellyfin:find_subs=partially_completed') {
+                      subsTextA = 'Subtitles may not be present in all episodes/movies'; subsTextAColor = '#9ca3af'
+                    } else if (findSubsTag === 'jellyfin:find_subs=already_present') {
+                      subsTextA = 'Subtitles included with torrent'; subsTextAColor = '#9ca3af'
+                    } else if (findSubsTag === 'jellyfin:find_subs=failed') {
+                      subsTextA = 'Failed to find and/or download subtitles'; subsTextAColor = '#ef4444'
+                    } else {
+                      subsTextA = 'Will not download subtitles'; subsTextAColor = '#9ca3af'
+                      subsTextB = 'Download'; subsTextBColor = jellyfinAccent
+                    }
+                  } else if (isDownloading || isCompleted) {
+                    subsClickable = true
+                    if (findSubsTag === 'jellyfin:find_subs=pending') {
+                      subsIconColor = jellyfinAccent; subsIconOpacity = 1
+                      subsTextA = 'Will download subtitles once completed'; subsTextAColor = jellyfinAccent
+                      subsTextB = 'Cancel'; subsTextBColor = '#ef4444'
+                    } else if (findSubsTag === 'jellyfin:find_subs=completed') {
+                      subsIconColor = jellyfinAccent; subsIconOpacity = 1
+                      subsTextA = 'Subtitles downloaded'; subsTextAColor = '#1DB954'
+                    } else if (findSubsTag === 'jellyfin:find_subs=partially_completed') {
+                      subsIconColor = jellyfinAccent; subsIconOpacity = 1
+                      subsTextA = 'Subtitles may not be present in all episodes/movies'; subsTextAColor = jellyfinAccent
+                    } else if (findSubsTag === 'jellyfin:find_subs=already_present') {
+                      subsIconColor = jellyfinAccent; subsIconOpacity = 1
+                      subsTextA = 'Subtitles already included with torrent'; subsTextAColor = '#1DB954'
+                    } else if (findSubsTag === 'jellyfin:find_subs=failed') {
+                      subsIconColor = '#ef4444'; subsIconOpacity = 1
+                      subsTextA = 'Failed to find and/or download subtitles'; subsTextAColor = '#ef4444'
+                    } else {
+                      subsIconColor = '#9ca3af'; subsIconOpacity = isSubsHovered ? 1 : 0.5
+                      subsTextA = 'Will not download subtitles'; subsTextAColor = '#111827'
+                      subsTextB = 'Download'; subsTextBColor = jellyfinAccent
+                    }
                   } else {
-                    subsIconColor = isSubsHovered ? '#111827' : '#9ca3af'
-                    subsText = "Won't download subtitles"; subsTextColor = '#9ca3af'
-                    subsHoverText = 'Download'; subsHoverTextColor = jellyfinAccent; subsHoverable = true
+                    subsIconColor = '#9ca3af'; subsIconOpacity = 1; subsClickable = false
                   }
 
-                  const subsDisplayText = subsHoverable && isSubsHovered ? subsHoverText : subsText
-                  const subsDisplayColor = subsHoverable && isSubsHovered ? subsHoverTextColor : subsTextColor
                   const isNameHovered = hoveredNameHash === torrent.hash
 
                   return (
@@ -576,28 +606,23 @@ export default function FetchApiActions() {
                           </div>
                           {/* Subtitle icon + gear icon */}
                           <div className="flex items-center gap-2 flex-shrink-0">
+                            {/* Subtitle section: row-reverse so icon stays right, text slides out left */}
                             <div
-                              className="flex items-center gap-1"
-                              onMouseEnter={() => subsHoverable && setHoveredSubsHash(torrent.hash)}
-                              onMouseLeave={() => subsHoverable && setHoveredSubsHash(null)}
+                              className="flex flex-row-reverse items-center gap-1"
+                              style={{ cursor: subsClickable ? 'pointer' : 'default' }}
+                              onMouseEnter={() => { if (subsClickable) setHoveredSubsHash(torrent.hash) }}
+                              onMouseLeave={() => { setHoveredSubsHash(null); setSubsTextHoveredHash(null) }}
                             >
-                              {subsDisplayText && (
-                                <span
-                                  key={`${torrent.hash}-subs-${isSubsHovered ? 'hov' : 'def'}`}
-                                  className="toggle-subtext text-xs font-semibold whitespace-nowrap"
-                                  style={{ color: subsDisplayColor, cursor: subsHoverable && isSubsHovered ? 'pointer' : 'default' }}
-                                >
-                                  {subsDisplayText}
-                                </span>
-                              )}
+                              {/* Icon */}
                               <span
                                 aria-hidden="true"
                                 className="block flex-shrink-0"
                                 style={{
-                                  width: '15px',
-                                  height: '15px',
+                                  width: '20px',
+                                  height: '20px',
                                   backgroundColor: subsIconColor,
-                                  transition: 'background-color 200ms ease',
+                                  opacity: subsIconOpacity,
+                                  transition: 'background-color 200ms ease, opacity 200ms ease',
                                   WebkitMaskImage: 'url(https://i.imgur.com/2SzFid0.png)',
                                   maskImage: 'url(https://i.imgur.com/2SzFid0.png)',
                                   WebkitMaskSize: 'contain',
@@ -608,10 +633,37 @@ export default function FetchApiActions() {
                                   maskPosition: 'center',
                                 }}
                               />
+                              {/* Text: slides in from icon (right) toward left */}
+                              {subsTextA && (
+                                <div
+                                  className={`subs-text-clip${isSubsHovered ? ' subs-text-visible' : ''}`}
+                                  onMouseEnter={() => { if (subsTextB) setSubsTextHoveredHash(torrent.hash) }}
+                                  onMouseLeave={() => setSubsTextHoveredHash(null)}
+                                >
+                                  {isSubsTextHovered && subsTextB ? (
+                                    <span
+                                      key={`${torrent.hash}-subs-b`}
+                                      className="subs-text-swap text-xs font-semibold whitespace-nowrap"
+                                      style={{ color: subsTextBColor }}
+                                    >
+                                      {subsTextB}
+                                    </span>
+                                  ) : (
+                                    <span
+                                      key={`${torrent.hash}-subs-a`}
+                                      className="text-xs font-semibold whitespace-nowrap"
+                                      style={{ color: subsTextAColor }}
+                                    >
+                                      {subsTextA}
+                                    </span>
+                                  )}
+                                </div>
+                              )}
                             </div>
+                            {/* Gear icon */}
                             <svg
                               aria-hidden="true"
-                              style={{ width: '15px', height: '15px', color: '#9ca3af', flexShrink: 0 }}
+                              style={{ width: '20px', height: '20px', color: '#9ca3af', flexShrink: 0 }}
                               fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"
                             >
                               <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />

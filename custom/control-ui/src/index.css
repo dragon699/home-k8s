@@ -455,6 +455,29 @@ code {
   opacity: 0;
 }
 
+/* Subtitle text slide-in (expands rightward from icon, which is on the right via flex-row-reverse) */
+.subs-text-clip {
+  overflow: hidden;
+  max-width: 0;
+  white-space: nowrap;
+  transition: max-width 0.5s ease;
+  flex-shrink: 0;
+}
+
+.subs-text-visible {
+  max-width: 260px;
+}
+
+@keyframes subsTextFadeDown {
+  from { opacity: 0; transform: translateY(-5px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.subs-text-swap {
+  display: inline-block;
+  animation: subsTextFadeDown 180ms ease forwards;
+}
+
 .toggle-switch {
   position: relative;
   width: 48px;
