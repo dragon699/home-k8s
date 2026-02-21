@@ -449,25 +449,33 @@ export default function FetchApiActions() {
           </div>
 
           {torrents.length === 0 ? (
-            <p className="mt-4 text-[15px] font-semibold" style={{ color: jellyfinAccent }}>
+            <p className="mt-7 text-xl font-semibold text-gray-900">
               Downloads will show here
             </p>
           ) : (
-            <div className="mt-4 space-y-3">
-              <p className="text-[15px] font-semibold" style={{ color: jellyfinAccent }}>
-                {torrents.some((t) => t.status === 'downloading') ? 'Now downloading' : 'Downloads will show here'}
+            <div className="mt-7 space-y-5">
+              <p className="text-xl font-semibold text-gray-900">
+                Now downloading
               </p>
               {torrents.map((torrent) => (
                 <div key={torrent.hash}>
                   <p className="mb-1 option-title truncate">{torrent.name}</p>
                   {torrent.status === 'downloading' && (
-                    <p className="mb-1.5 option-subtitle" style={{ maxHeight: 'none', opacity: 1, transform: 'none', marginTop: '2px' }}>
-                      &#8595;&nbsp;{torrent.speed_download_mbps ?? 0} mb/s&nbsp;&nbsp;&#8593;&nbsp;{torrent.speed_upload_mbps ?? 0} mb/s
+                    <p className="mb-1.5 text-[12px] font-semibold" style={{ marginTop: '2px' }}>
+                      <span style={{ color: jellyfinAccent }}>&#8595;</span>
+                      <span className="text-gray-900">&nbsp;{torrent.speed_download_mbps ?? 0} mb/s</span>
+                      <span>&nbsp;&nbsp;</span>
+                      <span style={{ color: jellyfinAccent }}>&#8593;</span>
+                      <span className="text-gray-900">&nbsp;{torrent.speed_upload_mbps ?? 0} mb/s</span>
                     </p>
                   )}
                   <div
-                    className="w-full h-11 rounded-md flex items-center justify-center overflow-hidden relative"
-                    style={{ borderColor: jellyfinAccent, backgroundColor: '#ffffff', border: `3px solid ${jellyfinAccent}` }}
+                    className="w-full h-11 rounded-lg flex items-center justify-center overflow-hidden relative"
+                    style={{
+                      backgroundColor: '#ffffff',
+                      border: `4px solid ${jellyfinAccent}`,
+                      boxShadow: `0 0 0 4px rgba(${jellyfinAccentRgb}, 0.17), inset 0 1px 0 rgba(255,255,255,0.26), inset 0 -2px 6px rgba(0,0,0,0.06)`,
+                    }}
                   >
                     {torrent.status === 'downloading' ? (
                       <div
