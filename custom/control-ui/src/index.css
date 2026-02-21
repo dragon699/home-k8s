@@ -38,7 +38,7 @@ code {
 
 @keyframes btnIconEnterFromTop {
   from {
-    transform: translate(-50%, -155%);
+    transform: translate(-50%, calc(-50% - 8px));
     opacity: 0;
   }
   to {
@@ -53,7 +53,7 @@ code {
     opacity: 1;
   }
   to {
-    transform: translate(-50%, 155%);
+    transform: translate(-50%, calc(-50% + 8px));
     opacity: 0;
   }
 }
@@ -353,17 +353,7 @@ code {
 }
 
 .import-action-btn::after {
-  content: "";
-  position: absolute;
-  width: 220%;
-  height: 220%;
-  left: 50%;
-  top: 50%;
-  border-radius: 9999px;
-  pointer-events: none;
-  transform: translate(-50%, -50%) scale(0.05);
-  opacity: 0;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.42) 0%, rgba(255, 255, 255, 0) 72%);
+  content: none;
 }
 
 .import-action-btn {
@@ -376,9 +366,7 @@ code {
   transform: scale(0.985);
 }
 
-.import-action-btn:active:not(:disabled)::after {
-  animation: checkboxSplash 300ms ease-out;
-}
+.import-action-btn:active:not(:disabled)::after {}
 
 @keyframes toggleSubtextEnter {
   from { opacity: 0; transform: translateY(-5px); }
@@ -393,7 +381,7 @@ code {
   position: relative;
   width: 48px;
   height: 28px;
-  border-radius: 9999px;
+  border-radius: 12px;
   border: none;
   background: #e5e7eb;
   cursor: pointer;
@@ -422,7 +410,7 @@ code {
   top: 3px;
   width: 22px;
   height: 22px;
-  border-radius: 9999px;
+  border-radius: 9px;
   background: white;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.22);
   transition: transform 220ms ease;

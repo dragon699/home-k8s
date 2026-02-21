@@ -159,8 +159,9 @@ export default function FetchApiActions() {
 
   const formatEta = (minutes) => {
     if (!minutes || minutes <= 0 || minutes >= 144000) return null
-    if (minutes >= 60) return `${Math.round(minutes / 60)} hrs left`
-    return `${minutes} mins left`
+    if (minutes < 1) return 'Less than a minute'
+    if (minutes >= 60) return `${Math.round(minutes / 60)} hrs`
+    return `${minutes} mins`
   }
 
   const handleSubmit = async (e) => {
@@ -319,7 +320,8 @@ export default function FetchApiActions() {
               </svg>
             </button>
             <div id="import-options" className={`options-panel ${showOptions ? 'options-panel-open' : ''}`}>
-              <div className="options-panel-inner space-y-5 pt-8">
+              <div className="options-panel-inner">
+                <div className="pt-8 space-y-5">
                 <div>
                   <p className="mb-1 text-sm font-medium text-gray-700">Save Location</p>
                   <input
@@ -352,6 +354,7 @@ export default function FetchApiActions() {
                     className="flat-input"
                     placeholder={DEFAULT_TAGS_PLACEHOLDER}
                   />
+                </div>
                 </div>
               </div>
             </div>
@@ -462,9 +465,15 @@ export default function FetchApiActions() {
                       {/* Name + speed */}
                       <div className="flex items-center justify-between gap-3 mb-1.5">
                         <span className="text-sm font-semibold text-gray-800 truncate">{torrent.name}</span>
-                        {isDownloading && (
-                          <span className="text-[11px] font-semibold whitespace-nowrap flex-shrink-0" style={{ color: jellyfinAccent }}>
-                            ↓ {torrent.speed_download_mbps ?? 0} mb/s &nbsp;↑ {torrent.speed_upload_mbps ?? 0} mb/s
+                        {isDownloading && (torrent.speed_download_mbps > 0 || torrent.speed_upload_mbps > 0) && (
+                          <span
+                            key={`${torrent.hash}-spd-${torrent.speed_download_mbps}-${torrent.speed_upload_mbps}`}
+                            className="toggle-subtext text-[11px] font-semibold whitespace-nowrap flex-shrink-0"
+                            style={{ color: jellyfinAccent }}
+                          >
+                            {torrent.speed_download_mbps > 0 && <>&#8595; {torrent.speed_download_mbps} mb/s</>}
+                            {torrent.speed_download_mbps > 0 && torrent.speed_upload_mbps > 0 && <>&nbsp;&nbsp;</>}
+                            {torrent.speed_upload_mbps > 0 && <>&#8593; {torrent.speed_upload_mbps} mb/s</>}
                           </span>
                         )}
                       </div>
@@ -482,20 +491,32 @@ export default function FetchApiActions() {
                       {/* Bottom row: seeders/leechers or status text left, ETA right */}
                       <div className="flex items-center justify-between mt-1">
                         <div>
-                          {isDownloading && (
-                            <span className="text-[11px] font-semibold flex items-center gap-1" style={{ color: jellyfinAccent }}>
-                              {/* seeder: arrow up from base = uploading/sharing */}
-                              <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth={2.2} viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 19V5m0 0-5 5m5-5 5 5" />
-                              </svg>
-                              {torrent.seeders ?? 0}
-                              <span className="mx-0.5 opacity-40">|</span>
-                              {/* leecher: arrow down to base = downloading */}
-                              <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth={2.2} viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 5v14m0 0-5-5m5 5 5-5" />
-                              </svg>
-                              {torrent.leechers ?? 0}
+                          {isDownloading && (torrent.seeders > 0 || torrent.leechers > 0) && (
+                            <span
+                              key={`${torrent.hash}-sl-${torrent.seeders}-${torrent.leechers}`}
+                              className="toggle-subtext text-[11px] font-semibold flex items-center gap-1"
+                              style={{ color: jellyfinAccent }}
+                            >
+                              {torrent.seeders > 0 && (
+                                <>
+                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth={2.2} viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 19V5m0 0-5 5m5-5 5 5" />
+                                  </svg>
+                                  <span>{torrent.seeders}</span>
+                                </>
+                              )}
+                              {torrent.leechers > 0 && (
+                                <>
+                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth={2.2} viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 5v14m0 0-5-5m5 5 5-5" />
+                                  </svg>
+                                  <span>{torrent.leechers}</span>
+                                </>
+                              )}
                             </span>
+                          )}
+                          {isPaused && (
+                            <span key="paused" className="toggle-subtext text-[11px] font-semibold text-gray-400">Paused</span>
                           )}
                           {isUnknown && (
                             <span key="unknown" className="toggle-subtext text-[11px] font-semibold text-red-500">Unknown status</span>
@@ -505,7 +526,11 @@ export default function FetchApiActions() {
                           )}
                         </div>
                         {isDownloading && eta && (
-                          <span className="text-[11px] font-semibold whitespace-nowrap flex items-center gap-1 flex-shrink-0" style={{ color: jellyfinAccent }}>
+                          <span
+                            key={`${torrent.hash}-eta-${eta}`}
+                            className="toggle-subtext text-[11px] font-semibold whitespace-nowrap flex items-center gap-1 flex-shrink-0"
+                            style={{ color: jellyfinAccent }}
+                          >
                             <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
                               <circle cx="12" cy="12" r="9" />
                               <path strokeLinecap="round" strokeLinejoin="round" d="M12 7v5l3 3" />
