@@ -449,7 +449,7 @@ export default function FetchApiActions() {
           </div>
 
           {torrents.length === 0 ? (
-            <p className="mt-4 text-[13px] font-semibold text-center" style={{ color: jellyfinAccent }}>
+            <p className="mt-4 text-xl font-semibold text-gray-900">
               Downloads will show here
             </p>
           ) : (

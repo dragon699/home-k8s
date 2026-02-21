@@ -24,7 +24,7 @@ export async function addTorrent(payload) {
 
 export async function getTorrents() {
   try {
-    const response = await fetch(`${API_BASE_URL}/torrents`)
+    const response = await fetch(`${API_BASE_URL}/torrents/`)
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`)
     }
