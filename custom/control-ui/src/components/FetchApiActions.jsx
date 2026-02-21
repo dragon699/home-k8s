@@ -566,7 +566,7 @@ export default function FetchApiActions() {
                     <div key={torrent.hash} className={animClass}>
                       <div className={`torrent-item-inner${idx < displayTorrents.length - 1 ? ' pb-4' : ''}`}>
                         {/* Name + icons */}
-                        <div className="flex items-center justify-between gap-3 mb-1.5">
+                        <div className="flex items-center justify-between gap-3 mb-1">
                           <div
                             className={`name-clip${isNameHovered ? ' name-clip-expanded' : ''}`}
                             onMouseEnter={() => setHoveredNameHash(torrent.hash)}
