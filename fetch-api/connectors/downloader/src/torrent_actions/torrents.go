@@ -334,7 +334,8 @@ func (instance *ActionsRunner) runActions() {
 		}
 
 		if !hasPendingActions {
-			qbittorrent.Client.RemoveTorrent(torrent.Hash, false)
+			// TODO: Rework logic when a torrent is deleted
+			// qbittorrent.Client.RemoveTorrent(torrent.Hash, false)
 
 			if torrent.Category == "jellyfin" {
 				instance.refreshJellyfinLibrary()
