@@ -270,6 +270,8 @@ func (instance *ActionsRunner) runActions() {
 
 						itemFile := filepath.Base(item["Path"].(string))
 
+						fmt.Printf("Checking jellyfin item '%s' if in qbittorrent content files: %v\n", itemFile, torrentContentFileNames)
+
 						if slices.Contains(torrentContentFileNames, itemFile) {
 							err = instance.downloadSubtitlesInJellyfin(item["Id"].(string), settings.Config.JellyfinSubtitlesDefaultLanguage)
 							if err != nil {
