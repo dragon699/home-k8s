@@ -200,8 +200,10 @@ export default function FetchApiActions() {
     return (
       <span
         aria-hidden="true"
-        className="block w-5 h-5"
+        className="block flex-shrink-0"
         style={{
+          width: '17px',
+          height: '17px',
           backgroundColor: 'currentColor',
           WebkitMaskImage: 'url(https://i.imgur.com/lrTz6dE.png)',
           maskImage: 'url(https://i.imgur.com/lrTz6dE.png)',
@@ -575,34 +577,18 @@ export default function FetchApiActions() {
                   const isEntering = enteringHashes.has(torrent.hash)
                   const isExiting = exitingTorrents.some(et => et.hash === torrent.hash)
                   const animClass = isEntering ? 'torrent-item-enter' : isExiting ? 'torrent-item-exit' : 'torrent-item-outer'
-                  const icon1Color = (isError || isUnknown) ? '#ef4444' : isPaused ? '#9ca3af' : '#111827'
-                  const icon2Color = '#9ca3af'
+                  const iconColor = isError ? '#ef4444' : isUnknown ? '#9ca3af' : '#111827'
                   return (
                     <div key={torrent.hash} className={animClass}>
                       <div className={`torrent-item-inner${idx < displayTorrents.length - 1 ? ' pb-5' : ''}`}>
                       <div className="flex gap-3">
-                        {/* Left icons column */}
-                        <div className="flex flex-col items-center gap-1 flex-shrink-0 pt-0.5">
+                        {/* Left icon */}
+                        <div className="flex items-start flex-shrink-0 pt-0.5">
                           <span
                             aria-hidden="true"
                             className="block w-5 h-5 flex-shrink-0 transition-colors duration-300"
                             style={{
-                              backgroundColor: icon1Color,
-                              WebkitMaskImage: 'url(https://i.imgur.com/tvCVgef.png)',
-                              maskImage: 'url(https://i.imgur.com/tvCVgef.png)',
-                              WebkitMaskSize: 'contain',
-                              maskSize: 'contain',
-                              WebkitMaskRepeat: 'no-repeat',
-                              maskRepeat: 'no-repeat',
-                              WebkitMaskPosition: 'center',
-                              maskPosition: 'center',
-                            }}
-                          />
-                          <span
-                            aria-hidden="true"
-                            className="block w-3 h-3 flex-shrink-0"
-                            style={{
-                              backgroundColor: icon2Color,
+                              backgroundColor: iconColor,
                               WebkitMaskImage: 'url(https://i.imgur.com/5LstlCU.png)',
                               maskImage: 'url(https://i.imgur.com/5LstlCU.png)',
                               WebkitMaskSize: 'contain',
