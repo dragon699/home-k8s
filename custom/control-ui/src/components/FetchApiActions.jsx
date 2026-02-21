@@ -120,7 +120,7 @@ export default function FetchApiActions() {
   }
 
   const clearTypingTimers = () => {
-    typingTimersRef.current.forEach(clearTimeout)
+    typingTimersRef.current.forEach(clearInterval)
     typingTimersRef.current = []
   }
 
@@ -129,40 +129,41 @@ export default function FetchApiActions() {
     const fullText = JSON.stringify(data ?? {}, null, 2)
     const newLines = fullText.split('\n')
     const currentLines = jsonTextRef.current.split('\n')
-    const ERASE_MS = 38
-    const TYPE_MS = 62
+    const ERASE_MS = 90
+    const TYPE_MS = 110
 
-    // Phase 1: erase current text bottom → top, line by line
-    let t = 0
-    for (let i = currentLines.length - 1; i > 0; i--) {
-      const snapshot = currentLines.slice(0, i).join('\n')
-      const id = setTimeout(() => {
-        jsonTextRef.current = snapshot
-        setJsonText(snapshot)
-      }, t * ERASE_MS)
-      typingTimersRef.current.push(id)
-      t++
-    }
-    const eraseEnd = t * ERASE_MS
-
-    // Phase 2: type new content top → bottom
-    const startId = setTimeout(() => {
-      const first = newLines[0] || '{}'
-      jsonTextRef.current = first
-      setJsonText(first)
-    }, eraseEnd)
-    typingTimersRef.current.push(startId)
-
-    newLines.slice(1).forEach((line, index) => {
-      const id = setTimeout(() => {
-        setJsonText((prev) => {
-          const next = `${prev}\n${line}`
-          jsonTextRef.current = next
-          return next
-        })
-      }, eraseEnd + (index + 1) * TYPE_MS)
-      typingTimersRef.current.push(id)
-    })
+    // Phase 1: erase bottom → top using a single interval
+    let eraseIdx = currentLines.length - 1
+    const eraseInterval = setInterval(() => {
+      if (eraseIdx <= 0) {
+        clearInterval(eraseInterval)
+        // Phase 2: type top → bottom using a single interval
+        let typeIdx = 0
+        const first = newLines[0] || '{}'
+        jsonTextRef.current = first
+        setJsonText(first)
+        if (newLines.length === 1) return
+        const typeInterval = setInterval(() => {
+          typeIdx++
+          if (typeIdx >= newLines.length) {
+            clearInterval(typeInterval)
+            return
+          }
+          setJsonText((prev) => {
+            const next = `${prev}\n${newLines[typeIdx]}`
+            jsonTextRef.current = next
+            return next
+          })
+        }, TYPE_MS)
+        typingTimersRef.current.push(typeInterval)
+        return
+      }
+      const snapshot = currentLines.slice(0, eraseIdx).join('\n')
+      jsonTextRef.current = snapshot
+      setJsonText(snapshot)
+      eraseIdx--
+    }, ERASE_MS)
+    typingTimersRef.current.push(eraseInterval)
   }
 
   const transitionButtonIcon = async (nextIcon, flowId) => {
@@ -202,8 +203,8 @@ export default function FetchApiActions() {
         className="block w-5 h-5"
         style={{
           backgroundColor: 'currentColor',
-          WebkitMaskImage: 'url(https://i.imgur.com/WUVPSGc.png)',
-          maskImage: 'url(https://i.imgur.com/WUVPSGc.png)',
+          WebkitMaskImage: 'url(https://i.imgur.com/lrTz6dE.png)',
+          maskImage: 'url(https://i.imgur.com/lrTz6dE.png)',
           WebkitMaskSize: 'contain',
           maskSize: 'contain',
           WebkitMaskRepeat: 'no-repeat',
@@ -224,7 +225,7 @@ export default function FetchApiActions() {
 
   const formatEta = (minutes) => {
     if (!minutes || minutes <= 0 || minutes >= 144000) return null
-    if (minutes <= 1) return 'around 1 min'
+    if (minutes <= 1) return 'Around a minute'
     if (minutes >= 60) return `${Math.round(minutes / 60)} hrs`
     return `${Math.round(minutes)} mins`
   }
@@ -574,9 +575,47 @@ export default function FetchApiActions() {
                   const isEntering = enteringHashes.has(torrent.hash)
                   const isExiting = exitingTorrents.some(et => et.hash === torrent.hash)
                   const animClass = isEntering ? 'torrent-item-enter' : isExiting ? 'torrent-item-exit' : 'torrent-item-outer'
+                  const icon1Color = (isError || isUnknown) ? '#ef4444' : isPaused ? '#9ca3af' : '#111827'
+                  const icon2Color = '#9ca3af'
                   return (
                     <div key={torrent.hash} className={animClass}>
                       <div className={`torrent-item-inner${idx < displayTorrents.length - 1 ? ' pb-5' : ''}`}>
+                      <div className="flex gap-3">
+                        {/* Left icons column */}
+                        <div className="flex flex-col items-center gap-1 flex-shrink-0 pt-0.5">
+                          <span
+                            aria-hidden="true"
+                            className="block w-5 h-5 flex-shrink-0 transition-colors duration-300"
+                            style={{
+                              backgroundColor: icon1Color,
+                              WebkitMaskImage: 'url(https://i.imgur.com/tvCVgef.png)',
+                              maskImage: 'url(https://i.imgur.com/tvCVgef.png)',
+                              WebkitMaskSize: 'contain',
+                              maskSize: 'contain',
+                              WebkitMaskRepeat: 'no-repeat',
+                              maskRepeat: 'no-repeat',
+                              WebkitMaskPosition: 'center',
+                              maskPosition: 'center',
+                            }}
+                          />
+                          <span
+                            aria-hidden="true"
+                            className="block w-3 h-3 flex-shrink-0"
+                            style={{
+                              backgroundColor: icon2Color,
+                              WebkitMaskImage: 'url(https://i.imgur.com/5LstlCU.png)',
+                              maskImage: 'url(https://i.imgur.com/5LstlCU.png)',
+                              WebkitMaskSize: 'contain',
+                              maskSize: 'contain',
+                              WebkitMaskRepeat: 'no-repeat',
+                              maskRepeat: 'no-repeat',
+                              WebkitMaskPosition: 'center',
+                              maskPosition: 'center',
+                            }}
+                          />
+                        </div>
+                        {/* Content */}
+                        <div className="flex-1 min-w-0">
                       {/* Name + speed */}
                       <div className="flex items-center justify-between gap-3 mb-1.5">
                         <span className="text-sm font-semibold text-gray-800 truncate">{torrent.name}</span>
@@ -649,6 +688,8 @@ export default function FetchApiActions() {
                           </span>
                         )}
                       </div>
+                        </div>{/* end content */}
+                      </div>{/* end flex gap-3 */}
                     </div>
                     </div>
                   )
