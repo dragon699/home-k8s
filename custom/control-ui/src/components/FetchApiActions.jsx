@@ -35,7 +35,7 @@ export default function FetchApiActions() {
   const [qbittorrentCategory, setQbittorrentCategory] = useState('')
   const [qbittorrentTags, setQbittorrentTags] = useState('')
   const [showOptions, setShowOptions] = useState(false)
-  const [findSubs, setFindSubs] = useState(false)
+  const [findSubs, setFindSubs] = useState(true)
   const [notify, setNotify] = useState(true)
   const [urlError, setUrlError] = useState('')
   const [jsonText, setJsonText] = useState('{}')
@@ -340,11 +340,28 @@ export default function FetchApiActions() {
           {/* Toggle options */}
           <div style={{ '--option-accent': jellyfinAccent }}>
             <div className="flex items-center justify-between py-3">
-              <div>
-                <p className="text-sm font-bold text-gray-900">Notify</p>
-                <p key={`notify-${notify}`} className={`toggle-subtext text-xs font-semibold mt-0.5 ${notify ? '' : 'text-gray-400'}`} style={notify ? { color: jellyfinAccent } : undefined}>
-                  {notify ? "Notify me in Slack when it's ready" : "Don't send me notifications"}
-                </p>
+              <div className="flex items-start gap-3">
+                <span
+                  aria-hidden="true"
+                  className="mt-0.5 block w-5 h-5 flex-shrink-0 transition-colors duration-300"
+                  style={{
+                    backgroundColor: notify ? '#111827' : '#9ca3af',
+                    WebkitMaskImage: 'url(https://i.imgur.com/Z2E0Nz2.png)',
+                    maskImage: 'url(https://i.imgur.com/Z2E0Nz2.png)',
+                    WebkitMaskSize: 'contain',
+                    maskSize: 'contain',
+                    WebkitMaskRepeat: 'no-repeat',
+                    maskRepeat: 'no-repeat',
+                    WebkitMaskPosition: 'center',
+                    maskPosition: 'center',
+                  }}
+                />
+                <div>
+                  <p className="text-sm font-bold text-gray-900">Notify</p>
+                  <p key={`notify-${notify}`} className={`toggle-subtext text-xs font-semibold mt-0.5 ${notify ? '' : 'text-gray-400'}`} style={notify ? { color: jellyfinAccent } : undefined}>
+                    {notify ? "Notify me in Slack when it's ready" : "Don't send me notifications"}
+                  </p>
+                </div>
               </div>
               <button
                 type="button"
@@ -359,11 +376,28 @@ export default function FetchApiActions() {
               </button>
             </div>
             <div className="flex items-center justify-between py-3">
-              <div>
-                <p className="text-sm font-bold text-gray-900">Subtitles</p>
-                <p key={`subs-${findSubs}`} className={`toggle-subtext text-xs font-semibold mt-0.5 ${findSubs ? '' : 'text-gray-400'}`} style={findSubs ? { color: jellyfinAccent } : undefined}>
-                  {findSubs ? 'Search and download subtitles' : "Don't search for subtitles"}
-                </p>
+              <div className="flex items-start gap-3">
+                <span
+                  aria-hidden="true"
+                  className="mt-0.5 block w-5 h-5 flex-shrink-0 transition-colors duration-300"
+                  style={{
+                    backgroundColor: findSubs ? '#111827' : '#9ca3af',
+                    WebkitMaskImage: 'url(https://i.imgur.com/2SzFid0.png)',
+                    maskImage: 'url(https://i.imgur.com/2SzFid0.png)',
+                    WebkitMaskSize: 'contain',
+                    maskSize: 'contain',
+                    WebkitMaskRepeat: 'no-repeat',
+                    maskRepeat: 'no-repeat',
+                    WebkitMaskPosition: 'center',
+                    maskPosition: 'center',
+                  }}
+                />
+                <div>
+                  <p className="text-sm font-bold text-gray-900">Subtitles</p>
+                  <p key={`subs-${findSubs}`} className={`toggle-subtext text-xs font-semibold mt-0.5 ${findSubs ? '' : 'text-gray-400'}`} style={findSubs ? { color: jellyfinAccent } : undefined}>
+                    {findSubs ? 'Search and download subtitles' : "Don't search for subtitles"}
+                  </p>
+                </div>
               </div>
               <button
                 type="button"

@@ -161,7 +161,7 @@ code {
   grid-template-rows: 0fr;
   opacity: 0;
   transform: translateY(-4px);
-  transition: grid-template-rows 500ms ease, opacity 450ms ease, transform 450ms ease;
+  transition: grid-template-rows 400ms ease, opacity 350ms ease, transform 350ms ease;
 }
 
 .options-panel-open {
@@ -374,7 +374,7 @@ code {
 }
 
 .toggle-subtext {
-  animation: toggleSubtextEnter 500ms ease;
+  animation: toggleSubtextEnter 400ms ease;
 }
 
 .stat-value {
