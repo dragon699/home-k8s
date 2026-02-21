@@ -319,9 +319,9 @@ export default function FetchApiActions() {
               </svg>
             </button>
             <div id="import-options" className={`options-panel ${showOptions ? 'options-panel-open' : ''}`}>
-              <div className="options-panel-inner space-y-5 pt-6">
+              <div className="options-panel-inner space-y-5 pt-8">
                 <div>
-                  <p className="mb-2 text-sm font-medium text-gray-700">Save Location</p>
+                  <p className="mb-1 text-sm font-medium text-gray-700">Save Location</p>
                   <input
                     type="text"
                     value={saveLocation}
@@ -332,7 +332,7 @@ export default function FetchApiActions() {
                   />
                 </div>
                 <div>
-                  <p className="mb-2 text-sm font-medium text-gray-700">Category</p>
+                  <p className="mb-1 text-sm font-medium text-gray-700">Category</p>
                   <input
                     type="text"
                     value={qbittorrentCategory}
@@ -343,7 +343,7 @@ export default function FetchApiActions() {
                   />
                 </div>
                 <div>
-                  <p className="mb-2 text-sm font-medium text-gray-700">Tags</p>
+                  <p className="mb-1 text-sm font-medium text-gray-700">Tags</p>
                   <input
                     type="text"
                     value={qbittorrentTags}
@@ -406,7 +406,7 @@ export default function FetchApiActions() {
             className="import-action-btn relative w-full overflow-hidden rounded-lg font-semibold py-3 px-4 flex items-center justify-center transition-all duration-300 text-white disabled:cursor-not-allowed disabled:opacity-70"
             style={{ backgroundColor: jellyfinAccent }}
           >
-            <span className="relative z-10 inline-flex items-center justify-center gap-1">
+            <span className="relative z-10 inline-flex items-center justify-center">
               <span className="btn-label-stack" aria-hidden="true">
                 {iconTransition ? (
                   <>
@@ -451,30 +451,68 @@ export default function FetchApiActions() {
                 {torrents.map((torrent, idx) => {
                   const eta = formatEta(torrent.eta_minutes)
                   const progress = torrent.progress_percentage ?? 0
-                  const isDownloading = torrent.status === 'downloading'
+                  const status = torrent.status
+                  const isDownloading = status === 'downloading'
+                  const isPaused = status === 'paused'
+                  const isUnknown = status === 'unknown'
+                  const isError = status === 'error'
+                  const barColor = isError ? '#ef4444' : (isPaused || isUnknown) ? '#9ca3af' : jellyfinAccent
                   return (
-                    <div key={torrent.hash} className={idx < torrents.length - 1 ? 'mb-4' : ''}>
+                    <div key={torrent.hash} className={idx < torrents.length - 1 ? 'mb-5' : ''}>
+                      {/* Name + speed */}
                       <div className="flex items-center justify-between gap-3 mb-1.5">
                         <span className="text-sm font-semibold text-gray-800 truncate">{torrent.name}</span>
+                        {isDownloading && (
+                          <span className="text-[11px] font-semibold whitespace-nowrap flex-shrink-0" style={{ color: jellyfinAccent }}>
+                            ↓ {torrent.speed_download_mbps ?? 0} mb/s &nbsp;↑ {torrent.speed_upload_mbps ?? 0} mb/s
+                          </span>
+                        )}
+                      </div>
+                      {/* Progress bar */}
+                      <div className="h-1 w-full rounded-full bg-gray-100 overflow-hidden">
+                        <div
+                          className="h-full rounded-full"
+                          style={{
+                            width: `${progress}%`,
+                            backgroundColor: barColor,
+                            transition: 'width 800ms ease, background-color 400ms ease',
+                          }}
+                        />
+                      </div>
+                      {/* Bottom row: seeders/leechers or status text left, ETA right */}
+                      <div className="flex items-center justify-between mt-1">
+                        <div>
+                          {isDownloading && (
+                            <span className="text-[11px] font-semibold flex items-center gap-1" style={{ color: jellyfinAccent }}>
+                              {/* seeder: arrow up from base = uploading/sharing */}
+                              <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth={2.2} viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 19V5m0 0-5 5m5-5 5 5" />
+                              </svg>
+                              {torrent.seeders ?? 0}
+                              <span className="mx-0.5 opacity-40">|</span>
+                              {/* leecher: arrow down to base = downloading */}
+                              <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth={2.2} viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 5v14m0 0-5-5m5 5 5-5" />
+                              </svg>
+                              {torrent.leechers ?? 0}
+                            </span>
+                          )}
+                          {isUnknown && (
+                            <span key="unknown" className="toggle-subtext text-[11px] font-semibold text-red-500">Unknown status</span>
+                          )}
+                          {isError && (
+                            <span key="error" className="toggle-subtext text-[11px] font-semibold text-red-500">Error while trying to download</span>
+                          )}
+                        </div>
                         {isDownloading && eta && (
-                          <span className="text-xs font-semibold whitespace-nowrap flex items-center gap-1 flex-shrink-0" style={{ color: jellyfinAccent }}>
-                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+                          <span className="text-[11px] font-semibold whitespace-nowrap flex items-center gap-1 flex-shrink-0" style={{ color: jellyfinAccent }}>
+                            <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
                               <circle cx="12" cy="12" r="9" />
                               <path strokeLinecap="round" strokeLinejoin="round" d="M12 7v5l3 3" />
                             </svg>
                             {eta}
                           </span>
                         )}
-                      </div>
-                      <div className="h-1 w-full rounded-full bg-gray-100 overflow-hidden">
-                        <div
-                          className="h-full rounded-full"
-                          style={{
-                            width: `${progress}%`,
-                            backgroundColor: jellyfinAccent,
-                            transition: 'width 800ms ease',
-                          }}
-                        />
                       </div>
                     </div>
                   )

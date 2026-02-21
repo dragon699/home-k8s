@@ -79,7 +79,7 @@ code {
 
 .btn-label-stack {
   position: relative;
-  width: 90px;
+  width: 56px;
   height: 20px;
   overflow: hidden;
 }
@@ -386,7 +386,7 @@ code {
 }
 
 .toggle-subtext {
-  animation: toggleSubtextEnter 180ms ease;
+  animation: toggleSubtextEnter 320ms ease;
 }
 
 .toggle-switch {
