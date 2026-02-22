@@ -10,3 +10,7 @@ type AddTorrentPayload struct {
 	FindSubs  *bool     `json:"find_subs,omitempty"`
 	Notify    *bool     `json:"notify,omitempty"`
 }
+
+type SearchTorrentsParams struct {
+	Query string `json:"query"`
+}

@@ -4,6 +4,12 @@ import (
 	"errors"
 	"slices"
 	"strings"
+	"encoding/json"
+	"fmt"
+	"io"
+	"net/http"
+	"net/url"
+	"time"
 
 	"common/utils"
 	"connector-downloader/settings"
@@ -181,6 +187,120 @@ func ListTorrents(ctx *fiber.Ctx) error {
 
 		torrentData.Meta = torrentMeta
 		result = append(result, torrentData)
+	}
+
+	return ctx.JSON(response.BaseResponse[response.Torrent]{
+		TotalItems: len(result),
+		Items:      result,
+	})
+}
+
+func SearchTorrents(ctx *fiber.Ctx) error {
+	var searchParams request.SearchTorrentsParams
+
+	if err := ctx.QueryParser(&searchParams); err != nil {
+		return ctx.Status(400).JSON(
+			response.ErrorResponse{
+				Error: "Invalid query parameters",
+			},
+		)
+	}
+
+	if searchParams.Query == "" {
+		return ctx.Status(400).JSON(
+			response.ErrorResponse{
+				Error: "query is required",
+			},
+		)
+	}
+
+	client := &http.Client{
+		Timeout: 10 * time.Second,
+	}
+
+	reqParams := url.Values{}
+	reqParams.Add("q", searchParams.Query)
+	reqParams.Add("cat", "200") // Videos only category
+
+	req, err := http.NewRequest(
+		http.MethodGet,
+		fmt.Sprintf("%s/q.php?%s", settings.Config.TPBAPIUrl, reqParams.Encode()),
+		nil,
+	)
+	if err != nil {
+		return ctx.Status(500).JSON(
+			response.ErrorResponse{
+				Error: "Failed to create HTTP request",
+			},
+		)
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return ctx.Status(500).JSON(
+			response.ErrorResponse{
+				Error: "Failed to perform search request to TPB API",
+			},
+		)
+	}
+
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return ctx.Status(500).JSON(
+			response.ErrorResponse{
+				Error: "Failed to read response from TPB API",
+			},
+		)
+	}
+
+	if ! (resp.StatusCode >= 200 && resp.StatusCode < 300) {
+		return ctx.Status(502).JSON(
+			response.ErrorResponse{
+				Error:            fmt.Sprintf("Unexpected status code from TPB API: %d", resp.StatusCode),
+				UpstreamResponse: map[string]any{"status_code": resp.StatusCode, "body": string(body)},
+			},
+		)
+	}
+
+	var TPBTorrents []response.TPBTorrent
+	if err := json.Unmarshal(body, &TPBTorrents); err != nil {
+		return ctx.Status(500).JSON(
+			response.ErrorResponse{
+				Error: "TPB API returned invalid response",
+			},
+		)
+	}
+
+	result := make([]response.Torrent, 0, len(TPBTorrents))
+
+	for torrent := range TPBTorrents {
+		id, _ := utils.ToInt(TPBTorrents[torrent].ID)
+		leechers, _ := utils.ToInt(TPBTorrents[torrent].Leechers)
+		seeders, _ := utils.ToInt(TPBTorrents[torrent].Seeders)
+		sizeTotalB, _ := utils.ToInt(TPBTorrents[torrent].Size)
+		filesCount, _ := utils.ToInt(TPBTorrents[torrent].NumFiles)
+		dateAdded, _ := utils.ToInt(TPBTorrents[torrent].Added)
+
+		torrentData := response.Torrent{
+			ID: id,
+			Name: TPBTorrents[torrent].Name,
+			Hash: TPBTorrents[torrent].InfoHash,
+			Leechers: leechers,
+			Seeders: seeders,
+			SizeTotalMB: utils.BytesToMegabytes(sizeTotalB),
+			SizeTotalGB: utils.BytesToGigabytes(sizeTotalB),
+			FilesCount: filesCount,
+			DateAdded: utils.TimeFromUnix(dateAdded),
+			IMDB: TPBTorrents[torrent].IMDB,
+		}
+		
+		result = append(result, torrentData)
+	}
+
+	if len(result) > 0 && result[0].ID == 0 {
+		result = []response.Torrent{}
 	}
 
 	return ctx.JSON(response.BaseResponse[response.Torrent]{

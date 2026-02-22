@@ -20,6 +20,7 @@ type Settings struct {
 	QBittorrentUrl                   string `json:"qbittorrent_url"                     env:"QBITTORRENT_URL"`
 	QBittorrentPublicUrl             string `json:"qbittorrent_public_url"              env:"QBITTORRENT_PUBLIC_URL"`
 	QBittorrentDefaultSavePath       string `json:"qbittorrent_default_save_path"       env:"QBITTORRENT_DEFAULT_SAVE_PATH"`
+	TPBAPIUrl                        string `json:"tpb_api_url"                         env:"TPB_API_URL"`
 	JellyfinUrl                      string `json:"jellyfin_url"                        env:"JELLYFIN_URL"`
 	JellyfinAPIKey                   string `json:"jellyfin_api_key"                    env:"JELLYFIN_API_KEY"`
 	JellyfinSubtitlesDefaultLanguage string `json:"jellyfin_subtitles_default_language" env:"JELLYFIN_SUBTITLES_DEFAULT_LANGUAGE"`
@@ -54,6 +55,7 @@ var defaultSettings = Settings{
 	QBittorrentUrl: "http://qbittorrent-web.qbittorrent.svc:80",
 	QBittorrentPublicUrl: "https://qb.k8s.iaminyourpc.xyz",
 	QBittorrentDefaultSavePath: "/data/Windows/Movies",
+	TPBAPIUrl: "https://apibay.org",
 	JellyfinUrl: "https://watch.k8s.iaminyourpc.xyz",
 	JellyfinSubtitlesDefaultLanguage: "english",
 

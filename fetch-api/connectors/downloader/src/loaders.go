@@ -53,6 +53,7 @@ func LoadRoutes(app fiber.Router) {
 
 	// /torrents routes
 	routes.ListTorrents(app)
+	routes.SearchTorrents(app)
 	routes.AddTorrent(app)
 
 	// Swagger routes

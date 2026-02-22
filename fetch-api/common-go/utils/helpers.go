@@ -1,15 +1,15 @@
 package utils
 
 import (
-	"fmt"
 	"bytes"
+	"fmt"
 	"math"
 	"os"
 	"regexp"
 	"strconv"
 	"strings"
-	"time"
 	"text/template"
+	"time"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -119,6 +119,10 @@ func TimeFromUnix(unixTime int64) string {
 
 func BytesToMegabytes(bytes int64) int64 {
 	return bytes / (1024 * 1024)
+}
+
+func BytesToGigabytes(bytes int64) float64 {
+	return RoundToTwoDecimals(float64(bytes) / (1024 * 1024 * 1024))
 }
 
 func RoundToTwoDecimals(value float64) float64 {
