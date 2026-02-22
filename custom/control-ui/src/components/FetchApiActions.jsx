@@ -386,7 +386,7 @@ export default function FetchApiActions() {
 
             {/* Indented input + Options button row, aligned with checkbox subtext */}
             <div className="ml-8 mt-[3px]">
-              <div className="flex items-center gap-3">
+              <div className="flex items-start gap-3">
                 {/* Input / dropdown — flex-1 */}
                 <div className="flex-1 min-w-0">
                   {/* Flat input — hidden in query mode */}
@@ -458,10 +458,9 @@ export default function FetchApiActions() {
                           </div>
                           <div className="query-dropdown-line" />
 
-                          {/* Floating popup — absolutely positioned to escape overflow clipping */}
+                          {/* Results popup — inline collapse, part of card flow */}
                           <div className={`query-dropdown-popup${dropdownOpen ? ' query-dropdown-popup-open' : ''}`}>
                             <div className="query-dropdown-popup-inner">
-                              <div className="query-dropdown-divider" />
                               <div className="query-dropdown-item query-dropdown-item-results">
                                 Search results appear here
                               </div>
@@ -479,7 +478,7 @@ export default function FetchApiActions() {
                   type="button"
                   disabled={isSubmitting}
                   onClick={() => setShowOptions((prev) => !prev)}
-                  className="flex-shrink-0 relative top-px inline-flex items-center justify-center disabled:opacity-60 disabled:cursor-not-allowed hover:opacity-60 transition-opacity"
+                  className="flex-shrink-0 mt-[9px] inline-flex items-center justify-center disabled:opacity-60 disabled:cursor-not-allowed hover:opacity-60 transition-opacity"
                   aria-expanded={showOptions}
                   aria-controls="import-options"
                 >

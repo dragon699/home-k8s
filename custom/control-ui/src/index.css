@@ -702,8 +702,8 @@ code {
 
 .query-mode-panel-inner {
   overflow: hidden;
-  padding: 4px 4px 18px 4px;
-  margin: -4px -4px -18px -4px;
+  padding: 4px;
+  margin: -4px;
 }
 
 /* flat-input with icon on left */
@@ -757,12 +757,8 @@ code {
   background: var(--card-accent, #8b5cf6);
 }
 
-/* Popup — in-flow grid-rows collapse so it isn't clipped by overflow:hidden ancestors */
+/* Popup — plain inline collapse, visually part of the card (no floating card chrome) */
 .query-dropdown-popup {
-  margin: 4px -4px 0 -4px;
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.12);
   display: grid;
   grid-template-rows: 0fr;
   overflow: hidden;
@@ -826,12 +822,6 @@ code {
 .query-dropdown-open .query-dropdown-magnifier,
 .query-dropdown-has-value .query-dropdown-magnifier {
   color: #111827;
-}
-
-.query-dropdown-divider {
-  height: 1px;
-  background: #f3f4f6;
-  margin: 0 10px;
 }
 
 .query-dropdown-item {
