@@ -62,6 +62,8 @@ export default function FetchApiActions() {
   const [inputApiError, setInputApiError] = useState(false)
   const [queryMode, setQueryMode] = useState(false)
   const [queryModeKey, setQueryModeKey] = useState(0)
+  const [dropdownOpen, setDropdownOpen] = useState(false)
+  const dropdownRef = useRef(null)
 
   useEffect(() => {
     return () => {
@@ -116,6 +118,21 @@ export default function FetchApiActions() {
     const id = setInterval(fetchTorrents, hasItems ? 5000 : 10000)
     return () => clearInterval(id)
   }, [hasItems])
+
+  useEffect(() => {
+    if (!queryMode) setDropdownOpen(false)
+  }, [queryMode])
+
+  useEffect(() => {
+    if (!dropdownOpen) return
+    const handler = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setDropdownOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [dropdownOpen])
 
   const wait = (delay) => {
     return new Promise((resolve) => {
@@ -323,37 +340,8 @@ export default function FetchApiActions() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Input */}
-          <div>
-            <label key={`label-${queryModeKey}`} className="toggle-subtext block text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: jellyfinAccent }}>
-              {queryMode ? 'Query' : 'Torrent'}
-            </label>
-            <div className={`flat-input-wrap${inputShake ? ' flat-input-wrap-shake' : ''}`}>
-              <input
-                type="text"
-                value={movieName}
-                disabled={isSubmitting}
-                onChange={(e) => {
-                  setMovieName(e.target.value)
-                  if (urlError) setUrlError('')
-                  if (inputApiError) setInputApiError(false)
-                }}
-                className={`flat-input flat-input-no-placeholder${inputAnimPhase ? ' flat-input-text-out' : ''}`}
-                placeholder=""
-              />
-              {movieName === '' && (
-                <span key={`ph-${queryModeKey}`} className="fake-placeholder toggle-subtext">
-                  {queryMode ? 'Name or keyword of movie or show' : 'Magnet or url'}
-                </span>
-              )}
-              <div className={`flat-input-line${urlError ? ' flat-input-line-error' : ''}${inputApiError ? ' flat-input-line-api-error' : ''}${inputAnimPhase ? ' flat-input-line-anim' : ''}`} />
-            </div>
-            {urlError && <p key={urlErrorKey} className="toggle-subtext mt-2 text-xs font-semibold" style={{ color: jellyfinAccent }}>{urlError}</p>}
-          </div>
-
-          {/* Toggle options */}
+          {/* Query toggle — always first */}
           <div style={{ '--option-accent': jellyfinAccent }}>
-            {/* Query */}
             <div className="flex items-center justify-between py-3">
               <div className="flex items-start gap-3">
                 <span
@@ -390,6 +378,95 @@ export default function FetchApiActions() {
                 <span className="toggle-thumb" />
               </button>
             </div>
+          </div>
+
+          {/* Input area */}
+          <div>
+            <label className="toggle-subtext block text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: jellyfinAccent }}>
+              Torrent
+            </label>
+
+            {/* Flat input — hidden in query mode */}
+            <div className={`query-mode-panel${queryMode ? ' query-mode-panel-hidden' : ''}`}>
+              <div className="query-mode-panel-inner">
+                <div className={`flat-input-wrap${inputShake ? ' flat-input-wrap-shake' : ''}`}>
+                  <input
+                    type="text"
+                    value={movieName}
+                    disabled={isSubmitting}
+                    onChange={(e) => {
+                      setMovieName(e.target.value)
+                      if (urlError) setUrlError('')
+                      if (inputApiError) setInputApiError(false)
+                    }}
+                    className={`flat-input flat-input-no-placeholder${inputAnimPhase ? ' flat-input-text-out' : ''}`}
+                    placeholder=""
+                  />
+                  {movieName === '' && (
+                    <span key={`ph-${queryModeKey}`} className="fake-placeholder toggle-subtext">
+                      Magnet or url
+                    </span>
+                  )}
+                  <div className={`flat-input-line${urlError ? ' flat-input-line-error' : ''}${inputApiError ? ' flat-input-line-api-error' : ''}${inputAnimPhase ? ' flat-input-line-anim' : ''}`} />
+                </div>
+              </div>
+            </div>
+
+            {/* Dropdown — shown in query mode */}
+            <div className={`query-mode-panel${!queryMode ? ' query-mode-panel-hidden' : ''}`}>
+              <div className="query-mode-panel-inner">
+                <div
+                  ref={dropdownRef}
+                  className={`query-dropdown${dropdownOpen ? ' query-dropdown-open' : ''}`}
+                >
+                  {/* Header / trigger */}
+                  <div
+                    className="query-dropdown-header"
+                    onClick={() => setDropdownOpen(p => !p)}
+                  >
+                    <input
+                      type="text"
+                      value={movieName}
+                      disabled={isSubmitting}
+                      placeholder="Movie or show name"
+                      className="query-dropdown-input"
+                      onClick={(e) => { e.stopPropagation(); setDropdownOpen(true) }}
+                      onChange={(e) => {
+                        setMovieName(e.target.value)
+                        if (urlError) setUrlError('')
+                        if (inputApiError) setInputApiError(false)
+                        setDropdownOpen(true)
+                      }}
+                    />
+                    <svg
+                      className={`query-dropdown-chevron${dropdownOpen ? ' query-dropdown-chevron-open' : ''}`}
+                      fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 9l6 6 6-6" />
+                    </svg>
+                  </div>
+
+                  {/* Items panel */}
+                  <div className={`query-dropdown-items${dropdownOpen ? ' query-dropdown-items-open' : ''}`}>
+                    <div className="query-dropdown-items-inner">
+                      <div className="query-dropdown-divider" />
+                      <div className="query-dropdown-item query-dropdown-item-static">
+                        Movie or show name
+                      </div>
+                      <div className="query-dropdown-item query-dropdown-item-results">
+                        Search results appear here
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {urlError && <p key={urlErrorKey} className="toggle-subtext mt-2 text-xs font-semibold" style={{ color: jellyfinAccent }}>{urlError}</p>}
+          </div>
+
+          {/* Toggle options */}
+          <div style={{ '--option-accent': jellyfinAccent }}>
             {/* Notify */}
             <div className="flex items-center justify-between py-3">
               <div className="flex items-start gap-3">
@@ -538,7 +615,7 @@ export default function FetchApiActions() {
           </div>
 
           {/* Submit button */}
-          <div className={`submit-btn-panel${queryMode ? ' submit-btn-panel-hidden' : ''}`}>
+          <div className="submit-btn-panel">
             <div className="submit-btn-panel-inner">
           <button
             type="submit"
