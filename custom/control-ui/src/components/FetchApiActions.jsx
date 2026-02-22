@@ -385,31 +385,39 @@ export default function FetchApiActions() {
             </div>
 
             {/* Indented input + Options button row, aligned with checkbox subtext */}
-            <div className="ml-8 mt-1">
+            <div className="ml-8 mt-[3px]">
               <div className="flex items-center gap-3">
                 {/* Input / dropdown — flex-1 */}
                 <div className="flex-1 min-w-0">
                   {/* Flat input — hidden in query mode */}
                   <div className={`query-mode-panel${queryMode ? ' query-mode-panel-hidden' : ''}`}>
                     <div className="query-mode-panel-inner">
-                      <div className={`flat-input-wrap${inputShake ? ' flat-input-wrap-shake' : ''}`}>
-                        <input
-                          type="text"
-                          value={movieName}
-                          disabled={isSubmitting}
-                          onChange={(e) => {
-                            setMovieName(e.target.value)
-                            if (urlError) setUrlError('')
-                            if (inputApiError) setInputApiError(false)
-                          }}
-                          className={`flat-input flat-input-no-placeholder${inputAnimPhase ? ' flat-input-text-out' : ''}`}
-                          placeholder=""
-                        />
-                        {movieName === '' && (
-                          <span key={`ph-${queryModeKey}`} className="fake-placeholder toggle-subtext">
-                            Magnet or url
-                          </span>
-                        )}
+                      <div className={`flat-input-wrap flat-input-wrap-icon${inputShake ? ' flat-input-wrap-shake' : ''}`}>
+                        <svg
+                          className="flat-input-icon"
+                          fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                        </svg>
+                        <div className="flat-input-icon-field">
+                          <input
+                            type="text"
+                            value={movieName}
+                            disabled={isSubmitting}
+                            onChange={(e) => {
+                              setMovieName(e.target.value)
+                              if (urlError) setUrlError('')
+                              if (inputApiError) setInputApiError(false)
+                            }}
+                            className={`flat-input flat-input-no-placeholder${inputAnimPhase ? ' flat-input-text-out' : ''}`}
+                            placeholder=""
+                          />
+                          {movieName === '' && (
+                            <span key={`ph-${queryModeKey}`} className="fake-placeholder toggle-subtext">
+                              Magnet or url
+                            </span>
+                          )}
+                        </div>
                         <div className={`flat-input-line${urlError ? ' flat-input-line-error' : ''}${inputApiError ? ' flat-input-line-api-error' : ''}${inputAnimPhase ? ' flat-input-line-anim' : ''}`} />
                       </div>
                     </div>
@@ -437,7 +445,7 @@ export default function FetchApiActions() {
                               type="text"
                               value={movieName}
                               disabled={isSubmitting}
-                              placeholder="Movie or show name"
+                              placeholder={dropdownOpen ? 'Start typing...' : 'Movie or show name'}
                               className="query-dropdown-input"
                               onClick={(e) => { e.stopPropagation(); setDropdownOpen(true) }}
                               onChange={(e) => {
@@ -450,9 +458,9 @@ export default function FetchApiActions() {
                           </div>
                           <div className="query-dropdown-line" />
 
-                          {/* Items panel */}
-                          <div className={`query-dropdown-items${dropdownOpen ? ' query-dropdown-items-open' : ''}`}>
-                            <div className="query-dropdown-items-inner">
+                          {/* Floating popup — absolutely positioned to escape overflow clipping */}
+                          <div className={`query-dropdown-popup${dropdownOpen ? ' query-dropdown-popup-open' : ''}`}>
+                            <div className="query-dropdown-popup-inner">
                               <div className="query-dropdown-divider" />
                               <div className="query-dropdown-item query-dropdown-item-results">
                                 Search results appear here
@@ -466,16 +474,16 @@ export default function FetchApiActions() {
                   {urlError && <p key={urlErrorKey} className="toggle-subtext mt-2 text-xs font-semibold" style={{ color: jellyfinAccent }}>{urlError}</p>}
                 </div>
 
-                {/* Options button — gear only, always black */}
+                {/* Options button — gear only */}
                 <button
                   type="button"
                   disabled={isSubmitting}
                   onClick={() => setShowOptions((prev) => !prev)}
-                  className="flex-shrink-0 inline-flex items-center justify-center disabled:opacity-60 disabled:cursor-not-allowed hover:opacity-60 transition-opacity"
+                  className="flex-shrink-0 relative top-px inline-flex items-center justify-center disabled:opacity-60 disabled:cursor-not-allowed hover:opacity-60 transition-opacity"
                   aria-expanded={showOptions}
                   aria-controls="import-options"
                 >
-                  <svg className="w-[22px] h-[22px] text-gray-900" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                  <svg className="w-[22px] h-[22px] text-gray-500" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                     <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
@@ -485,7 +493,7 @@ export default function FetchApiActions() {
               {/* Options collapsible panel */}
               <div id="import-options" className={`options-panel ${showOptions ? 'options-panel-open' : ''}`}>
                 <div className="options-panel-inner">
-                  <div className="pt-5 space-y-5">
+                  <div className="pt-5 space-y-[18px] pr-[34px]">
                   <div>
                     <p className="mb-0.5 text-sm font-medium text-gray-700">Save Location</p>
                     <div className="flat-input-wrap">
@@ -648,7 +656,7 @@ export default function FetchApiActions() {
 
           {/* JSON log */}
           <div className="mt-5">
-            <p className="toggle-subtext text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: jellyfinAccent }}>Response</p>
+            <p className="toggle-subtext text-[10px] font-bold uppercase tracking-widest mb-4" style={{ color: jellyfinAccent }}>Response</p>
             <div className="w-full rounded-lg bg-[#0d0d0d] p-4 min-h-[180px] border border-gray-800">
             <pre
               key={jsonKey}

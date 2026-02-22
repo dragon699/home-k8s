@@ -706,9 +706,35 @@ code {
   margin: -4px;
 }
 
+/* flat-input with icon on left */
+.flat-input-wrap-icon .flat-input-icon {
+  position: absolute;
+  left: 0;
+  top: calc(50% - 1.5px); /* centre vertically in the text area (above underline) */
+  transform: translateY(-50%);
+  pointer-events: none;
+  width: 14px;
+  height: 14px;
+  color: #9ca3af;
+  z-index: 1;
+}
+
+.flat-input-wrap-icon .flat-input-icon-field {
+  position: relative;
+  padding-left: 22px;
+}
+
+.flat-input-wrap-icon .flat-input-icon-field .flat-input {
+  width: 100%;
+}
+
+.flat-input-wrap-icon .fake-placeholder {
+  left: 22px;
+}
+
 /* ── Custom search dropdown (flat style, matches inputs) ─────────── */
 .query-dropdown {
-  /* no card — just flat like other inputs */
+  position: relative;
 }
 
 .query-dropdown-header {
@@ -729,6 +755,38 @@ code {
 .query-dropdown:focus-within .query-dropdown-line,
 .query-dropdown-open .query-dropdown-line {
   background: var(--card-accent, #8b5cf6);
+}
+
+/* Floating popup — absolutely positioned so it escapes overflow-hidden ancestors,
+   letting the card-style box-shadow render without clipping */
+.query-dropdown-popup {
+  position: absolute;
+  left: -4px;
+  right: -4px;
+  top: calc(100% + 6px);
+  z-index: 30;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.12);
+  display: grid;
+  grid-template-rows: 0fr;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: grid-template-rows 320ms ease, opacity 240ms ease, transform 280ms ease;
+  pointer-events: none;
+}
+
+.query-dropdown-popup-open {
+  grid-template-rows: 1fr;
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.query-dropdown-popup-inner {
+  overflow: hidden;
+  min-height: 0;
 }
 
 .query-dropdown-input {
@@ -775,24 +833,6 @@ code {
   color: #111827;
 }
 
-.query-dropdown-items {
-  display: grid;
-  grid-template-rows: 0fr;
-  transition: grid-template-rows 360ms ease;
-  background: white;
-  border-radius: 0 0 10px 10px;
-  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.10);
-  overflow: hidden;
-}
-
-.query-dropdown-items-open {
-  grid-template-rows: 1fr;
-}
-
-.query-dropdown-items-inner {
-  overflow: hidden;
-}
-
 .query-dropdown-divider {
   height: 1px;
   background: #f3f4f6;
@@ -822,7 +862,7 @@ code {
   transition: color 180ms ease;
 }
 
-.query-dropdown-open .query-dropdown-item-results {
+.query-dropdown-popup-open .query-dropdown-item-results {
   color: #374151;
 }
 
