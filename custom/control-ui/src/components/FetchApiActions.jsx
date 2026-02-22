@@ -340,8 +340,12 @@ export default function FetchApiActions() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Query toggle — always first */}
-          <div style={{ '--option-accent': jellyfinAccent }}>
+          {/* Query section — label + toggle + indented input/options */}
+          <div>
+            <label className="toggle-subtext block text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: jellyfinAccent }}>
+              Torrent
+            </label>
+            <div style={{ '--option-accent': jellyfinAccent }}>
             <div className="flex items-center justify-between py-3">
               <div className="flex items-start gap-3">
                 <span
@@ -378,95 +382,168 @@ export default function FetchApiActions() {
                 <span className="toggle-thumb" />
               </button>
             </div>
-          </div>
-
-          {/* Input area */}
-          <div>
-            <label className="toggle-subtext block text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: jellyfinAccent }}>
-              Torrent
-            </label>
-
-            {/* Flat input — hidden in query mode */}
-            <div className={`query-mode-panel${queryMode ? ' query-mode-panel-hidden' : ''}`}>
-              <div className="query-mode-panel-inner">
-                <div className={`flat-input-wrap${inputShake ? ' flat-input-wrap-shake' : ''}`}>
-                  <input
-                    type="text"
-                    value={movieName}
-                    disabled={isSubmitting}
-                    onChange={(e) => {
-                      setMovieName(e.target.value)
-                      if (urlError) setUrlError('')
-                      if (inputApiError) setInputApiError(false)
-                    }}
-                    className={`flat-input flat-input-no-placeholder${inputAnimPhase ? ' flat-input-text-out' : ''}`}
-                    placeholder=""
-                  />
-                  {movieName === '' && (
-                    <span key={`ph-${queryModeKey}`} className="fake-placeholder toggle-subtext">
-                      Magnet or url
-                    </span>
-                  )}
-                  <div className={`flat-input-line${urlError ? ' flat-input-line-error' : ''}${inputApiError ? ' flat-input-line-api-error' : ''}${inputAnimPhase ? ' flat-input-line-anim' : ''}`} />
-                </div>
-              </div>
             </div>
 
-            {/* Dropdown — shown in query mode */}
-            <div className={`query-mode-panel${!queryMode ? ' query-mode-panel-hidden' : ''}`}>
-              <div className="query-mode-panel-inner">
-                <div
-                  ref={dropdownRef}
-                  className={`query-dropdown${dropdownOpen ? ' query-dropdown-open' : ''}`}
-                >
-                  {/* Header / trigger */}
-                  <div
-                    className="query-dropdown-header"
-                    onClick={() => setDropdownOpen(p => !p)}
-                  >
-                    <input
-                      type="text"
-                      value={movieName}
-                      disabled={isSubmitting}
-                      placeholder="Movie or show name"
-                      className="query-dropdown-input"
-                      onClick={(e) => { e.stopPropagation(); setDropdownOpen(true) }}
-                      onChange={(e) => {
-                        setMovieName(e.target.value)
-                        if (urlError) setUrlError('')
-                        if (inputApiError) setInputApiError(false)
-                        setDropdownOpen(true)
-                      }}
-                    />
-                    <svg
-                      className={`query-dropdown-chevron${dropdownOpen ? ' query-dropdown-chevron-open' : ''}`}
-                      fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 9l6 6 6-6" />
-                    </svg>
-                  </div>
-
-                  {/* Items panel */}
-                  <div className={`query-dropdown-items${dropdownOpen ? ' query-dropdown-items-open' : ''}`}>
-                    <div className="query-dropdown-items-inner">
-                      <div className="query-dropdown-divider" />
-                      <div className="query-dropdown-item query-dropdown-item-static">
-                        Movie or show name
-                      </div>
-                      <div className="query-dropdown-item query-dropdown-item-results">
-                        Search results appear here
+            {/* Indented input + Options button row, aligned with checkbox subtext */}
+            <div className="ml-8 mt-1">
+              <div className="flex items-center gap-3">
+                {/* Input / dropdown — flex-1 */}
+                <div className="flex-1 min-w-0">
+                  {/* Flat input — hidden in query mode */}
+                  <div className={`query-mode-panel${queryMode ? ' query-mode-panel-hidden' : ''}`}>
+                    <div className="query-mode-panel-inner">
+                      <div className={`flat-input-wrap${inputShake ? ' flat-input-wrap-shake' : ''}`}>
+                        <input
+                          type="text"
+                          value={movieName}
+                          disabled={isSubmitting}
+                          onChange={(e) => {
+                            setMovieName(e.target.value)
+                            if (urlError) setUrlError('')
+                            if (inputApiError) setInputApiError(false)
+                          }}
+                          className={`flat-input flat-input-no-placeholder${inputAnimPhase ? ' flat-input-text-out' : ''}`}
+                          placeholder=""
+                        />
+                        {movieName === '' && (
+                          <span key={`ph-${queryModeKey}`} className="fake-placeholder toggle-subtext">
+                            Magnet or url
+                          </span>
+                        )}
+                        <div className={`flat-input-line${urlError ? ' flat-input-line-error' : ''}${inputApiError ? ' flat-input-line-api-error' : ''}${inputAnimPhase ? ' flat-input-line-anim' : ''}`} />
                       </div>
                     </div>
                   </div>
+
+                  {/* Dropdown — shown in query mode */}
+                  <div className={`query-mode-panel${!queryMode ? ' query-mode-panel-hidden' : ''}`}>
+                    <div className="query-mode-panel-inner">
+                      <div
+                        ref={dropdownRef}
+                        className={`query-dropdown${dropdownOpen ? ' query-dropdown-open' : ''}${movieName.trim() ? ' query-dropdown-has-value' : ''}`}
+                      >
+                        <div className="query-dropdown-clip">
+                          {/* Header / trigger */}
+                          <div
+                            className="query-dropdown-header"
+                            onClick={() => setDropdownOpen(p => !p)}
+                          >
+                            <svg
+                              className="query-dropdown-magnifier"
+                              fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                            >
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11A6 6 0 111 11a6 6 0 0116 0z" />
+                            </svg>
+                            <input
+                              type="text"
+                              value={movieName}
+                              disabled={isSubmitting}
+                              placeholder="Movie or show name"
+                              className="query-dropdown-input"
+                              onClick={(e) => { e.stopPropagation(); setDropdownOpen(true) }}
+                              onChange={(e) => {
+                                setMovieName(e.target.value)
+                                if (urlError) setUrlError('')
+                                if (inputApiError) setInputApiError(false)
+                                setDropdownOpen(true)
+                              }}
+                            />
+                          </div>
+
+                          {/* Items panel */}
+                          <div className={`query-dropdown-items${dropdownOpen ? ' query-dropdown-items-open' : ''}`}>
+                            <div className="query-dropdown-items-inner">
+                              <div className="query-dropdown-divider" />
+                              <div className="query-dropdown-item query-dropdown-item-results">
+                                Search results appear here
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {urlError && <p key={urlErrorKey} className="toggle-subtext mt-2 text-xs font-semibold" style={{ color: jellyfinAccent }}>{urlError}</p>}
+                </div>
+
+                {/* Options button — inline, right side */}
+                <button
+                  type="button"
+                  disabled={isSubmitting}
+                  onClick={() => setShowOptions((prev) => !prev)}
+                  className="flex-shrink-0 inline-flex items-center gap-1.5 text-sm font-semibold disabled:opacity-60 disabled:cursor-not-allowed hover:opacity-70 transition-opacity"
+                  aria-expanded={showOptions}
+                  aria-controls="import-options"
+                >
+                  <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  <span className="text-gray-900">Options</span>
+                  <svg
+                    className={`w-4 h-4 text-gray-900 transition-transform duration-220 ${showOptions ? 'rotate-180' : 'rotate-0'}`}
+                    fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 9l6 6 6-6" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Options collapsible panel */}
+              <div id="import-options" className={`options-panel ${showOptions ? 'options-panel-open' : ''}`}>
+                <div className="options-panel-inner">
+                  <div className="pt-5 space-y-5">
+                  <div>
+                    <p className="mb-0.5 text-sm font-medium text-gray-700">Save Location</p>
+                    <div className="flat-input-wrap">
+                      <input
+                        type="text"
+                        value={saveLocation}
+                        disabled={isSubmitting}
+                        onChange={(e) => setSaveLocation(e.target.value)}
+                        className="flat-input"
+                        placeholder={DEFAULT_SAVE_LOCATION}
+                      />
+                      <div className="flat-input-line" />
+                    </div>
+                  </div>
+                  <div>
+                    <p className="mb-0.5 text-sm font-medium text-gray-700">Category</p>
+                    <div className="flat-input-wrap">
+                      <input
+                        type="text"
+                        value={qbittorrentCategory}
+                        disabled={isSubmitting}
+                        onChange={(e) => setQbittorrentCategory(e.target.value)}
+                        className="flat-input"
+                        placeholder={DEFAULT_CATEGORY}
+                      />
+                      <div className="flat-input-line" />
+                    </div>
+                  </div>
+                  <div>
+                    <p className="mb-0.5 text-sm font-medium text-gray-700">Tags</p>
+                    <div className="flat-input-wrap">
+                      <input
+                        type="text"
+                        value={qbittorrentTags}
+                        disabled={isSubmitting}
+                        onChange={(e) => setQbittorrentTags(e.target.value)}
+                        className="flat-input"
+                        placeholder={DEFAULT_TAGS_PLACEHOLDER}
+                      />
+                      <div className="flat-input-line" />
+                    </div>
+                  </div>
+                  </div>
                 </div>
               </div>
             </div>
-
-            {urlError && <p key={urlErrorKey} className="toggle-subtext mt-2 text-xs font-semibold" style={{ color: jellyfinAccent }}>{urlError}</p>}
           </div>
 
           {/* Toggle options */}
-          <div style={{ '--option-accent': jellyfinAccent }}>
+          <div style={{ '--option-accent': jellyfinAccent }} className="pt-3">
             {/* Notify */}
             <div className="flex items-center justify-between py-3">
               <div className="flex items-start gap-3">
@@ -539,78 +616,6 @@ export default function FetchApiActions() {
               >
                 <span className="toggle-thumb" />
               </button>
-            </div>
-          </div>
-
-          {/* Settings collapsible */}
-          <div>
-            <button
-              type="button"
-              disabled={isSubmitting}
-              onClick={() => setShowOptions((prev) => !prev)}
-              className="inline-flex items-center gap-2 text-sm font-semibold text-gray-500 disabled:opacity-60 disabled:cursor-not-allowed hover:text-gray-700 transition-colors"
-              aria-expanded={showOptions}
-              aria-controls="import-options"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-              <span>Options</span>
-              <svg
-                className={`w-4 h-4 transition-transform duration-220 ${showOptions ? 'rotate-180' : 'rotate-0'}`}
-                fill="none" stroke="currentColor" viewBox="0 0 24 24"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 9l6 6 6-6" />
-              </svg>
-            </button>
-            <div id="import-options" className={`options-panel ${showOptions ? 'options-panel-open' : ''}`}>
-              <div className="options-panel-inner">
-                <div className="pt-5 space-y-5">
-                <div>
-                  <p className="mb-0.5 text-sm font-medium text-gray-700">Save Location</p>
-                  <div className="flat-input-wrap">
-                    <input
-                      type="text"
-                      value={saveLocation}
-                      disabled={isSubmitting}
-                      onChange={(e) => setSaveLocation(e.target.value)}
-                      className="flat-input"
-                      placeholder={DEFAULT_SAVE_LOCATION}
-                    />
-                    <div className="flat-input-line" />
-                  </div>
-                </div>
-                <div>
-                  <p className="mb-0.5 text-sm font-medium text-gray-700">Category</p>
-                  <div className="flat-input-wrap">
-                    <input
-                      type="text"
-                      value={qbittorrentCategory}
-                      disabled={isSubmitting}
-                      onChange={(e) => setQbittorrentCategory(e.target.value)}
-                      className="flat-input"
-                      placeholder={DEFAULT_CATEGORY}
-                    />
-                    <div className="flat-input-line" />
-                  </div>
-                </div>
-                <div>
-                  <p className="mb-0.5 text-sm font-medium text-gray-700">Tags</p>
-                  <div className="flat-input-wrap">
-                    <input
-                      type="text"
-                      value={qbittorrentTags}
-                      disabled={isSubmitting}
-                      onChange={(e) => setQbittorrentTags(e.target.value)}
-                      className="flat-input"
-                      placeholder={DEFAULT_TAGS_PLACEHOLDER}
-                    />
-                    <div className="flat-input-line" />
-                  </div>
-                </div>
-                </div>
-              </div>
             </div>
           </div>
 
