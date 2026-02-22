@@ -422,7 +422,6 @@ export default function FetchApiActions() {
                         ref={dropdownRef}
                         className={`query-dropdown${dropdownOpen ? ' query-dropdown-open' : ''}${movieName.trim() ? ' query-dropdown-has-value' : ''}`}
                       >
-                        <div className="query-dropdown-clip">
                           {/* Header / trigger */}
                           <div
                             className="query-dropdown-header"
@@ -432,7 +431,7 @@ export default function FetchApiActions() {
                               className="query-dropdown-magnifier"
                               fill="none" stroke="currentColor" viewBox="0 0 24 24"
                             >
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11A6 6 0 111 11a6 6 0 0116 0z" />
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                             </svg>
                             <input
                               type="text"
@@ -449,6 +448,7 @@ export default function FetchApiActions() {
                               }}
                             />
                           </div>
+                          <div className="query-dropdown-line" />
 
                           {/* Items panel */}
                           <div className={`query-dropdown-items${dropdownOpen ? ' query-dropdown-items-open' : ''}`}>
@@ -459,7 +459,6 @@ export default function FetchApiActions() {
                               </div>
                             </div>
                           </div>
-                        </div>
                       </div>
                     </div>
                   </div>
@@ -467,25 +466,18 @@ export default function FetchApiActions() {
                   {urlError && <p key={urlErrorKey} className="toggle-subtext mt-2 text-xs font-semibold" style={{ color: jellyfinAccent }}>{urlError}</p>}
                 </div>
 
-                {/* Options button — inline, right side */}
+                {/* Options button — gear only, always black */}
                 <button
                   type="button"
                   disabled={isSubmitting}
                   onClick={() => setShowOptions((prev) => !prev)}
-                  className="flex-shrink-0 inline-flex items-center gap-1.5 text-sm font-semibold disabled:opacity-60 disabled:cursor-not-allowed hover:opacity-70 transition-opacity"
+                  className="flex-shrink-0 inline-flex items-center justify-center disabled:opacity-60 disabled:cursor-not-allowed hover:opacity-60 transition-opacity"
                   aria-expanded={showOptions}
                   aria-controls="import-options"
                 >
-                  <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                  <svg className="w-[22px] h-[22px] text-gray-900" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                     <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
-                  <span className="text-gray-900">Options</span>
-                  <svg
-                    className={`w-4 h-4 text-gray-900 transition-transform duration-220 ${showOptions ? 'rotate-180' : 'rotate-0'}`}
-                    fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 9l6 6 6-6" />
                   </svg>
                 </button>
               </div>
@@ -655,13 +647,15 @@ export default function FetchApiActions() {
           </div>
 
           {/* JSON log */}
-          <div className="w-full rounded-lg bg-[#0d0d0d] p-4 min-h-[180px] border border-gray-800">
-            <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-2">Response</p>
+          <div className="mt-5">
+            <p className="toggle-subtext text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: jellyfinAccent }}>Response</p>
+            <div className="w-full rounded-lg bg-[#0d0d0d] p-4 min-h-[180px] border border-gray-800">
             <pre
               key={jsonKey}
               className="json-fade text-[12px] leading-5 whitespace-pre-wrap break-all text-slate-300"
               dangerouslySetInnerHTML={{ __html: syntaxHighlightJson(jsonText) }}
             />
+            </div>
           </div>
 
           {/* Active Downloads */}
