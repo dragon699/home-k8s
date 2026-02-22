@@ -702,8 +702,8 @@ code {
 
 .query-mode-panel-inner {
   overflow: hidden;
-  padding: 4px;
-  margin: -4px;
+  padding: 4px 4px 18px 4px;
+  margin: -4px -4px -18px -4px;
 }
 
 /* flat-input with icon on left */
@@ -757,14 +757,9 @@ code {
   background: var(--card-accent, #8b5cf6);
 }
 
-/* Floating popup — absolutely positioned so it escapes overflow-hidden ancestors,
-   letting the card-style box-shadow render without clipping */
+/* Popup — in-flow grid-rows collapse so it isn't clipped by overflow:hidden ancestors */
 .query-dropdown-popup {
-  position: absolute;
-  left: -4px;
-  right: -4px;
-  top: calc(100% + 6px);
-  z-index: 30;
+  margin: 4px -4px 0 -4px;
   background: white;
   border-radius: 10px;
   box-shadow: 0 6px 14px rgba(15, 23, 42, 0.12);
