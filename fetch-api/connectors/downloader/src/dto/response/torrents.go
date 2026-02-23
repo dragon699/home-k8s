@@ -30,8 +30,8 @@ type Torrent struct {
 	FilesPath                    string        `json:"files_path,omitempty"`
 	SavePath					 string        `json:"save_path,omitempty"`
 
-	SpeedDownloadMBps            float64       `json:"speed_download_mbps"`
-	SpeedUploadMBps              float64       `json:"speed_upload_mbps"`
+	SpeedDownloadMBps            float64       `json:"speed_download_mbps,omitempty"`
+	SpeedUploadMBps              float64       `json:"speed_upload_mbps,omitempty"`
 
 	IMDB                         string        `json:"imdb,omitempty"`
 	Meta                         TorrentMeta   `json:"meta"`
