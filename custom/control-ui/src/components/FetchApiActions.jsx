@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { addTorrent, getTorrents } from '../services/api'
+import { addTorrent, getTorrents, searchTorrents } from '../services/api'
 
 function syntaxHighlightJson(rawJsonText) {
   const escaped = rawJsonText
@@ -64,11 +64,19 @@ export default function FetchApiActions() {
   const [queryModeKey, setQueryModeKey] = useState(0)
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const dropdownRef = useRef(null)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [selectedResult, setSelectedResult] = useState(null)
+  const [searchResults, setSearchResults] = useState([])
+  const [searchLoading, setSearchLoading] = useState(false)
+  const [searchPage, setSearchPage] = useState(0)
+  const searchDebounceRef = useRef(null)
+  const RESULTS_PER_PAGE = 5
 
   useEffect(() => {
     return () => {
       timersRef.current.forEach(clearTimeout)
       timersRef.current = []
+      if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current)
     }
   }, [])
 
@@ -120,7 +128,15 @@ export default function FetchApiActions() {
   }, [hasItems])
 
   useEffect(() => {
-    if (!queryMode) setDropdownOpen(false)
+    if (!queryMode) {
+      setDropdownOpen(false)
+      setSearchQuery('')
+      setSelectedResult(null)
+      setSearchResults([])
+      setSearchPage(0)
+      setSearchLoading(false)
+      if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current)
+    }
   }, [queryMode])
 
   useEffect(() => {
@@ -217,7 +233,9 @@ export default function FetchApiActions() {
     if (buttonState === 'pending') {
       return
     }
-    const value = movieName.trim()
+    const value = queryMode
+      ? (selectedResult?.magnet_uri || '')
+      : movieName.trim()
 
     if (!value) {
       setUrlError(queryMode ? '* Select a movie or show' : '* Torrent URL is required')
@@ -270,9 +288,17 @@ export default function FetchApiActions() {
       return
     }
 
-    setInputAnimPhase(true)
-    const animTimer = setTimeout(() => { setMovieName(''); setInputAnimPhase(false) }, 1750)
-    timersRef.current.push(animTimer)
+    if (queryMode) {
+      setSearchQuery('')
+      setSelectedResult(null)
+      setSearchResults([])
+      setSearchPage(0)
+      setDropdownOpen(false)
+    } else {
+      setInputAnimPhase(true)
+      const animTimer = setTimeout(() => { setMovieName(''); setInputAnimPhase(false) }, 1750)
+      timersRef.current.push(animTimer)
+    }
 
     await transitionButtonIcon('check', flowId)
     if (flowId === iconFlowRef.current) {
@@ -343,7 +369,7 @@ export default function FetchApiActions() {
           {/* Query section — label + toggle + indented input/options */}
           <div>
             <label className="toggle-subtext block text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: jellyfinAccent }}>
-              Torrent
+              {queryMode ? 'Search Movies and Shows' : 'Torrent'}
             </label>
             <div style={{ '--option-accent': jellyfinAccent }}>
             <div className="flex items-center justify-between py-3">
@@ -366,7 +392,7 @@ export default function FetchApiActions() {
                 <div>
                   <p className="text-sm font-bold text-gray-900 cursor-pointer select-none" onClick={() => { setQueryMode(p => !p); setQueryModeKey(k => k + 1) }}>Query</p>
                   <p key={`query-${queryMode}`} className={`toggle-subtext text-xs font-semibold mt-0.5 cursor-pointer select-none ${queryMode ? '' : 'text-gray-400'}`} style={queryMode ? { color: jellyfinAccent } : undefined} onClick={() => { setQueryMode(p => !p); setQueryModeKey(k => k + 1) }}>
-                    {queryMode ? 'Search for movie or show' : 'Use torrent url'}
+                    {queryMode ? 'Search and select what to download' : 'Use torrent url'}
                   </p>
                 </div>
               </div>
@@ -428,7 +454,7 @@ export default function FetchApiActions() {
                     <div className="query-mode-panel-inner">
                       <div
                         ref={dropdownRef}
-                        className={`query-dropdown${dropdownOpen ? ' query-dropdown-open' : ''}${movieName.trim() ? ' query-dropdown-has-value' : ''}`}
+                        className={`query-dropdown${dropdownOpen ? ' query-dropdown-open' : ''}${selectedResult !== null ? ' query-dropdown-has-value' : ''}`}
                       >
                           {/* Header / trigger */}
                           <div
@@ -443,16 +469,35 @@ export default function FetchApiActions() {
                             </svg>
                             <input
                               type="text"
-                              value={movieName}
+                              value={dropdownOpen ? searchQuery : (selectedResult ? selectedResult.name : '')}
                               disabled={isSubmitting}
                               placeholder={dropdownOpen ? 'Start typing' : 'Movie or show name'}
                               className="query-dropdown-input"
                               onClick={(e) => { e.stopPropagation(); setDropdownOpen(true) }}
                               onChange={(e) => {
-                                setMovieName(e.target.value)
+                                const q = e.target.value
+                                setSearchQuery(q)
+                                setSelectedResult(null)
                                 if (urlError) setUrlError('')
                                 if (inputApiError) setInputApiError(false)
-                                setDropdownOpen(true)
+                                if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current)
+                                if (!q.trim()) {
+                                  setSearchResults([])
+                                  setSearchLoading(false)
+                                  return
+                                }
+                                searchDebounceRef.current = setTimeout(async () => {
+                                  setSearchLoading(true)
+                                  setSearchResults([])
+                                  setSearchPage(0)
+                                  try {
+                                    const data = await searchTorrents(q)
+                                    setSearchResults(data.items || [])
+                                  } catch (_) {
+                                    setSearchResults([])
+                                  }
+                                  setSearchLoading(false)
+                                }, 500)
                               }}
                             />
                           </div>
@@ -461,9 +506,51 @@ export default function FetchApiActions() {
                           {/* Results popup — inline collapse, part of card flow */}
                           <div className={`query-dropdown-popup${dropdownOpen ? ' query-dropdown-popup-open' : ''}`}>
                             <div className="query-dropdown-popup-inner">
-                              <div className="query-dropdown-item query-dropdown-item-results">
-                                Search results appear here
-                              </div>
+                              {searchLoading ? (
+                                <div className="query-search-loading"><span /><span /><span /></div>
+                              ) : searchResults.length > 0 ? (
+                                <>
+                                  {searchResults.slice(searchPage * RESULTS_PER_PAGE, (searchPage + 1) * RESULTS_PER_PAGE).map((item) => (
+                                    <div
+                                      key={item.hash}
+                                      className="query-dropdown-item query-dropdown-result-item"
+                                      onClick={() => { setSelectedResult(item); setSearchQuery(''); setDropdownOpen(false) }}
+                                    >
+                                      <div className="query-result-icon">
+                                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ width: 14, height: 14 }}>
+                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3" />
+                                        </svg>
+                                      </div>
+                                      <div className="query-result-text">
+                                        <span className="query-result-name">{item.name}</span>
+                                        <span className="query-result-meta">
+                                          {item.date_added}
+                                          {item.size_total_gb ? ` · ${item.size_total_gb} GB` : item.size_total_mb ? ` · ${item.size_total_mb} MB` : ''}
+                                          {item.files_count ? ` · ${item.files_count} file${item.files_count !== 1 ? 's' : ''}` : ''}
+                                          {` · ${item.seeders} seed${item.seeders !== 1 ? 's' : ''}`}
+                                        </span>
+                                      </div>
+                                    </div>
+                                  ))}
+                                  {(searchPage > 0 || (searchPage + 1) * RESULTS_PER_PAGE < searchResults.length) && (
+                                    <div className="query-dropdown-pagination">
+                                      {searchPage > 0 && (
+                                        <button type="button" className="query-pagination-btn" onClick={(e) => { e.stopPropagation(); setSearchPage(p => p - 1) }}>← Prev</button>
+                                      )}
+                                      <span className="query-pagination-info">
+                                        {searchPage * RESULTS_PER_PAGE + 1}–{Math.min((searchPage + 1) * RESULTS_PER_PAGE, searchResults.length)} of {searchResults.length}
+                                      </span>
+                                      {(searchPage + 1) * RESULTS_PER_PAGE < searchResults.length && (
+                                        <button type="button" className="query-pagination-btn" onClick={(e) => { e.stopPropagation(); setSearchPage(p => p + 1) }}>Next →</button>
+                                      )}
+                                    </div>
+                                  )}
+                                </>
+                              ) : searchQuery.trim() ? (
+                                <div className="query-dropdown-item query-dropdown-item-results">No results found</div>
+                              ) : (
+                                <div className="query-dropdown-item query-dropdown-item-results">Search results appear here</div>
+                              )}
                             </div>
                           </div>
                       </div>
@@ -838,7 +925,7 @@ export default function FetchApiActions() {
                           />
                         </div>
                         {/* Bottom row */}
-                        <div className="flex items-center justify-between mt-1">
+                        <div className="flex items-center justify-between mt-[3px]">
                           {/* Left: ETA or status text */}
                           <div>
                             {isDownloading && eta && (

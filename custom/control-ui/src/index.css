@@ -855,6 +855,108 @@ code {
   background: transparent;
 }
 
+/* ── Search loading dots ─────────────────────────────────────────── */
+.query-search-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 14px 12px;
+}
+
+.query-search-loading span {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--card-accent, #8b5cf6);
+  animation: searchBounce 0.9s ease-in-out infinite;
+}
+
+.query-search-loading span:nth-child(2) { animation-delay: 0.18s; }
+.query-search-loading span:nth-child(3) { animation-delay: 0.36s; }
+
+@keyframes searchBounce {
+  0%, 80%, 100% { transform: translateY(0) scale(0.7); opacity: 0.35; }
+  40% { transform: translateY(-5px) scale(1); opacity: 1; }
+}
+
+/* ── Search result items ─────────────────────────────────────────── */
+.query-dropdown-result-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 7px 12px;
+  cursor: pointer;
+}
+
+.query-result-icon {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: #9ca3af;
+  transition: color 150ms ease;
+}
+
+.query-dropdown-result-item:hover .query-result-icon {
+  color: var(--card-accent, #8b5cf6);
+}
+
+.query-result-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.query-result-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #111827;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+
+.query-result-meta {
+  font-size: 11px;
+  color: #9ca3af;
+  font-weight: 400;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+
+/* ── Pagination row ──────────────────────────────────────────────── */
+.query-dropdown-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 12px 10px;
+  border-top: 1px solid #f3f4f6;
+  margin-top: 2px;
+}
+
+.query-pagination-btn {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--card-accent, #8b5cf6);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px 0;
+  transition: opacity 150ms ease;
+}
+
+.query-pagination-btn:hover { opacity: 0.7; }
+
+.query-pagination-info {
+  font-size: 11px;
+  color: #9ca3af;
+  font-weight: 400;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .tab-panel-enter {
     animation: none;

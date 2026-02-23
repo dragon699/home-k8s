@@ -60,3 +60,17 @@ export async function getReady() {
     throw error
   }
 }
+
+export async function searchTorrents(query) {
+  try {
+    const params = new URLSearchParams({ query })
+    const response = await fetch(`${API_BASE_URL}/torrents/search?${params.toString()}`)
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    return await response.json()
+  } catch (error) {
+    console.error('Error searching torrents:', error)
+    throw error
+  }
+}
