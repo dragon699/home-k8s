@@ -301,7 +301,7 @@ func SearchTorrents(ctx *fiber.Ctx) error {
 			DateAdded: utils.TimeFromUnix(dateAdded),
 			IMDB: TPBTorrents[torrent].IMDB,
 		}
-		
+
 		result = append(result, torrentData)
 	}
 

@@ -196,13 +196,16 @@ func (instance *ActionsRunner) runActions() {
 							continue
 						}
 
+						fileName := path.Base(file["name"].(string))
+						fileExt := path.Ext(fileName)
+
 						torrentContentFiles = append(torrentContentFiles, file)
 						torrentContentNewFileNames = append(
 							torrentContentNewFileNames,
 							fmt.Sprintf(
 								"%s%s",
-								utils.BeautifyMovieName(path.Base(file["name"].(string))),
-								path.Ext(file["name"].(string)),
+								utils.BeautifyMovieName(strings.TrimSuffix(fileName, fileExt)),
+								fileExt,
 							),
 						)
 					}
