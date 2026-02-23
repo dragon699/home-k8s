@@ -68,6 +68,7 @@ export default function FetchApiActions() {
   const [selectedResult, setSelectedResult] = useState(null)
   const [searchResults, setSearchResults] = useState([])
   const [searchLoading, setSearchLoading] = useState(false)
+  const [searchDone, setSearchDone] = useState(false)
   const [searchPage, setSearchPage] = useState(0)
   const searchDebounceRef = useRef(null)
   const RESULTS_PER_PAGE = 5
@@ -135,6 +136,7 @@ export default function FetchApiActions() {
       setSearchResults([])
       setSearchPage(0)
       setSearchLoading(false)
+      setSearchDone(false)
       if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current)
     }
   }, [queryMode])
@@ -369,7 +371,7 @@ export default function FetchApiActions() {
           {/* Query section — label + toggle + indented input/options */}
           <div>
             <label className="toggle-subtext block text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: jellyfinAccent }}>
-              {queryMode ? 'Search Movies and Shows' : 'Torrent'}
+              {queryMode ? 'Search' : 'Torrent'}
             </label>
             <div style={{ '--option-accent': jellyfinAccent }}>
             <div className="flex items-center justify-between py-3">
@@ -390,9 +392,9 @@ export default function FetchApiActions() {
                   }}
                 />
                 <div>
-                  <p className="text-sm font-bold text-gray-900 cursor-pointer select-none" onClick={() => { setQueryMode(p => !p); setQueryModeKey(k => k + 1) }}>Query</p>
-                  <p key={`query-${queryMode}`} className={`toggle-subtext text-xs font-semibold mt-0.5 cursor-pointer select-none ${queryMode ? '' : 'text-gray-400'}`} style={queryMode ? { color: jellyfinAccent } : undefined} onClick={() => { setQueryMode(p => !p); setQueryModeKey(k => k + 1) }}>
-                    {queryMode ? 'Search and select what to download' : 'Use torrent url'}
+                  <p className="text-sm font-bold text-gray-900 cursor-pointer select-none" onClick={() => { setQueryMode(p => !p); setQueryModeKey(k => k + 1); setUrlError('') }}>Query</p>
+                  <p key={`query-${queryMode}`} className={`toggle-subtext text-xs font-semibold mt-0.5 cursor-pointer select-none ${queryMode ? '' : 'text-gray-400'}`} style={queryMode ? { color: jellyfinAccent } : undefined} onClick={() => { setQueryMode(p => !p); setQueryModeKey(k => k + 1); setUrlError('') }}>
+                    {queryMode ? "I'll search and choose" : 'Use torrent url'}
                   </p>
                 </div>
               </div>
@@ -402,7 +404,7 @@ export default function FetchApiActions() {
                 disabled={isSubmitting}
                 aria-checked={queryMode}
                 aria-label="Query"
-                onClick={() => { setQueryMode(p => !p); setQueryModeKey(k => k + 1) }}
+                onClick={() => { setQueryMode(p => !p); setQueryModeKey(k => k + 1); setUrlError('') }}
                 className="toggle-switch"
               >
                 <span className="toggle-thumb" />
@@ -481,6 +483,7 @@ export default function FetchApiActions() {
                                 if (urlError) setUrlError('')
                                 if (inputApiError) setInputApiError(false)
                                 if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current)
+                                setSearchDone(false)
                                 if (!q.trim()) {
                                   setSearchResults([])
                                   setSearchLoading(false)
@@ -496,6 +499,7 @@ export default function FetchApiActions() {
                                   } catch (_) {
                                     setSearchResults([])
                                   }
+                                  setSearchDone(true)
                                   setSearchLoading(false)
                                 }, 500)
                               }}
@@ -525,9 +529,9 @@ export default function FetchApiActions() {
                                         <span className="query-result-name">{item.name}</span>
                                         <span className="query-result-meta">
                                           {item.date_added}
-                                          {item.size_total_gb ? ` · ${item.size_total_gb} GB` : item.size_total_mb ? ` · ${item.size_total_mb} MB` : ''}
-                                          {item.files_count ? ` · ${item.files_count} file${item.files_count !== 1 ? 's' : ''}` : ''}
                                           {` · ${item.seeders} seed${item.seeders !== 1 ? 's' : ''}`}
+                                          {item.files_count ? ` · ${item.files_count} file${item.files_count !== 1 ? 's' : ''}` : ''}
+                                          {item.size_total_gb ? ` · ${item.size_total_gb} GB` : item.size_total_mb ? ` · ${item.size_total_mb} MB` : ''}
                                         </span>
                                       </div>
                                     </div>
@@ -535,18 +539,22 @@ export default function FetchApiActions() {
                                   {(searchPage > 0 || (searchPage + 1) * RESULTS_PER_PAGE < searchResults.length) && (
                                     <div className="query-dropdown-pagination">
                                       {searchPage > 0 && (
-                                        <button type="button" className="query-pagination-btn" onClick={(e) => { e.stopPropagation(); setSearchPage(p => p - 1) }}>← Prev</button>
+                                        <button type="button" className="query-pagination-btn" onClick={(e) => { e.stopPropagation(); setSearchPage(p => p - 1) }}>
+                                          <svg fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24" style={{ width: 16, height: 16 }}><path strokeLinecap="round" strokeLinejoin="round" d="M6 9l6 6 6-6" transform="rotate(90, 12, 12)" /></svg>
+                                        </button>
                                       )}
                                       <span className="query-pagination-info">
                                         {searchPage * RESULTS_PER_PAGE + 1}–{Math.min((searchPage + 1) * RESULTS_PER_PAGE, searchResults.length)} of {searchResults.length}
                                       </span>
                                       {(searchPage + 1) * RESULTS_PER_PAGE < searchResults.length && (
-                                        <button type="button" className="query-pagination-btn" onClick={(e) => { e.stopPropagation(); setSearchPage(p => p + 1) }}>Next →</button>
+                                        <button type="button" className="query-pagination-btn" onClick={(e) => { e.stopPropagation(); setSearchPage(p => p + 1) }}>
+                                          <svg fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24" style={{ width: 16, height: 16 }}><path strokeLinecap="round" strokeLinejoin="round" d="M6 9l6 6 6-6" transform="rotate(-90, 12, 12)" /></svg>
+                                        </button>
                                       )}
                                     </div>
                                   )}
                                 </>
-                              ) : searchQuery.trim() ? (
+                              ) : searchDone && searchQuery.trim() ? (
                                 <div className="query-dropdown-item query-dropdown-item-results">No results found</div>
                               ) : (
                                 <div className="query-dropdown-item query-dropdown-item-results">Search results appear here</div>
@@ -628,7 +636,7 @@ export default function FetchApiActions() {
           </div>
 
           {/* Toggle options */}
-          <div style={{ '--option-accent': jellyfinAccent }} className="pt-3">
+          <div style={{ '--option-accent': jellyfinAccent }} className="pt-2">
             {/* Notify */}
             <div className="flex items-center justify-between py-3">
               <div className="flex items-start gap-3">
