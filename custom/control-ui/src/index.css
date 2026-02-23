@@ -888,10 +888,8 @@ code {
   gap: 9px;
   padding: 7px 12px;
   cursor: pointer;
-}
-
-.query-dropdown-result-item:first-child {
-  padding-top: 0;
+  position: relative;
+  overflow: hidden;
 }
 
 .query-result-icon {
@@ -963,6 +961,46 @@ code {
   font-size: 11px;
   color: #9ca3af;
   font-weight: 400;
+}
+
+/* ── Page-flip slide animations ─────────────────────────────────── */
+@keyframes slideInFromRight {
+  from { transform: translateX(36px); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+@keyframes slideInFromLeft {
+  from { transform: translateX(-36px); opacity: 0; }
+  to   { transform: translateX(0);     opacity: 1; }
+}
+.query-results-page-next {
+  animation: slideInFromRight 230ms cubic-bezier(0.33, 1, 0.68, 1) both;
+}
+.query-results-page-prev {
+  animation: slideInFromLeft 230ms cubic-bezier(0.33, 1, 0.68, 1) both;
+}
+
+/* ── Ripple ──────────────────────────────────────────────────────── */
+.query-ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(var(--card-accent-rgb, 139, 92, 246), 0.22);
+  transform: scale(0);
+  animation: queryRippleAnim 500ms ease-out forwards;
+  pointer-events: none;
+}
+@keyframes queryRippleAnim {
+  to { transform: scale(2.6); opacity: 0; }
+}
+
+/* ── Selected result item ────────────────────────────────────────── */
+.query-dropdown-result-item-selected {
+  background: rgba(var(--card-accent-rgb, 139, 92, 246), 0.07);
+}
+.query-dropdown-result-item-selected .query-result-icon {
+  color: var(--card-accent, #8b5cf6);
+}
+.query-dropdown-result-item-selected .query-result-name {
+  color: var(--card-accent, #8b5cf6);
 }
 
 @media (prefers-reduced-motion: reduce) {

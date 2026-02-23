@@ -70,6 +70,8 @@ export default function FetchApiActions() {
   const [searchLoading, setSearchLoading] = useState(false)
   const [searchDone, setSearchDone] = useState(false)
   const [searchPage, setSearchPage] = useState(0)
+  const [pageDir, setPageDir] = useState(1)
+  const [pageAnimKey, setPageAnimKey] = useState(0)
   const searchDebounceRef = useRef(null)
   const RESULTS_PER_PAGE = 5
 
@@ -514,11 +516,24 @@ export default function FetchApiActions() {
                                 <div className="query-search-loading"><span /><span /><span /></div>
                               ) : searchResults.length > 0 ? (
                                 <>
+                                  <div key={pageAnimKey} className={`query-results-page${pageDir >= 0 ? ' query-results-page-next' : ' query-results-page-prev'}`}>
                                   {searchResults.slice(searchPage * RESULTS_PER_PAGE, (searchPage + 1) * RESULTS_PER_PAGE).map((item) => (
                                     <div
                                       key={item.hash}
-                                      className="query-dropdown-item query-dropdown-result-item"
-                                      onClick={() => { setSelectedResult(item); setSearchQuery(''); setDropdownOpen(false) }}
+                                      className={`query-dropdown-item query-dropdown-result-item${selectedResult?.hash === item.hash ? ' query-dropdown-result-item-selected' : ''}`}
+                                      onClick={(e) => {
+                                        const el = e.currentTarget
+                                        const rect = el.getBoundingClientRect()
+                                        const size = Math.max(rect.width, rect.height)
+                                        const ripple = document.createElement('span')
+                                        ripple.className = 'query-ripple'
+                                        ripple.style.cssText = `width:${size}px;height:${size}px;left:${e.clientX - rect.left - size / 2}px;top:${e.clientY - rect.top - size / 2}px`
+                                        el.appendChild(ripple)
+                                        setTimeout(() => ripple.remove(), 550)
+                                        setSelectedResult(item)
+                                        setSearchQuery('')
+                                        setDropdownOpen(false)
+                                      }}
                                     >
                                       <div className="query-result-icon">
                                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ width: 14, height: 14 }}>
@@ -536,10 +551,11 @@ export default function FetchApiActions() {
                                       </div>
                                     </div>
                                   ))}
+                                  </div>
                                   {(searchPage > 0 || (searchPage + 1) * RESULTS_PER_PAGE < searchResults.length) && (
                                     <div className="query-dropdown-pagination">
                                       {searchPage > 0 && (
-                                        <button type="button" className="query-pagination-btn" onClick={(e) => { e.stopPropagation(); setSearchPage(p => p - 1) }}>
+                                        <button type="button" className="query-pagination-btn" onClick={(e) => { e.stopPropagation(); setPageDir(-1); setPageAnimKey(k => k + 1); setSearchPage(p => p - 1) }}>
                                           <svg fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24" style={{ width: 16, height: 16 }}><path strokeLinecap="round" strokeLinejoin="round" d="M6 9l6 6 6-6" transform="rotate(90, 12, 12)" /></svg>
                                         </button>
                                       )}
@@ -547,7 +563,7 @@ export default function FetchApiActions() {
                                         {searchPage * RESULTS_PER_PAGE + 1}–{Math.min((searchPage + 1) * RESULTS_PER_PAGE, searchResults.length)} of {searchResults.length}
                                       </span>
                                       {(searchPage + 1) * RESULTS_PER_PAGE < searchResults.length && (
-                                        <button type="button" className="query-pagination-btn" onClick={(e) => { e.stopPropagation(); setSearchPage(p => p + 1) }}>
+                                        <button type="button" className="query-pagination-btn" onClick={(e) => { e.stopPropagation(); setPageDir(1); setPageAnimKey(k => k + 1); setSearchPage(p => p + 1) }}>
                                           <svg fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24" style={{ width: 16, height: 16 }}><path strokeLinecap="round" strokeLinejoin="round" d="M6 9l6 6 6-6" transform="rotate(-90, 12, 12)" /></svg>
                                         </button>
                                       )}
