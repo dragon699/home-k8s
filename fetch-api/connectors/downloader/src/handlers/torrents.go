@@ -277,6 +277,11 @@ func SearchTorrents(ctx *fiber.Ctx) error {
 
 	for torrent := range TPBTorrents {
 		id, _ := utils.ToInt(TPBTorrents[torrent].ID)
+		magnetURI := fmt.Sprintf(
+			"magnet:?xt=urn:btih:%s&dn=%s",
+			TPBTorrents[torrent].InfoHash,
+			url.QueryEscape(TPBTorrents[torrent].Name),
+		)
 		leechers, _ := utils.ToInt(TPBTorrents[torrent].Leechers)
 		seeders, _ := utils.ToInt(TPBTorrents[torrent].Seeders)
 		sizeTotalB, _ := utils.ToInt(TPBTorrents[torrent].Size)
@@ -287,6 +292,7 @@ func SearchTorrents(ctx *fiber.Ctx) error {
 			ID: id,
 			Name: TPBTorrents[torrent].Name,
 			Hash: TPBTorrents[torrent].InfoHash,
+			MagnetURI: magnetURI,
 			Leechers: leechers,
 			Seeders: seeders,
 			SizeTotalMB: utils.BytesToMegabytes(sizeTotalB),

@@ -34,7 +34,6 @@ type Torrent struct {
 	SpeedUploadMBps              float64       `json:"speed_upload_mbps"`
 
 	IMDB                         string        `json:"imdb,omitempty"`
-
 	Meta                         TorrentMeta   `json:"meta"`
 }
 
