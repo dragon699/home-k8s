@@ -825,7 +825,9 @@ code {
 }
 
 .query-dropdown-item {
-  padding: 9px 12px;
+  padding: 9px 10px;
+  margin: 0 5px;
+  border-radius: 7px;
   font-size: 14px;
   font-weight: 500;
   color: #374151;
@@ -841,7 +843,7 @@ code {
   color: #b0b8c4;
   font-weight: 400;
   font-size: 13px;
-  padding: 6px 12px 12px;
+  padding: 6px 10px 12px;
   cursor: default;
   animation: toggleSubtextEnter 420ms 60ms ease both;
   transition: color 180ms ease;
@@ -886,7 +888,9 @@ code {
   display: flex;
   align-items: flex-start;
   gap: 9px;
-  padding: 7px 12px;
+  padding: 7px 10px;
+  margin: 0 5px;
+  border-radius: 7px;
   cursor: pointer;
   position: relative;
   overflow: hidden;
@@ -916,8 +920,27 @@ code {
   color: #111827;
   white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis;
+  position: relative;
   display: block;
+}
+
+.query-result-name::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 44px;
+  background: linear-gradient(to right, transparent, white);
+  pointer-events: none;
+}
+
+.query-dropdown-result-item:hover .query-result-name::after {
+  background: linear-gradient(to right, transparent, rgba(var(--card-accent-rgb, 139, 92, 246), 0.04) 60%, rgba(var(--card-accent-rgb, 139, 92, 246), 0.04));
+}
+
+.query-dropdown-result-item-selected .query-result-name::after {
+  background: linear-gradient(to right, transparent, rgba(var(--card-accent-rgb, 139, 92, 246), 0.07) 60%, rgba(var(--card-accent-rgb, 139, 92, 246), 0.07));
 }
 
 .query-result-meta {
@@ -928,6 +951,30 @@ code {
   overflow: hidden;
   text-overflow: ellipsis;
   display: block;
+}
+
+/* ── IMDb badge ──────────────────────────────────────────────────────── */
+.query-result-imdb {
+  flex-shrink: 0;
+  align-self: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  color: #000;
+  background: #f5c518;
+  border-radius: 4px;
+  padding: 2px 4px;
+  text-decoration: none;
+  transition: opacity 150ms ease;
+  user-select: none;
+}
+
+.query-result-imdb:hover {
+  opacity: 0.8;
 }
 
 /* ── Pagination row ──────────────────────────────────────────────── */

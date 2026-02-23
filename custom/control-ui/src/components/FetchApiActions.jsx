@@ -549,6 +549,15 @@ export default function FetchApiActions() {
                                           {item.size_total_gb ? ` · ${item.size_total_gb} GB` : item.size_total_mb ? ` · ${item.size_total_mb} MB` : ''}
                                         </span>
                                       </div>
+                                      {item.imdb && (
+                                        <a
+                                          href={`https://www.imdb.com/title/${item.imdb}/`}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="query-result-imdb"
+                                          onClick={(e) => e.stopPropagation()}
+                                        >IMDb</a>
+                                      )}
                                     </div>
                                   ))}
                                   </div>
@@ -589,7 +598,7 @@ export default function FetchApiActions() {
                   type="button"
                   disabled={isSubmitting}
                   onClick={() => setShowOptions((prev) => !prev)}
-                  className="flex-shrink-0 mt-[9px] inline-flex items-center justify-center disabled:opacity-60 disabled:cursor-not-allowed hover:opacity-60 transition-opacity"
+                  className="flex-shrink-0 mt-[13px] inline-flex items-center justify-center disabled:opacity-60 disabled:cursor-not-allowed hover:opacity-60 transition-opacity"
                   aria-expanded={showOptions}
                   aria-controls="import-options"
                 >
