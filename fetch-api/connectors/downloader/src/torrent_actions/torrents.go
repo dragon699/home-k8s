@@ -306,6 +306,10 @@ func (instance *ActionsRunner) runActions() {
 
 						itemFile := filepath.Base(item["Path"].(string))
 
+						// DEBUG
+						fmt.Printf("Checking if [from jellyfin's response] %s is in %v\n", itemFile, torrentContentNewFileNames)
+						// END DEBUG
+
 						if slices.Contains(torrentContentNewFileNames, itemFile) {
 							// DEBUG
 							fmt.Printf("Trying subs download for for %s -> %s\n", item["Id"].(string), item["Path"].(string))
