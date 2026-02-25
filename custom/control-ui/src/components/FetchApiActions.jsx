@@ -53,6 +53,7 @@ export default function FetchApiActions() {
   const buttonIconRef = useRef('arrows')
   const prevItemsRef = useRef([])
   const isFirstFetchRef = useRef(true)
+  const fetchTorrentsRef = useRef(null)
   const isSubmitting = buttonState === 'pending'
   const [hoveredItemHash, setHoveredItemHash] = useState(null)
   const [hoveredPill, setHoveredPill] = useState(null) // { hash, kind }
@@ -125,6 +126,7 @@ export default function FetchApiActions() {
         // silently ignore polling errors
       }
     }
+    fetchTorrentsRef.current = fetchTorrents
     fetchTorrents()
     const id = setInterval(fetchTorrents, hasItems ? 5000 : 10000)
     return () => clearInterval(id)
@@ -665,17 +667,21 @@ export default function FetchApiActions() {
             {/* Notify */}
             <div className="flex items-center justify-between py-3">
               <div className="flex items-start gap-3">
-                <svg
+                <span
                   aria-hidden="true"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth={1.75}
-                  className="mt-1 w-5 h-5 flex-shrink-0 transition-colors duration-300"
-                  style={{ color: notify ? '#111827' : '#9ca3af' }}
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                </svg>
+                  className="mt-1 block w-5 h-5 flex-shrink-0 transition-colors duration-300"
+                  style={{
+                    backgroundColor: notify ? '#111827' : '#9ca3af',
+                    WebkitMaskImage: 'url(https://i.imgur.com/SI5VKI0.png)',
+                    maskImage: 'url(https://i.imgur.com/SI5VKI0.png)',
+                    WebkitMaskSize: 'contain',
+                    maskSize: 'contain',
+                    WebkitMaskRepeat: 'no-repeat',
+                    maskRepeat: 'no-repeat',
+                    WebkitMaskPosition: 'center',
+                    maskPosition: 'center',
+                  }}
+                />
                 <div>
                   <p className="text-sm font-bold text-gray-900 cursor-pointer select-none" onClick={() => setNotify(prev => !prev)}>Notify</p>
                   <p key={`notify-${notify}`} className={`toggle-subtext text-xs font-semibold mt-0.5 cursor-pointer select-none ${notify ? '' : 'text-gray-400'}`} style={notify ? { color: jellyfinAccent } : undefined} onClick={() => setNotify(prev => !prev)}>
@@ -890,6 +896,7 @@ export default function FetchApiActions() {
                       } else if (notifyVariant === 'active-clickable') {
                         await deleteTorrentTags({ hash: torrent.hash, tags: ['slack:notify=pending', 'slack:notify=initial'] })
                       }
+                      fetchTorrentsRef.current?.()
                     } catch (_) { /* polling will reconcile */ }
                     finally {
                       setPillPending(prev => { const n = new Set(prev); n.delete(key); return n })
@@ -907,11 +914,20 @@ export default function FetchApiActions() {
                       } else if (subsVariant === 'active-clickable') {
                         await deleteTorrentTags({ hash: torrent.hash, tags: ['jellyfin:find_subs=pending'] })
                       }
+                      fetchTorrentsRef.current?.()
                     } catch (_) { /* polling will reconcile */ }
                     finally {
                       setPillPending(prev => { const n = new Set(prev); n.delete(key); return n })
                     }
                   }
+
+                  // max-width for animated text width transition (ch ≈ char width in Manrope 11px)
+                  const notifyClipStyle = isNotifyPillHovered && notifyHoverLabel
+                    ? { maxWidth: `${notifyHoverLabel.length * 0.62 + 1}ch` }
+                    : { maxWidth: `${notifyLabel.length * 0.62 + 1}ch` }
+                  const subsClipStyle = isSubsPillHovered && subsHoverLabel
+                    ? { maxWidth: `${subsHoverLabel.length * 0.62 + 1}ch` }
+                    : { maxWidth: `${subsLabel.length * 0.62 + 1}ch` }
 
                   // Pill CSS class helper
                   const pillClass = (variant, isPending) => {
@@ -997,14 +1013,22 @@ export default function FetchApiActions() {
                                 onMouseEnter={() => notifyHoverLabel && setHoveredPill({ hash: torrent.hash, kind: 'notify' })}
                                 onMouseLeave={() => setHoveredPill(null)}
                               >
-                                <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.9}
-                                  style={{ width: '11px', height: '11px', flexShrink: 0 }}>
-                                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                                </svg>
-                                <span className="pill-label-clip">
+                                <span
+                                  aria-hidden="true"
+                                  style={{
+                                    width: '15px', height: '15px', backgroundColor: 'currentColor',
+                                    WebkitMaskImage: 'url(https://i.imgur.com/SI5VKI0.png)',
+                                    maskImage: 'url(https://i.imgur.com/SI5VKI0.png)',
+                                    WebkitMaskSize: 'contain', maskSize: 'contain',
+                                    WebkitMaskRepeat: 'no-repeat', maskRepeat: 'no-repeat',
+                                    WebkitMaskPosition: 'center', maskPosition: 'center',
+                                    display: 'block', flexShrink: 0,
+                                  }}
+                                />
+                                <span className="pill-label-clip" style={notifyClipStyle}>
                                   <span
                                     key={`notify-${torrent.hash}-${isNotifyPillHovered && notifyHoverLabel ? 'h' : 'd'}`}
-                                    className={`pill-label-text${isNotifyPillHovered && notifyHoverLabel ? ' pill-label-danger' : ''}`}
+                                    className="pill-label-text"
                                   >
                                     {isNotifyPillHovered && notifyHoverLabel ? notifyHoverLabel : notifyLabel}
                                   </span>
@@ -1022,7 +1046,7 @@ export default function FetchApiActions() {
                                 <span
                                   aria-hidden="true"
                                   style={{
-                                    width: '11px', height: '11px', backgroundColor: 'currentColor',
+                                    width: '15px', height: '15px', backgroundColor: 'currentColor',
                                     WebkitMaskImage: 'url(https://i.imgur.com/2SzFid0.png)',
                                     maskImage: 'url(https://i.imgur.com/2SzFid0.png)',
                                     WebkitMaskSize: 'contain', maskSize: 'contain',
@@ -1031,10 +1055,10 @@ export default function FetchApiActions() {
                                     display: 'block', flexShrink: 0,
                                   }}
                                 />
-                                <span className="pill-label-clip">
+                                <span className="pill-label-clip" style={subsClipStyle}>
                                   <span
                                     key={`subs-${torrent.hash}-${isSubsPillHovered && subsHoverLabel ? 'h' : 'd'}`}
-                                    className={`pill-label-text${isSubsPillHovered && subsHoverLabel ? ' pill-label-danger' : ''}`}
+                                    className="pill-label-text"
                                   >
                                     {isSubsPillHovered && subsHoverLabel ? subsHoverLabel : subsLabel}
                                   </span>
