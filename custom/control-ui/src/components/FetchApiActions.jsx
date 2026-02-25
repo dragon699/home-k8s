@@ -816,6 +816,7 @@ export default function FetchApiActions() {
                   // Only expand for downloading / paused
                   const canExpand = isDownloading || isPaused
                   const isExpanded = hoveredItemHash === torrent.hash && canExpand
+                  const isJellyfinCategory = torrent.category === 'jellyfin'
 
                   // ── Tag-derived button states ────────────────────────────────
                   const tags = torrent.tags || []
@@ -1034,7 +1035,8 @@ export default function FetchApiActions() {
                                   </span>
                                 </span>
                               </button>
-                              {/* Subs pill */}
+                              {/* Subs pill — only for jellyfin category */}
+                              {isJellyfinCategory && (
                               <button
                                 type="button"
                                 disabled={subsVariant === 'active-locked' || subsVariant === 'error' || subsPending}
@@ -1064,6 +1066,7 @@ export default function FetchApiActions() {
                                   </span>
                                 </span>
                               </button>
+                              )}
                             </div>
                           </div>
                         </div>
