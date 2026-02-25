@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { addTorrent, getTorrents, searchTorrents } from '../services/api'
+import { addTorrent, addTorrentTags, deleteTorrentTags, getTorrents, searchTorrents } from '../services/api'
 
 function syntaxHighlightJson(rawJsonText) {
   const escaped = rawJsonText
@@ -55,7 +55,8 @@ export default function FetchApiActions() {
   const isFirstFetchRef = useRef(true)
   const isSubmitting = buttonState === 'pending'
   const [hoveredItemHash, setHoveredItemHash] = useState(null)
-  const [itemToggles, setItemToggles] = useState({})
+  const [hoveredPill, setHoveredPill] = useState(null) // { hash, kind }
+  const [pillPending, setPillPending] = useState(new Set())
   const [inputAnimPhase, setInputAnimPhase] = useState(false)
   const [inputShake, setInputShake] = useState(false)
   const [inputApiError, setInputApiError] = useState(false)
@@ -229,16 +230,6 @@ export default function FetchApiActions() {
     if (minutes <= 1) return 'Around a minute'
     if (minutes >= 60) return `${Math.round(minutes / 60)} hrs`
     return `${Math.round(minutes)} mins`
-  }
-
-  const toggleItemOption = (hash, key, currentVal) => {
-    setItemToggles(prev => ({
-      ...prev,
-      [hash]: {
-        ...(prev[hash] || {}),
-        [key]: !currentVal,
-      },
-    }))
   }
 
   const handleSubmit = async (e) => {
@@ -620,7 +611,7 @@ export default function FetchApiActions() {
               {/* Options collapsible panel */}
               <div id="import-options" className={`options-panel ${showOptions ? 'options-panel-open' : ''}`}>
                 <div className="options-panel-inner">
-                  <div className="pt-5 space-y-[18px] pr-[34px]">
+                  <div className="pt-5 pb-5 space-y-[18px] pr-[34px]">
                   <div>
                     <p className="mb-0.5 text-sm font-medium text-gray-700">Save Location</p>
                     <div className="flat-input-wrap">
@@ -674,21 +665,17 @@ export default function FetchApiActions() {
             {/* Notify */}
             <div className="flex items-center justify-between py-3">
               <div className="flex items-start gap-3">
-                <span
+                <svg
                   aria-hidden="true"
-                  className="mt-1 block w-5 h-5 flex-shrink-0 transition-colors duration-300"
-                  style={{
-                    backgroundColor: notify ? '#111827' : '#9ca3af',
-                    WebkitMaskImage: 'url(https://i.imgur.com/Z2E0Nz2.png)',
-                    maskImage: 'url(https://i.imgur.com/Z2E0Nz2.png)',
-                    WebkitMaskSize: 'contain',
-                    maskSize: 'contain',
-                    WebkitMaskRepeat: 'no-repeat',
-                    maskRepeat: 'no-repeat',
-                    WebkitMaskPosition: 'center',
-                    maskPosition: 'center',
-                  }}
-                />
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={1.75}
+                  className="mt-1 w-5 h-5 flex-shrink-0 transition-colors duration-300"
+                  style={{ color: notify ? '#111827' : '#9ca3af' }}
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                </svg>
                 <div>
                   <p className="text-sm font-bold text-gray-900 cursor-pointer select-none" onClick={() => setNotify(prev => !prev)}>Notify</p>
                   <p key={`notify-${notify}`} className={`toggle-subtext text-xs font-semibold mt-0.5 cursor-pointer select-none ${notify ? '' : 'text-gray-400'}`} style={notify ? { color: jellyfinAccent } : undefined} onClick={() => setNotify(prev => !prev)}>
@@ -820,18 +807,129 @@ export default function FetchApiActions() {
                   const isExiting = exitingTorrents.some(et => et.hash === torrent.hash)
                   const animClass = isEntering ? 'torrent-item-enter' : isExiting ? 'torrent-item-exit' : 'torrent-item-outer'
 
-                  const isExpanded = hoveredItemHash === torrent.hash
-                  const itemNotify = itemToggles[torrent.hash]?.notify ?? true
-                  const itemSubs = itemToggles[torrent.hash]?.subs ?? false
+                  // Only expand for downloading / paused
+                  const canExpand = isDownloading || isPaused
+                  const isExpanded = hoveredItemHash === torrent.hash && canExpand
+
+                  // ── Tag-derived button states ────────────────────────────────
+                  const tags = torrent.tags || []
+
+                  // Notify pill
+                  const notifyTagEntry = tags.find(t => typeof t === 'string' && t.startsWith('slack:notify='))
+                  let notifyVariant  // 'active-clickable' | 'active-locked' | 'error' | 'inactive'
+                  let notifyLabel, notifyHoverLabel
+                  if (!notifyTagEntry) {
+                    notifyVariant = 'inactive'
+                    notifyLabel = 'Enable Slack notifications'
+                    notifyHoverLabel = null
+                  } else if (notifyTagEntry === 'slack:notify=pending' || notifyTagEntry === 'slack:notify=initial') {
+                    notifyVariant = 'active-clickable'
+                    notifyLabel = 'Slack notifications enabled'
+                    notifyHoverLabel = 'Disable'
+                  } else if (notifyTagEntry === 'slack:notify=completed') {
+                    notifyVariant = 'active-locked'
+                    notifyLabel = 'Slack notifications enabled'
+                    notifyHoverLabel = null
+                  } else if (notifyTagEntry === 'slack:notify=failed') {
+                    notifyVariant = 'error'
+                    notifyLabel = 'Internal error'
+                    notifyHoverLabel = null
+                  } else {
+                    notifyVariant = 'inactive'
+                    notifyLabel = 'Enable Slack notifications'
+                    notifyHoverLabel = null
+                  }
+
+                  // Subs pill
+                  const subsTagEntry = tags.find(t => typeof t === 'string' && t.startsWith('jellyfin:find_subs='))
+                  let subsVariant
+                  let subsLabel, subsHoverLabel
+                  if (!subsTagEntry) {
+                    subsVariant = 'inactive'
+                    subsLabel = 'Download subtitles'
+                    subsHoverLabel = null
+                  } else if (subsTagEntry === 'jellyfin:find_subs=pending') {
+                    subsVariant = 'active-clickable'
+                    subsLabel = 'Subtitles will be downloaded'
+                    subsHoverLabel = "Don't download subtitles"
+                  } else if (subsTagEntry === 'jellyfin:find_subs=completed') {
+                    subsVariant = 'active-locked'
+                    subsLabel = 'Subtitles downloaded'
+                    subsHoverLabel = null
+                  } else if (subsTagEntry === 'jellyfin:find_subs=partially_completed') {
+                    subsVariant = 'active-locked'
+                    subsLabel = 'Some files may be missing subtitles'
+                    subsHoverLabel = null
+                  } else if (subsTagEntry === 'jellyfin:find_subs=already_present') {
+                    subsVariant = 'active-locked'
+                    subsLabel = 'Subtitles already included'
+                    subsHoverLabel = null
+                  } else if (subsTagEntry === 'jellyfin:find_subs=failed') {
+                    subsVariant = 'error'
+                    subsLabel = "Couldn't find subtitles"
+                    subsHoverLabel = null
+                  } else {
+                    subsVariant = 'inactive'
+                    subsLabel = 'Download subtitles'
+                    subsHoverLabel = null
+                  }
+
+                  const isNotifyPillHovered = hoveredPill?.hash === torrent.hash && hoveredPill?.kind === 'notify'
+                  const isSubsPillHovered   = hoveredPill?.hash === torrent.hash && hoveredPill?.kind === 'subs'
+                  const notifyPending = pillPending.has(`${torrent.hash}-notify`)
+                  const subsPending   = pillPending.has(`${torrent.hash}-subs`)
+
+                  const handleNotifyClick = async (e) => {
+                    e.stopPropagation()
+                    if (notifyVariant === 'active-locked' || notifyVariant === 'error' || notifyPending) return
+                    const key = `${torrent.hash}-notify`
+                    setPillPending(prev => new Set([...prev, key]))
+                    try {
+                      if (notifyVariant === 'inactive') {
+                        await addTorrentTags({ hash: torrent.hash, tags: ['slack:notify=pending'] })
+                      } else if (notifyVariant === 'active-clickable') {
+                        await deleteTorrentTags({ hash: torrent.hash, tags: ['slack:notify=pending', 'slack:notify=initial'] })
+                      }
+                    } catch (_) { /* polling will reconcile */ }
+                    finally {
+                      setPillPending(prev => { const n = new Set(prev); n.delete(key); return n })
+                    }
+                  }
+
+                  const handleSubsClick = async (e) => {
+                    e.stopPropagation()
+                    if (subsVariant === 'active-locked' || subsVariant === 'error' || subsPending) return
+                    const key = `${torrent.hash}-subs`
+                    setPillPending(prev => new Set([...prev, key]))
+                    try {
+                      if (subsVariant === 'inactive') {
+                        await addTorrentTags({ hash: torrent.hash, tags: ['jellyfin:find_subs=pending'] })
+                      } else if (subsVariant === 'active-clickable') {
+                        await deleteTorrentTags({ hash: torrent.hash, tags: ['jellyfin:find_subs=pending'] })
+                      }
+                    } catch (_) { /* polling will reconcile */ }
+                    finally {
+                      setPillPending(prev => { const n = new Set(prev); n.delete(key); return n })
+                    }
+                  }
+
+                  // Pill CSS class helper
+                  const pillClass = (variant, isPending) => {
+                    let cls = 'torrent-pill'
+                    if (variant === 'active-clickable' || variant === 'active-locked') cls += ' torrent-pill-active'
+                    if (variant === 'error') cls += ' torrent-pill-error'
+                    if (isPending) cls += ' torrent-pill-pending'
+                    return cls
+                  }
 
                   return (
                     <div
                       key={torrent.hash}
                       className={animClass}
-                      onMouseEnter={() => setHoveredItemHash(torrent.hash)}
-                      onMouseLeave={() => setHoveredItemHash(null)}
+                      onMouseEnter={() => { if (canExpand) setHoveredItemHash(torrent.hash) }}
+                      onMouseLeave={() => { setHoveredItemHash(null); setHoveredPill(null) }}
                     >
-                      <div className={`torrent-item-inner${idx < displayTorrents.length - 1 ? ' pb-[18px]' : ''}`}>
+                      <div className="torrent-item-inner pb-[18px]">
                         {/* Name */}
                         <div className="flex items-center gap-3 mb-1">
                           <div className={`name-clip${isExpanded ? ' name-clip-expanded' : ''}`}>
@@ -851,7 +949,6 @@ export default function FetchApiActions() {
                         </div>
                         {/* Bottom row */}
                         <div className="flex items-center justify-between mt-[3px]">
-                          {/* Left: ETA or status text */}
                           <div>
                             {isDownloading && eta && (
                               <span className="text-xs font-semibold whitespace-nowrap" style={{ color: jellyfinAccent }}>
@@ -871,7 +968,6 @@ export default function FetchApiActions() {
                               <span key="completed" className="toggle-subtext text-xs font-semibold" style={{ color: '#1DB954' }}>Completed</span>
                             )}
                           </div>
-                          {/* Right: down/up speed */}
                           {isDownloading && (torrent.speed_download_mbps > 0 || torrent.speed_upload_mbps > 0) && (
                             <span className="text-xs font-semibold whitespace-nowrap flex-shrink-0 flex items-center gap-1" style={{ color: jellyfinAccent }}>
                               {torrent.speed_download_mbps > 0 && (
@@ -888,59 +984,61 @@ export default function FetchApiActions() {
                             </span>
                           )}
                         </div>
-                        {/* Expand panel — revealed on hover */}
+                        {/* Expand panel — only for downloading / paused */}
                         <div className={`torrent-expand-panel${isExpanded ? ' torrent-expand-panel-open' : ''}`}>
                           <div className="torrent-expand-inner">
-                            <div className="flex gap-2 pt-[10px]">
+                            <div className="flex gap-2 pt-[10px] pb-[4px] px-[2px]">
+                              {/* Notify pill */}
                               <button
                                 type="button"
-                                onClick={(e) => { e.stopPropagation(); toggleItemOption(torrent.hash, 'notify', itemNotify) }}
-                                className={`torrent-pill${itemNotify ? ' torrent-pill-active' : ''}`}
+                                disabled={notifyVariant === 'active-locked' || notifyVariant === 'error' || notifyPending}
+                                className={pillClass(notifyVariant, notifyPending)}
+                                onClick={handleNotifyClick}
+                                onMouseEnter={() => notifyHoverLabel && setHoveredPill({ hash: torrent.hash, kind: 'notify' })}
+                                onMouseLeave={() => setHoveredPill(null)}
                               >
-                                <span
-                                  aria-hidden="true"
-                                  style={{
-                                    width: '11px',
-                                    height: '11px',
-                                    backgroundColor: 'currentColor',
-                                    WebkitMaskImage: 'url(https://i.imgur.com/Z2E0Nz2.png)',
-                                    maskImage: 'url(https://i.imgur.com/Z2E0Nz2.png)',
-                                    WebkitMaskSize: 'contain',
-                                    maskSize: 'contain',
-                                    WebkitMaskRepeat: 'no-repeat',
-                                    maskRepeat: 'no-repeat',
-                                    WebkitMaskPosition: 'center',
-                                    maskPosition: 'center',
-                                    display: 'block',
-                                    flexShrink: 0,
-                                  }}
-                                />
-                                Notify
+                                <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.9}
+                                  style={{ width: '11px', height: '11px', flexShrink: 0 }}>
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                                </svg>
+                                <span className="pill-label-clip">
+                                  <span
+                                    key={`notify-${torrent.hash}-${isNotifyPillHovered && notifyHoverLabel ? 'h' : 'd'}`}
+                                    className={`pill-label-text${isNotifyPillHovered && notifyHoverLabel ? ' pill-label-danger' : ''}`}
+                                  >
+                                    {isNotifyPillHovered && notifyHoverLabel ? notifyHoverLabel : notifyLabel}
+                                  </span>
+                                </span>
                               </button>
+                              {/* Subs pill */}
                               <button
                                 type="button"
-                                onClick={(e) => { e.stopPropagation(); toggleItemOption(torrent.hash, 'subs', itemSubs) }}
-                                className={`torrent-pill${itemSubs ? ' torrent-pill-active' : ''}`}
+                                disabled={subsVariant === 'active-locked' || subsVariant === 'error' || subsPending}
+                                className={pillClass(subsVariant, subsPending)}
+                                onClick={handleSubsClick}
+                                onMouseEnter={() => subsHoverLabel && setHoveredPill({ hash: torrent.hash, kind: 'subs' })}
+                                onMouseLeave={() => setHoveredPill(null)}
                               >
                                 <span
                                   aria-hidden="true"
                                   style={{
-                                    width: '11px',
-                                    height: '11px',
-                                    backgroundColor: 'currentColor',
+                                    width: '11px', height: '11px', backgroundColor: 'currentColor',
                                     WebkitMaskImage: 'url(https://i.imgur.com/2SzFid0.png)',
                                     maskImage: 'url(https://i.imgur.com/2SzFid0.png)',
-                                    WebkitMaskSize: 'contain',
-                                    maskSize: 'contain',
-                                    WebkitMaskRepeat: 'no-repeat',
-                                    maskRepeat: 'no-repeat',
-                                    WebkitMaskPosition: 'center',
-                                    maskPosition: 'center',
-                                    display: 'block',
-                                    flexShrink: 0,
+                                    WebkitMaskSize: 'contain', maskSize: 'contain',
+                                    WebkitMaskRepeat: 'no-repeat', maskRepeat: 'no-repeat',
+                                    WebkitMaskPosition: 'center', maskPosition: 'center',
+                                    display: 'block', flexShrink: 0,
                                   }}
                                 />
-                                Subtitles
+                                <span className="pill-label-clip">
+                                  <span
+                                    key={`subs-${torrent.hash}-${isSubsPillHovered && subsHoverLabel ? 'h' : 'd'}`}
+                                    className={`pill-label-text${isSubsPillHovered && subsHoverLabel ? ' pill-label-danger' : ''}`}
+                                  >
+                                    {isSubsPillHovered && subsHoverLabel ? subsHoverLabel : subsLabel}
+                                  </span>
+                                </span>
                               </button>
                             </div>
                           </div>

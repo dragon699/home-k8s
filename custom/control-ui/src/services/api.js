@@ -74,3 +74,23 @@ export async function searchTorrents(query) {
     throw error
   }
 }
+
+export async function addTorrentTags(payload) {
+  const response = await fetch(`${API_BASE_URL}/torrents/tags`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  })
+  if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
+  return response.json()
+}
+
+export async function deleteTorrentTags(payload) {
+  const response = await fetch(`${API_BASE_URL}/torrents/tags`, {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  })
+  if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
+  return response.json()
+}

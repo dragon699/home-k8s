@@ -1066,6 +1066,9 @@ code {
 .torrent-expand-inner {
   overflow: hidden;
   min-height: 0;
+  /* padding+margin gives box-shadows room to render without getting clipped */
+  padding: 0 4px 6px;
+  margin: 0 -4px -6px;
 }
 
 /* ── Pill toggle buttons ─────────────────────────────────────────── */
@@ -1073,8 +1076,8 @@ code {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  padding: 5px 11px;
-  border-radius: 9999px;
+  padding: 5px 10px;
+  border-radius: 7px;
   border: 1.5px solid #e5e7eb;
   background: transparent;
   color: #b0b8c4;
@@ -1088,7 +1091,7 @@ code {
     box-shadow 200ms ease, transform 110ms ease;
 }
 
-.torrent-pill:hover:not(.torrent-pill-active) {
+.torrent-pill:hover:not(.torrent-pill-active):not(.torrent-pill-error):not(:disabled) {
   border-color: var(--card-accent, #8b5cf6);
   color: var(--card-accent, #8b5cf6);
   background: rgba(var(--card-accent-rgb, 139, 92, 246), 0.06);
@@ -1098,20 +1101,54 @@ code {
   background: var(--card-accent, #8b5cf6);
   border-color: var(--card-accent, #8b5cf6);
   color: white;
-  box-shadow: 0 2px 8px rgba(var(--card-accent-rgb, 139, 92, 246), 0.35);
 }
 
-.torrent-pill-active:hover {
-  opacity: 0.88;
+/* Active + button-hovered with a destructive label → turn red */
+.torrent-pill-active:hover:not(:disabled) {
+  background: #ef4444;
+  border-color: #ef4444;
 }
 
-.torrent-pill:active {
+.torrent-pill-error {
+  border-color: #ef4444;
+  color: #ef4444;
+  cursor: not-allowed;
+  opacity: 0.75;
+}
+
+.torrent-pill-pending {
+  opacity: 0.55;
+  cursor: wait;
+}
+
+.torrent-pill:active:not(:disabled) {
   transform: scale(0.94);
 }
 
-/* Staggered entrance when panel opens */
+/* ── Pill label text (animated swap on hover) ────────────────────── */
+.pill-label-clip {
+  overflow: hidden;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+@keyframes pillTextDown {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.pill-label-text {
+  display: inline-block;
+  animation: pillTextDown 160ms ease both;
+}
+
+.pill-label-danger {
+  color: inherit; /* colour already set by active:hover rule above */
+}
+
+/* Staggered entrance when panel opens — from top */
 @keyframes pillEnter {
-  from { opacity: 0; transform: translateY(5px) scale(0.88); }
+  from { opacity: 0; transform: translateY(-6px) scale(0.9); }
   to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
@@ -1140,7 +1177,8 @@ code {
   .import-action-btn::after,
   .import-action-btn,
   .torrent-expand-panel,
-  .torrent-pill {
+  .torrent-pill,
+  .pill-label-text {
     animation: none;
     transition: none;
   }
