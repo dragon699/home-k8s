@@ -54,9 +54,8 @@ export default function FetchApiActions() {
   const prevItemsRef = useRef([])
   const isFirstFetchRef = useRef(true)
   const isSubmitting = buttonState === 'pending'
-  const [hoveredSubsHash, setHoveredSubsHash] = useState(null)
-  const [subsTextHoveredHash, setSubsTextHoveredHash] = useState(null)
-  const [hoveredNameHash, setHoveredNameHash] = useState(null)
+  const [hoveredItemHash, setHoveredItemHash] = useState(null)
+  const [itemToggles, setItemToggles] = useState({})
   const [inputAnimPhase, setInputAnimPhase] = useState(false)
   const [inputShake, setInputShake] = useState(false)
   const [inputApiError, setInputApiError] = useState(false)
@@ -230,6 +229,16 @@ export default function FetchApiActions() {
     if (minutes <= 1) return 'Around a minute'
     if (minutes >= 60) return `${Math.round(minutes / 60)} hrs`
     return `${Math.round(minutes)} mins`
+  }
+
+  const toggleItemOption = (hash, key, currentVal) => {
+    setItemToggles(prev => ({
+      ...prev,
+      [hash]: {
+        ...(prev[hash] || {}),
+        [key]: !currentVal,
+      },
+    }))
   }
 
   const handleSubmit = async (e) => {
@@ -811,139 +820,22 @@ export default function FetchApiActions() {
                   const isExiting = exitingTorrents.some(et => et.hash === torrent.hash)
                   const animClass = isEntering ? 'torrent-item-enter' : isExiting ? 'torrent-item-exit' : 'torrent-item-outer'
 
-                  // Subtitles tag logic
-                  const tags = torrent.tags || []
-                  const findSubsTag = tags.find(t => typeof t === 'string' && t.startsWith('jellyfin:find_subs='))
-                  const isSubsHovered = hoveredSubsHash === torrent.hash
-                  const isSubsTextHovered = subsTextHoveredHash === torrent.hash
-
-                  let subsIconColor, subsIconOpacity, subsClickable
-                  let subsTextA = null, subsTextAColor, subsTextB = null, subsTextBColor
-
-                  if (isUnknown || isError) {
-                    subsIconColor = '#9ca3af'; subsIconOpacity = 1; subsClickable = false
-                  } else if (isPaused) {
-                    subsIconColor = '#9ca3af'; subsIconOpacity = 1; subsClickable = true
-                    if (findSubsTag === 'jellyfin:find_subs=pending') {
-                      subsTextA = 'Will download subtitles'; subsTextAColor = '#111827'
-                      subsTextB = 'Cancel'; subsTextBColor = '#e00000'
-                    } else if (findSubsTag === 'jellyfin:find_subs=completed') {
-                      subsTextA = 'Subtitles downloaded'; subsTextAColor = '#111827'
-                    } else if (findSubsTag === 'jellyfin:find_subs=partially_completed') {
-                      subsTextA = 'Subtitles may not be present in all episodes/movies'; subsTextAColor = '#111827'
-                    } else if (findSubsTag === 'jellyfin:find_subs=already_present') {
-                      subsTextA = 'Subtitles included with torrent'; subsTextAColor = '#111827'
-                    } else if (findSubsTag === 'jellyfin:find_subs=failed') {
-                      subsTextA = 'Failed to find and/or download subtitles'; subsTextAColor = '#e00000'
-                    } else {
-                      subsTextA = 'Will not download subtitles'; subsTextAColor = '#111827'
-                      subsTextB = 'Download'; subsTextBColor = jellyfinAccent
-                    }
-                  } else if (isDownloading || isCompleted) {
-                    subsClickable = true
-                    if (findSubsTag === 'jellyfin:find_subs=pending') {
-                      subsIconColor = jellyfinAccent; subsIconOpacity = 1
-                      subsTextA = 'Will download subtitles'; subsTextAColor = jellyfinAccent
-                      subsTextB = 'Cancel'; subsTextBColor = '#e00000'
-                    } else if (findSubsTag === 'jellyfin:find_subs=completed') {
-                      subsIconColor = jellyfinAccent; subsIconOpacity = 1
-                      subsTextA = 'Subtitles downloaded'; subsTextAColor = '#1DB954'
-                    } else if (findSubsTag === 'jellyfin:find_subs=partially_completed') {
-                      subsIconColor = jellyfinAccent; subsIconOpacity = 1
-                      subsTextA = 'Subtitles may not be present in all episodes/movies'; subsTextAColor = jellyfinAccent
-                    } else if (findSubsTag === 'jellyfin:find_subs=already_present') {
-                      subsIconColor = jellyfinAccent; subsIconOpacity = 1
-                      subsTextA = 'Subtitles already included with torrent'; subsTextAColor = '#1DB954'
-                    } else if (findSubsTag === 'jellyfin:find_subs=failed') {
-                      subsIconColor = '#e00000'; subsIconOpacity = 1
-                      subsTextA = 'Failed to find and/or download subtitles'; subsTextAColor = '#e00000'
-                    } else {
-                      subsIconColor = '#9ca3af'; subsIconOpacity = isSubsHovered ? 1 : 0.5
-                      subsTextA = 'Will not download subtitles'; subsTextAColor = '#111827'
-                      subsTextB = 'Download'; subsTextBColor = jellyfinAccent
-                    }
-                  } else {
-                    subsIconColor = '#9ca3af'; subsIconOpacity = 1; subsClickable = false
-                  }
-
-                  const isNameHovered = hoveredNameHash === torrent.hash
+                  const isExpanded = hoveredItemHash === torrent.hash
+                  const itemNotify = itemToggles[torrent.hash]?.notify ?? true
+                  const itemSubs = itemToggles[torrent.hash]?.subs ?? false
 
                   return (
-                    <div key={torrent.hash} className={animClass}>
+                    <div
+                      key={torrent.hash}
+                      className={animClass}
+                      onMouseEnter={() => setHoveredItemHash(torrent.hash)}
+                      onMouseLeave={() => setHoveredItemHash(null)}
+                    >
                       <div className={`torrent-item-inner${idx < displayTorrents.length - 1 ? ' pb-[18px]' : ''}`}>
-                        {/* Name + icons */}
-                        <div className="flex items-center justify-between gap-3 mb-1">
-                          <div
-                            className={`name-clip${isNameHovered ? ' name-clip-expanded' : ''}`}
-                            onMouseEnter={() => setHoveredNameHash(torrent.hash)}
-                            onMouseLeave={() => setHoveredNameHash(null)}
-                          >
+                        {/* Name */}
+                        <div className="flex items-center gap-3 mb-1">
+                          <div className={`name-clip${isExpanded ? ' name-clip-expanded' : ''}`}>
                             <span className="text-sm font-bold text-gray-900 whitespace-nowrap">{torrent.name}</span>
-                          </div>
-                          {/* Subtitle icon + gear icon */}
-                          <div className="flex items-center gap-2 flex-shrink-0">
-                            {/* Subtitle section: row-reverse so icon stays right, text slides out left */}
-                            <div
-                              className="flex flex-row-reverse items-center gap-1"
-                              style={{ cursor: subsClickable ? 'pointer' : 'default' }}
-                              onMouseEnter={() => { if (subsClickable) setHoveredSubsHash(torrent.hash) }}
-                              onMouseLeave={() => { setHoveredSubsHash(null); setSubsTextHoveredHash(null) }}
-                            >
-                              {/* Icon */}
-                              <span
-                                aria-hidden="true"
-                                className="block flex-shrink-0"
-                                style={{
-                                  width: '22px',
-                                  height: '22px',
-                                  backgroundColor: subsIconColor,
-                                  opacity: subsIconOpacity,
-                                  transition: 'background-color 200ms ease, opacity 200ms ease',
-                                  WebkitMaskImage: 'url(https://i.imgur.com/2SzFid0.png)',
-                                  maskImage: 'url(https://i.imgur.com/2SzFid0.png)',
-                                  WebkitMaskSize: 'contain',
-                                  maskSize: 'contain',
-                                  WebkitMaskRepeat: 'no-repeat',
-                                  maskRepeat: 'no-repeat',
-                                  WebkitMaskPosition: 'center',
-                                  maskPosition: 'center',
-                                }}
-                              />
-                              {/* Text: slides in from icon (right) toward left */}
-                              {subsTextA && (
-                                <div
-                                  className={`subs-text-clip${isSubsHovered ? ' subs-text-visible' : ''}`}
-                                  onMouseEnter={() => { if (subsTextB) setSubsTextHoveredHash(torrent.hash) }}
-                                  onMouseLeave={() => setSubsTextHoveredHash(null)}
-                                >
-                                  {isSubsTextHovered && subsTextB ? (
-                                    <span
-                                      key={`${torrent.hash}-subs-b`}
-                                      className="subs-text-swap subs-bubble"
-                                      style={{ backgroundColor: subsTextBColor, fontSize: '15px' }}
-                                    >
-                                      {subsTextB}
-                                    </span>
-                                  ) : (
-                                    <span
-                                      key={`${torrent.hash}-subs-a`}
-                                      className="subs-bubble"
-                                      style={{ backgroundColor: subsTextAColor, fontSize: '15px' }}
-                                    >
-                                      {subsTextA}
-                                    </span>
-                                  )}
-                                </div>
-                              )}
-                            </div>
-                            {/* Chevron icon */}
-                            <svg
-                              aria-hidden="true"
-                              style={{ width: '18px', height: '18px', color: '#9ca3af', flexShrink: 0 }}
-                              fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"
-                            >
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M6 9l6 6 6-6" />
-                            </svg>
                           </div>
                         </div>
                         {/* Progress bar */}
@@ -996,7 +888,64 @@ export default function FetchApiActions() {
                             </span>
                           )}
                         </div>
-                    </div>
+                        {/* Expand panel — revealed on hover */}
+                        <div className={`torrent-expand-panel${isExpanded ? ' torrent-expand-panel-open' : ''}`}>
+                          <div className="torrent-expand-inner">
+                            <div className="flex gap-2 pt-[10px]">
+                              <button
+                                type="button"
+                                onClick={(e) => { e.stopPropagation(); toggleItemOption(torrent.hash, 'notify', itemNotify) }}
+                                className={`torrent-pill${itemNotify ? ' torrent-pill-active' : ''}`}
+                              >
+                                <span
+                                  aria-hidden="true"
+                                  style={{
+                                    width: '11px',
+                                    height: '11px',
+                                    backgroundColor: 'currentColor',
+                                    WebkitMaskImage: 'url(https://i.imgur.com/Z2E0Nz2.png)',
+                                    maskImage: 'url(https://i.imgur.com/Z2E0Nz2.png)',
+                                    WebkitMaskSize: 'contain',
+                                    maskSize: 'contain',
+                                    WebkitMaskRepeat: 'no-repeat',
+                                    maskRepeat: 'no-repeat',
+                                    WebkitMaskPosition: 'center',
+                                    maskPosition: 'center',
+                                    display: 'block',
+                                    flexShrink: 0,
+                                  }}
+                                />
+                                Notify
+                              </button>
+                              <button
+                                type="button"
+                                onClick={(e) => { e.stopPropagation(); toggleItemOption(torrent.hash, 'subs', itemSubs) }}
+                                className={`torrent-pill${itemSubs ? ' torrent-pill-active' : ''}`}
+                              >
+                                <span
+                                  aria-hidden="true"
+                                  style={{
+                                    width: '11px',
+                                    height: '11px',
+                                    backgroundColor: 'currentColor',
+                                    WebkitMaskImage: 'url(https://i.imgur.com/2SzFid0.png)',
+                                    maskImage: 'url(https://i.imgur.com/2SzFid0.png)',
+                                    WebkitMaskSize: 'contain',
+                                    maskSize: 'contain',
+                                    WebkitMaskRepeat: 'no-repeat',
+                                    maskRepeat: 'no-repeat',
+                                    WebkitMaskPosition: 'center',
+                                    maskPosition: 'center',
+                                    display: 'block',
+                                    flexShrink: 0,
+                                  }}
+                                />
+                                Subtitles
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   )
                 })}

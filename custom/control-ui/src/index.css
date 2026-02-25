@@ -1050,6 +1050,79 @@ code {
   color: var(--card-accent, #8b5cf6);
 }
 
+/* ── Torrent item expand on hover ───────────────────────────────── */
+.torrent-expand-panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition: grid-template-rows 260ms cubic-bezier(0.4, 0, 0.2, 1), opacity 200ms ease;
+}
+
+.torrent-expand-panel-open {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
+.torrent-expand-inner {
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* ── Pill toggle buttons ─────────────────────────────────────────── */
+.torrent-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 11px;
+  border-radius: 9999px;
+  border: 1.5px solid #e5e7eb;
+  background: transparent;
+  color: #b0b8c4;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+  outline: none;
+  transition: background-color 200ms ease, border-color 200ms ease, color 200ms ease,
+    box-shadow 200ms ease, transform 110ms ease;
+}
+
+.torrent-pill:hover:not(.torrent-pill-active) {
+  border-color: var(--card-accent, #8b5cf6);
+  color: var(--card-accent, #8b5cf6);
+  background: rgba(var(--card-accent-rgb, 139, 92, 246), 0.06);
+}
+
+.torrent-pill-active {
+  background: var(--card-accent, #8b5cf6);
+  border-color: var(--card-accent, #8b5cf6);
+  color: white;
+  box-shadow: 0 2px 8px rgba(var(--card-accent-rgb, 139, 92, 246), 0.35);
+}
+
+.torrent-pill-active:hover {
+  opacity: 0.88;
+}
+
+.torrent-pill:active {
+  transform: scale(0.94);
+}
+
+/* Staggered entrance when panel opens */
+@keyframes pillEnter {
+  from { opacity: 0; transform: translateY(5px) scale(0.88); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.torrent-expand-panel-open .torrent-pill:first-child {
+  animation: pillEnter 220ms 30ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.torrent-expand-panel-open .torrent-pill:last-child {
+  animation: pillEnter 220ms 90ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .tab-panel-enter {
     animation: none;
@@ -1065,7 +1138,9 @@ code {
   .option-check-mark path,
   .option-check::after,
   .import-action-btn::after,
-  .import-action-btn {
+  .import-action-btn,
+  .torrent-expand-panel,
+  .torrent-pill {
     animation: none;
     transition: none;
   }
