@@ -11,6 +11,16 @@ type AddTorrentPayload struct {
 	Notify    *bool     `json:"notify,omitempty"`
 }
 
+type AddTorrentTagsPayload struct {
+	Hash  string   `json:"hash"`
+	Tags  []string `json:"tags"`
+}
+
+type DeleteTorrentTagsPayload struct {
+	Hash  string   `json:"hash"`
+	Tags  []string `json:"tags"`
+}
+
 type SearchTorrentsParams struct {
-	Query string `json:"query"`
+	Query  string `json:"query"`
 }

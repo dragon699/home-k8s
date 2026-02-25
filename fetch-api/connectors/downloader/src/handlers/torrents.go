@@ -418,3 +418,103 @@ func AddTorrent(ctx *fiber.Ctx) error {
 		},
 	)
 }
+
+func AddTorrentTags(ctx *fiber.Ctx) error {
+	var reqPayload request.AddTorrentTagsPayload
+
+	if err := ctx.BodyParser(&reqPayload); err != nil {
+		return ctx.Status(400).JSON(
+			response.ErrorResponse{
+				Error: "Invalid request payload",
+			},
+		)
+	}
+
+	if reqPayload.Hash == "" || len(reqPayload.Tags) == 0 {
+		return ctx.Status(400).JSON(
+			response.ErrorResponse{
+				Error: "hash and at least one tag in tags are required",
+			},
+		)
+	}
+
+	err := qbittorrent.Client.AddTorrentTags(
+		reqPayload.Hash,
+		reqPayload.Tags,
+	)
+
+	if err != nil {
+		var clientErr *qbittorrent.ClientError
+		if errors.As(err, &clientErr) {
+			return ctx.Status(502).JSON(
+				response.ErrorResponse{
+					Error:            err.Error(),
+					UpstreamResponse: clientErr.UpstreamResponse(),
+				},
+			)
+		}
+
+		return ctx.Status(500).JSON(
+			response.ErrorResponse{
+				Error: err.Error(),
+			},
+		)
+	}
+
+	return ctx.JSON(
+		response.SuccessResponse{
+			Success: true,
+			Message: "Tag/s added to torrent successfully!",
+		},
+	)
+}
+
+func DeleteTorrentTags(ctx *fiber.Ctx) error {
+	var reqPayload request.DeleteTorrentTagsPayload
+
+	if err := ctx.BodyParser(&reqPayload); err != nil {
+		return ctx.Status(400).JSON(
+			response.ErrorResponse{
+				Error: "Invalid request payload",
+			},
+		)
+	}
+
+	if reqPayload.Hash == "" || len(reqPayload.Tags) == 0 {
+		return ctx.Status(400).JSON(
+			response.ErrorResponse{
+				Error: "hash and at least one tag in tags are required",
+			},
+		)
+	}
+
+	err := qbittorrent.Client.DeleteTorrentTags(
+		reqPayload.Hash,
+		reqPayload.Tags,
+	)
+
+	if err != nil {
+		var clientErr *qbittorrent.ClientError
+		if errors.As(err, &clientErr) {
+			return ctx.Status(502).JSON(
+				response.ErrorResponse{
+					Error:            err.Error(),
+					UpstreamResponse: clientErr.UpstreamResponse(),
+				},
+			)
+		}
+
+		return ctx.Status(500).JSON(
+			response.ErrorResponse{
+				Error: err.Error(),
+			},
+		)
+	}
+
+	return ctx.JSON(
+		response.SuccessResponse{
+			Success: true,
+			Message: "Tag/s deleted from torrent successfully!",
+		},
+	)
+}

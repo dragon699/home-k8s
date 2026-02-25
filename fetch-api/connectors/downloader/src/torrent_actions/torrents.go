@@ -89,13 +89,13 @@ func (instance *ActionsRunner) runActions() {
 					if err != nil {
 						t.Log.Error("Failed to send slack notification for a torrent!", "error", err.Error())
 
-						qbittorrent.Client.RemoveTorrentTags(torrent.Hash, []string{"slack:notify=pending"})
+						qbittorrent.Client.DeleteTorrentTags(torrent.Hash, []string{"slack:notify=pending"})
 						qbittorrent.Client.AddTorrentTags(torrent.Hash, []string{"slack:notify=failed"})
 
 						break
 					}
 
-					qbittorrent.Client.RemoveTorrentTags(torrent.Hash, []string{"slack:notify=pending"})
+					qbittorrent.Client.DeleteTorrentTags(torrent.Hash, []string{"slack:notify=pending"})
 					qbittorrent.Client.AddTorrentTags(torrent.Hash, []string{"slack:notify=initial"})
 
 					break
@@ -121,13 +121,13 @@ func (instance *ActionsRunner) runActions() {
 					if err != nil {
 						t.Log.Error("Failed to send slack notification for a completed torrent!", "error", err.Error())
 
-						qbittorrent.Client.RemoveTorrentTags(torrent.Hash, []string{"slack:notify=initial"})
+						qbittorrent.Client.DeleteTorrentTags(torrent.Hash, []string{"slack:notify=initial"})
 						qbittorrent.Client.AddTorrentTags(torrent.Hash, []string{"slack:notify=failed"})
 
 						break
 					}
 
-					qbittorrent.Client.RemoveTorrentTags(torrent.Hash, []string{"slack:notify=initial"})
+					qbittorrent.Client.DeleteTorrentTags(torrent.Hash, []string{"slack:notify=initial"})
 					qbittorrent.Client.AddTorrentTags(torrent.Hash, []string{"slack:notify=completed"})
 
 					break
@@ -141,7 +141,7 @@ func (instance *ActionsRunner) runActions() {
 
 		var hasPendingActions bool = false
 		var actionsOrder = map[string]int{
-			"rename": 0,
+			"rename":    0,
 			"find_subs": 1,
 		}
 
@@ -254,7 +254,7 @@ func (instance *ActionsRunner) runActions() {
 					instance.refreshJellyfinLibrary()
 					time.Sleep(2 * time.Second)
 
-					qbittorrent.Client.RemoveTorrentTags(torrent.Hash, []string{"jellyfin:rename=pending"})
+					qbittorrent.Client.DeleteTorrentTags(torrent.Hash, []string{"jellyfin:rename=pending"})
 
 					if renameFailed {
 						qbittorrent.Client.AddTorrentTags(torrent.Hash, []string{"jellyfin:rename=failed"})
@@ -274,7 +274,7 @@ func (instance *ActionsRunner) runActions() {
 					jellyfinItems, err := instance.getJellyfinItems()
 					if err != nil {
 						t.Log.Error("Failed to get Jellyfin items", "error", err.Error())
-						qbittorrent.Client.RemoveTorrentTags(torrent.Hash, []string{"jellyfin:find_subs=pending"})
+						qbittorrent.Client.DeleteTorrentTags(torrent.Hash, []string{"jellyfin:find_subs=pending"})
 						qbittorrent.Client.AddTorrentTags(torrent.Hash, []string{"jellyfin:find_subs=failed"})
 
 						continue
@@ -314,7 +314,7 @@ func (instance *ActionsRunner) runActions() {
 						}
 					}
 
-					qbittorrent.Client.RemoveTorrentTags(torrent.Hash, []string{"jellyfin:find_subs=pending"})
+					qbittorrent.Client.DeleteTorrentTags(torrent.Hash, []string{"jellyfin:find_subs=pending"})
 
 					if subsAlreadyPresentCount == len(torrentContentNewFileNames) {
 						qbittorrent.Client.AddTorrentTags(torrent.Hash, []string{"jellyfin:find_subs=already_present"})

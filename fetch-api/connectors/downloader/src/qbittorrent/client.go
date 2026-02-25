@@ -350,7 +350,7 @@ func (instance *QBittorrentClient) AddTorrentTags(torrentHash string, tags []str
 	return nil
 }
 
-func (instance *QBittorrentClient) RemoveTorrentTags(torrentHash string, tags []string) error {
+func (instance *QBittorrentClient) DeleteTorrentTags(torrentHash string, tags []string) error {
 	reqParams := url.Values{}
 	reqParams.Set("hashes", torrentHash)
 	reqParams.Set("tags", strings.Join(tags, ","))

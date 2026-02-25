@@ -53,3 +53,35 @@ func AddTorrent(router fiber.Router) {
 	api := router.Group(torrentsRouterName)
 	api.Post("/", handlers.AddTorrent)
 }
+
+// AddTorrentTag godoc
+// @Summary      Add a tag to a torrent in qBittorrent
+// @Description  Adds a tag to a torrent in qBittorrent.
+// @Tags         torrents
+// @Accept       json
+// @Produce      json
+// @Param        request  body      request.AddTorrentTagPayload  true  "Add torrent tag payload"
+// @Success      200      {object}  response.SuccessResponse
+// @Failure      400      {object}  response.ErrorResponse
+// @Failure      500      {object}  response.ErrorResponse
+// @Router       /torrents/tag [post]
+func AddTorrentTags(router fiber.Router) {
+	api := router.Group(torrentsRouterName)
+	api.Post("/tags", handlers.AddTorrentTags)
+}
+
+// DeleteTorrentTag godoc
+// @Summary      Delete a tag from a torrent in qBittorrent
+// @Description  Deletes a tag from a torrent in qBittorrent.
+// @Tags         torrents
+// @Accept       json
+// @Produce      json
+// @Param        request  body      request.DeleteTorrentTagPayload  true  "Delete torrent tag payload"
+// @Success      200      {object}  response.SuccessResponse
+// @Failure      400      {object}  response.ErrorResponse
+// @Failure      500      {object}  response.ErrorResponse
+// @Router       /torrents/tag [delete]
+func DeleteTorrentTags(router fiber.Router) {
+	api := router.Group(torrentsRouterName)
+	api.Delete("/tags", handlers.DeleteTorrentTags)
+}
