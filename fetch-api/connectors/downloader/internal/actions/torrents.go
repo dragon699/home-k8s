@@ -1,4 +1,4 @@
-package torrent_actions
+package actions
 
 import (
 	"common/utils"
@@ -14,11 +14,11 @@ import (
 	"strings"
 	"time"
 
-	"connector-downloader/settings"
-	"connector-downloader/src/dto/response"
-	"connector-downloader/src/notifications"
-	"connector-downloader/src/qbittorrent"
-	t "connector-downloader/src/telemetry"
+	"connector-downloader/internal/config"
+	"connector-downloader/internal/dto/response"
+	"connector-downloader/internal/notifications"
+	"connector-downloader/internal/qbittorrent"
+	t "connector-downloader/internal/telemetry"
 
 	"github.com/go-co-op/gocron"
 )
@@ -31,25 +31,25 @@ func (instance *ActionsRunner) CreateSchedule() {
 	t.Log.Info("Scheduling qBittorrent action checks..")
 	instance.runActions()
 
-	if settings.Config.TorrentActionsJobID == nil {
+	if config.Config.TorrentActionsJobID == nil {
 		if instance.Scheduler == nil {
 			return
 		}
 
 		nextCheckTime := instance.getNextCheckTime()
-		settings.Config.TorrentActionsNextCheck = &nextCheckTime
+		config.Config.TorrentActionsNextCheck = &nextCheckTime
 
 		jobTag := "torrent_actions"
-		job, _ := instance.Scheduler.Every(settings.Config.TorrentActionsIntervalSeconds).Seconds().Do(instance.runActions)
+		job, _ := instance.Scheduler.Every(config.Config.TorrentActionsIntervalSeconds).Seconds().Do(instance.runActions)
 		job.Tag(jobTag)
-		settings.Config.TorrentActionsJobID = &jobTag
+		config.Config.TorrentActionsJobID = &jobTag
 	}
 }
 
 func (instance *ActionsRunner) getNextCheckTime() string {
 	ts := time.Now().Add(
 		time.Duration(
-			settings.Config.TorrentActionsIntervalSeconds,
+			config.Config.TorrentActionsIntervalSeconds,
 		) * time.Second,
 	)
 
@@ -58,14 +58,14 @@ func (instance *ActionsRunner) getNextCheckTime() string {
 
 func (instance *ActionsRunner) runActions() {
 	lastCheckTime := time.Now().Format("2006-01-02T15:04:05")
-	settings.Config.TorrentActionsLastCheck = &lastCheckTime
+	config.Config.TorrentActionsLastCheck = &lastCheckTime
 
 	torrents, err := instance.getTorrents()
 
 	if err != nil {
 		t.Log.Error("Failed to fetch torrents list from qBittorrent", "error", err.Error())
 		nextCheckTime := instance.getNextCheckTime()
-		settings.Config.TorrentActionsNextCheck = &nextCheckTime
+		config.Config.TorrentActionsNextCheck = &nextCheckTime
 
 		return
 	}
@@ -77,12 +77,12 @@ func (instance *ActionsRunner) runActions() {
 					vars := notifications.NotificationTorrentsVars{
 						TorrentName:    torrent.Name,
 						Category:       torrent.Category,
-						QBittorrentURL: settings.Config.QBittorrentPublicUrl,
-						JellyfinURL:    settings.Config.JellyfinUrl,
+						QBittorrentURL: config.Config.QBittorrentPublicUrl,
+						JellyfinURL:    config.Config.JellyfinUrl,
 					}
 
 					err = notifications.SendSlackNotification(
-						settings.Config.SlackNotificationsWebhookUrl,
+						config.Config.SlackNotificationsWebhookUrl,
 						"templates/torrents/slack_initial.json",
 						vars,
 					)
@@ -109,12 +109,12 @@ func (instance *ActionsRunner) runActions() {
 					vars := notifications.NotificationTorrentsVars{
 						TorrentName:    torrent.Name,
 						Category:       torrent.Category,
-						QBittorrentURL: settings.Config.QBittorrentPublicUrl,
-						JellyfinURL:    settings.Config.JellyfinUrl,
+						QBittorrentURL: config.Config.QBittorrentPublicUrl,
+						JellyfinURL:    config.Config.JellyfinUrl,
 					}
 
 					err = notifications.SendSlackNotification(
-						settings.Config.SlackNotificationsWebhookUrl,
+						config.Config.SlackNotificationsWebhookUrl,
 						"templates/torrents/slack_completed.json",
 						vars,
 					)
@@ -287,7 +287,7 @@ func (instance *ActionsRunner) runActions() {
 							if mediaStreams, ok := item["MediaStreams"].([]map[string]any); ok {
 								for _, stream := range mediaStreams {
 									if stream["Type"] == "Subtitle" {
-										if subtitleLanguage, ok := stream["Language"].(string); ok && subtitleLanguage == settings.Config.JellyfinSubtitlesDefaultLanguage[:3] {
+										if subtitleLanguage, ok := stream["Language"].(string); ok && subtitleLanguage == config.Config.JellyfinSubtitlesDefaultLanguage[:3] {
 											subtitlesFound = true
 											break
 										}
@@ -304,7 +304,7 @@ func (instance *ActionsRunner) runActions() {
 						itemFile := filepath.Base(item["Path"].(string))
 
 						if slices.Contains(torrentContentNewFileNames, itemFile) {
-							err = instance.downloadSubtitlesInJellyfin(item["Id"].(string), settings.Config.JellyfinSubtitlesDefaultLanguage)
+							err = instance.downloadSubtitlesInJellyfin(item["Id"].(string), config.Config.JellyfinSubtitlesDefaultLanguage)
 							if err != nil {
 								t.Log.Error("Failed to download subtitles in Jellyfin", "error", err.Error())
 								continue
@@ -345,7 +345,7 @@ func (instance *ActionsRunner) getTorrents() (*response.BaseResponse[response.To
 
 	req, err := http.NewRequest(
 		http.MethodGet,
-		fmt.Sprintf("%s/torrents", settings.Config.ListenUrl),
+		fmt.Sprintf("%s/torrents", config.Config.ListenUrl),
 		nil,
 	)
 	if err != nil {
@@ -383,7 +383,7 @@ func (instance *ActionsRunner) refreshJellyfinLibrary() error {
 
 	req, err := http.NewRequest(
 		http.MethodPost,
-		fmt.Sprintf("%s/Library/Refresh", settings.Config.JellyfinUrl),
+		fmt.Sprintf("%s/Library/Refresh", config.Config.JellyfinUrl),
 		nil,
 	)
 	if err != nil {
@@ -391,7 +391,7 @@ func (instance *ActionsRunner) refreshJellyfinLibrary() error {
 	}
 
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("X-Emby-Token", settings.Config.JellyfinAPIKey)
+	req.Header.Set("X-Emby-Token", config.Config.JellyfinAPIKey)
 
 	resp, err := httpClient.Do(req)
 	if err != nil {
@@ -426,14 +426,14 @@ func (instance *ActionsRunner) getJellyfinItems() ([]map[string]any, error) {
 
 	req, err := http.NewRequest(
 		http.MethodGet,
-		fmt.Sprintf("%s/Items?%s", settings.Config.JellyfinUrl, reqParams.Encode()),
+		fmt.Sprintf("%s/Items?%s", config.Config.JellyfinUrl, reqParams.Encode()),
 		nil,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create request: %w", err)
 	}
 
-	req.Header.Set("X-Emby-Token", settings.Config.JellyfinAPIKey)
+	req.Header.Set("X-Emby-Token", config.Config.JellyfinAPIKey)
 
 	resp, err := httpClient.Do(req)
 	if err != nil {
@@ -472,14 +472,14 @@ func (instance *ActionsRunner) downloadSubtitlesInJellyfin(itemID string, langua
 
 	req, err := http.NewRequest(
 		http.MethodGet,
-		fmt.Sprintf("%s/Items/%s/RemoteSearch/Subtitles/%s", settings.Config.JellyfinUrl, itemID, language),
+		fmt.Sprintf("%s/Items/%s/RemoteSearch/Subtitles/%s", config.Config.JellyfinUrl, itemID, language),
 		nil,
 	)
 	if err != nil {
 		return fmt.Errorf("failed to create request: %w", err)
 	}
 
-	req.Header.Set("X-Emby-Token", settings.Config.JellyfinAPIKey)
+	req.Header.Set("X-Emby-Token", config.Config.JellyfinAPIKey)
 
 	resp, err := httpClient.Do(req)
 	if err != nil {
@@ -510,14 +510,14 @@ func (instance *ActionsRunner) downloadSubtitlesInJellyfin(itemID string, langua
 
 	req, err = http.NewRequest(
 		http.MethodPost,
-		fmt.Sprintf("%s/Items/%s/RemoteSearch/Subtitles/%s", settings.Config.JellyfinUrl, itemID, jellyfinSubtitlesID),
+		fmt.Sprintf("%s/Items/%s/RemoteSearch/Subtitles/%s", config.Config.JellyfinUrl, itemID, jellyfinSubtitlesID),
 		nil,
 	)
 	if err != nil {
 		return fmt.Errorf("failed to create request: %w", err)
 	}
 
-	req.Header.Set("X-Emby-Token", settings.Config.JellyfinAPIKey)
+	req.Header.Set("X-Emby-Token", config.Config.JellyfinAPIKey)
 
 	resp, err = httpClient.Do(req)
 	if err != nil {

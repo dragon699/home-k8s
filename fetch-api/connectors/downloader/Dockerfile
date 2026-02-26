@@ -17,7 +17,7 @@ RUN CGO_ENABLED=0 \
     GOOS=linux \
     go build \
     -o /app/bin/downloader \
-    app.go
+    ./cmd/downloader
 
 
 

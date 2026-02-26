@@ -1,6 +1,5 @@
 package response
 
-
 type HealthResponse struct {
 	ConnectorName   string `json:"connector_name"`
 	Healthy         *bool  `json:"healthy"`
@@ -8,5 +7,5 @@ type HealthResponse struct {
 	HealthNextCheck string `json:"health_next_check,omitempty"`
 }
 type ReadyResponse struct {
-	Ready           *bool  `json:"ready"`
+	Ready *bool `json:"ready"`
 }

@@ -1,21 +1,21 @@
 package handlers
 
 import (
-	"errors"
-	"slices"
-	"strings"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
 	"net/url"
+	"slices"
+	"strings"
 	"time"
 
 	"common/utils"
-	"connector-downloader/settings"
-	"connector-downloader/src/dto/request"
-	"connector-downloader/src/dto/response"
-	"connector-downloader/src/qbittorrent"
+	"connector-downloader/internal/config"
+	"connector-downloader/internal/dto/request"
+	"connector-downloader/internal/dto/response"
+	"connector-downloader/internal/qbittorrent"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -224,7 +224,7 @@ func SearchTorrents(ctx *fiber.Ctx) error {
 
 	req, err := http.NewRequest(
 		http.MethodGet,
-		fmt.Sprintf("%s/q.php?%s", settings.Config.TPBAPIUrl, reqParams.Encode()),
+		fmt.Sprintf("%s/q.php?%s", config.Config.TPBAPIUrl, reqParams.Encode()),
 		nil,
 	)
 	if err != nil {
@@ -255,7 +255,7 @@ func SearchTorrents(ctx *fiber.Ctx) error {
 		)
 	}
 
-	if ! (resp.StatusCode >= 200 && resp.StatusCode < 300) {
+	if !(resp.StatusCode >= 200 && resp.StatusCode < 300) {
 		return ctx.Status(502).JSON(
 			response.ErrorResponse{
 				Error:            fmt.Sprintf("Unexpected status code from TPB API: %d", resp.StatusCode),
@@ -289,17 +289,17 @@ func SearchTorrents(ctx *fiber.Ctx) error {
 		dateAdded, _ := utils.ToInt(TPBTorrents[torrent].Added)
 
 		torrentData := response.Torrent{
-			ID: id,
-			Name: TPBTorrents[torrent].Name,
-			Hash: TPBTorrents[torrent].InfoHash,
-			MagnetURI: magnetURI,
-			Leechers: leechers,
-			Seeders: seeders,
+			ID:          id,
+			Name:        TPBTorrents[torrent].Name,
+			Hash:        TPBTorrents[torrent].InfoHash,
+			MagnetURI:   magnetURI,
+			Leechers:    leechers,
+			Seeders:     seeders,
 			SizeTotalMB: utils.BytesToMegabytes(sizeTotalB),
 			SizeTotalGB: utils.BytesToGigabytes(sizeTotalB),
-			FilesCount: filesCount,
-			DateAdded: utils.TimeFromUnix(dateAdded),
-			IMDB: TPBTorrents[torrent].IMDB,
+			FilesCount:  filesCount,
+			DateAdded:   utils.TimeFromUnix(dateAdded),
+			IMDB:        TPBTorrents[torrent].IMDB,
 		}
 
 		result = append(result, torrentData)
@@ -342,7 +342,7 @@ func AddTorrent(ctx *fiber.Ctx) error {
 		reqPayload.Category = "jellyfin"
 	}
 
-	if (reqPayload.Category == "jellyfin") && ! (slices.Contains(reqPayload.Tags, "jellyfin:rename=pending")) {
+	if (reqPayload.Category == "jellyfin") && !(slices.Contains(reqPayload.Tags, "jellyfin:rename=pending")) {
 		reqPayload.Tags = append(reqPayload.Tags, "jellyfin:rename=pending")
 	}
 
@@ -351,7 +351,7 @@ func AddTorrent(ctx *fiber.Ctx) error {
 	}
 
 	if reqPayload.SavePath == "" {
-		reqPayload.SavePath = settings.Config.QBittorrentDefaultSavePath
+		reqPayload.SavePath = config.Config.QBittorrentDefaultSavePath
 	}
 
 	if reqPayload.Manage != nil {

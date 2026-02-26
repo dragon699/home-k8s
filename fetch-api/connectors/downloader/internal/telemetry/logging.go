@@ -4,14 +4,14 @@ import (
 	"log/slog"
 
 	"common/telemetry"
-	"connector-downloader/settings"
+	"connector-downloader/internal/config"
 )
 
 var Log *slog.Logger
 
 func init() {
 	Log = telemetry.NewLogger(
-		settings.Config.LogLevel,
-		settings.Config.LogFormat,
+		config.Config.LogLevel,
+		config.Config.LogFormat,
 	)
 }

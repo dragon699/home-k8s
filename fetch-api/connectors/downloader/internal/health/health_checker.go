@@ -3,13 +3,12 @@ package health
 import (
 	"time"
 
-	"connector-downloader/settings"
-	"connector-downloader/src/qbittorrent"
-	t "connector-downloader/src/telemetry"
+	"connector-downloader/internal/config"
+	"connector-downloader/internal/qbittorrent"
+	t "connector-downloader/internal/telemetry"
 
 	"github.com/go-co-op/gocron"
 )
-
 
 type HealthChecker struct {
 	Scheduler *gocron.Scheduler
@@ -19,16 +18,16 @@ func (instance *HealthChecker) CreateSchedule() {
 	t.Log.Info("Scheduling health checks..")
 	instance.updateStatus()
 
-	if settings.Config.HealthJobID == nil {
+	if config.Config.HealthJobID == nil {
 		instance.updateSchedule()
 	}
 }
 
 func (instance *HealthChecker) getNextInterval() int {
-	if settings.Config.Healthy != nil && *settings.Config.Healthy {
-		return settings.Config.HealthCheckIntervalSeconds
+	if config.Config.Healthy != nil && *config.Config.Healthy {
+		return config.Config.HealthCheckIntervalSeconds
 	} else {
-		return settings.Config.HealthRetryIntervalSeconds
+		return config.Config.HealthRetryIntervalSeconds
 	}
 }
 
@@ -46,24 +45,24 @@ func (instance *HealthChecker) updateStatus() {
 	var wasHealthy bool
 	var isHealthy bool
 
-	wasHealthyPtr := settings.Config.Healthy
+	wasHealthyPtr := config.Config.Healthy
 
 	if wasHealthyPtr != nil {
 		wasHealthy = *wasHealthyPtr
 	}
 
 	lastCheckTime := time.Now().Format("2006-01-02T15:04:05")
-	settings.Config.HealthLastCheck = &lastCheckTime
+	config.Config.HealthLastCheck = &lastCheckTime
 	healthStatus, healthStatusCode, err := qbittorrent.Client.Ping()
 
 	if err != nil {
-		settings.Config.Healthy = nil
+		config.Config.Healthy = nil
 
 		if wasHealthyPtr != nil {
 			instance.updateSchedule()
 		} else {
 			nextCheckTime := instance.getNextCheckTime()
-			settings.Config.HealthNextCheck = &nextCheckTime
+			config.Config.HealthNextCheck = &nextCheckTime
 		}
 
 		t.Log.Error("Health check failed, QBittorrent is unreachable", "error", err.Error())
@@ -75,13 +74,13 @@ func (instance *HealthChecker) updateStatus() {
 		isHealthy = true
 	} else {
 		isHealthy = false
-		settings.Config.Healthy = nil
+		config.Config.Healthy = nil
 
 		if wasHealthyPtr != nil {
 			instance.updateSchedule()
 		} else {
 			nextCheckTime := instance.getNextCheckTime()
-			settings.Config.HealthNextCheck = &nextCheckTime
+			config.Config.HealthNextCheck = &nextCheckTime
 		}
 
 		t.Log.Warn("Health check failed, got unexpected response", "status", healthStatus)
@@ -91,24 +90,24 @@ func (instance *HealthChecker) updateStatus() {
 
 	if healthStatusCode == 200 && isHealthy {
 		isHealthy = true
-		settings.Config.Healthy = &isHealthy
+		config.Config.Healthy = &isHealthy
 
 		if wasHealthyPtr != nil && wasHealthy {
 			nextCheckTime := instance.getNextCheckTime()
-			settings.Config.HealthNextCheck = &nextCheckTime
+			config.Config.HealthNextCheck = &nextCheckTime
 		} else {
 			t.Log.Info("Health check successful")
 			instance.updateSchedule()
 		}
 	} else {
 		isHealthy = false
-		settings.Config.Healthy = &isHealthy
+		config.Config.Healthy = &isHealthy
 
 		if wasHealthyPtr == nil || wasHealthy != isHealthy {
 			instance.updateSchedule()
 		} else {
 			nextCheckTime := instance.getNextCheckTime()
-			settings.Config.HealthNextCheck = &nextCheckTime
+			config.Config.HealthNextCheck = &nextCheckTime
 		}
 
 		t.Log.Warn("Health check failed, QBittorrent is unhealthy", "status_code", healthStatusCode)
@@ -120,16 +119,16 @@ func (instance *HealthChecker) updateSchedule() {
 		return
 	}
 
-	if settings.Config.HealthJobID != nil {
-		instance.Scheduler.RemoveByTag(*settings.Config.HealthJobID)
+	if config.Config.HealthJobID != nil {
+		instance.Scheduler.RemoveByTag(*config.Config.HealthJobID)
 	}
 
 	interval := instance.getNextInterval()
 	nextCheckTime := instance.getNextCheckTime()
-	settings.Config.HealthNextCheck = &nextCheckTime
+	config.Config.HealthNextCheck = &nextCheckTime
 
 	jobTag := "health_check_qbittorrent"
 	job, _ := instance.Scheduler.Every(interval).Seconds().Do(instance.updateStatus)
 	job.Tag(jobTag)
-	settings.Config.HealthJobID = &jobTag
+	config.Config.HealthJobID = &jobTag
 }

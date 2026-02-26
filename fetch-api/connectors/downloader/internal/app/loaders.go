@@ -1,4 +1,4 @@
-package src
+package app
 
 import (
 	"fmt"
@@ -6,13 +6,13 @@ import (
 	"time"
 
 	docs "connector-downloader/docs"
-	"connector-downloader/settings"
-	"connector-downloader/src/health"
-	"connector-downloader/src/qbittorrent"
-	"connector-downloader/src/routes"
-	"connector-downloader/src/swagger"
-	t "connector-downloader/src/telemetry"
-	"connector-downloader/src/torrent_actions"
+	"connector-downloader/internal/actions"
+	"connector-downloader/internal/config"
+	"connector-downloader/internal/health"
+	"connector-downloader/internal/http/routes"
+	"connector-downloader/internal/qbittorrent"
+	"connector-downloader/internal/swagger"
+	t "connector-downloader/internal/telemetry"
 
 	"github.com/go-co-op/gocron"
 	"github.com/gofiber/fiber/v2"
@@ -23,7 +23,7 @@ var scheduler = gocron.NewScheduler(time.UTC)
 var healthChecker = health.HealthChecker{
 	Scheduler: scheduler,
 }
-var ActionsRunner = torrent_actions.ActionsRunner{
+var ActionsRunner = actions.ActionsRunner{
 	Scheduler: scheduler,
 }
 
@@ -59,10 +59,10 @@ func LoadRoutes(app fiber.Router) {
 	routes.DeleteTorrentTags(app)
 
 	// Swagger routes
-	docs.SwaggerInfo.Host = fmt.Sprintf("%s:%d", settings.Config.ListenHost, settings.Config.ListenPort)
+	docs.SwaggerInfo.Host = fmt.Sprintf("%s:%d", config.Config.ListenHost, config.Config.ListenPort)
 
-	if settings.Config.OtelServiceVersion != "" {
-		docs.SwaggerInfo.Version = settings.Config.OtelServiceVersion
+	if config.Config.OtelServiceVersion != "" {
+		docs.SwaggerInfo.Version = config.Config.OtelServiceVersion
 	}
 
 	swaggerHandler := fiberSwagger.FiberWrapHandler(

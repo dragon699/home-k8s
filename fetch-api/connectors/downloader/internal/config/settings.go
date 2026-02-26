@@ -1,4 +1,4 @@
-package settings
+package config
 
 import (
 	"fmt"
@@ -52,11 +52,11 @@ var defaultSettings = Settings{
 	ListenHost: "0.0.0.0",
 	ListenPort: 8080,
 
-	QBittorrentUrl: "http://qbittorrent-web.qbittorrent.svc:80",
-	QBittorrentPublicUrl: "https://qb.k8s.iaminyourpc.xyz",
-	QBittorrentDefaultSavePath: "/data/Windows/Movies",
-	TPBAPIUrl: "https://apibay.org",
-	JellyfinUrl: "https://watch.k8s.iaminyourpc.xyz",
+	QBittorrentUrl:                   "http://qbittorrent-web.qbittorrent.svc:80",
+	QBittorrentPublicUrl:             "https://qb.k8s.iaminyourpc.xyz",
+	QBittorrentDefaultSavePath:       "/data/Windows/Movies",
+	TPBAPIUrl:                        "https://apibay.org",
+	JellyfinUrl:                      "https://watch.k8s.iaminyourpc.xyz",
 	JellyfinSubtitlesDefaultLanguage: "english",
 
 	OtelServiceName:      "connector-downloader",
@@ -144,7 +144,7 @@ func loadSettings() (Settings, error) {
 			settings.OtelServiceVersion = "unknown"
 		} else {
 			currentDir := filepath.Dir(currentFile)
-			verFile := filepath.Join(currentDir, "..", "VERSION")
+			verFile := filepath.Join(currentDir, "..", "..", "VERSION")
 
 			if appVer, err := utils.ReadFile(verFile); err != nil {
 				settings.OtelServiceVersion = "unknown"

@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"common/telemetry"
-	"connector-downloader/settings"
+	"connector-downloader/internal/config"
 
 	"github.com/gofiber/contrib/otelfiber/v2"
 	"github.com/gofiber/fiber/v2"
@@ -18,10 +18,10 @@ func init() {
 	var err error
 
 	tracerProvider, err = telemetry.NewTracer(telemetry.TracerConfig{
-		ServiceName:      settings.Config.OtelServiceName,
-		ServiceNamespace: settings.Config.OtelServiceNamespace,
-		ServiceVersion:   settings.Config.OtelServiceVersion,
-		OtlpEndpointGrpc: settings.Config.OtlpEndpointGrpc,
+		ServiceName:      config.Config.OtelServiceName,
+		ServiceNamespace: config.Config.OtelServiceNamespace,
+		ServiceVersion:   config.Config.OtelServiceVersion,
+		OtlpEndpointGrpc: config.Config.OtlpEndpointGrpc,
 	})
 
 	if err != nil {

@@ -10,12 +10,11 @@ import (
 	"time"
 )
 
-
 type NotificationTorrentsVars struct {
-	TorrentName  	string  `json:"torrent_name"`
-	Category        string  `json:"category,omitempty"`
-	QBittorrentURL  string  `json:"qbittorrent_url"`
-	JellyfinURL     string  `json:"jellyfin_url,omitempty"`
+	TorrentName    string `json:"torrent_name"`
+	Category       string `json:"category,omitempty"`
+	QBittorrentURL string `json:"qbittorrent_url"`
+	JellyfinURL    string `json:"jellyfin_url,omitempty"`
 }
 
 //go:embed templates/torrents/*.json

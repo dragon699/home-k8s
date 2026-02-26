@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"connector-downloader/src/handlers"
+	"connector-downloader/internal/http/handlers"
 
 	"github.com/gofiber/fiber/v2"
 )
