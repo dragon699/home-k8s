@@ -1,5 +1,3 @@
-planeVersion: 1.2.0
-
 ingress:
   appHost: board.iaminyourpc.xyz
   ingressClass: nginx
