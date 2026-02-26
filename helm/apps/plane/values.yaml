@@ -1,4 +1,4 @@
-planeVersion: 2.3.1
+planeVersion: v1.2.2
 
 ingress:
   appHost: board.iaminyourpc.xyz
