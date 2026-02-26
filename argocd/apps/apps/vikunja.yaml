@@ -14,7 +14,7 @@ spec:
   - repoURL: git@github.com:dragon699/home-k8s.git
     targetRevision: main
     ref: values
-  - repoURL: oci://ghcr.io/go-vikunja/helm-chart
+  - repoURL: oci://ghcr.io/go-vikunja/helm-chart/vikunja
     targetRevision: 1.0.0
     chart: vikunja
     helm:
