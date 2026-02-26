@@ -116,72 +116,39 @@ func (instance *QBittorrentClient) Init() {
 }
 
 func (instance *QBittorrentClient) Ping() (string, int, error) {
-	req, err := http.NewRequest(
-		http.MethodGet,
+	req := &utils.Req{Client: instance.Client}
+
+	resp, err := req.GET(
 		fmt.Sprintf("%s/app/defaultSavePath", instance.APIBaseURL),
 		nil,
+		nil,
 	)
+
 	if err != nil {
 		return "not_ok", 0, err
-	}
-
-	resp, err := instance.Client.Do(req)
-	if err != nil {
-		return "not_ok", 0, err
-	}
-
-	defer resp.Body.Close()
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return "not_ok", 0, err
-	}
-
-	if !(resp.StatusCode >= 200) && (resp.StatusCode < 300) {
-		return "not_ok", resp.StatusCode, fmt.Errorf("unexpected status code: %d, body: %s", resp.StatusCode, string(body))
 	}
 
 	return "ok", resp.StatusCode, nil
 }
 
-func (instance *QBittorrentClient) ListTorrents() ([]any, error) {
-	req, err := http.NewRequest(
-		http.MethodGet,
+func (instance *QBittorrentClient) ListTorrents() ([]map[string]any, error) {
+	req := &utils.Req{Client: instance.Client}
+
+	resp, err := req.GET(
 		fmt.Sprintf("%s/torrents/info", instance.APIBaseURL),
 		nil,
+		nil,
 	)
+
 	if err != nil {
-		return nil, newConnectionError("Failed to create HTTP request", err)
+		return nil, err
 	}
 
-	resp, err := instance.Client.Do(req)
-	if err != nil {
-		return nil, newConnectionError("Failed to create HTTP request", err)
-	}
-
-	defer resp.Body.Close()
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, newConnectionError("Failed to read HTTP response", err)
-	}
-
-	if !(resp.StatusCode >= 200 && resp.StatusCode < 300) {
-		return nil, newUpstreamError("qBittorrent returned a non-2xx status", resp.StatusCode, body, nil)
-	}
-
-	var torrents []any
-	if err := json.Unmarshal(body, &torrents); err != nil {
-		return nil, newUpstreamError("qBittorrent returned an invalid response", resp.StatusCode, body, err)
-	}
-
-	return torrents, nil
+	return resp.Body.([]map[string]any), nil
 }
 
 func (instance *QBittorrentClient) GetTorrentContent(torrentHash string) ([]map[string]any, error) {
-	req := &utils.Req{
-		Client: instance.Client,
-	}
+	req := &utils.Req{Client: instance.Client}
 
 	resp, err := req.GET(
 		fmt.Sprintf("%s/torrents/files", instance.APIBaseURL),
