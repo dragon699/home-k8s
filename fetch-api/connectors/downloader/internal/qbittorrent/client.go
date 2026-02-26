@@ -131,7 +131,7 @@ func (instance *QBittorrentClient) Ping() (string, int, error) {
 	return "ok", resp.StatusCode, nil
 }
 
-func (instance *QBittorrentClient) ListTorrents() (any, error) {
+func (instance *QBittorrentClient) ListTorrents() ([]map[string]any, error) {
 	req := &utils.Req{Client: instance.Client}
 
 	resp, err := req.GET(
@@ -144,7 +144,7 @@ func (instance *QBittorrentClient) ListTorrents() (any, error) {
 		return nil, err
 	}
 
-	return resp.Body, nil
+	return resp.Body.([]map[string]any), nil
 }
 
 func (instance *QBittorrentClient) GetTorrentContent(torrentHash string) ([]map[string]any, error) {
@@ -162,21 +162,7 @@ func (instance *QBittorrentClient) GetTorrentContent(torrentHash string) ([]map[
 		return nil, err
 	}
 
-	items, ok := resp.Body.([]any)
-	if !ok {
-		return nil, fmt.Errorf("unexpected torrent content response type")
-	}
-
-	result := make([]map[string]any, 0, len(items))
-	for _, item := range items {
-		file, ok := item.(map[string]any)
-		if !ok {
-			return nil, fmt.Errorf("unexpected torrent content item type")
-		}
-		result = append(result, file)
-	}
-
-	return result, nil
+	return resp.Body.([]map[string]any), nil
 }
 
 func (instance *QBittorrentClient) StopTorrent(torrentHash string) error {
