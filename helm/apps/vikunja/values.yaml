@@ -1,0 +1,4 @@
+vikunja:
+  ingress:
+    main:
+      enabled: false
