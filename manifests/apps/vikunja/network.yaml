@@ -15,9 +15,9 @@ spec:
   tls:
   - hosts:
     - board.iaminyourpc.xyz
-    secretName: tls-board-k8s-iaminyourpc-xyz
+    secretName: tls-board-iaminyourpc-xyz
   rules:
-  - host: board.k8s.iaminyourpc.xyz
+  - host: board.iaminyourpc.xyz
     http:
       paths:
       - pathType: Prefix
