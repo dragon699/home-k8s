@@ -36,8 +36,8 @@ users:
   - monitoring-grafana
   options: "SUPERUSER"
 
-- name: vikunja-vikunja
-  secretName: data-postgresql-shared-vikunja-vikunja
+- name: vikunja
+  secretName: data-postgresql-shared-vikunja
   databases:
-  - vikunja-vikunja
+  - vikunja
   options: "SUPERUSER"

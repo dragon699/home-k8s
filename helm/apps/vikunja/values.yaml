@@ -7,27 +7,27 @@ vikunja:
     VIKUNJA_DATABASE_HOST:
       valueFrom:
         secretKeyRef:
-          name: data-postgresql-shared-vikunja-vikunja
+          name: data-postgresql-shared-vikunja
           key: pgbouncer-host
     VIKUNJA_DATABASE_PORT:
       valueFrom:
         secretKeyRef:
-          name: data-postgresql-shared-vikunja-vikunja
+          name: data-postgresql-shared-vikunja
           key: pgbouncer-port
     VIKUNJA_DATABASE_USER:
       valueFrom:
         secretKeyRef:
-          name: data-postgresql-shared-vikunja-vikunja
+          name: data-postgresql-shared-vikunja
           key: user
     VIKUNJA_DATABASE_PASSWORD:
       valueFrom:
         secretKeyRef:
-          name: data-postgresql-shared-vikunja-vikunja
+          name: data-postgresql-shared-vikunja
           key: password
     VIKUNJA_DATABASE_NAME:
       valueFrom:
         secretKeyRef:
-          name: data-postgresql-shared-vikunja-vikunja
+          name: data-postgresql-shared-vikunja
           key: dbname
 
 postgresql:
