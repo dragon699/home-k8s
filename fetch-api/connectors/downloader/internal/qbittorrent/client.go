@@ -1,7 +1,6 @@
 package qbittorrent
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"strings"
@@ -15,99 +14,16 @@ import (
 var Client *QBittorrentClient
 
 type QBittorrentClient struct {
-	APIBaseURL string
-	Client     *http.Client
-}
-
-type ClientErrorKind string
-
-type ClientError struct {
-	Kind       ClientErrorKind
-	Message    string
-	StatusCode int
-	Body       string
-	ParsedJSON any
-	Err        error
-}
-
-const (
-	ClientErrorConnection ClientErrorKind = "connection"
-	ClientErrorUpstream   ClientErrorKind = "upstream_api"
-)
-
-func (e *ClientError) Error() string {
-	if e == nil {
-		return ""
-	}
-	if e.Err != nil {
-		return fmt.Sprintf("%s: %v", e.Message, e.Err)
-	}
-	return e.Message
-}
-
-func (e *ClientError) Unwrap() error {
-	if e == nil {
-		return nil
-	}
-	return e.Err
-}
-
-func (e *ClientError) UpstreamResponse() map[string]any {
-	if e == nil {
-		return nil
-	}
-
-	resp := map[string]any{
-		"error_type": string(e.Kind),
-	}
-
-	if e.StatusCode > 0 {
-		resp["status_code"] = e.StatusCode
-	}
-
-	if e.Body != "" {
-		resp["body"] = e.Body
-	}
-
-	if e.ParsedJSON != nil {
-		resp["json"] = e.ParsedJSON
-	}
-
-	return resp
-}
-
-func parseJSONBody(body []byte) any {
-	var parsed any
-	if len(body) == 0 {
-		return nil
-	}
-	if err := json.Unmarshal(body, &parsed); err != nil {
-		return nil
-	}
-	return parsed
-}
-
-func newConnectionError(message string, err error) error {
-	return &ClientError{
-		Kind:    ClientErrorConnection,
-		Message: message,
-		Err:     err,
-	}
-}
-
-func newUpstreamError(message string, statusCode int, body []byte, err error) error {
-	return &ClientError{
-		Kind:       ClientErrorUpstream,
-		Message:    message,
-		StatusCode: statusCode,
-		Body:       string(body),
-		ParsedJSON: parseJSONBody(body),
-		Err:        err,
-	}
+	APIBaseURL        string
+	APIDefaultHeaders map[string]string
+	Client            *http.Client
 }
 
 func (instance *QBittorrentClient) Init() {
 	instance.APIBaseURL = fmt.Sprintf("%s/api/v2", config.Config.QBittorrentUrl)
+	instance.APIDefaultHeaders = map[string]string{
+		"Content-Type": "application/x-www-form-urlencoded",
+	}
 	instance.Client = &http.Client{
 		Timeout: 10 * time.Second,
 	}
@@ -118,7 +34,7 @@ func (instance *QBittorrentClient) Ping() (string, int, error) {
 
 	resp, err := req.GET(
 		fmt.Sprintf("%s/app/defaultSavePath", instance.APIBaseURL),
-		nil,
+		instance.APIDefaultHeaders,
 		nil,
 	)
 
@@ -134,7 +50,7 @@ func (instance *QBittorrentClient) ListTorrents() ([]map[string]any, error) {
 
 	resp, err := req.GET(
 		fmt.Sprintf("%s/torrents/info", instance.APIBaseURL),
-		nil,
+		instance.APIDefaultHeaders,
 		nil,
 	)
 
@@ -150,7 +66,7 @@ func (instance *QBittorrentClient) GetTorrentContent(torrentHash string) ([]map[
 
 	resp, err := req.GET(
 		fmt.Sprintf("%s/torrents/files", instance.APIBaseURL),
-		nil,
+		instance.APIDefaultHeaders,
 		map[string]any{
 			"hash": torrentHash,
 		},
@@ -168,9 +84,7 @@ func (instance *QBittorrentClient) StopTorrent(torrentHash string) error {
 
 	_, err := req.POST(
 		fmt.Sprintf("%s/torrents/stop", instance.APIBaseURL),
-		map[string]string{
-			"Content-Type": "application/x-www-form-urlencoded",
-		},
+		instance.APIDefaultHeaders,
 		nil,
 		map[string]any{
 			"hashes": torrentHash,
@@ -189,9 +103,7 @@ func (instance *QBittorrentClient) AddTorrent(torrentURL string, category string
 
 	resp, err := req.POST(
 		fmt.Sprintf("%s/torrents/add", instance.APIBaseURL),
-		map[string]string{
-			"Content-Type": "application/x-www-form-urlencoded",
-		},
+		instance.APIDefaultHeaders,
 		nil,
 		map[string]any{
 			"urls":     torrentURL,
@@ -217,9 +129,7 @@ func (instance *QBittorrentClient) RemoveTorrent(torrentHash string, deleteFiles
 
 	_, err := req.POST(
 		fmt.Sprintf("%s/torrents/delete", instance.APIBaseURL),
-		map[string]string{
-			"Content-Type": "application/x-www-form-urlencoded",
-		},
+		instance.APIDefaultHeaders,
 		nil,
 		map[string]any{
 			"hashes":      torrentHash,
@@ -239,9 +149,7 @@ func (instance *QBittorrentClient) AddTorrentTags(torrentHash string, tags []str
 
 	_, err := req.POST(
 		fmt.Sprintf("%s/torrents/addTags", instance.APIBaseURL),
-		map[string]string{
-			"Content-Type": "application/x-www-form-urlencoded",
-		},
+		instance.APIDefaultHeaders,
 		nil,
 		map[string]any{
 			"hashes": torrentHash,
@@ -261,9 +169,7 @@ func (instance *QBittorrentClient) DeleteTorrentTags(torrentHash string, tags []
 
 	_, err := req.POST(
 		fmt.Sprintf("%s/torrents/removeTags", instance.APIBaseURL),
-		map[string]string{
-			"Content-Type": "application/x-www-form-urlencoded",
-		},
+		instance.APIDefaultHeaders,
 		nil,
 		map[string]any{
 			"hashes": torrentHash,
