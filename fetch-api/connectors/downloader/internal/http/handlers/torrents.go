@@ -43,12 +43,7 @@ func ListTorrents(ctx *fiber.Ctx) error {
 
 	result := make([]response.Torrent, 0, len(torrents))
 
-	for _, torrent := range torrents {
-		torrentSrc, ok := torrent.(map[string]any)
-		if !ok {
-			continue
-		}
-
+	for _, torrentSrc := range torrents {
 		torrentData := response.Torrent{
 			Name:               torrentSrc["name"].(string),
 			Hash:               torrentSrc["hash"].(string),
