@@ -9,5 +9,5 @@ worker:
   memoryLimit: 3Gi
   memoryRequest: 512Mi
 
-# external_secrets:
-#   app_env_existingSecret: app-env
+external_secrets:
+  app_env_existingSecret: app-env
