@@ -225,13 +225,27 @@ func (r *Req) POST(url string, headers map[string]string, params map[string]any,
 	var bodyReader io.Reader
 
 	if len(body) > 0 {
-		bodyBytes, err := json.Marshal(body)
-
-		if err != nil {
-			return nil, newConnectionError(fmt.Sprintf("[POST] [%s] Failed to serialize request body", url), err)
+		contentType := ""
+		for k, v := range headers {
+			if strings.ToLower(k) == "content-type" {
+				contentType = strings.ToLower(v)
+				break
+			}
 		}
 
-		bodyReader = strings.NewReader(string(bodyBytes))
+		if strings.Contains(contentType, "application/x-www-form-urlencoded") {
+			formData := netUrl.Values{}
+			for key, value := range body {
+				formData.Set(key, fmt.Sprintf("%v", value))
+			}
+			bodyReader = strings.NewReader(formData.Encode())
+		} else {
+			bodyBytes, err := json.Marshal(body)
+			if err != nil {
+				return nil, newConnectionError(fmt.Sprintf("[POST] [%s] Failed to serialize request body", url), err)
+			}
+			bodyReader = strings.NewReader(string(bodyBytes))
+		}
 	}
 
 	req, err := http.NewRequest(http.MethodPost, url, bodyReader)

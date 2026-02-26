@@ -171,10 +171,10 @@ func (instance *QBittorrentClient) StopTorrent(torrentHash string) error {
 		map[string]string{
 			"Content-Type": "application/x-www-form-urlencoded",
 		},
+		nil,
 		map[string]any{
 			"hashes": torrentHash,
 		},
-		nil,
 	)
 
 	if err != nil {
@@ -192,13 +192,13 @@ func (instance *QBittorrentClient) AddTorrent(torrentURL string, category string
 		map[string]string{
 			"Content-Type": "application/x-www-form-urlencoded",
 		},
+		nil,
 		map[string]any{
 			"urls":     torrentURL,
 			"savepath": savePath,
 			"category": category,
 			"tags":     strings.Join(tags, ","),
 		},
-		nil,
 	)
 
 	if err != nil {
@@ -220,11 +220,11 @@ func (instance *QBittorrentClient) RemoveTorrent(torrentHash string, deleteFiles
 		map[string]string{
 			"Content-Type": "application/x-www-form-urlencoded",
 		},
+		nil,
 		map[string]any{
 			"hashes":      torrentHash,
 			"deleteFiles": deleteFiles,
 		},
-		nil,
 	)
 
 	if err != nil {
@@ -242,11 +242,11 @@ func (instance *QBittorrentClient) AddTorrentTags(torrentHash string, tags []str
 		map[string]string{
 			"Content-Type": "application/x-www-form-urlencoded",
 		},
+		nil,
 		map[string]any{
 			"hashes": torrentHash,
 			"tags":   strings.Join(tags, ","),
 		},
-		nil,
 	)
 
 	if err != nil {
@@ -264,11 +264,11 @@ func (instance *QBittorrentClient) DeleteTorrentTags(torrentHash string, tags []
 		map[string]string{
 			"Content-Type": "application/x-www-form-urlencoded",
 		},
+		nil,
 		map[string]any{
 			"hashes": torrentHash,
 			"tags":   strings.Join(tags, ","),
 		},
-		nil,
 	)
 
 	if err != nil {
