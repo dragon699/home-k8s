@@ -2,7 +2,7 @@
 
 
 export DIR="./"
-export GENERAL_INFO="./src/api.go"
+export GENERAL_INFO="./internal/app/bootstrap.go"
 export OUTPUT_DIR="./docs"
 
 
