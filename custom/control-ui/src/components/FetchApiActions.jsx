@@ -922,14 +922,6 @@ export default function FetchApiActions() {
                     }
                   }
 
-                  // max-width for animated text width transition (ch ≈ char width in Manrope 11px)
-                  const notifyClipStyle = isNotifyPillHovered && notifyHoverLabel
-                    ? { maxWidth: `${notifyHoverLabel.length * 0.62 + 1}ch` }
-                    : { maxWidth: `${notifyLabel.length * 0.62 + 1}ch` }
-                  const subsClipStyle = isSubsPillHovered && subsHoverLabel
-                    ? { maxWidth: `${subsHoverLabel.length * 0.62 + 1}ch` }
-                    : { maxWidth: `${subsLabel.length * 0.62 + 1}ch` }
-
                   // Pill CSS class helper
                   const pillClass = (variant, isPending) => {
                     let cls = 'torrent-pill'
@@ -1026,7 +1018,7 @@ export default function FetchApiActions() {
                                     display: 'block', flexShrink: 0,
                                   }}
                                 />
-                                <span className="pill-label-clip" style={notifyClipStyle}>
+                                <span className="pill-label-clip">
                                   <span
                                     key={`notify-${torrent.hash}-${isNotifyPillHovered && notifyHoverLabel ? 'h' : 'd'}`}
                                     className="pill-label-text"
@@ -1057,7 +1049,7 @@ export default function FetchApiActions() {
                                     display: 'block', flexShrink: 0,
                                   }}
                                 />
-                                <span className="pill-label-clip" style={subsClipStyle}>
+                                <span className="pill-label-clip">
                                   <span
                                     key={`subs-${torrent.hash}-${isSubsPillHovered && subsHoverLabel ? 'h' : 'd'}`}
                                     className="pill-label-text"
