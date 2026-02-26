@@ -2,7 +2,6 @@ package app
 
 import (
 	"fmt"
-	"os"
 	"time"
 
 	docs "connector-downloader/docs"
@@ -12,7 +11,6 @@ import (
 	"connector-downloader/internal/http/routes"
 	"connector-downloader/internal/qbittorrent"
 	"connector-downloader/internal/swagger"
-	t "connector-downloader/internal/telemetry"
 
 	"github.com/go-co-op/gocron"
 	"github.com/gofiber/fiber/v2"
@@ -29,12 +27,7 @@ var ActionsRunner = actions.ActionsRunner{
 
 func LoadQBittorrentClient() {
 	qbittorrent.Client = &qbittorrent.QBittorrentClient{}
-	err := qbittorrent.Client.Init()
-
-	if err != nil {
-		t.Log.Error("Failed to create QBittorrent client", "error", err.Error())
-		os.Exit(1)
-	}
+	qbittorrent.Client.Init()
 }
 
 func LoadHealthChecker() {
@@ -44,6 +37,21 @@ func LoadHealthChecker() {
 
 func LoadActionsRunner() {
 	ActionsRunner.CreateSchedule()
+}
+
+func LoadSwagger() fiber.Handler {
+	docs.SwaggerInfo.Host = fmt.Sprintf("%s:%d", config.Config.ListenHost, config.Config.ListenPort)
+
+	if config.Config.OtelServiceVersion != "" {
+		docs.SwaggerInfo.Version = config.Config.OtelServiceVersion
+	}
+
+	return fiberSwagger.FiberWrapHandler(
+		fiberSwagger.URL("/swagger/doc.json"),
+		fiberSwagger.DocExpansion("list"),
+		fiberSwagger.DeepLinking(true),
+		fiberSwagger.PersistAuthorization(true),
+	)
 }
 
 func LoadRoutes(app fiber.Router) {
@@ -59,18 +67,7 @@ func LoadRoutes(app fiber.Router) {
 	routes.DeleteTorrentTags(app)
 
 	// Swagger routes
-	docs.SwaggerInfo.Host = fmt.Sprintf("%s:%d", config.Config.ListenHost, config.Config.ListenPort)
-
-	if config.Config.OtelServiceVersion != "" {
-		docs.SwaggerInfo.Version = config.Config.OtelServiceVersion
-	}
-
-	swaggerHandler := fiberSwagger.FiberWrapHandler(
-		fiberSwagger.URL("/swagger/doc.json"),
-		fiberSwagger.DocExpansion("list"),
-		fiberSwagger.DeepLinking(true),
-		fiberSwagger.PersistAuthorization(true),
-	)
+	swaggerHandler := LoadSwagger()
 	app.Get("/swagger/*", swaggerHandler)
 	app.Get("/docs", swagger.Handler("/swagger/doc.json"))
 }

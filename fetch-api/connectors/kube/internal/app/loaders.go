@@ -56,18 +56,22 @@ func LoadRoutes(app fiber.Router) {
 	routes.ListDeployments(app)
 
 	// Swagger routes
+	swaggerHandler := LoadSwagger()
+	app.Get("/swagger/*", swaggerHandler)
+	app.Get("/docs", swagger.Handler("/swagger/doc.json"))
+}
+
+func LoadSwagger() fiber.Handler {
 	docs.SwaggerInfo.Host = fmt.Sprintf("%s:%d", config.Config.ListenHost, config.Config.ListenPort)
 
 	if config.Config.OtelServiceVersion != "" {
 		docs.SwaggerInfo.Version = config.Config.OtelServiceVersion
 	}
 
-	swaggerHandler := fiberSwagger.FiberWrapHandler(
+	return fiberSwagger.FiberWrapHandler(
 		fiberSwagger.URL("/swagger/doc.json"),
 		fiberSwagger.DocExpansion("list"),
 		fiberSwagger.DeepLinking(true),
 		fiberSwagger.PersistAuthorization(true),
 	)
-	app.Get("/swagger/*", swaggerHandler)
-	app.Get("/docs", swagger.Handler("/swagger/doc.json"))
 }

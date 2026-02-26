@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"common/utils"
 	// t "connector-downloader/internal/telemetry"
 	"connector-downloader/internal/config"
 )
@@ -16,15 +17,11 @@ import (
 var Client *QBittorrentClient
 
 type QBittorrentClient struct {
-	Client *http.Client
+	APIBaseURL string
+	Client     *http.Client
 }
 
 type ClientErrorKind string
-
-const (
-	ClientErrorConnection ClientErrorKind = "connection"
-	ClientErrorUpstream   ClientErrorKind = "upstream_api"
-)
 
 type ClientError struct {
 	Kind       ClientErrorKind
@@ -34,6 +31,11 @@ type ClientError struct {
 	ParsedJSON any
 	Err        error
 }
+
+const (
+	ClientErrorConnection ClientErrorKind = "connection"
+	ClientErrorUpstream   ClientErrorKind = "upstream_api"
+)
 
 func (e *ClientError) Error() string {
 	if e == nil {
@@ -106,19 +108,17 @@ func newUpstreamError(message string, statusCode int, body []byte, err error) er
 	}
 }
 
-func (instance *QBittorrentClient) Init() error {
-	client := &http.Client{
+func (instance *QBittorrentClient) Init() {
+	instance.APIBaseURL = fmt.Sprintf("%s/api/v2", config.Config.QBittorrentUrl)
+	instance.Client = &http.Client{
 		Timeout: 10 * time.Second,
 	}
-
-	instance.Client = client
-	return nil
 }
 
 func (instance *QBittorrentClient) Ping() (string, int, error) {
 	req, err := http.NewRequest(
 		http.MethodGet,
-		fmt.Sprintf("%s/api/v2/app/defaultSavePath", config.Config.QBittorrentUrl),
+		fmt.Sprintf("%s/app/defaultSavePath", instance.APIBaseURL),
 		nil,
 	)
 	if err != nil {
@@ -147,7 +147,7 @@ func (instance *QBittorrentClient) Ping() (string, int, error) {
 func (instance *QBittorrentClient) ListTorrents() ([]any, error) {
 	req, err := http.NewRequest(
 		http.MethodGet,
-		fmt.Sprintf("%s/api/v2/torrents/info", config.Config.QBittorrentUrl),
+		fmt.Sprintf("%s/torrents/info", instance.APIBaseURL),
 		nil,
 	)
 	if err != nil {
@@ -179,42 +179,23 @@ func (instance *QBittorrentClient) ListTorrents() ([]any, error) {
 }
 
 func (instance *QBittorrentClient) GetTorrentContent(torrentHash string) ([]map[string]any, error) {
-	reqParams := url.Values{}
-	reqParams.Set("hash", torrentHash)
+	req := &utils.Req{
+		Client: instance.Client,
+	}
 
-	req, err := http.NewRequest(
-		http.MethodGet,
-		fmt.Sprintf("%s/api/v2/torrents/files?%s", config.Config.QBittorrentUrl, reqParams.Encode()),
+	resp, err := req.GET(
+		fmt.Sprintf("%s/torrents/files", instance.APIBaseURL),
 		nil,
+		map[string]string{
+			"hash": torrentHash,
+		},
 	)
+
 	if err != nil {
-		return nil, newConnectionError("Failed to create HTTP request", err)
+		return nil, err
 	}
 
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-
-	resp, err := instance.Client.Do(req)
-	if err != nil {
-		return nil, newConnectionError("Failed to create HTTP request", err)
-	}
-
-	defer resp.Body.Close()
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, newConnectionError("Failed to read HTTP response", err)
-	}
-
-	if !(resp.StatusCode >= 200 && resp.StatusCode < 300) {
-		return nil, newUpstreamError("qBittorrent returned a non-2xx status", resp.StatusCode, body, nil)
-	}
-
-	var files []map[string]any
-	if err := json.Unmarshal(body, &files); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal response: %w", err)
-	}
-
-	return files, nil
+	return resp.Body.([]map[string]any), nil
 }
 
 func (instance *QBittorrentClient) StopTorrent(torrentHash string) error {
@@ -223,7 +204,7 @@ func (instance *QBittorrentClient) StopTorrent(torrentHash string) error {
 
 	req, err := http.NewRequest(
 		http.MethodPost,
-		fmt.Sprintf("%s/api/v2/torrents/stop", config.Config.QBittorrentUrl),
+		fmt.Sprintf("%s/torrents/stop", instance.APIBaseURL),
 		strings.NewReader(reqParams.Encode()),
 	)
 	if err != nil {
@@ -256,7 +237,7 @@ func (instance *QBittorrentClient) AddTorrent(torrentURL string, category string
 
 	req, err := http.NewRequest(
 		http.MethodPost,
-		fmt.Sprintf("%s/api/v2/torrents/add", config.Config.QBittorrentUrl),
+		fmt.Sprintf("%s/torrents/add", instance.APIBaseURL),
 		strings.NewReader(reqParams.Encode()),
 	)
 	if err != nil {
@@ -295,7 +276,7 @@ func (instance *QBittorrentClient) RemoveTorrent(torrentHash string, deleteFiles
 
 	req, err := http.NewRequest(
 		http.MethodPost,
-		fmt.Sprintf("%s/api/v2/torrents/delete", config.Config.QBittorrentUrl),
+		fmt.Sprintf("%s/torrents/delete", instance.APIBaseURL),
 		strings.NewReader(reqParams.Encode()),
 	)
 	if err != nil {
@@ -326,7 +307,7 @@ func (instance *QBittorrentClient) AddTorrentTags(torrentHash string, tags []str
 
 	req, err := http.NewRequest(
 		http.MethodPost,
-		fmt.Sprintf("%s/api/v2/torrents/addTags", config.Config.QBittorrentUrl),
+		fmt.Sprintf("%s/torrents/addTags", instance.APIBaseURL),
 		strings.NewReader(reqParams.Encode()),
 	)
 	if err != nil {
@@ -357,7 +338,7 @@ func (instance *QBittorrentClient) DeleteTorrentTags(torrentHash string, tags []
 
 	req, err := http.NewRequest(
 		http.MethodPost,
-		fmt.Sprintf("%s/api/v2/torrents/removeTags", config.Config.QBittorrentUrl),
+		fmt.Sprintf("%s/torrents/removeTags", instance.APIBaseURL),
 		strings.NewReader(reqParams.Encode()),
 	)
 	if err != nil {
