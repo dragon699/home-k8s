@@ -3,9 +3,7 @@ package qbittorrent
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
-	"net/url"
 	"strings"
 	"time"
 
@@ -153,7 +151,7 @@ func (instance *QBittorrentClient) GetTorrentContent(torrentHash string) ([]map[
 	resp, err := req.GET(
 		fmt.Sprintf("%s/torrents/files", instance.APIBaseURL),
 		nil,
-		map[string]string{
+		map[string]any{
 			"hash": torrentHash,
 		},
 	)
@@ -166,164 +164,115 @@ func (instance *QBittorrentClient) GetTorrentContent(torrentHash string) ([]map[
 }
 
 func (instance *QBittorrentClient) StopTorrent(torrentHash string) error {
-	reqParams := url.Values{}
-	reqParams.Set("hashes", torrentHash)
+	req := &utils.Req{Client: instance.Client}
 
-	req, err := http.NewRequest(
-		http.MethodPost,
+	_, err := req.POST(
 		fmt.Sprintf("%s/torrents/stop", instance.APIBaseURL),
-		strings.NewReader(reqParams.Encode()),
+		map[string]string{
+			"Content-Type": "application/x-www-form-urlencoded",
+		},
+		map[string]any{
+			"hashes": torrentHash,
+		},
+		nil,
 	)
+
 	if err != nil {
-		return newConnectionError("Failed to create HTTP request", err)
-	}
-
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-
-	resp, err := instance.Client.Do(req)
-	if err != nil {
-		return newConnectionError("Failed to create HTTP request", err)
-	}
-
-	defer resp.Body.Close()
-
-	if !(resp.StatusCode >= 200 && resp.StatusCode < 300) {
-		body, _ := io.ReadAll(resp.Body)
-		return newUpstreamError("qBittorrent returned a non-2xx status", resp.StatusCode, body, nil)
+		return err
 	}
 
 	return nil
 }
 
 func (instance *QBittorrentClient) AddTorrent(torrentURL string, category string, tags []string, savePath string) error {
-	reqParams := url.Values{}
-	reqParams.Set("urls", torrentURL)
-	reqParams.Set("savepath", savePath)
-	reqParams.Set("category", category)
-	reqParams.Set("tags", strings.Join(tags, ","))
+	req := &utils.Req{Client: instance.Client}
 
-	req, err := http.NewRequest(
-		http.MethodPost,
+	resp, err := req.POST(
 		fmt.Sprintf("%s/torrents/add", instance.APIBaseURL),
-		strings.NewReader(reqParams.Encode()),
+		map[string]string{
+			"Content-Type": "application/x-www-form-urlencoded",
+		},
+		map[string]any{
+			"urls":     torrentURL,
+			"savepath": savePath,
+			"category": category,
+			"tags":     strings.Join(tags, ","),
+		},
+		nil,
 	)
+
 	if err != nil {
-		return newConnectionError("Failed to create HTTP request", err)
+		return err
 	}
 
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-
-	resp, err := instance.Client.Do(req)
-	if err != nil {
-		return newConnectionError("Failed to create HTTP request", err)
-	}
-
-	defer resp.Body.Close()
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return newConnectionError("Failed to read HTTP response", err)
-	}
-
-	if !(resp.StatusCode >= 200 && resp.StatusCode < 300) {
-		return newUpstreamError("qBittorrent returned a non-2xx status", resp.StatusCode, body, nil)
-	}
-
-	if strings.Contains(strings.ToLower(string(body)), "fails") {
-		return newUpstreamError("Invalid torrent parameters", 502, body, nil)
+	if strings.Contains(strings.ToLower(fmt.Sprintf("%v", resp.Body)), "fails") {
+		return newUpstreamError("Invalid torrent parameters", 502, []byte(fmt.Sprintf("%v", resp.Body)), nil)
 	}
 
 	return nil
 }
 
 func (instance *QBittorrentClient) RemoveTorrent(torrentHash string, deleteFiles bool) error {
-	reqParams := url.Values{}
-	reqParams.Set("hashes", torrentHash)
-	reqParams.Set("deleteFiles", fmt.Sprintf("%t", deleteFiles))
+	req := &utils.Req{Client: instance.Client}
 
-	req, err := http.NewRequest(
-		http.MethodPost,
+	_, err := req.POST(
 		fmt.Sprintf("%s/torrents/delete", instance.APIBaseURL),
-		strings.NewReader(reqParams.Encode()),
+		map[string]string{
+			"Content-Type": "application/x-www-form-urlencoded",
+		},
+		map[string]any{
+			"hashes":      torrentHash,
+			"deleteFiles": deleteFiles,
+		},
+		nil,
 	)
+
 	if err != nil {
-		return newConnectionError("Failed to create HTTP request", err)
-	}
-
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-
-	resp, err := instance.Client.Do(req)
-	if err != nil {
-		return newConnectionError("Failed to create HTTP request", err)
-	}
-
-	defer resp.Body.Close()
-
-	if !(resp.StatusCode >= 200 && resp.StatusCode < 300) {
-		body, _ := io.ReadAll(resp.Body)
-		return newUpstreamError("qBittorrent returned a non-2xx status", resp.StatusCode, body, nil)
+		return err
 	}
 
 	return nil
 }
 
 func (instance *QBittorrentClient) AddTorrentTags(torrentHash string, tags []string) error {
-	reqParams := url.Values{}
-	reqParams.Set("hashes", torrentHash)
-	reqParams.Set("tags", strings.Join(tags, ","))
+	req := &utils.Req{Client: instance.Client}
 
-	req, err := http.NewRequest(
-		http.MethodPost,
+	_, err := req.POST(
 		fmt.Sprintf("%s/torrents/addTags", instance.APIBaseURL),
-		strings.NewReader(reqParams.Encode()),
+		map[string]string{
+			"Content-Type": "application/x-www-form-urlencoded",
+		},
+		map[string]any{
+			"hashes": torrentHash,
+			"tags":   strings.Join(tags, ","),
+		},
+		nil,
 	)
+
 	if err != nil {
-		return newConnectionError("Failed to create HTTP request", err)
-	}
-
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-
-	resp, err := instance.Client.Do(req)
-	if err != nil {
-		return newConnectionError("Failed to create HTTP request", err)
-	}
-
-	defer resp.Body.Close()
-
-	if !(resp.StatusCode >= 200 && resp.StatusCode < 300) {
-		body, _ := io.ReadAll(resp.Body)
-		return newUpstreamError("qBittorrent returned a non-2xx status", resp.StatusCode, body, nil)
+		return err
 	}
 
 	return nil
 }
 
 func (instance *QBittorrentClient) DeleteTorrentTags(torrentHash string, tags []string) error {
-	reqParams := url.Values{}
-	reqParams.Set("hashes", torrentHash)
-	reqParams.Set("tags", strings.Join(tags, ","))
+	req := &utils.Req{Client: instance.Client}
 
-	req, err := http.NewRequest(
-		http.MethodPost,
+	_, err := req.POST(
 		fmt.Sprintf("%s/torrents/removeTags", instance.APIBaseURL),
-		strings.NewReader(reqParams.Encode()),
+		map[string]string{
+			"Content-Type": "application/x-www-form-urlencoded",
+		},
+		map[string]any{
+			"hashes": torrentHash,
+			"tags":   strings.Join(tags, ","),
+		},
+		nil,
 	)
+
 	if err != nil {
-		return newConnectionError("Failed to create HTTP request", err)
-	}
-
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-
-	resp, err := instance.Client.Do(req)
-	if err != nil {
-		return newConnectionError("Failed to create HTTP request", err)
-	}
-
-	defer resp.Body.Close()
-
-	if !(resp.StatusCode >= 200 && resp.StatusCode < 300) {
-		body, _ := io.ReadAll(resp.Body)
-		return newUpstreamError("qBittorrent returned a non-2xx status", resp.StatusCode, body, nil)
+		return err
 	}
 
 	return nil

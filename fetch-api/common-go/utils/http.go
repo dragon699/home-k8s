@@ -112,7 +112,22 @@ func (e *ClientError) UpstreamResponse() map[string]any {
 	return resp
 }
 
-func (r *Req) GET(url string, headers map[string]string, params map[string]string) (*Response, error) {
+func normalizeJSONBody(parsed any) any {
+	if arr, ok := parsed.([]any); ok {
+		maps := make([]map[string]any, 0, len(arr))
+		for _, item := range arr {
+			m, ok := item.(map[string]any)
+			if !ok {
+				return parsed
+			}
+			maps = append(maps, m)
+		}
+		return maps
+	}
+	return parsed
+}
+
+func (r *Req) GET(url string, headers map[string]string, params map[string]any) (*Response, error) {
 	if r.Client == nil {
 		r.Client = &http.Client{
 			Timeout: 30 * time.Second,
@@ -129,7 +144,7 @@ func (r *Req) GET(url string, headers map[string]string, params map[string]strin
 		reqParams := netUrl.Values{}
 
 		for key, value := range params {
-			reqParams.Set(key, value)
+			reqParams.Set(key, fmt.Sprintf("%v", value))
 		}
 
 		url = fmt.Sprintf("%s?%s", url, reqParams.Encode())
@@ -153,14 +168,14 @@ func (r *Req) GET(url string, headers map[string]string, params map[string]strin
 
 	defer resp.Body.Close()
 
-	body, err := io.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 
 	if err != nil {
 		return nil, newConnectionError(fmt.Sprintf("[GET] [%s] Failed to read response body", url), err)
 	}
 
 	if !(resp.StatusCode >= 200 && resp.StatusCode < 300) {
-		return nil, newUpstreamError(fmt.Sprintf("[GET] [%s] Returned non-2xx status code", url), resp.StatusCode, body, nil)
+		return nil, newUpstreamError(fmt.Sprintf("[GET] [%s] Returned non-2xx status code", url), resp.StatusCode, respBody, nil)
 	}
 
 	respContentType := strings.ToLower(resp.Header.Get("Content-Type"))
@@ -168,30 +183,98 @@ func (r *Req) GET(url string, headers map[string]string, params map[string]strin
 
 	var parsedBody any
 
-	if isJSONResponse && len(body) > 0 {
-		if err := json.Unmarshal(body, &parsedBody); err != nil {
-			return nil, newUpstreamError(fmt.Sprintf("[GET] [%s] Returned invalid JSON", url), resp.StatusCode, body, err)
+	if isJSONResponse && len(respBody) > 0 {
+		if err := json.Unmarshal(respBody, &parsedBody); err != nil {
+			return nil, newUpstreamError(fmt.Sprintf("[GET] [%s] Returned invalid JSON", url), resp.StatusCode, respBody, err)
 		}
 
-		if arr, ok := parsedBody.([]any); ok {
-			maps := make([]map[string]any, 0, len(arr))
-			allMaps := true
-
-			for _, item := range arr {
-				m, ok := item.(map[string]any)
-				if !ok {
-					allMaps = false
-					break
-				}
-				maps = append(maps, m)
-			}
-
-			if allMaps {
-				parsedBody = maps
-			}
-		}
+		parsedBody = normalizeJSONBody(parsedBody)
 	} else {
-		parsedBody = string(body)
+		parsedBody = string(respBody)
+	}
+
+	return &Response{
+		StatusCode: resp.StatusCode,
+		Body:       parsedBody,
+	}, nil
+}
+
+func (r *Req) POST(url string, headers map[string]string, params map[string]any, body map[string]any) (*Response, error) {
+	if r.Client == nil {
+		r.Client = &http.Client{
+			Timeout: 30 * time.Second,
+		}
+	}
+
+	if len(headers) == 0 {
+		headers = map[string]string{
+			"Content-Type": "application/json",
+		}
+	}
+
+	if len(params) > 0 {
+		reqParams := netUrl.Values{}
+
+		for key, value := range params {
+			reqParams.Set(key, fmt.Sprintf("%v", value))
+		}
+
+		url = fmt.Sprintf("%s?%s", url, reqParams.Encode())
+	}
+
+	var bodyReader io.Reader
+
+	if len(body) > 0 {
+		bodyBytes, err := json.Marshal(body)
+
+		if err != nil {
+			return nil, newConnectionError(fmt.Sprintf("[POST] [%s] Failed to serialize request body", url), err)
+		}
+
+		bodyReader = strings.NewReader(string(bodyBytes))
+	}
+
+	req, err := http.NewRequest(http.MethodPost, url, bodyReader)
+
+	if err != nil {
+		return nil, newConnectionError(fmt.Sprintf("[POST] [%s] Request failed", url), err)
+	}
+
+	for key, value := range headers {
+		req.Header.Set(key, value)
+	}
+
+	resp, err := r.Client.Do(req)
+
+	if err != nil {
+		return nil, newConnectionError(fmt.Sprintf("[POST] [%s] Request failed", url), err)
+	}
+
+	defer resp.Body.Close()
+
+	respBody, err := io.ReadAll(resp.Body)
+
+	if err != nil {
+		return nil, newConnectionError(fmt.Sprintf("[POST] [%s] Failed to read response body", url), err)
+	}
+
+	if !(resp.StatusCode >= 200 && resp.StatusCode < 300) {
+		return nil, newUpstreamError(fmt.Sprintf("[POST] [%s] Returned non-2xx status code", url), resp.StatusCode, respBody, nil)
+	}
+
+	respContentType := strings.ToLower(resp.Header.Get("Content-Type"))
+	isJSONResponse := strings.Contains(respContentType, "application/json")
+
+	var parsedBody any
+
+	if isJSONResponse && len(respBody) > 0 {
+		if err := json.Unmarshal(respBody, &parsedBody); err != nil {
+			return nil, newUpstreamError(fmt.Sprintf("[POST] [%s] Returned invalid JSON", url), resp.StatusCode, respBody, err)
+		}
+
+		parsedBody = normalizeJSONBody(parsedBody)
+	} else {
+		parsedBody = string(respBody)
 	}
 
 	return &Response{
