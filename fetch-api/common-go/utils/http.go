@@ -1,13 +1,13 @@
 package utils
 
 import (
-	"strings"
 	"encoding/json"
 	"fmt"
 	"io"
-	"time"
 	"net/http"
 	netUrl "net/url"
+	"strings"
+	"time"
 )
 
 type Req struct {
@@ -144,7 +144,7 @@ func (r *Req) GET(url string, headers map[string]string, params map[string]strin
 	for key, value := range headers {
 		req.Header.Set(key, value)
 	}
-	
+
 	resp, err := r.Client.Do(req)
 
 	if err != nil {
@@ -171,6 +171,24 @@ func (r *Req) GET(url string, headers map[string]string, params map[string]strin
 	if isJSONResponse && len(body) > 0 {
 		if err := json.Unmarshal(body, &parsedBody); err != nil {
 			return nil, newUpstreamError(fmt.Sprintf("[GET] [%s] Returned invalid JSON", url), resp.StatusCode, body, err)
+		}
+
+		if arr, ok := parsedBody.([]any); ok {
+			maps := make([]map[string]any, 0, len(arr))
+			allMaps := true
+
+			for _, item := range arr {
+				m, ok := item.(map[string]any)
+				if !ok {
+					allMaps = false
+					break
+				}
+				maps = append(maps, m)
+			}
+
+			if allMaps {
+				parsedBody = maps
+			}
 		}
 	} else {
 		parsedBody = string(body)
