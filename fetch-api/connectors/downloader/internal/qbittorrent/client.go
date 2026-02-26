@@ -131,7 +131,7 @@ func (instance *QBittorrentClient) Ping() (string, int, error) {
 	return "ok", resp.StatusCode, nil
 }
 
-func (instance *QBittorrentClient) ListTorrents() ([]map[string]any, error) {
+func (instance *QBittorrentClient) ListTorrents() (any, error) {
 	req := &utils.Req{Client: instance.Client}
 
 	resp, err := req.GET(
@@ -144,10 +144,10 @@ func (instance *QBittorrentClient) ListTorrents() ([]map[string]any, error) {
 		return nil, err
 	}
 
-	return resp.Body.([]map[string]any), nil
+	return resp.Body, nil
 }
 
-func (instance *QBittorrentClient) GetTorrentContent(torrentHash string) ([]map[string]any, error) {
+func (instance *QBittorrentClient) GetTorrentContent(torrentHash string) (any, error) {
 	req := &utils.Req{Client: instance.Client}
 
 	resp, err := req.GET(
@@ -162,7 +162,7 @@ func (instance *QBittorrentClient) GetTorrentContent(torrentHash string) ([]map[
 		return nil, err
 	}
 
-	return resp.Body.([]map[string]any), nil
+	return resp.Body, nil
 }
 
 func (instance *QBittorrentClient) StopTorrent(torrentHash string) error {
