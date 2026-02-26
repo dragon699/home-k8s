@@ -14,6 +14,8 @@ spec:
     {% if cluster_nodes | length == 1 %}
     installFlags:
       - --no-taints
+      - --profile=custom-eviction
+      - --kubelet-extra-args=--max-pods=240
     {% endif %}
     {% if proxy_address is defined %}
     environment:
@@ -79,6 +81,7 @@ spec:
         workerProfiles:
           - name: custom-eviction
             values:
+              maxPods: 240
               evictionHard:
                 memory.available: "500Mi"
                 nodefs.available: "1Gi"

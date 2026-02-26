@@ -3,3 +3,7 @@ planeVersion: v1.2.2
 ingress:
   appHost: board.iaminyourpc.xyz
   ingressClass: nginx
+
+worker:
+  memoryLimit: 3Gi
+  memoryRequest: 512Mi
