@@ -21,6 +21,48 @@ spec:
     http:
       paths:
       - pathType: Prefix
+        path: /api
+        backend:
+          service:
+            name: plane-api
+            port:
+              number: 8000
+      - pathType: Prefix
+        path: /auth
+        backend:
+          service:
+            name: plane-api
+            port:
+              number: 8000
+      - pathType: Prefix
+        path: /god-mode
+        backend:
+          service:
+            name: plane-admin
+            port:
+              number: 3000
+      - pathType: Prefix
+        path: /spaces
+        backend:
+          service:
+            name: plane-space
+            port:
+              number: 3000
+      - pathType: Prefix
+        path: /live/
+        backend:
+          service:
+            name: plane-live
+            port:
+              number: 3000
+      - pathType: Prefix
+        path: /uploads
+        backend:
+          service:
+            name: plane-minio
+            port:
+              number: 9000
+      - pathType: Prefix
         path: /
         backend:
           service:
