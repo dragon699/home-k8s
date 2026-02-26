@@ -1,6 +1,7 @@
 planeVersion: v1.2.2
 
 ingress:
+  enabled: false
   appHost: board.iaminyourpc.xyz
   ingressClass: nginx
 
@@ -8,5 +9,5 @@ worker:
   memoryLimit: 3Gi
   memoryRequest: 512Mi
 
-external_secrets:
-  app_env_existingSecret: app-env
+# external_secrets:
+#   app_env_existingSecret: app-env
