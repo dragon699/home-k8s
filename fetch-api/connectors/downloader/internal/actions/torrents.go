@@ -16,7 +16,7 @@ import (
 
 	"connector-downloader/internal/config"
 	"connector-downloader/internal/http/dto/response"
-	"connector-downloader/internal/notifications"
+	"connector-downloader/internal/slack"
 	"connector-downloader/internal/qbittorrent"
 	t "connector-downloader/internal/telemetry"
 )
@@ -49,18 +49,18 @@ func (instance *ActionsRunner) runActions() {
 		if torrent.ProgressPercentage < 100 {
 			for _, action := range torrent.Meta.ScheduledActions {
 				if (action.Category == "slack") && (action.Name == "notify") && (action.Status == "pending") {
-					vars := notifications.NotificationTorrentsVars{
+					vars := TorrentsSlackNotificationVars{
 						TorrentName:    torrent.Name,
 						Category:       torrent.Category,
 						QBittorrentURL: config.Config.QBittorrentPublicUrl,
 						JellyfinURL:    config.Config.JellyfinUrl,
 					}
 
-					err = notifications.SendSlackNotification(
-						config.Config.SlackNotificationsWebhookUrl,
-						"templates/torrents/slack_initial.json",
+					err = slack.Client.SendMessage(
+						"torrents_initial",
 						vars,
 					)
+
 					if err != nil {
 						t.Log.Error("Failed to send slack notification for a torrent!", "error", err.Error())
 
@@ -81,18 +81,18 @@ func (instance *ActionsRunner) runActions() {
 		} else {
 			for _, action := range torrent.Meta.ScheduledActions {
 				if (action.Category == "slack") && (action.Name == "notify") && (action.Status == "initial") {
-					vars := notifications.NotificationTorrentsVars{
+					vars := TorrentsSlackNotificationVars{
 						TorrentName:    torrent.Name,
 						Category:       torrent.Category,
 						QBittorrentURL: config.Config.QBittorrentPublicUrl,
 						JellyfinURL:    config.Config.JellyfinUrl,
 					}
 
-					err = notifications.SendSlackNotification(
-						config.Config.SlackNotificationsWebhookUrl,
-						"templates/torrents/slack_completed.json",
+					err = slack.Client.SendMessage(
+						"torrents_completed",
 						vars,
 					)
+
 					if err != nil {
 						t.Log.Error("Failed to send slack notification for a completed torrent!", "error", err.Error())
 

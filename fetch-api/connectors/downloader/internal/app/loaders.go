@@ -10,6 +10,7 @@ import (
 	"connector-downloader/internal/health"
 	"connector-downloader/internal/http/routes"
 	"connector-downloader/internal/qbittorrent"
+	"connector-downloader/internal/slack"
 	"connector-downloader/internal/swagger"
 	"connector-downloader/internal/tpb"
 
@@ -34,6 +35,11 @@ func LoadQBittorrentClient() {
 func LoadTPBClient() {
 	tpb.Client = &tpb.TPBClient{}
 	tpb.Client.Init()
+}
+
+func LoadSlackClient() {
+	slack.Client = &slack.SlackClient{}
+	slack.Client.Init()
 }
 
 func LoadHealthChecker() {
