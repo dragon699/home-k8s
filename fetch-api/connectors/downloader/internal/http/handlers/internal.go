@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"connector-downloader/internal/config"
-	"connector-downloader/internal/dto/response"
+	"connector-downloader/internal/http/dto/response"
 
 	"github.com/gofiber/fiber/v2"
 )

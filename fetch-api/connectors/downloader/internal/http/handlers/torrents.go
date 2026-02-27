@@ -13,8 +13,8 @@ import (
 
 	"common/utils"
 	"connector-downloader/internal/config"
-	"connector-downloader/internal/dto/request"
-	"connector-downloader/internal/dto/response"
+	"connector-downloader/internal/http/dto/request"
+	"connector-downloader/internal/http/dto/response"
 	"connector-downloader/internal/qbittorrent"
 
 	"github.com/gofiber/fiber/v2"
@@ -44,34 +44,45 @@ func ListTorrents(ctx *fiber.Ctx) error {
 	result := make([]response.Torrent, 0, len(torrents))
 
 	for _, torrentSrc := range torrents {
+		rawTorrent, err := json.Marshal(torrentSrc)
+		if err != nil {
+			continue
+		}
+
+		qbTorrent := response.QBTorrent{}
+		if err := json.Unmarshal(rawTorrent, &qbTorrent); err != nil {
+			continue
+		}
+
+		tags := []string{}
+		if qbTorrent.Tags != "" {
+			tags = strings.Split(qbTorrent.Tags, ", ")
+		}
+
 		torrentData := response.Torrent{
-			Name:               torrentSrc["name"].(string),
-			Hash:               torrentSrc["hash"].(string),
-			Category:           torrentSrc["category"].(string),
-			Tags:               strings.Split(torrentSrc["tags"].(string), ", "),
-			Status:             torrentSrc["state"].(string),
-			ProgressPercentage: utils.ProgressToPercentage(torrentSrc["progress"].(float64)),
-			EtaMinutes:         utils.SecondsToMinutes(int64(torrentSrc["eta"].(float64))),
-			MagnetURI:          torrentSrc["magnet_uri"].(string),
-			Leechers:           int64(torrentSrc["num_leechs"].(float64)),
-			Seeders:            int64(torrentSrc["num_seeds"].(float64)),
-
-			DateAdded:        utils.TimeFromUnix(int64(torrentSrc["added_on"].(float64))),
-			DateLastActivity: utils.TimeFromUnix(int64(torrentSrc["last_activity"].(float64))),
-			DateCompleted:    utils.TimeFromUnix(int64(torrentSrc["completion_on"].(float64))),
-
-			SizeTotalMB:      utils.BytesToMegabytes(int64(torrentSrc["total_size"].(float64))),
-			SizeDownloadedMB: utils.BytesToMegabytes(int64(torrentSrc["downloaded"].(float64))),
-			SizeUploadedMB:   utils.BytesToMegabytes(int64(torrentSrc["uploaded"].(float64))),
-			SizeLeftMB:       utils.BytesToMegabytes(int64(torrentSrc["amount_left"].(float64))),
-			SizeMB:           utils.BytesToMegabytes(int64(torrentSrc["size"].(float64))),
-
-			FilesAvailabilityPercentage: utils.RoundToTwoDecimals(torrentSrc["availability"].(float64) * 100),
-			FilesPath:                   torrentSrc["content_path"].(string),
-			SavePath:                    torrentSrc["save_path"].(string),
-
-			SpeedDownloadMBps: utils.BytesPerSecondToMBps(int64(torrentSrc["dlspeed"].(float64))),
-			SpeedUploadMBps:   utils.BytesPerSecondToMBps(int64(torrentSrc["upspeed"].(float64))),
+			Name:               qbTorrent.Name,
+			Hash:               qbTorrent.Hash,
+			Category:           qbTorrent.Category,
+			Tags:               tags,
+			Status:             qbTorrent.State,
+			ProgressPercentage: utils.ProgressToPercentage(qbTorrent.Progress),
+			EtaMinutes:         utils.SecondsToMinutes(int64(qbTorrent.ETA)),
+			MagnetURI:          qbTorrent.MagnetURI,
+			Leechers:           int64(qbTorrent.Leechers),
+			Seeders:            int64(qbTorrent.Seeders),
+			DateAdded:          utils.TimeFromUnix(int64(qbTorrent.AddedOn)),
+			DateLastActivity:   utils.TimeFromUnix(int64(qbTorrent.LastActivity)),
+			DateCompleted:      utils.TimeFromUnix(int64(qbTorrent.CompletionOn)),
+			SizeTotalMB:        utils.BytesToMegabytes(int64(qbTorrent.TotalSize)),
+			SizeDownloadedMB:   utils.BytesToMegabytes(int64(qbTorrent.Downloaded)),
+			SizeUploadedMB:     utils.BytesToMegabytes(int64(qbTorrent.Uploaded)),
+			SizeLeftMB:         utils.BytesToMegabytes(int64(qbTorrent.AmountLeft)),
+			SizeMB:             utils.BytesToMegabytes(int64(qbTorrent.Size)),
+			FilesAvailabilityPercentage: utils.RoundToTwoDecimals(qbTorrent.Availability * 100),
+			FilesPath:                   qbTorrent.ContentPath,
+			SavePath:                    qbTorrent.SavePath,
+			SpeedDownloadMBps:           utils.BytesPerSecondToMBps(int64(qbTorrent.SpeedDownload)),
+			SpeedUploadMBps:             utils.BytesPerSecondToMBps(int64(qbTorrent.SpeedUpload)),
 		}
 
 		torrentMeta := response.TorrentMeta{}

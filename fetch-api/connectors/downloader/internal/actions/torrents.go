@@ -15,7 +15,7 @@ import (
 	"time"
 
 	"connector-downloader/internal/config"
-	"connector-downloader/internal/dto/response"
+	"connector-downloader/internal/http/dto/response"
 	"connector-downloader/internal/notifications"
 	"connector-downloader/internal/qbittorrent"
 	t "connector-downloader/internal/telemetry"
