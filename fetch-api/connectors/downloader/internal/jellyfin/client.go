@@ -77,3 +77,34 @@ func (instance *JellyfinClient) GetItems() ([]map[string]any, error) {
 
 	return result.Items, nil
 }
+
+func (instance *JellyfinClient) DownloadSubtitles(itemID string, language string) error {
+	req := &utils.Req{Client: instance.Client}
+
+	searchResp, err := req.GET(
+		fmt.Sprintf("%s/Items/%s/RemoteSearch/Subtitles/%s", instance.APIBaseURL, itemID, language),
+		instance.APIDefaultHeaders,
+		nil,
+	)
+
+	if err != nil {
+		return err
+	}
+
+	var subs []map[string]any = searchResp.Body.([]map[string]any)
+
+	if len(subs) == 0 {
+		return fmt.Errorf("No %s subtitles found for item ID %s in Jellyfin", language, itemID)
+	}
+
+	subsID := subs[0]["Id"].(string)
+
+	_, err = req.POST(
+		fmt.Sprintf("%s/Items/%s/RemoteSearch/Subtitles/%s", instance.APIBaseURL, itemID, subsID),
+		instance.APIDefaultHeaders,
+		nil,
+		nil,
+	)
+
+	return err
+}

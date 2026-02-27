@@ -1,11 +1,6 @@
 package actions
 
 import (
-	"encoding/json"
-	"fmt"
-	"io"
-	"net/http"
-	"path/filepath"
 	"slices"
 	"time"
 
@@ -149,70 +144,17 @@ func (instance *ActionsRunner) run() {
 
 				switch action.Name {
 				case "rename":
-					op := runner.JellyfinRename(torrent, torrentContentFiles, torrentContentNewFileNames)
+					err := runner.JellyfinRename(torrent, torrentContentFiles, torrentContentNewFileNames)
 
-					if op != nil {
+					if err != nil {
 						continue
 					}
 
 				case "find_subs":
-					var subsDownloadedCount int = 0
-					var subsAlreadyPresentCount int = 0
+					err := runner.JellyfinFindSubs(torrent, torrentContentNewFileNames)
 
-					jellyfin.Client.RefreshLibrary()
-					time.Sleep(2 * time.Second)
-
-					jellyfinItems, err := jellyfin.Client.GetItems()
 					if err != nil {
-						t.Log.Error("Failed to get Jellyfin items", "error", err.Error())
-						qbittorrent.Client.DeleteTorrentTags(torrent.Hash, []string{"jellyfin:find_subs=pending"})
-						qbittorrent.Client.AddTorrentTags(torrent.Hash, []string{"jellyfin:find_subs=failed"})
-
 						continue
-					}
-
-					for _, item := range jellyfinItems {
-						if hasSubtitles, ok := item["HasSubtitles"].(bool); ok && hasSubtitles {
-							var subtitlesFound bool = false
-
-							if mediaStreams, ok := item["MediaStreams"].([]map[string]any); ok {
-								for _, stream := range mediaStreams {
-									if stream["Type"] == "Subtitle" {
-										if subtitleLanguage, ok := stream["Language"].(string); ok && subtitleLanguage == config.Config.JellyfinSubtitlesDefaultLanguage[:3] {
-											subtitlesFound = true
-											break
-										}
-									}
-								}
-							}
-
-							if subtitlesFound {
-								subsAlreadyPresentCount += 1
-								continue
-							}
-						}
-
-						itemFile := filepath.Base(item["Path"].(string))
-
-						if slices.Contains(torrentContentNewFileNames, itemFile) {
-							err = instance.downloadSubtitlesInJellyfin(item["Id"].(string), config.Config.JellyfinSubtitlesDefaultLanguage)
-							if err != nil {
-								t.Log.Error("Failed to download subtitles in Jellyfin", "error", err.Error())
-								continue
-							}
-
-							subsDownloadedCount += 1
-						}
-					}
-
-					qbittorrent.Client.DeleteTorrentTags(torrent.Hash, []string{"jellyfin:find_subs=pending"})
-
-					if subsAlreadyPresentCount == len(torrentContentNewFileNames) {
-						qbittorrent.Client.AddTorrentTags(torrent.Hash, []string{"jellyfin:find_subs=already_present"})
-					} else if (subsDownloadedCount + subsAlreadyPresentCount) == len(torrentContentNewFileNames) {
-						qbittorrent.Client.AddTorrentTags(torrent.Hash, []string{"jellyfin:find_subs=completed"})
-					} else {
-						qbittorrent.Client.AddTorrentTags(torrent.Hash, []string{"jellyfin:find_subs=partially_completed"})
 					}
 				}
 			}
@@ -224,77 +166,4 @@ func (instance *ActionsRunner) run() {
 			}
 		}
 	}
-}
-
-func (instance *ActionsRunner) downloadSubtitlesInJellyfin(itemID string, language string) error {
-	httpClient := &http.Client{
-		Timeout: 10 * time.Second,
-	}
-
-	req, err := http.NewRequest(
-		http.MethodGet,
-		fmt.Sprintf("%s/Items/%s/RemoteSearch/Subtitles/%s", config.Config.JellyfinUrl, itemID, language),
-		nil,
-	)
-	if err != nil {
-		return fmt.Errorf("failed to create request: %w", err)
-	}
-
-	req.Header.Set("X-Emby-Token", config.Config.JellyfinAPIKey)
-
-	resp, err := httpClient.Do(req)
-	if err != nil {
-		return fmt.Errorf("failed to fetch response: %w", err)
-	}
-
-	defer resp.Body.Close()
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return fmt.Errorf("failed to read response: %w", err)
-	}
-
-	if !(resp.StatusCode >= 200 && resp.StatusCode < 300) {
-		return fmt.Errorf("unexpected status code: %d, body: %s", resp.StatusCode, string(body))
-	}
-
-	var result []map[string]any
-	if err := json.Unmarshal(body, &result); err != nil {
-		return fmt.Errorf("failed to unmarshal response: %w", err)
-	}
-
-	if len(result) == 0 {
-		return fmt.Errorf("no subtitles found in Jellyfin for item ID: %s and language: %s", itemID, language)
-	}
-
-	jellyfinSubtitlesID := result[0]["Id"].(string)
-
-	req, err = http.NewRequest(
-		http.MethodPost,
-		fmt.Sprintf("%s/Items/%s/RemoteSearch/Subtitles/%s", config.Config.JellyfinUrl, itemID, jellyfinSubtitlesID),
-		nil,
-	)
-	if err != nil {
-		return fmt.Errorf("failed to create request: %w", err)
-	}
-
-	req.Header.Set("X-Emby-Token", config.Config.JellyfinAPIKey)
-
-	resp, err = httpClient.Do(req)
-	if err != nil {
-		return fmt.Errorf("failed to fetch response: %w", err)
-	}
-
-	defer resp.Body.Close()
-
-	body, err = io.ReadAll(resp.Body)
-	if err != nil {
-		return fmt.Errorf("failed to read response: %w", err)
-	}
-
-	if !(resp.StatusCode >= 200 && resp.StatusCode < 300) {
-		return fmt.Errorf("unexpected status code: %d, body: %s", resp.StatusCode, string(body))
-	}
-
-	return nil
 }
