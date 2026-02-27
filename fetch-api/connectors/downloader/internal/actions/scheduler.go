@@ -5,7 +5,6 @@ import (
 	t "connector-downloader/internal/telemetry"
 
 	"github.com/go-co-op/gocron"
-
 )
 
 type ActionsRunner struct {
@@ -14,7 +13,7 @@ type ActionsRunner struct {
 
 func (instance *ActionsRunner) CreateSchedule() {
 	t.Log.Info("Scheduling qBittorrent checks..")
-	instance.runActions()
+	instance.run()
 
 	if config.Config.TorrentActionsJobID == nil {
 		if instance.Scheduler == nil {
@@ -25,7 +24,7 @@ func (instance *ActionsRunner) CreateSchedule() {
 		config.Config.TorrentActionsNextCheck = &nextCheckTime
 
 		jobTag := "torrent_actions"
-		job, _ := instance.Scheduler.Every(config.Config.TorrentActionsIntervalSeconds).Seconds().Do(instance.runActions)
+		job, _ := instance.Scheduler.Every(config.Config.TorrentActionsIntervalSeconds).Seconds().Do(instance.run)
 		job.Tag(jobTag)
 		config.Config.TorrentActionsJobID = &jobTag
 	}

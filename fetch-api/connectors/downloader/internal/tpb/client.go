@@ -21,7 +21,9 @@ type TPBClient struct {
 func (instance *TPBClient) Init() {
 	instance.APIBaseURL = config.Config.TPBAPIUrl
 	instance.APIDefaultHeaders = map[string]string{}
-	instance.Client = &http.Client{Timeout: 10 * time.Second}
+	instance.Client = &http.Client{
+		Timeout: 10 * time.Second,
+	}
 }
 
 func (instance *TPBClient) SearchTorrents(category int64, query string) ([]Torrent, error) {

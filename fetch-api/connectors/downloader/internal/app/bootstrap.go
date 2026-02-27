@@ -35,6 +35,7 @@ func Run() error {
 	LoadQBittorrentClient()
 	LoadTPBClient()
 	LoadSlackClient()
+	LoadJellyfinClient()
 	LoadHealthChecker()
 	LoadRoutes(app)
 	LoadActionsRunner()

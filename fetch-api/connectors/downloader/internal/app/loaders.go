@@ -9,6 +9,7 @@ import (
 	"connector-downloader/internal/config"
 	"connector-downloader/internal/health"
 	"connector-downloader/internal/http/routes"
+	"connector-downloader/internal/jellyfin"
 	"connector-downloader/internal/qbittorrent"
 	"connector-downloader/internal/slack"
 	"connector-downloader/internal/swagger"
@@ -40,6 +41,11 @@ func LoadTPBClient() {
 func LoadSlackClient() {
 	slack.Client = &slack.SlackClient{}
 	slack.Client.Init()
+}
+
+func LoadJellyfinClient() {
+	jellyfin.Client = &jellyfin.JellyfinClient{}
+	jellyfin.Client.Init()
 }
 
 func LoadHealthChecker() {

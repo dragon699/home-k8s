@@ -109,11 +109,7 @@ func (instance *QBittorrentClient) StopTorrent(torrentHash string) error {
 		},
 	)
 
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return err
 }
 
 func (instance *QBittorrentClient) AddTorrent(torrentURL string, category string, tags []string, savePath string) error {
@@ -155,11 +151,7 @@ func (instance *QBittorrentClient) RemoveTorrent(torrentHash string, deleteFiles
 		},
 	)
 
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return err
 }
 
 func (instance *QBittorrentClient) AddTorrentTags(torrentHash string, tags []string) error {
@@ -175,11 +167,7 @@ func (instance *QBittorrentClient) AddTorrentTags(torrentHash string, tags []str
 		},
 	)
 
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return err
 }
 
 func (instance *QBittorrentClient) DeleteTorrentTags(torrentHash string, tags []string) error {
@@ -195,9 +183,5 @@ func (instance *QBittorrentClient) DeleteTorrentTags(torrentHash string, tags []
 		},
 	)
 
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return err
 }
