@@ -13,16 +13,6 @@ import (
 	t "connector-downloader/internal/telemetry"
 )
 
-func (instance *ActionsRunner) getNextCheckTime() string {
-	ts := time.Now().Add(
-		time.Duration(
-			config.Config.TorrentActionsIntervalSeconds,
-		) * time.Second,
-	)
-
-	return ts.Format("2006-01-02T15:04:05")
-}
-
 func (instance *ActionsRunner) run() {
 	lastCheckTime := time.Now().Format("2006-01-02T15:04:05")
 	config.Config.TorrentActionsLastCheck = &lastCheckTime
@@ -44,27 +34,14 @@ func (instance *ActionsRunner) run() {
 		if torrent.ProgressPercentage < 100 {
 			for _, action := range torrent.Meta.ScheduledActions {
 				if (action.Category == "slack") && (action.Name == "notify") && (action.Status == "pending") {
-					vars := torrentActions.TorrentsSlackNotificationVars{
-						TorrentName: torrent.Name,
-						Category:    torrent.Category,
-					}
-
 					err := runner.SlackNotify(
-						"torrents_initial",
-						vars,
+						"initial",
+						torrent,
 					)
 
 					if err != nil {
-						t.Log.Error("Failed to send slack notification for a torrent!", "error", err.Error())
-
-						qbittorrent.Client.DeleteTorrentTags(torrent.Hash, []string{"slack:notify=pending"})
-						qbittorrent.Client.AddTorrentTags(torrent.Hash, []string{"slack:notify=failed"})
-
 						break
 					}
-
-					qbittorrent.Client.DeleteTorrentTags(torrent.Hash, []string{"slack:notify=pending"})
-					qbittorrent.Client.AddTorrentTags(torrent.Hash, []string{"slack:notify=initial"})
 
 					break
 				}
@@ -74,27 +51,14 @@ func (instance *ActionsRunner) run() {
 		} else {
 			for _, action := range torrent.Meta.ScheduledActions {
 				if (action.Category == "slack") && (action.Name == "notify") && (action.Status == "initial") {
-					vars := torrentActions.TorrentsSlackNotificationVars{
-						TorrentName: torrent.Name,
-						Category:    torrent.Category,
-					}
-
 					err = runner.SlackNotify(
-						"torrents_completed",
-						vars,
+						"completed",
+						torrent,
 					)
 
 					if err != nil {
-						t.Log.Error("Failed to send slack notification for a completed torrent!", "error", err.Error())
-
-						qbittorrent.Client.DeleteTorrentTags(torrent.Hash, []string{"slack:notify=initial"})
-						qbittorrent.Client.AddTorrentTags(torrent.Hash, []string{"slack:notify=failed"})
-
 						break
 					}
-
-					qbittorrent.Client.DeleteTorrentTags(torrent.Hash, []string{"slack:notify=initial"})
-					qbittorrent.Client.AddTorrentTags(torrent.Hash, []string{"slack:notify=completed"})
 
 					break
 				}

@@ -3,6 +3,7 @@ package actions
 import (
 	"connector-downloader/internal/config"
 	t "connector-downloader/internal/telemetry"
+	"time"
 
 	"github.com/go-co-op/gocron"
 )
@@ -28,4 +29,14 @@ func (instance *ActionsRunner) CreateSchedule() {
 		job.Tag(jobTag)
 		config.Config.TorrentActionsJobID = &jobTag
 	}
+}
+
+func (instance *ActionsRunner) getNextCheckTime() string {
+	ts := time.Now().Add(
+		time.Duration(
+			config.Config.TorrentActionsIntervalSeconds,
+		) * time.Second,
+	)
+
+	return ts.Format("2006-01-02T15:04:05")
 }

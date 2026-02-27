@@ -62,14 +62,43 @@ func (instance *Actions) TorrentPostDownload(torrent response.Torrent) ([]map[st
 	return torrentContentFiles, torrentContentNewFileNames, nil
 }
 
-func (instance *Actions) SlackNotify(templateName string, templateVars TorrentsSlackNotificationVars) error {
-	templateVars.QBittorrentURL = config.Config.QBittorrentPublicUrl
-	templateVars.JellyfinURL = config.Config.JellyfinUrl
+func (instance *Actions) SlackNotify(stage string, torrent response.Torrent) error {
+	var lastTag, newTag string
 
-	return slack.Client.SendMessage(
-		templateName,
+	switch stage {
+	case "initial":
+		lastTag = "slack:notify=pending"
+		newTag = "slack:notify=initial"
+	case "completed":
+		lastTag = "slack:notify=initial"
+		newTag = "slack:notify=completed"
+	}
+
+	templateVars := TorrentsSlackNotificationVars{
+		TorrentName:    torrent.Name,
+		Category:       torrent.Category,
+		QBittorrentURL: config.Config.QBittorrentPublicUrl,
+		JellyfinURL:    config.Config.JellyfinUrl,
+	}
+
+	err := slack.Client.SendMessage(
+		fmt.Sprintf("torrents_%s", stage),
 		templateVars,
 	)
+
+	if err != nil {
+		t.Log.Error("Failed to send slack notification for a torrent!", "error", err.Error())
+
+		qbittorrent.Client.DeleteTorrentTags(torrent.Hash, []string{lastTag})
+		qbittorrent.Client.AddTorrentTags(torrent.Hash, []string{"slack:notify=failed"})
+
+		return fmt.Errorf("Failed to send slack notification for a torrent: %w", err)
+	}
+
+	qbittorrent.Client.DeleteTorrentTags(torrent.Hash, []string{lastTag})
+	qbittorrent.Client.AddTorrentTags(torrent.Hash, []string{newTag})
+
+	return nil
 }
 
 func (instance *Actions) JellyfinRename(torrent response.Torrent, torrentContentFiles []map[string]any, torrentContentNewFileNames []string) error {
