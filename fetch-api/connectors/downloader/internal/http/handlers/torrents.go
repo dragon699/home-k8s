@@ -1,21 +1,15 @@
 package handlers
 
 import (
-	"encoding/json"
 	"errors"
-	"fmt"
-	"io"
-	"net/http"
-	"net/url"
 	"slices"
-	"strings"
-	"time"
 
-	"common/utils"
 	"connector-downloader/internal/config"
 	"connector-downloader/internal/http/dto/request"
 	"connector-downloader/internal/http/dto/response"
+	"connector-downloader/internal/mapper"
 	"connector-downloader/internal/qbittorrent"
+	"connector-downloader/internal/tpb"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -24,7 +18,7 @@ func ListTorrents(ctx *fiber.Ctx) error {
 	torrents, err := qbittorrent.Client.ListTorrents()
 
 	if err != nil {
-		var clientErr *qbittorrent.ClientError
+		var clientErr *config.ClientError
 		if errors.As(err, &clientErr) {
 			return ctx.Status(502).JSON(
 				response.ErrorResponse{
@@ -41,159 +35,7 @@ func ListTorrents(ctx *fiber.Ctx) error {
 		)
 	}
 
-	result := make([]response.Torrent, 0, len(torrents))
-
-	for _, torrentSrc := range torrents {
-		rawTorrent, err := json.Marshal(torrentSrc)
-		if err != nil {
-			continue
-		}
-
-		qbTorrent := response.QBTorrent{}
-		if err := json.Unmarshal(rawTorrent, &qbTorrent); err != nil {
-			continue
-		}
-
-		tags := []string{}
-		if qbTorrent.Tags != "" {
-			tags = strings.Split(qbTorrent.Tags, ", ")
-		}
-
-		torrentData := response.Torrent{
-			Name:               qbTorrent.Name,
-			Hash:               qbTorrent.Hash,
-			Category:           qbTorrent.Category,
-			Tags:               tags,
-			Status:             qbTorrent.State,
-			ProgressPercentage: utils.ProgressToPercentage(qbTorrent.Progress),
-			EtaMinutes:         utils.SecondsToMinutes(int64(qbTorrent.ETA)),
-			MagnetURI:          qbTorrent.MagnetURI,
-			Leechers:           int64(qbTorrent.Leechers),
-			Seeders:            int64(qbTorrent.Seeders),
-			DateAdded:          utils.TimeFromUnix(int64(qbTorrent.AddedOn)),
-			DateLastActivity:   utils.TimeFromUnix(int64(qbTorrent.LastActivity)),
-			DateCompleted:      utils.TimeFromUnix(int64(qbTorrent.CompletionOn)),
-			SizeTotalMB:        utils.BytesToMegabytes(int64(qbTorrent.TotalSize)),
-			SizeDownloadedMB:   utils.BytesToMegabytes(int64(qbTorrent.Downloaded)),
-			SizeUploadedMB:     utils.BytesToMegabytes(int64(qbTorrent.Uploaded)),
-			SizeLeftMB:         utils.BytesToMegabytes(int64(qbTorrent.AmountLeft)),
-			SizeMB:             utils.BytesToMegabytes(int64(qbTorrent.Size)),
-			FilesAvailabilityPercentage: utils.RoundToTwoDecimals(qbTorrent.Availability * 100),
-			FilesPath:                   qbTorrent.ContentPath,
-			SavePath:                    qbTorrent.SavePath,
-			SpeedDownloadMBps:           utils.BytesPerSecondToMBps(int64(qbTorrent.SpeedDownload)),
-			SpeedUploadMBps:             utils.BytesPerSecondToMBps(int64(qbTorrent.SpeedUpload)),
-		}
-
-		torrentMeta := response.TorrentMeta{}
-
-		if slices.Contains(torrentData.Tags, "fetch-api") {
-			torrentMeta.ManagedBy = "connector-downloader"
-		} else {
-			torrentMeta.ManagedBy = "qBittorrent"
-		}
-
-		statesDownloading := []string{
-			"allocating", "downloading", "metaDL", "queuedDL", "stalledDL", "checkingDL", "forcedDL",
-		}
-		statesPaused := []string{
-			"pausedUP", "pausedDL", "stoppedDL",
-		}
-		statesError := []string{
-			"error", "missingFiles",
-		}
-
-		if slices.Contains(statesDownloading, torrentData.Status) {
-			torrentData.Status = "downloading"
-		} else if slices.Contains(statesPaused, torrentData.Status) {
-			torrentData.Status = "paused"
-		} else if slices.Contains(statesError, torrentData.Status) {
-			torrentData.Status = "error"
-		} else {
-			torrentData.Status = "unknown"
-		}
-
-		if torrentData.ProgressPercentage == 100 {
-			torrentData.Status = "completed"
-			torrentData.EtaMinutes = 0
-		} else {
-			torrentData.DateCompleted = ""
-		}
-
-		for _, tag := range torrentData.Tags {
-			tagParts := strings.Split(tag, ":")
-
-			if !(len(tagParts) > 1) {
-				continue
-			}
-
-			tagOpParts := strings.Split(tagParts[1], "=")
-
-			if !(len(tagOpParts) > 1) {
-				continue
-			}
-
-			tagAction := response.TorrentMetaScheduledAction{}
-
-			tagCategory := tagParts[0]
-			tagOpName := tagOpParts[0]
-			tagOpStatus := tagOpParts[1]
-
-			if tagCategory == "jellyfin" {
-				if tagOpName == "rename" {
-					switch tagOpStatus {
-					case "pending":
-						tagAction.Description = "Torrent dir/files will be renamed to match Jellyfin library structure once completed."
-					case "completed":
-						tagAction.Description = "Torrent dir/files renamed to match Jellyfin library structure."
-					case "failed":
-						tagAction.Description = "[!] Something went wrong while renaming Torrent's content."
-					}
-				}
-
-				if tagOpName == "find_subs" {
-					switch tagOpStatus {
-					case "pending":
-						tagAction.Description = "Subtitles will be fetched from OpenSubtitles in Jellyfin for this torrent media."
-					case "completed":
-						tagAction.Description = "Subtitles in Jellyfin fully fetched."
-					case "partially_completed":
-						tagAction.Description = "Subtitles fetched in Jellyfin for some of the media."
-					case "already_present":
-						tagAction.Description = "Subtitles and preferred language already present in Jellyfin for this media."
-					case "failed":
-						tagAction.Description = "[!] Something went wrong while fetching subtitles from OpenSubtitles in Jellyfin for this torrent media."
-					}
-				}
-			}
-
-			if tagCategory == "slack" {
-				if tagOpName == "notify" {
-					switch tagOpStatus {
-					case "pending":
-						tagAction.Description = "Slack notification still not sent."
-					case "initial":
-						tagAction.Description = "Initial Slack notification already sent, awaiting for torrent completion."
-					case "completed":
-						tagAction.Description = "Slack notifications sent."
-					case "failed":
-						tagAction.Description = "[!] Something went wrong while sending notifications to Slack."
-					}
-				}
-			}
-
-			tagAction.Name = tagOpName
-			tagAction.Status = tagOpStatus
-			tagAction.Category = tagCategory
-
-			if (tagAction.Name != "") && (tagAction.Status != "") {
-				torrentMeta.ScheduledActions = append(torrentMeta.ScheduledActions, tagAction)
-			}
-		}
-
-		torrentData.Meta = torrentMeta
-		result = append(result, torrentData)
-	}
+	result := mapper.TorrentsFromQBittorrent(torrents)
 
 	return ctx.JSON(response.BaseResponse[response.Torrent]{
 		TotalItems: len(result),
@@ -280,7 +122,7 @@ func AddTorrent(ctx *fiber.Ctx) error {
 	)
 
 	if err != nil {
-		var clientErr *qbittorrent.ClientError
+		var clientErr *config.ClientError
 		if errors.As(err, &clientErr) {
 			return ctx.Status(502).JSON(
 				response.ErrorResponse{
@@ -330,7 +172,7 @@ func AddTorrentTags(ctx *fiber.Ctx) error {
 	)
 
 	if err != nil {
-		var clientErr *qbittorrent.ClientError
+		var clientErr *config.ClientError
 		if errors.As(err, &clientErr) {
 			return ctx.Status(502).JSON(
 				response.ErrorResponse{
@@ -380,7 +222,7 @@ func DeleteTorrentTags(ctx *fiber.Ctx) error {
 	)
 
 	if err != nil {
-		var clientErr *qbittorrent.ClientError
+		var clientErr *config.ClientError
 		if errors.As(err, &clientErr) {
 			return ctx.Status(502).JSON(
 				response.ErrorResponse{
@@ -424,100 +266,28 @@ func SearchTorrents(ctx *fiber.Ctx) error {
 		)
 	}
 
-	client := &http.Client{
-		Timeout: 10 * time.Second,
-	}
+	// 200 = All video media
+	torrents, err := tpb.Client.SearchTorrents(200, searchParams.Query)
 
-	reqParams := url.Values{}
-	reqParams.Add("q", searchParams.Query)
-	reqParams.Add("cat", "200") // Videos only category
-
-	req, err := http.NewRequest(
-		http.MethodGet,
-		fmt.Sprintf("%s/q.php?%s", config.Config.TPBAPIUrl, reqParams.Encode()),
-		nil,
-	)
 	if err != nil {
-		return ctx.Status(500).JSON(
-			response.ErrorResponse{
-				Error: "Failed to create HTTP request",
-			},
-		)
-	}
-
-	resp, err := client.Do(req)
-	if err != nil {
-		return ctx.Status(500).JSON(
-			response.ErrorResponse{
-				Error: "Failed to perform search request to TPB API",
-			},
-		)
-	}
-
-	defer resp.Body.Close()
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return ctx.Status(500).JSON(
-			response.ErrorResponse{
-				Error: "Failed to read response from TPB API",
-			},
-		)
-	}
-
-	if !(resp.StatusCode >= 200 && resp.StatusCode < 300) {
-		return ctx.Status(502).JSON(
-			response.ErrorResponse{
-				Error:            fmt.Sprintf("Unexpected status code from TPB API: %d", resp.StatusCode),
-				UpstreamResponse: map[string]any{"status_code": resp.StatusCode, "body": string(body)},
-			},
-		)
-	}
-
-	var TPBTorrents []response.TPBTorrent
-	if err := json.Unmarshal(body, &TPBTorrents); err != nil {
-		return ctx.Status(500).JSON(
-			response.ErrorResponse{
-				Error: "TPB API returned invalid response",
-			},
-		)
-	}
-
-	result := make([]response.Torrent, 0, len(TPBTorrents))
-
-	for torrent := range TPBTorrents {
-		id, _ := utils.ToInt(TPBTorrents[torrent].ID)
-		magnetURI := fmt.Sprintf(
-			"magnet:?xt=urn:btih:%s&dn=%s",
-			TPBTorrents[torrent].InfoHash,
-			url.QueryEscape(TPBTorrents[torrent].Name),
-		)
-		leechers, _ := utils.ToInt(TPBTorrents[torrent].Leechers)
-		seeders, _ := utils.ToInt(TPBTorrents[torrent].Seeders)
-		sizeTotalB, _ := utils.ToInt(TPBTorrents[torrent].Size)
-		filesCount, _ := utils.ToInt(TPBTorrents[torrent].NumFiles)
-		dateAdded, _ := utils.ToInt(TPBTorrents[torrent].Added)
-
-		torrentData := response.Torrent{
-			ID:          id,
-			Name:        TPBTorrents[torrent].Name,
-			Hash:        TPBTorrents[torrent].InfoHash,
-			MagnetURI:   magnetURI,
-			Leechers:    leechers,
-			Seeders:     seeders,
-			SizeTotalMB: utils.BytesToMegabytes(sizeTotalB),
-			SizeTotalGB: utils.BytesToGigabytes(sizeTotalB),
-			FilesCount:  filesCount,
-			DateAdded:   utils.TimeFromUnix(dateAdded),
-			IMDB:        TPBTorrents[torrent].IMDB,
+		var clientErr *config.ClientError
+		if errors.As(err, &clientErr) {
+			return ctx.Status(502).JSON(
+				response.ErrorResponse{
+					Error:            err.Error(),
+					UpstreamResponse: clientErr.UpstreamResponse(),
+				},
+			)
 		}
 
-		result = append(result, torrentData)
+		return ctx.Status(500).JSON(
+			response.ErrorResponse{
+				Error: err.Error(),
+			},
+		)
 	}
 
-	if len(result) > 0 && result[0].ID == 0 {
-		result = []response.Torrent{}
-	}
+	result := mapper.TorrentsFromTPB(torrents)
 
 	return ctx.JSON(response.BaseResponse[response.Torrent]{
 		TotalItems: len(result),

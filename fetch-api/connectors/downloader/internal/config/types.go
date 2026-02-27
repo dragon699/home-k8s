@@ -1,4 +1,4 @@
-package qbittorrent
+package config
 
 import (
 	"encoding/json"
@@ -71,7 +71,7 @@ func parseJSONBody(body []byte) any {
 	return parsed
 }
 
-func newConnectionError(message string, err error) error {
+func NewConnectionError(message string, err error) error {
 	return &ClientError{
 		Kind:    ClientErrorConnection,
 		Message: message,
@@ -79,7 +79,7 @@ func newConnectionError(message string, err error) error {
 	}
 }
 
-func newUpstreamError(message string, statusCode int, body []byte, err error) error {
+func NewUpstreamError(message string, statusCode int, body []byte, err error) error {
 	return &ClientError{
 		Kind:       ClientErrorUpstream,
 		Message:    message,

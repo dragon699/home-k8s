@@ -1,13 +1,13 @@
 package qbittorrent
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"strings"
 	"time"
 
 	"common/utils"
-	// t "connector-downloader/internal/telemetry"
 	"connector-downloader/internal/config"
 )
 
@@ -45,7 +45,7 @@ func (instance *QBittorrentClient) Ping() (string, int, error) {
 	return "ok", resp.StatusCode, nil
 }
 
-func (instance *QBittorrentClient) ListTorrents() ([]map[string]any, error) {
+func (instance *QBittorrentClient) ListTorrents() ([]Torrent, error) {
 	req := &utils.Req{Client: instance.Client}
 
 	resp, err := req.GET(
@@ -58,7 +58,25 @@ func (instance *QBittorrentClient) ListTorrents() ([]map[string]any, error) {
 		return nil, err
 	}
 
-	return resp.Body.([]map[string]any), nil
+	torrents, ok := resp.Body.([]map[string]any)
+
+	if !ok {
+		return nil, config.NewUpstreamError("Invalid qBittorrent torrents response", resp.StatusCode, nil, nil)
+	}
+
+	rawTorrents, err := json.Marshal(torrents)
+
+	if err != nil {
+		return nil, err
+	}
+
+	result := []Torrent{}
+
+	if err := json.Unmarshal(rawTorrents, &result); err != nil {
+		return nil, err
+	}
+
+	return result, nil
 }
 
 func (instance *QBittorrentClient) GetTorrentContent(torrentHash string) ([]map[string]any, error) {
@@ -118,7 +136,7 @@ func (instance *QBittorrentClient) AddTorrent(torrentURL string, category string
 	}
 
 	if strings.Contains(strings.ToLower(fmt.Sprintf("%v", resp.Body)), "fails") {
-		return newUpstreamError("Invalid torrent parameters", 502, []byte(fmt.Sprintf("%v", resp.Body)), nil)
+		return config.NewUpstreamError("Invalid torrent parameters", 502, []byte(fmt.Sprintf("%v", resp.Body)), nil)
 	}
 
 	return nil

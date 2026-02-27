@@ -33,6 +33,7 @@ func Run() error {
 	app.Use(t.TracingMiddleware())
 
 	LoadQBittorrentClient()
+	LoadTPBClient()
 	LoadHealthChecker()
 	LoadRoutes(app)
 	LoadActionsRunner()

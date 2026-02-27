@@ -11,6 +11,7 @@ import (
 	"connector-downloader/internal/http/routes"
 	"connector-downloader/internal/qbittorrent"
 	"connector-downloader/internal/swagger"
+	"connector-downloader/internal/tpb"
 
 	"github.com/go-co-op/gocron"
 	"github.com/gofiber/fiber/v2"
@@ -28,6 +29,11 @@ var ActionsRunner = actions.ActionsRunner{
 func LoadQBittorrentClient() {
 	qbittorrent.Client = &qbittorrent.QBittorrentClient{}
 	qbittorrent.Client.Init()
+}
+
+func LoadTPBClient() {
+	tpb.Client = &tpb.TPBClient{}
+	tpb.Client.Init()
 }
 
 func LoadHealthChecker() {
