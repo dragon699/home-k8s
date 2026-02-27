@@ -235,15 +235,19 @@ func (r *Req) POST(url string, headers map[string]string, params map[string]any,
 
 		if strings.Contains(contentType, "application/x-www-form-urlencoded") {
 			formData := netUrl.Values{}
+
 			for key, value := range body {
 				formData.Set(key, fmt.Sprintf("%v", value))
 			}
+
 			bodyReader = strings.NewReader(formData.Encode())
 		} else {
 			bodyBytes, err := json.Marshal(body)
+
 			if err != nil {
 				return nil, newConnectionError(fmt.Sprintf("[POST] [%s] Failed to serialize request body", url), err)
 			}
+
 			bodyReader = strings.NewReader(string(bodyBytes))
 		}
 	}
