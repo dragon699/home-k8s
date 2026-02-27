@@ -79,7 +79,7 @@ func (instance *QBittorrentClient) ListTorrents() ([]Torrent, error) {
 	return result, nil
 }
 
-func (instance *QBittorrentClient) GetTorrentContent(torrentHash string) ([]map[string]any, error) {
+func (instance *QBittorrentClient) ListTorrentContents(torrentHash string) ([]TorrentContentFile, error) {
 	req := &utils.Req{Client: instance.Client}
 
 	resp, err := req.GET(
@@ -94,7 +94,25 @@ func (instance *QBittorrentClient) GetTorrentContent(torrentHash string) ([]map[
 		return nil, err
 	}
 
-	return resp.Body.([]map[string]any), nil
+	torrentContentFiles, ok := resp.Body.([]map[string]any)
+
+	if !ok {
+		return nil, config.NewUpstreamError("Invalid qBittorrent torrent content response", resp.StatusCode, nil, nil)
+	}
+
+	rawTorrentContentFiles, err := json.Marshal(torrentContentFiles)
+
+	if err != nil {
+		return nil, err
+	}
+
+	result := []TorrentContentFile{}
+
+	if err := json.Unmarshal(rawTorrentContentFiles, &result); err != nil {
+		return nil, err
+	}
+
+	return result, nil
 }
 
 func (instance *QBittorrentClient) StopTorrent(torrentHash string) error {

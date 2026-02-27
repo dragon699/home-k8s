@@ -18,16 +18,14 @@ import (
 	t "connector-downloader/internal/telemetry"
 )
 
-type Actions struct{}
-
-func (instance *Actions) TorrentPostDownload(torrent response.Torrent) ([]map[string]any, []string, error) {
-	torrentContent, err := qbittorrent.Client.GetTorrentContent(torrent.Hash)
+func TorrentPostDownload(torrent response.Torrent) ([]qbittorrent.TorrentContentFile, []string, error) {
+	torrentContent, err := qbittorrent.Client.ListTorrentContents(torrent.Hash)
 
 	if err != nil {
 		return nil, nil, fmt.Errorf("Failed to get torrent content: %w", err)
 	}
 
-	var torrentContentFiles = []map[string]any{}
+	var torrentContentFiles = []qbittorrent.TorrentContentFile{}
 	var torrentContentNewFileNames = []string{}
 	var allowedExtensions = []string{
 		".mkv", ".mp4", ".avi", ".mov", ".wmv", ".flv", ".webm", ".m4v",
@@ -37,14 +35,14 @@ func (instance *Actions) TorrentPostDownload(torrent response.Torrent) ([]map[st
 	}
 
 	for _, file := range torrentContent {
-		if file["progress"].(float64) < 1 {
-			os.Remove(path.Join(torrent.SavePath, file["name"].(string)))
+		if file.Progress < 1 {
+			os.Remove(path.Join(torrent.SavePath, file.Name))
 		} else {
-			if !slices.Contains(allowedExtensions, path.Ext(file["name"].(string))) {
+			if !slices.Contains(allowedExtensions, path.Ext(file.Name)) {
 				continue
 			}
 
-			fileName := path.Base(file["name"].(string))
+			fileName := path.Base(file.Name)
 			fileExt := path.Ext(fileName)
 
 			torrentContentFiles = append(torrentContentFiles, file)
@@ -62,7 +60,7 @@ func (instance *Actions) TorrentPostDownload(torrent response.Torrent) ([]map[st
 	return torrentContentFiles, torrentContentNewFileNames, nil
 }
 
-func (instance *Actions) SlackNotify(stage string, torrent response.Torrent) error {
+func SlackNotify(stage string, torrent response.Torrent) error {
 	var lastTag, newTag string
 
 	switch stage {
@@ -74,7 +72,7 @@ func (instance *Actions) SlackNotify(stage string, torrent response.Torrent) err
 		newTag = "slack:notify=completed"
 	}
 
-	templateVars := TorrentsSlackNotificationVars{
+	templateVars := TorrentSlackNotificationVars{
 		TorrentName:    torrent.Name,
 		Category:       torrent.Category,
 		QBittorrentURL: config.Config.QBittorrentPublicUrl,
@@ -89,24 +87,34 @@ func (instance *Actions) SlackNotify(stage string, torrent response.Torrent) err
 	if err != nil {
 		t.Log.Error("Failed to send slack notification for a torrent!", "error", err.Error())
 
-		qbittorrent.Client.DeleteTorrentTags(torrent.Hash, []string{lastTag})
-		qbittorrent.Client.AddTorrentTags(torrent.Hash, []string{"slack:notify=failed"})
+		tagErr := SwitchTorrentTags(torrent.Hash, []string{lastTag}, []string{"slack:notify=failed"})
+
+		if tagErr != nil {
+			t.Log.Error(fmt.Sprintf("Failed to update tags for slack:notify action status for torrent %s", torrent.Hash), "error", tagErr.Error(), "torrent_hash", torrent.Hash)
+
+			return fmt.Errorf("Failed to send slack notification and update tags for torrent %s: notify error: %w; tag error: %v", torrent.Hash, err, tagErr)
+		}
 
 		return fmt.Errorf("Failed to send slack notification for a torrent: %w", err)
 	}
 
-	qbittorrent.Client.DeleteTorrentTags(torrent.Hash, []string{lastTag})
-	qbittorrent.Client.AddTorrentTags(torrent.Hash, []string{newTag})
+	err = SwitchTorrentTags(torrent.Hash, []string{lastTag}, []string{newTag})
+
+	if err != nil {
+		t.Log.Error(fmt.Sprintf("Failed to update tags for slack:notify action status for torrent %s", torrent.Hash), "error", err.Error(), "torrent_hash", torrent.Hash)
+
+		return fmt.Errorf("Failed to update slack:notify tags for torrent %s after sending notification: %w", torrent.Hash, err)
+	}
 
 	return nil
 }
 
-func (instance *Actions) JellyfinRename(torrent response.Torrent, torrentContentFiles []map[string]any, torrentContentNewFileNames []string) error {
+func JellyfinRename(torrent response.Torrent, torrentContentFiles []qbittorrent.TorrentContentFile, torrentContentNewFileNames []string) error {
 	var renameFailed bool = false
 
 	for _, file := range torrentContentFiles {
-		filePath := path.Dir(file["name"].(string))
-		fileName := path.Base(file["name"].(string))
+		filePath := path.Dir(file.Name)
+		fileName := path.Base(file.Name)
 		fileExt := path.Ext(fileName)
 		fileNameBase := strings.TrimSuffix(fileName, fileExt)
 
@@ -116,7 +124,7 @@ func (instance *Actions) JellyfinRename(torrent response.Torrent, torrentContent
 			fileExt,
 		)
 
-		srcFile := path.Join(torrent.SavePath, file["name"].(string))
+		srcFile := path.Join(torrent.SavePath, file.Name)
 		destPath := path.Join(torrent.SavePath, filePath)
 		destFile := path.Join(destPath, fileNameNew)
 
@@ -162,7 +170,7 @@ func (instance *Actions) JellyfinRename(torrent response.Torrent, torrentContent
 	return nil
 }
 
-func (instance *Actions) JellyfinFindSubs(torrent response.Torrent, torrentContentNewFileNames []string) error {
+func JellyfinFindSubs(torrent response.Torrent, torrentContentNewFileNames []string) error {
 	var subsDownloadedCount int = 0
 	var subsAlreadyPresentCount int = 0
 
@@ -170,26 +178,34 @@ func (instance *Actions) JellyfinFindSubs(torrent response.Torrent, torrentConte
 	time.Sleep(2 * time.Second)
 
 	jellyfinItems, err := jellyfin.Client.GetItems()
+
 	if err != nil {
 		t.Log.Error("Failed to get Jellyfin items", "error", err.Error())
-		qbittorrent.Client.DeleteTorrentTags(torrent.Hash, []string{"jellyfin:find_subs=pending"})
-		qbittorrent.Client.AddTorrentTags(torrent.Hash, []string{"jellyfin:find_subs=failed"})
+
+		err := SwitchTorrentTags(torrent.Hash, []string{"jellyfin:find_subs=pending"}, []string{"jellyfin:find_subs=failed"})
+
+		if err != nil {
+			t.Log.Error(fmt.Sprintf("Failed to update tags for jellyfin:find_subs action status for torrent %s", torrent.Hash), "error", err.Error(), "torrent_hash", torrent.Hash)
+		}
 
 		return fmt.Errorf("Failed to get Jellyfin items")
 	}
 
 	for _, item := range jellyfinItems {
-		if hasSubtitles, ok := item["HasSubtitles"].(bool); ok && hasSubtitles {
+		fileName := filepath.Base(item.Path)
+		
+		if !slices.Contains(torrentContentNewFileNames, fileName) {
+			continue
+		}
+
+		if item.HasSubtitles {
 			var subtitlesFound bool = false
 
-			if mediaStreams, ok := item["MediaStreams"].([]map[string]any); ok {
-				for _, stream := range mediaStreams {
-					if stream["Type"] == "Subtitle" {
-						if subtitleLanguage, ok := stream["Language"].(string); ok && subtitleLanguage == config.Config.JellyfinSubtitlesDefaultLanguage[:3] {
-							subtitlesFound = true
-							break
-						}
-					}
+			for _, stream := range item.MediaStreams {
+				if stream.Type == "Subtitle" && stream.Language == config.Config.JellyfinSubtitlesDefaultLanguage[:3] {
+					subtitlesFound = true
+
+					break
 				}
 			}
 
@@ -200,19 +216,15 @@ func (instance *Actions) JellyfinFindSubs(torrent response.Torrent, torrentConte
 			}
 		}
 
-		itemFile := filepath.Base(item["Path"].(string))
+		err = jellyfin.Client.DownloadSubtitles(item.ID, config.Config.JellyfinSubtitlesDefaultLanguage)
 
-		if slices.Contains(torrentContentNewFileNames, itemFile) {
-			err = jellyfin.Client.DownloadSubtitles(item["Id"].(string), config.Config.JellyfinSubtitlesDefaultLanguage)
+		if err != nil {
+			t.Log.Error("Failed to download subtitles in Jellyfin", "error", err.Error())
 
-			if err != nil {
-				t.Log.Error("Failed to download subtitles in Jellyfin", "error", err.Error())
-
-				continue
-			}
-
-			subsDownloadedCount += 1
+			continue
 		}
+
+		subsDownloadedCount += 1
 	}
 
 	qbittorrent.Client.DeleteTorrentTags(torrent.Hash, []string{"jellyfin:find_subs=pending"})

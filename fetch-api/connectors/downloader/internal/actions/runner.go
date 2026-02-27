@@ -4,7 +4,7 @@ import (
 	"slices"
 	"time"
 
-	torrentActions "connector-downloader/internal/actions/torrents"
+	run "connector-downloader/internal/actions/torrents"
 	"connector-downloader/internal/config"
 	"connector-downloader/internal/http/dto/response"
 	"connector-downloader/internal/jellyfin"
@@ -16,7 +16,6 @@ import (
 func (instance *ActionsRunner) run() {
 	lastCheckTime := time.Now().Format("2006-01-02T15:04:05")
 	config.Config.TorrentActionsLastCheck = &lastCheckTime
-	runner := torrentActions.Actions{}
 
 	rawTorrents, err := qbittorrent.Client.ListTorrents()
 
@@ -33,14 +32,16 @@ func (instance *ActionsRunner) run() {
 	for _, torrent := range torrents {
 		if torrent.ProgressPercentage < 100 {
 			for _, action := range torrent.Meta.ScheduledActions {
-				if (action.Category == "slack") && (action.Name == "notify") && (action.Status == "pending") {
-					err := runner.SlackNotify(
+				shouldNotify := (action.Category == "slack") && (action.Name == "notify") && (action.Status == "pending")
+
+				if shouldNotify {
+					err := run.SlackNotify(
 						"initial",
 						torrent,
 					)
 
 					if err != nil {
-						break
+						t.Log.Error("Failed to send Slack notification for downloading torrent", "error", err.Error())
 					}
 
 					break
@@ -50,14 +51,16 @@ func (instance *ActionsRunner) run() {
 			continue
 		} else {
 			for _, action := range torrent.Meta.ScheduledActions {
-				if (action.Category == "slack") && (action.Name == "notify") && (action.Status == "initial") {
-					err = runner.SlackNotify(
+				shouldNotify := (action.Category == "slack") && (action.Name == "notify") && (action.Status == "initial")
+
+				if shouldNotify {
+					err = run.SlackNotify(
 						"completed",
 						torrent,
 					)
 
 					if err != nil {
-						break
+						t.Log.Error("Failed to send Slack notification for completed torrent", "error", err.Error())
 					}
 
 					break
@@ -99,7 +102,7 @@ func (instance *ActionsRunner) run() {
 			qbittorrent.Client.StopTorrent(torrent.Hash)
 
 			if action.Category == "jellyfin" {
-				torrentContentFiles, torrentContentNewFileNames, err := runner.TorrentPostDownload(torrent)
+				torrentContentFiles, torrentContentNewFileNames, err := run.TorrentPostDownload(torrent)
 
 				if err != nil {
 					t.Log.Error("Failed to execute torrent post-download actions", "error", err.Error())
@@ -108,16 +111,18 @@ func (instance *ActionsRunner) run() {
 
 				switch action.Name {
 				case "rename":
-					err := runner.JellyfinRename(torrent, torrentContentFiles, torrentContentNewFileNames)
+					err := run.JellyfinRename(torrent, torrentContentFiles, torrentContentNewFileNames)
 
 					if err != nil {
+						t.Log.Error("Failed to rename torrent files in Jellyfin", "error", err.Error())
 						continue
 					}
 
 				case "find_subs":
-					err := runner.JellyfinFindSubs(torrent, torrentContentNewFileNames)
+					err := run.JellyfinFindSubs(torrent, torrentContentNewFileNames)
 
 					if err != nil {
+						t.Log.Error("Failed to find subtitles for torrent in Jellyfin", "error", err.Error())
 						continue
 					}
 				}

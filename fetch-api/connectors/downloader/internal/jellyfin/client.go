@@ -42,7 +42,7 @@ func (instance *JellyfinClient) RefreshLibrary() error {
 	return err
 }
 
-func (instance *JellyfinClient) GetItems() ([]map[string]any, error) {
+func (instance *JellyfinClient) GetItems() ([]Item, error) {
 	req := &utils.Req{Client: instance.Client}
 
 	resp, err := req.GET(
@@ -61,21 +61,30 @@ func (instance *JellyfinClient) GetItems() ([]map[string]any, error) {
 		return nil, err
 	}
 
-	result := struct {
-		Items []map[string]any `json:"Items"`
-	}{}
+	body, ok := resp.Body.(map[string]any)
 
-	rawBody, err := json.Marshal(resp.Body)
+	if !ok {
+		return nil, config.NewUpstreamError("Invalid Jellyfin items response", resp.StatusCode, nil, nil)
+	}
+
+	itemsRaw, ok := body["Items"]
+	if !ok {
+		return nil, config.NewUpstreamError("Invalid Jellyfin items response", resp.StatusCode, nil, nil)
+	}
+
+	rawItems, err := json.Marshal(itemsRaw)
 
 	if err != nil {
 		return nil, err
 	}
 
-	if err := json.Unmarshal(rawBody, &result); err != nil {
+	result := []Item{}
+
+	if err := json.Unmarshal(rawItems, &result); err != nil {
 		return nil, err
 	}
 
-	return result.Items, nil
+	return result, nil
 }
 
 func (instance *JellyfinClient) DownloadSubtitles(itemID string, language string) error {
@@ -91,13 +100,26 @@ func (instance *JellyfinClient) DownloadSubtitles(itemID string, language string
 		return err
 	}
 
-	var subs []map[string]any = searchResp.Body.([]map[string]any)
+	subtitlesRaw, ok := searchResp.Body.([]map[string]any)
+	if !ok {
+		return config.NewUpstreamError("Invalid Jellyfin subtitles response", searchResp.StatusCode, nil, nil)
+	}
+
+	rawSubtitles, err := json.Marshal(subtitlesRaw)
+	if err != nil {
+		return err
+	}
+
+	subs := []RemoteSubtitle{}
+	if err := json.Unmarshal(rawSubtitles, &subs); err != nil {
+		return err
+	}
 
 	if len(subs) == 0 {
 		return fmt.Errorf("No %s subtitles found for item ID %s in Jellyfin", language, itemID)
 	}
 
-	subsID := subs[0]["Id"].(string)
+	subsID := subs[0].ID
 
 	_, err = req.POST(
 		fmt.Sprintf("%s/Items/%s/RemoteSearch/Subtitles/%s", instance.APIBaseURL, itemID, subsID),
