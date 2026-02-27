@@ -2,6 +2,7 @@
 	"attachments": [
 		{
 			"color": "#00b389",
+			"fallback": "Download completed - {{ .TorrentName }}",
 			"blocks": [
 				{
 					"type": "section",
