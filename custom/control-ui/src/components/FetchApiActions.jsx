@@ -28,8 +28,8 @@ export default function FetchApiActions() {
   const DEFAULT_TAGS_FALLBACK = 'fetch-api'
   const jellyfinUrl = '/__jellyfin__'
   const qbittorrentUrl = '/__qbittorrent__'
-  const jellyfinAccent = '#0080ff'
-  const jellyfinAccentRgb = '0, 128, 255'
+  const jellyfinAccent = '#549ED8'
+  const jellyfinAccentRgb = '84, 158, 216'
   const [movieName, setMovieName] = useState('')
   const [saveLocation, setSaveLocation] = useState('')
   const [qbittorrentCategory, setQbittorrentCategory] = useState('')
@@ -334,13 +334,13 @@ export default function FetchApiActions() {
               rel="noreferrer"
               aria-label="Open Jellyfin"
               className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
-              style={{ backgroundColor: 'rgba(0, 128, 255, 0.12)' }}
+              style={{ backgroundColor: 'rgba(84, 158, 216, 0.16)' }}
             >
               <span
                 aria-hidden="true"
                 className="block w-4 h-4"
                 style={{
-                  backgroundColor: '#0080ff',
+                  backgroundColor: '#549ED8',
                   WebkitMaskImage: 'url(https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/jellyfin.png)',
                   maskImage: 'url(https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/jellyfin.png)',
                   WebkitMaskSize: 'contain',
@@ -361,7 +361,7 @@ export default function FetchApiActions() {
               rel="noreferrer"
               aria-label="Open qBittorrent"
               className="inline-flex items-center justify-center w-8 h-8 rounded-md hover:bg-gray-100 transition-colors"
-              style={{ color: '#0080ff' }}
+              style={{ color: '#549ED8' }}
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3" />
@@ -744,8 +744,7 @@ export default function FetchApiActions() {
           <button
             type="submit"
             disabled={buttonState === 'pending'}
-            className="import-action-btn relative w-full overflow-hidden rounded-lg font-semibold py-3 px-4 flex items-center justify-center transition-all duration-300 text-white disabled:cursor-not-allowed disabled:opacity-70"
-            style={{ backgroundColor: jellyfinAccent }}
+            className="import-action-btn relative w-full overflow-hidden rounded-lg font-semibold py-3 px-4 flex items-center justify-center transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-70"
           >
             <span className="relative z-10 inline-flex items-center justify-center">
               <span className="btn-label-stack" aria-hidden="true">

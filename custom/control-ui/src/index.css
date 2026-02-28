@@ -5,15 +5,16 @@
 @tailwind utilities;
 
 :root {
-  --card-accent: #0080ff;
-  --card-accent-rgb: 0, 128, 255;
+  --card-accent: #549ED8;
+  --card-accent-rgb: 84, 158, 216;
+  --card-accent-dark: #357fb8;
   --ui-green: #cdef3c;
   --ui-green-rgb: 205, 239, 60;
   --ui-green-ink: #244133;
   --ui-stroke: rgba(17, 24, 39, 0.15);
-  --jellyfin-blue: #0080ff;
-  --jellyfin-blue-rgb: 0, 128, 255;
-  --jellyfin-blue-soft: rgba(0, 128, 255, 0.12);
+  --jellyfin-blue: #549ED8;
+  --jellyfin-blue-rgb: 84, 158, 216;
+  --jellyfin-blue-soft: rgba(84, 158, 216, 0.16);
 }
 
 body {
@@ -613,10 +614,10 @@ a {
 
 .import-action-btn {
   min-height: 52px;
-  border: 1px solid rgba(var(--card-accent-rgb, 0, 128, 255), 0.28);
+  border: 1.5px solid rgba(53, 127, 184, 0.72);
   border-radius: 12px;
-  background: rgba(var(--card-accent-rgb, 0, 128, 255), 0.12);
-  color: var(--card-accent, #0080ff);
+  background: rgba(var(--card-accent-rgb, 84, 158, 216), 0.14);
+  color: var(--card-accent-dark, #357fb8);
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.55);
 }
 
@@ -647,7 +648,7 @@ a {
 }
 
 .progress-bar-gradient {
-  background: linear-gradient(90deg, rgba(0, 128, 255, 0.82), rgba(0, 128, 255, 0.96));
+  background: linear-gradient(90deg, rgba(84, 158, 216, 0.82), rgba(84, 158, 216, 0.96));
   background-size: 100% 100%;
   animation: none;
 }
@@ -747,8 +748,8 @@ a {
   width: 52px;
   height: 30px;
   border-radius: 999px;
-  border: 1px solid rgba(var(--card-accent-rgb, 0, 128, 255), 0.22);
-  background: rgba(var(--card-accent-rgb, 0, 128, 255), 0.08);
+  border: 1px solid rgba(var(--card-accent-rgb, 84, 158, 216), 0.34);
+  background: rgba(var(--card-accent-rgb, 84, 158, 216), 0.18);
   cursor: pointer;
   transition: background-color 220ms ease, border-color 220ms ease, box-shadow 220ms ease;
   flex-shrink: 0;
@@ -758,8 +759,8 @@ a {
 }
 
 .toggle-switch[aria-checked="true"] {
-  background-color: rgba(var(--card-accent-rgb, 0, 128, 255), 0.18);
-  border-color: rgba(var(--card-accent-rgb, 0, 128, 255), 0.34);
+  background-color: rgba(var(--card-accent-rgb, 84, 158, 216), 0.3);
+  border-color: rgba(var(--card-accent-rgb, 84, 158, 216), 0.5);
 }
 
 .toggle-switch:disabled {
@@ -768,7 +769,7 @@ a {
 }
 
 .toggle-switch:focus-visible {
-  box-shadow: 0 0 0 3px rgba(var(--card-accent-rgb, 0, 128, 255), 0.18);
+  box-shadow: 0 0 0 3px rgba(var(--card-accent-rgb, 84, 158, 216), 0.18);
 }
 
 .toggle-thumb {
@@ -780,7 +781,7 @@ a {
   border-radius: 999px;
   background: white;
   box-shadow:
-    inset 0 0 0 1px rgba(var(--card-accent-rgb, 0, 128, 255), 0.24),
+    inset 0 0 0 1px rgba(var(--card-accent-rgb, 84, 158, 216), 0.32),
     0 2px 6px rgba(15, 23, 42, 0.12);
   transition: transform 220ms ease;
   pointer-events: none;
@@ -858,11 +859,11 @@ a {
 }
 
 .flat-input-wrap:focus-within .flat-input-line:not(.flat-input-line-anim) {
-  background: var(--card-accent, #0080ff);
+  background: var(--card-accent, #549ED8);
 }
 
 .flat-input-line-error {
-  background: var(--card-accent, #0080ff);
+  background: var(--card-accent, #549ED8);
 }
 
 .flat-input-line.flat-input-line-api-error {
@@ -873,7 +874,7 @@ a {
   content: '';
   position: absolute;
   inset: 0;
-  background: rgba(var(--card-accent-rgb, 0, 128, 255), 0.9);
+  background: rgba(var(--card-accent-rgb, 84, 158, 216), 0.9);
   opacity: 0;
   transform: scaleX(1);
   transform-origin: center;
@@ -1016,7 +1017,7 @@ a {
 
 .query-dropdown:focus-within .query-dropdown-line,
 .query-dropdown-open .query-dropdown-line {
-  background: var(--card-accent, #8b5cf6);
+  background: var(--card-accent, #549ED8);
 }
 
 /* Popup — plain inline collapse, visually part of the card (no floating card chrome) */
@@ -1098,7 +1099,7 @@ a {
 }
 
 .query-dropdown-item:hover {
-  background: rgba(var(--card-accent-rgb, 0, 128, 255), 0.06);
+  background: rgba(var(--card-accent-rgb, 84, 158, 216), 0.06);
 }
 
 .query-dropdown-item-results {
@@ -1133,7 +1134,7 @@ a {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: var(--card-accent, #0080ff);
+  background: var(--card-accent, #549ED8);
   animation: searchBounce 0.9s ease-in-out infinite;
 }
 
@@ -1166,7 +1167,7 @@ a {
 }
 
 .query-dropdown-result-item:hover .query-result-icon {
-  color: var(--card-accent, #0080ff);
+  color: var(--card-accent, #549ED8);
 }
 
 .query-result-text {
@@ -1198,11 +1199,11 @@ a {
 }
 
 .query-dropdown-result-item:hover .query-result-name::after {
-  background: linear-gradient(to right, transparent, rgba(var(--card-accent-rgb, 0, 128, 255), 0.04) 60%, rgba(var(--card-accent-rgb, 0, 128, 255), 0.04));
+  background: linear-gradient(to right, transparent, rgba(var(--card-accent-rgb, 84, 158, 216), 0.04) 60%, rgba(var(--card-accent-rgb, 84, 158, 216), 0.04));
 }
 
 .query-dropdown-result-item-selected .query-result-name::after {
-  background: linear-gradient(to right, transparent, rgba(var(--card-accent-rgb, 0, 128, 255), 0.07) 60%, rgba(var(--card-accent-rgb, 0, 128, 255), 0.07));
+  background: linear-gradient(to right, transparent, rgba(var(--card-accent-rgb, 84, 158, 216), 0.07) 60%, rgba(var(--card-accent-rgb, 84, 158, 216), 0.07));
 }
 
 .query-result-meta {
@@ -1256,7 +1257,7 @@ a {
   justify-content: center;
   font-size: 12px;
   font-weight: 600;
-  color: var(--card-accent, #0080ff);
+  color: var(--card-accent, #549ED8);
   background: none;
   border: none;
   cursor: pointer;
@@ -1292,7 +1293,7 @@ a {
 .query-ripple {
   position: absolute;
   border-radius: 50%;
-  background: rgba(var(--card-accent-rgb, 0, 128, 255), 0.22);
+  background: rgba(var(--card-accent-rgb, 84, 158, 216), 0.22);
   transform: scale(0);
   animation: queryRippleAnim 500ms ease-out forwards;
   pointer-events: none;
@@ -1303,13 +1304,13 @@ a {
 
 /* ── Selected result item ────────────────────────────────────────── */
 .query-dropdown-result-item-selected {
-  background: rgba(var(--card-accent-rgb, 0, 128, 255), 0.07);
+  background: rgba(var(--card-accent-rgb, 84, 158, 216), 0.07);
 }
 .query-dropdown-result-item-selected .query-result-icon {
-  color: var(--card-accent, #0080ff);
+  color: var(--card-accent, #549ED8);
 }
 .query-dropdown-result-item-selected .query-result-name {
-  color: var(--card-accent, #0080ff);
+  color: var(--card-accent, #549ED8);
 }
 
 /* ── Torrent item expand on hover ───────────────────────────────── */
@@ -1340,7 +1341,7 @@ a {
   gap: 5px;
   padding: 5px 10px;
   border-radius: 7px;
-  border: 1.5px solid rgba(var(--card-accent-rgb, 0, 128, 255), 0.16);
+  border: 1.5px solid rgba(var(--card-accent-rgb, 84, 158, 216), 0.22);
   background: transparent;
   color: #9ca3af;
   font-size: 11px;
@@ -1355,15 +1356,15 @@ a {
 }
 
 .torrent-pill:hover:not(.torrent-pill-active):not(.torrent-pill-error):not(:disabled) {
-  border-color: var(--card-accent, #0080ff);
-  color: var(--card-accent, #0080ff);
-  background: rgba(var(--card-accent-rgb, 0, 128, 255), 0.06);
+  border-color: var(--card-accent, #549ED8);
+  color: var(--card-accent-dark, #357fb8);
+  background: rgba(var(--card-accent-rgb, 84, 158, 216), 0.09);
 }
 
 .torrent-pill-active {
-  background: rgba(var(--card-accent-rgb, 0, 128, 255), 0.07);
-  border-color: var(--card-accent, #0080ff);
-  color: var(--card-accent, #0080ff);
+  background: rgba(var(--card-accent-rgb, 84, 158, 216), 0.1);
+  border-color: rgba(53, 127, 184, 0.72);
+  color: var(--card-accent-dark, #357fb8);
 }
 
 /* Active + button-hovered with a destructive label → turn red */
