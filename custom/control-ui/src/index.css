@@ -362,7 +362,7 @@ a {
 
 .btn-label-stack {
   position: relative;
-  width: 128px;
+  width: 220px;
   height: 22px;
   overflow: hidden;
   margin-left: 0;
@@ -389,6 +389,7 @@ a {
   font-weight: 700;
   letter-spacing: 0.18em;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .btn-icon-enter {
