@@ -5,7 +5,12 @@ import FetchApiActions from './FetchApiActions'
 export default function ActionCenter({ activeTab, setActiveTab }) {
   const tabs = useMemo(
     () => [
-      { id: 'fetch-api', label: 'fetch-api', component: <FetchApiActions /> },
+      {
+        id: 'fetch-api',
+        label: 'fetch-api',
+        icon: 'https://i.imgur.com/VwpKmbC.png',
+        component: <FetchApiActions />,
+      },
       { id: 'overview', label: 'overview', component: <ApplicationActions /> },
     ],
     []
@@ -95,6 +100,7 @@ export default function ActionCenter({ activeTab, setActiveTab }) {
                   onClick={() => handleTabChange(tab.id)}
                   className={`nav-item ${activeTab === tab.id ? 'nav-item-active' : ''}`}
                 >
+                  {tab.icon && <img src={tab.icon} alt="" className="nav-item-icon" />}
                   <span>{tab.label}</span>
                 </button>
               ))}
