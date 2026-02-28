@@ -37,13 +37,14 @@ admin:
 grafana.ini:
   server:
     root_url: https://grafana.k8s.iaminyourpc.xyz
+    router_logging: true
 
   date_formats:
     default_timezone: Europe/Sofia
 
   log:
     mode: console
-    level: warn
+    level: debug
 
   log.frontend:
     instrumentations_tracing_enabled: false
