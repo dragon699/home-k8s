@@ -222,9 +222,9 @@ export default function FetchApiActions() {
   }
 
   const labelForState = (stateName) => {
-    if (stateName === 'pending') return 'Adding'
-    if (stateName === 'check') return 'Added'
-    return 'Add'
+    if (stateName === 'pending') return 'Downloading'
+    if (stateName === 'check') return 'Downloaded'
+    return 'Download'
   }
 
   const formatEta = (minutes) => {

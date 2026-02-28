@@ -337,7 +337,7 @@ a {
 
 .btn-label-stack {
   position: relative;
-  width: 56px;
+  width: 110px;
   height: 20px;
   overflow: hidden;
 }
@@ -359,6 +359,10 @@ a {
   width: 100%;
   text-align: center;
   transform: translate(-50%, -50%);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
 }
 
 .btn-icon-enter {
@@ -616,7 +620,7 @@ a {
 
 .import-action-btn {
   min-height: 52px;
-  border: none;
+  border: 1px solid var(--ui-stroke);
   border-radius: 12px;
   background: var(--card-accent-tonal, #dce4f2);
   color: var(--card-accent, #2c74d8);
@@ -756,7 +760,7 @@ a {
   width: 52px;
   height: 30px;
   border-radius: 999px;
-  border: 1px solid rgba(var(--card-accent-rgb, 44, 116, 216), 0.26);
+  border: 1px solid var(--ui-stroke);
   background: rgba(var(--card-accent-tonal-rgb, 220, 228, 242), 0.98);
   cursor: pointer;
   transition: background-color 220ms ease, border-color 220ms ease, box-shadow 220ms ease;
@@ -768,7 +772,7 @@ a {
 
 .toggle-switch[aria-checked="true"] {
   background-color: rgba(var(--card-accent-rgb, 44, 116, 216), 0.32);
-  border-color: rgba(var(--card-accent-rgb, 44, 116, 216), 0.52);
+  border-color: var(--ui-stroke);
 }
 
 .toggle-switch:disabled {
