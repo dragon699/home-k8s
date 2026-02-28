@@ -320,60 +320,57 @@ export default function FetchApiActions() {
   ]
 
   return (
-    <div className="mx-auto w-full max-w-6xl">
+    <div>
       <div
-        className="rounded-[2rem] border border-[#ddd6cd] bg-[#f6f2ed] p-4 shadow-[0_24px_60px_rgba(26,20,14,0.08)] sm:p-6"
+        className="relative max-w-2xl rounded-xl border border-black/15 bg-white p-6 shadow-[0_10px_24px_rgba(15,23,42,0.08)]"
+        style={{ '--card-accent': jellyfinAccent, '--card-accent-rgb': jellyfinAccentRgb }}
       >
-        <div
-          className="relative rounded-[1.5rem] border border-white/80 bg-white/90 p-6 shadow-[0_10px_30px_rgba(26,20,14,0.05)]"
-          style={{ '--card-accent': jellyfinAccent, '--card-accent-rgb': jellyfinAccentRgb }}
-        >
-          {/* Header */}
-          <div className="mb-5 flex items-center justify-between group">
-            <div className="flex items-center gap-3">
-              <a
-                href={jellyfinUrl}
-                target="_blank"
-                rel="noreferrer"
-                aria-label="Open Jellyfin"
-                className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
-                style={{ backgroundColor: 'rgba(0, 128, 255, 0.12)' }}
-              >
-                <span
-                  aria-hidden="true"
-                  className="block w-4 h-4"
-                  style={{
-                    backgroundColor: '#0080ff',
-                    WebkitMaskImage: 'url(https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/jellyfin.png)',
-                    maskImage: 'url(https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/jellyfin.png)',
-                    WebkitMaskSize: 'contain',
-                    maskSize: 'contain',
-                    WebkitMaskRepeat: 'no-repeat',
-                    maskRepeat: 'no-repeat',
-                    WebkitMaskPosition: 'center',
-                    maskPosition: 'center',
-                  }}
-                />
-              </a>
-              <h3 className="text-xl font-semibold text-gray-900">Add to Jellyfin</h3>
-            </div>
-            <div className="flex items-center gap-1">
-              <a
-                href={qbittorrentUrl}
-                target="_blank"
-                rel="noreferrer"
-                aria-label="Open qBittorrent"
-                className="inline-flex items-center justify-center w-8 h-8 rounded-md hover:bg-gray-100 transition-colors"
-                style={{ color: '#0080ff' }}
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3" />
-                </svg>
-              </a>
-            </div>
+        {/* Header */}
+        <div className="mb-5 flex items-center justify-between group">
+          <div className="flex items-center gap-3">
+            <a
+              href={jellyfinUrl}
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Open Jellyfin"
+              className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
+              style={{ backgroundColor: 'rgba(0, 128, 255, 0.12)' }}
+            >
+              <span
+                aria-hidden="true"
+                className="block w-4 h-4"
+                style={{
+                  backgroundColor: '#0080ff',
+                  WebkitMaskImage: 'url(https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/jellyfin.png)',
+                  maskImage: 'url(https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/jellyfin.png)',
+                  WebkitMaskSize: 'contain',
+                  maskSize: 'contain',
+                  WebkitMaskRepeat: 'no-repeat',
+                  maskRepeat: 'no-repeat',
+                  WebkitMaskPosition: 'center',
+                  maskPosition: 'center',
+                }}
+              />
+            </a>
+            <h3 className="text-xl font-semibold text-gray-900">Add to Jellyfin</h3>
           </div>
+          <div className="flex items-center gap-1">
+            <a
+              href={qbittorrentUrl}
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Open qBittorrent"
+              className="inline-flex items-center justify-center w-8 h-8 rounded-md hover:bg-gray-100 transition-colors"
+              style={{ color: '#0080ff' }}
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3" />
+              </svg>
+            </a>
+          </div>
+        </div>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit} className="space-y-5">
           {/* Query section — label + toggle + indented input/options */}
           <div>
             <label className="toggle-subtext block text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: jellyfinAccent }}>
@@ -1071,8 +1068,7 @@ export default function FetchApiActions() {
               </div>
             )}
           </div>
-          </form>
-        </div>
+        </form>
       </div>
     </div>
   )
