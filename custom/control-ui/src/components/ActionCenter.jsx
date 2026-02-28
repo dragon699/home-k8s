@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import ApplicationActions from './ApplicationActions'
+import CustomActions from './CustomActions'
 import FetchApiActions from './FetchApiActions'
 
 function QbittorrentNavIcon() {
@@ -14,9 +15,17 @@ export default function ActionCenter({ activeTab, setActiveTab }) {
   const tabs = useMemo(
     () => [
       {
+        id: 'custom',
+        singleLabel: 'custom',
+        accent: { rgb: '205, 239, 60', ink: '#244133' },
+        icon: <img src="https://i.imgur.com/jffZhU0.png" alt="" className="nav-item-icon" />,
+        component: <CustomActions />,
+      },
+      {
         id: 'fetch-api',
         primaryLabel: 'connector-downloader',
         secondaryLabel: 'fetch-api',
+        accent: { rgb: '44, 116, 216', ink: '#1f63c2' },
         icon: <QbittorrentNavIcon />,
         component: <FetchApiActions />,
       },
@@ -24,6 +33,7 @@ export default function ActionCenter({ activeTab, setActiveTab }) {
         id: 'overview',
         primaryLabel: 'connector-grafana',
         secondaryLabel: 'fetch-api',
+        accent: { rgb: '243, 130, 32', ink: '#c75c07' },
         icon: (
           <img
             src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/grafana.svg"
@@ -76,6 +86,7 @@ export default function ActionCenter({ activeTab, setActiveTab }) {
   const displayedComponent = tabs.find((tab) => tab.id === displayedTab)?.component ?? null
   const outgoingComponent = tabs.find((tab) => tab.id === outgoingTab)?.component ?? null
   const isTransitioning = outgoingTab !== null
+  const activeAccent = tabs.find((tab) => tab.id === activeTab)?.accent ?? { rgb: '205, 239, 60', ink: '#244133' }
 
   const handleTabChange = (nextTab) => {
     if (nextTab === activeTab) {
@@ -112,7 +123,13 @@ export default function ActionCenter({ activeTab, setActiveTab }) {
       <div className="pointer-events-none fixed inset-x-0 bottom-5 z-30 px-4 sm:px-6">
         <div className="mx-auto flex w-full max-w-fit justify-center">
           <div className="nav-shell pointer-events-auto">
-            <div className="nav-group">
+            <div
+              className="nav-group"
+              style={{
+                '--nav-accent-rgb': activeAccent.rgb,
+                '--nav-accent-ink': activeAccent.ink,
+              }}
+            >
               {tabs.map((tab) => (
                 <button
                   key={tab.id}
@@ -121,10 +138,14 @@ export default function ActionCenter({ activeTab, setActiveTab }) {
                   className={`nav-item ${activeTab === tab.id ? 'nav-item-active' : ''}`}
                 >
                   {tab.icon && <span className="nav-item-icon-wrap">{tab.icon}</span>}
-                  <span className="nav-item-copy">
-                    <span className="nav-item-primary">{tab.primaryLabel}</span>
-                    <span className="nav-item-secondary">{tab.secondaryLabel}</span>
-                  </span>
+                  {tab.singleLabel ? (
+                    <span className="nav-item-single">{tab.singleLabel}</span>
+                  ) : (
+                    <span className="nav-item-copy">
+                      <span className="nav-item-primary">{tab.primaryLabel}</span>
+                      <span className="nav-item-secondary">{tab.secondaryLabel}</span>
+                    </span>
+                  )}
                 </button>
               ))}
               <a

@@ -175,7 +175,7 @@ a {
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: rgba(var(--ui-green-rgb), 0.22);
+  background: rgba(var(--nav-accent-rgb, var(--ui-green-rgb)), 0.22);
   opacity: 0;
   transform: scale(0.94);
   transition: opacity 220ms ease, transform 220ms ease;
@@ -235,16 +235,22 @@ a {
   letter-spacing: 0.01em;
 }
 
+.nav-item-single {
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
 .nav-item-active .nav-item-secondary,
 .nav-item:hover .nav-item-secondary,
 .nav-item:focus-visible .nav-item-secondary {
-  color: rgba(36, 65, 51, 0.78);
+  color: rgba(var(--nav-accent-rgb, var(--ui-green-rgb)), 0.88);
 }
 
 .nav-item:hover,
 .nav-item:focus-visible,
 .nav-item-active {
-  color: var(--ui-green-ink);
+  color: var(--nav-accent-ink, var(--ui-green-ink));
 }
 
 .nav-item:hover::before,
@@ -260,7 +266,7 @@ a {
 }
 
 .nav-item:focus-visible {
-  outline: 2px solid rgba(var(--ui-green-rgb), 0.38);
+  outline: 2px solid rgba(var(--nav-accent-rgb, var(--ui-green-rgb)), 0.38);
   outline-offset: 2px;
 }
 
@@ -333,14 +339,15 @@ a {
   width: 17px;
   height: 20px;
   overflow: hidden;
+  margin-right: 4px;
 }
 
 .btn-label-stack {
   position: relative;
-  width: 150px;
+  width: 155px;
   height: 22px;
   overflow: hidden;
-  margin-left: 10px;
+  margin-left: 0;
 }
 
 .btn-icon-layer {
@@ -360,7 +367,7 @@ a {
   width: 100%;
   text-align: center;
   transform: translate(-50%, -50%);
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 700;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -593,7 +600,7 @@ a {
 
 .option-subtitle {
   margin-top: 0;
-  font-size: 12px;
+  font-size: 14px;
   line-height: 1.2;
   font-weight: 600;
   color: var(--option-accent, var(--card-accent, #4f6df6));
@@ -621,11 +628,11 @@ a {
 
 .import-action-btn {
   min-height: 52px;
-  border: 1px solid var(--ui-stroke);
+  border: 1px solid rgba(17, 24, 39, 0.12);
   border-radius: 12px;
   background: var(--card-accent-tonal, #dce4f2);
   color: var(--card-accent, #2c74d8);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.55);
+  box-shadow: none;
   transition: background-color 500ms ease, color 500ms ease, transform 300ms ease;
 }
 
@@ -761,7 +768,7 @@ a {
   width: 52px;
   height: 30px;
   border-radius: 999px;
-  border: 1px solid var(--ui-stroke);
+  border: 1px solid rgba(17, 24, 39, 0.12);
   background: rgba(var(--card-accent-tonal-rgb, 220, 228, 242), 0.98);
   cursor: pointer;
   transition: background-color 220ms ease, border-color 220ms ease, box-shadow 220ms ease;
@@ -772,8 +779,8 @@ a {
 }
 
 .toggle-switch[aria-checked="true"] {
-  background-color: rgba(var(--card-accent-rgb, 44, 116, 216), 0.46);
-  border-color: var(--ui-stroke);
+  background-color: rgba(var(--card-accent-rgb, 44, 116, 216), 0.64);
+  border-color: rgba(17, 24, 39, 0.12);
 }
 
 .toggle-switch:disabled {
@@ -1266,7 +1273,7 @@ a {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 600;
   color: var(--card-accent, #549ED8);
   background: none;
