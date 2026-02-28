@@ -244,7 +244,7 @@ a {
 .nav-item-active .nav-item-secondary,
 .nav-item:hover .nav-item-secondary,
 .nav-item:focus-visible .nav-item-secondary {
-  color: rgba(var(--nav-accent-rgb, var(--ui-green-rgb)), 0.98);
+  color: var(--nav-accent-secondary, var(--nav-accent-ink, var(--ui-green-ink)));
 }
 
 .nav-item:hover,
@@ -339,7 +339,7 @@ a {
   width: 17px;
   height: 20px;
   overflow: hidden;
-  margin-right: 1px;
+  margin-right: 0;
 }
 
 .btn-label-stack {

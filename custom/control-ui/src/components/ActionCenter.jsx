@@ -16,9 +16,9 @@ export default function ActionCenter({ activeTab, setActiveTab }) {
     () => [
       {
         id: 'custom',
-        primaryLabel: 'Custom request',
+        primaryLabel: 'Request',
         secondaryLabel: 'fetch-api',
-        accent: { rgb: '205, 239, 60', ink: '#244133' },
+        accent: { rgb: '205, 239, 60', ink: '#244133', secondary: '#7d9821' },
         icon: <img src="https://i.imgur.com/wWCcoW6.png" alt="" className="nav-item-icon" />,
         component: <CustomActions />,
       },
@@ -26,7 +26,7 @@ export default function ActionCenter({ activeTab, setActiveTab }) {
         id: 'fetch-api',
         primaryLabel: 'connector-downloader',
         secondaryLabel: 'fetch-api',
-        accent: { rgb: '44, 116, 216', ink: '#1f63c2' },
+        accent: { rgb: '44, 116, 216', ink: '#1f63c2', secondary: '#3c84d7' },
         icon: <QbittorrentNavIcon />,
         component: <FetchApiActions />,
       },
@@ -34,7 +34,7 @@ export default function ActionCenter({ activeTab, setActiveTab }) {
         id: 'overview',
         primaryLabel: 'connector-grafana',
         secondaryLabel: 'fetch-api',
-        accent: { rgb: '243, 130, 32', ink: '#c75c07' },
+        accent: { rgb: '243, 130, 32', ink: '#c75c07', secondary: '#d9731d' },
         icon: (
           <img
             src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/grafana.svg"
@@ -129,6 +129,7 @@ export default function ActionCenter({ activeTab, setActiveTab }) {
               style={{
                 '--nav-accent-rgb': activeAccent.rgb,
                 '--nav-accent-ink': activeAccent.ink,
+                '--nav-accent-secondary': activeAccent.secondary ?? activeAccent.ink,
               }}
             >
               {tabs.map((tab) => (
