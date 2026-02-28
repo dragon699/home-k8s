@@ -28,8 +28,8 @@ export default function FetchApiActions() {
   const DEFAULT_TAGS_FALLBACK = 'fetch-api'
   const jellyfinUrl = '/__jellyfin__'
   const qbittorrentUrl = '/__qbittorrent__'
-  const jellyfinAccent = '#8b5cf6'
-  const jellyfinAccentRgb = '139, 92, 246'
+  const jellyfinAccent = '#cdef3c'
+  const jellyfinAccentRgb = '205, 239, 60'
   const [movieName, setMovieName] = useState('')
   const [saveLocation, setSaveLocation] = useState('')
   const [qbittorrentCategory, setQbittorrentCategory] = useState('')
@@ -322,7 +322,7 @@ export default function FetchApiActions() {
   return (
     <div>
       <div
-        className="relative max-w-2xl rounded-xl border border-black/15 bg-white p-6 shadow-[0_10px_24px_rgba(15,23,42,0.08)]"
+        className="relative max-w-2xl rounded-xl border border-black/40 bg-white p-6 shadow-[0_10px_24px_rgba(15,23,42,0.08)]"
         style={{ '--card-accent': jellyfinAccent, '--card-accent-rgb': jellyfinAccentRgb }}
       >
         {/* Header */}
@@ -744,8 +744,7 @@ export default function FetchApiActions() {
           <button
             type="submit"
             disabled={buttonState === 'pending'}
-            className="import-action-btn relative w-full overflow-hidden rounded-lg font-semibold py-3 px-4 flex items-center justify-center transition-all duration-300 text-white disabled:cursor-not-allowed disabled:opacity-70"
-            style={{ backgroundColor: jellyfinAccent }}
+            className="import-action-btn relative w-full overflow-hidden font-semibold py-3 px-4 flex items-center justify-center transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-70"
           >
             <span className="relative z-10 inline-flex items-center justify-center">
               <span className="btn-label-stack" aria-hidden="true">
@@ -945,12 +944,12 @@ export default function FetchApiActions() {
                           </div>
                         </div>
                         {/* Progress bar */}
-                        <div className="h-1 w-full rounded-full bg-gray-100 overflow-hidden">
+                        <div className="progress-track">
                           <div
-                            className={`h-full rounded-full${isDownloading ? ' progress-bar-gradient' : ''}`}
+                            className={`progress-fill${isDownloading ? ' progress-bar-gradient' : ''}${(isPaused || isUnknown) ? ' progress-fill-muted' : ''}`}
                             style={{
                               width: `${progress}%`,
-                              ...(!isDownloading ? { backgroundColor: isCompleted ? '#1DB954' : barColor } : {}),
+                              ...(!isDownloading ? { backgroundColor: isCompleted ? jellyfinAccent : barColor } : {}),
                               transition: 'width 800ms ease, background-color 400ms ease',
                             }}
                           />
@@ -973,7 +972,7 @@ export default function FetchApiActions() {
                               <span key="error" className="toggle-subtext text-xs font-semibold text-red-500">Torrent error</span>
                             )}
                             {isCompleted && (
-                              <span key="completed" className="toggle-subtext text-xs font-semibold" style={{ color: '#1DB954' }}>Completed</span>
+                              <span key="completed" className="toggle-subtext text-xs font-semibold" style={{ color: jellyfinAccent }}>Completed</span>
                             )}
                           </div>
                           {isDownloading && (torrent.speed_download_mbps > 0 || torrent.speed_upload_mbps > 0) && (

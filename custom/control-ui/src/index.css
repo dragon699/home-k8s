@@ -5,8 +5,12 @@
 @tailwind utilities;
 
 :root {
-  --card-accent: #8b5cf6;
-  --card-accent-rgb: 139, 92, 246;
+  --card-accent: #cdef3c;
+  --card-accent-rgb: 205, 239, 60;
+  --ui-green: #cdef3c;
+  --ui-green-rgb: 205, 239, 60;
+  --ui-green-ink: #244133;
+  --ui-stroke: rgba(17, 24, 39, 0.4);
 }
 
 body {
@@ -44,17 +48,6 @@ a {
 
 .tab-panel-enter {
   animation: tabPanelIn 220ms ease-out;
-}
-
-.content-shell::after {
-  content: "";
-  position: absolute;
-  right: 3rem;
-  top: 6rem;
-  height: calc(100% - 12rem);
-  width: 1px;
-  background: linear-gradient(180deg, rgba(17, 24, 39, 0), rgba(17, 24, 39, 0.14), rgba(17, 24, 39, 0));
-  opacity: 0.42;
 }
 
 .panel-stack {
@@ -138,7 +131,7 @@ a {
 }
 
 .nav-shell {
-  border: 1px solid rgba(17, 24, 39, 0.18);
+  border: 1px solid var(--ui-stroke);
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.94);
   box-shadow: 0 18px 45px rgba(15, 23, 42, 0.12);
@@ -176,7 +169,7 @@ a {
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: rgba(205, 239, 60, 0.22);
+  background: rgba(var(--ui-green-rgb), 0.22);
   opacity: 0;
   transform: scale(0.94);
   transition: opacity 220ms ease, transform 220ms ease;
@@ -199,7 +192,7 @@ a {
 .nav-item:hover,
 .nav-item:focus-visible,
 .nav-item-active {
-  color: #244133;
+  color: var(--ui-green-ink);
 }
 
 .nav-item:hover::before,
@@ -215,12 +208,12 @@ a {
 }
 
 .nav-item:focus-visible {
-  outline: 2px solid rgba(205, 239, 60, 0.38);
+  outline: 2px solid rgba(var(--ui-green-rgb), 0.38);
   outline-offset: 2px;
 }
 
 .nav-item-active {
-  box-shadow: inset 0 0 0 1px rgba(17, 24, 39, 0.22);
+  box-shadow: inset 0 0 0 1px var(--ui-stroke);
 }
 
 .nav-linkout-icon {
@@ -230,10 +223,6 @@ a {
 }
 
 @media (max-width: 640px) {
-  .content-shell::after {
-    display: none;
-  }
-
   .nav-group {
     gap: 0.15rem;
     padding: 0.4rem;
@@ -566,9 +555,11 @@ a {
 }
 
 .import-action-btn {
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.26),
-    inset 0 -2px 6px rgba(0,0,0,0.2);
+  border-radius: 999px;
+  color: var(--ui-green-ink);
+  background: rgba(var(--ui-green-rgb), 0.22);
+  box-shadow: inset 0 0 0 1px var(--ui-stroke);
+  min-height: 56px;
 }
 
 .import-action-btn:active:not(:disabled) {
@@ -598,9 +589,29 @@ a {
 }
 
 .progress-bar-gradient {
-  background: linear-gradient(90deg, #8b5cf6, #0080ff, #8b5cf6);
-  background-size: 200% 100%;
-  animation: gradientShift 3s ease infinite;
+  background: rgba(var(--ui-green-rgb), 0.9);
+  box-shadow: inset 0 0 0 1px var(--ui-stroke);
+  animation: none;
+}
+
+.progress-track {
+  height: 10px;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: inset 0 0 0 1px var(--ui-stroke);
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: rgba(var(--ui-green-rgb), 0.9);
+  box-shadow: inset 0 0 0 1px var(--ui-stroke);
+}
+
+.progress-fill-muted {
+  box-shadow: none;
 }
 
 @keyframes torrentItemEnter {
@@ -695,20 +706,21 @@ a {
 
 .toggle-switch {
   position: relative;
-  width: 48px;
-  height: 28px;
-  border-radius: 12px;
-  border: none;
-  background: #e5e7eb;
+  width: 72px;
+  height: 40px;
+  border-radius: 999px;
+  border: 1px solid var(--ui-stroke);
+  background: rgba(255, 255, 255, 0.95);
   cursor: pointer;
-  transition: background-color 220ms ease;
+  transition: background-color 220ms ease, box-shadow 220ms ease, transform 220ms ease;
   flex-shrink: 0;
-  padding: 0;
+  padding: 0 3px;
   outline: none;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
 }
 
 .toggle-switch[aria-checked="true"] {
-  background-color: var(--option-accent, var(--card-accent, #8b5cf6));
+  background-color: rgba(var(--ui-green-rgb), 0.22);
 }
 
 .toggle-switch:disabled {
@@ -717,18 +729,18 @@ a {
 }
 
 .toggle-switch:focus-visible {
-  box-shadow: 0 0 0 3px rgba(var(--card-accent-rgb, 139, 92, 246), 0.3);
+  box-shadow: 0 0 0 3px rgba(var(--ui-green-rgb), 0.25);
 }
 
 .toggle-thumb {
   position: absolute;
   left: 3px;
   top: 3px;
-  width: 22px;
-  height: 22px;
-  border-radius: 9px;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
   background: white;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.22);
+  box-shadow: inset 0 0 0 1px var(--ui-stroke), 0 4px 10px rgba(15, 23, 42, 0.08);
   transition: transform 220ms ease;
   pointer-events: none;
 }
@@ -767,7 +779,7 @@ a {
 }
 
 .toggle-switch[aria-checked="true"] .toggle-thumb {
-  transform: translateX(20px);
+  transform: translateX(30px);
 }
 
 .flat-input {
@@ -805,11 +817,11 @@ a {
 }
 
 .flat-input-wrap:focus-within .flat-input-line:not(.flat-input-line-anim) {
-  background: var(--card-accent, #8b5cf6);
+  background: var(--card-accent, #cdef3c);
 }
 
 .flat-input-line-error {
-  background: var(--card-accent, #8b5cf6);
+  background: var(--card-accent, #cdef3c);
 }
 
 .flat-input-line.flat-input-line-api-error {
@@ -820,7 +832,7 @@ a {
   content: '';
   position: absolute;
   inset: 0;
-  background: #f472b6;
+  background: rgba(var(--ui-green-rgb), 0.9);
   opacity: 0;
   transform: scaleX(1);
   transform-origin: center;
@@ -963,7 +975,7 @@ a {
 
 .query-dropdown:focus-within .query-dropdown-line,
 .query-dropdown-open .query-dropdown-line {
-  background: var(--card-accent, #8b5cf6);
+  background: var(--card-accent, #cdef3c);
 }
 
 /* Popup — plain inline collapse, visually part of the card (no floating card chrome) */

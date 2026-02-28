@@ -66,8 +66,7 @@ export default function ActionCenter({ activeTab, setActiveTab }) {
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(255,255,255,1),_rgba(252,252,251,0.98)_48%,_rgba(247,247,245,0.96)_100%)]">
       <div className="mx-auto flex min-h-screen w-full max-w-[1680px] flex-col px-4 pb-32 pt-8 sm:px-6 lg:px-10">
-        <div className="content-shell relative min-h-[calc(100vh-10rem)] overflow-hidden rounded-[2rem] border border-black/10 bg-white shadow-[0_24px_64px_rgba(15,23,42,0.07)]">
-          <div className="pointer-events-none absolute inset-x-[3%] top-0 h-px bg-[linear-gradient(90deg,rgba(17,24,39,0),rgba(17,24,39,0.14),rgba(17,24,39,0))]" />
+        <div className="content-shell relative min-h-[calc(100vh-10rem)] overflow-visible">
           <div className="relative h-full px-4 py-6 sm:px-6 sm:py-8 lg:px-10 lg:py-10">
             <div className="panel-stack min-h-[calc(100vh-14rem)]">
               {outgoingComponent && (
