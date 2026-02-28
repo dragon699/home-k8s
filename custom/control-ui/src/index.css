@@ -10,7 +10,7 @@
   --ui-green: #cdef3c;
   --ui-green-rgb: 205, 239, 60;
   --ui-green-ink: #244133;
-  --ui-stroke: rgba(17, 24, 39, 0.05);
+  --ui-stroke: rgba(17, 24, 39, 0.15);
 }
 
 body {
@@ -193,9 +193,19 @@ a {
 .nav-item-icon {
   position: relative;
   z-index: 1;
-  width: 1.1rem;
-  height: 1.1rem;
+  width: 1.3rem;
+  height: 1.3rem;
   object-fit: contain;
+}
+
+.nav-item-icon-svg {
+  width: 1.3rem;
+  height: 1.3rem;
+  display: block;
+}
+
+.nav-item-icon-black {
+  filter: brightness(0) saturate(100%);
 }
 
 .nav-item-copy {

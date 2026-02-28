@@ -322,7 +322,7 @@ export default function FetchApiActions() {
   return (
     <div>
       <div
-        className="relative max-w-2xl rounded-xl border border-[rgba(0,0,0,0.05)] bg-white p-6 shadow-[0_10px_24px_rgba(15,23,42,0.08)]"
+        className="relative max-w-2xl rounded-xl border border-[rgba(0,0,0,0.15)] bg-white p-6 shadow-[0_10px_24px_rgba(15,23,42,0.08)]"
         style={{ '--card-accent': jellyfinAccent, '--card-accent-rgb': jellyfinAccentRgb }}
       >
         {/* Header */}
