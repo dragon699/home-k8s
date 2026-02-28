@@ -2,16 +2,37 @@ import React, { useEffect, useMemo, useRef, useState } from 'react'
 import ApplicationActions from './ApplicationActions'
 import FetchApiActions from './FetchApiActions'
 
+function QbittorrentNavIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2M7 10l5 5 5-5M12 15V3" />
+    </svg>
+  )
+}
+
 export default function ActionCenter({ activeTab, setActiveTab }) {
   const tabs = useMemo(
     () => [
       {
         id: 'fetch-api',
-        label: 'fetch-api',
-        icon: 'https://i.imgur.com/VwpKmbC.png',
+        primaryLabel: 'connector-downloader',
+        secondaryLabel: 'fetch-api',
+        icon: <QbittorrentNavIcon />,
         component: <FetchApiActions />,
       },
-      { id: 'overview', label: 'overview', component: <ApplicationActions /> },
+      {
+        id: 'overview',
+        primaryLabel: 'connector-grafana',
+        secondaryLabel: 'fetch-api',
+        icon: (
+          <img
+            src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/grafana.svg"
+            alt=""
+            className="nav-item-icon"
+          />
+        ),
+        component: <ApplicationActions />,
+      },
     ],
     []
   )
@@ -99,8 +120,11 @@ export default function ActionCenter({ activeTab, setActiveTab }) {
                   onClick={() => handleTabChange(tab.id)}
                   className={`nav-item ${activeTab === tab.id ? 'nav-item-active' : ''}`}
                 >
-                  {tab.icon && <img src={tab.icon} alt="" className="nav-item-icon" />}
-                  <span>{tab.label}</span>
+                  {tab.icon && <span className="nav-item-icon-wrap">{tab.icon}</span>}
+                  <span className="nav-item-copy">
+                    <span className="nav-item-primary">{tab.primaryLabel}</span>
+                    <span className="nav-item-secondary">{tab.secondaryLabel}</span>
+                  </span>
                 </button>
               ))}
               <a
