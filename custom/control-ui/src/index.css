@@ -253,6 +253,12 @@ a {
   color: var(--nav-accent-ink, var(--ui-green-ink));
 }
 
+.nav-item-active .nav-item-icon-wrap,
+.nav-item:hover .nav-item-icon-wrap,
+.nav-item:focus-visible .nav-item-icon-wrap {
+  color: var(--nav-accent-ink, var(--ui-green-ink));
+}
+
 .nav-item-active .nav-item-secondary,
 .nav-item:hover .nav-item-secondary,
 .nav-item:focus-visible .nav-item-secondary {

@@ -207,8 +207,8 @@ export default function FetchApiActions() {
   }
 
   const labelForState = (stateName) => {
-    if (stateName === 'pending') return 'Downloading'
-    if (stateName === 'check') return 'Downloaded'
+    if (stateName === 'pending') return 'Sending request'
+    if (stateName === 'check') return 'Download requested'
     return 'Download'
   }
 

@@ -32,7 +32,7 @@ export default function ActionCenter({ activeTab, setActiveTab }) {
         primaryLabel: 'Panel',
         secondaryLabel: 'fetch-api',
         accent: { rgb: '205, 239, 60', ink: '#244133', secondary: '#7d9821' },
-        icon: <MaskNavIcon url="https://i.imgur.com/wWCcoW6.png" />,
+        icon: <MaskNavIcon url="/panel-icon.png" />,
         component: <CustomActions />,
       },
       {
