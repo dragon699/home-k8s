@@ -1,0 +1,253 @@
+basePath: /
+definitions:
+  connector-slack_internal_http_dto_request.DownloaderSlackPayload:
+    properties:
+      actions:
+        items:
+          $ref: '#/definitions/connector-slack_internal_http_dto_request.SlackAction'
+        type: array
+      category:
+        type: string
+      channel:
+        type: string
+      event:
+        type: string
+      fields:
+        items:
+          $ref: '#/definitions/connector-slack_internal_http_dto_request.SlackField'
+        type: array
+      hash:
+        type: string
+      message:
+        type: string
+      metadata:
+        additionalProperties: {}
+        type: object
+      severity:
+        type: string
+      tags:
+        items:
+          type: string
+        type: array
+      title:
+        type: string
+    type: object
+  connector-slack_internal_http_dto_request.GrafanaAlert:
+    properties:
+      annotations:
+        additionalProperties:
+          type: string
+        type: object
+      dashboardURL:
+        type: string
+      endsAt:
+        type: string
+      fingerprint:
+        type: string
+      generatorURL:
+        type: string
+      labels:
+        additionalProperties:
+          type: string
+        type: object
+      panelURL:
+        type: string
+      silenceURL:
+        type: string
+      startsAt:
+        type: string
+      status:
+        type: string
+      valueString:
+        type: string
+    type: object
+  connector-slack_internal_http_dto_request.GrafanaSlackPayload:
+    properties:
+      alerts:
+        items:
+          $ref: '#/definitions/connector-slack_internal_http_dto_request.GrafanaAlert'
+        type: array
+      channel:
+        type: string
+      commonAnnotations:
+        additionalProperties:
+          type: string
+        type: object
+      commonLabels:
+        additionalProperties:
+          type: string
+        type: object
+      externalURL:
+        type: string
+      groupKey:
+        type: string
+      groupLabels:
+        additionalProperties:
+          type: string
+        type: object
+      message:
+        type: string
+      orgId:
+        type: integer
+      receiver:
+        type: string
+      state:
+        type: string
+      status:
+        type: string
+      title:
+        type: string
+      truncatedAlerts:
+        type: integer
+      version:
+        type: string
+    type: object
+  connector-slack_internal_http_dto_request.SlackAction:
+    properties:
+      id:
+        type: string
+      label:
+        type: string
+      style:
+        type: string
+      url:
+        type: string
+      value:
+        type: string
+    type: object
+  connector-slack_internal_http_dto_request.SlackField:
+    properties:
+      short:
+        type: boolean
+      title:
+        type: string
+      value:
+        type: string
+    type: object
+  connector-slack_internal_http_dto_response.ErrorResponse:
+    properties:
+      error:
+        type: string
+      upstream_response:
+        additionalProperties: {}
+        type: object
+    type: object
+  connector-slack_internal_http_dto_response.HealthResponse:
+    properties:
+      connector_name:
+        type: string
+      health_last_check:
+        type: string
+      health_next_check:
+        type: string
+      healthy:
+        type: boolean
+    type: object
+  connector-slack_internal_http_dto_response.ReadyResponse:
+    properties:
+      ready:
+        type: boolean
+    type: object
+  connector-slack_internal_http_dto_response.SlackDeliveryResponse:
+    properties:
+      channel:
+        type: string
+      message:
+        type: string
+      success:
+        type: boolean
+      timestamp:
+        type: string
+    type: object
+info:
+  contact: {}
+  description: A connector that accepts payloads and forwards them to Slack channels.
+  title: Slack Connector
+paths:
+  /api/health:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/connector-slack_internal_http_dto_response.HealthResponse'
+      summary: Health check
+      tags:
+      - health
+  /api/ready:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/connector-slack_internal_http_dto_response.ReadyResponse'
+      summary: Readiness check
+      tags:
+      - health
+  /slack/downloader:
+    post:
+      consumes:
+      - application/json
+      description: Accepts a downloader-originated Slack payload and posts it to Slack.
+      parameters:
+      - description: Downloader Slack payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/connector-slack_internal_http_dto_request.DownloaderSlackPayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/connector-slack_internal_http_dto_response.SlackDeliveryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/connector-slack_internal_http_dto_response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/connector-slack_internal_http_dto_response.ErrorResponse'
+      summary: Forward a connector-downloader event payload to Slack
+      tags:
+      - slack
+  /slack/grafana:
+    post:
+      consumes:
+      - application/json
+      description: Accepts a Grafana Alerting webhook payload and posts it to Slack.
+      parameters:
+      - description: Grafana Slack payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/connector-slack_internal_http_dto_request.GrafanaSlackPayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/connector-slack_internal_http_dto_response.SlackDeliveryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/connector-slack_internal_http_dto_response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/connector-slack_internal_http_dto_response.ErrorResponse'
+      summary: Forward a Grafana alert payload to Slack
+      tags:
+      - slack
+produces:
+- application/json
+swagger: "2.0"

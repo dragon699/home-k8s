@@ -17,5 +17,5 @@ configMapGenerator:
   envs: ['connectors/downloader/config.env']
 - name: config-connector-ml
   envs: ['connectors/ml/config.env']
-- name: config-connector-notifications
-  envs: ['connectors/notifications/config.env']
+- name: config-connector-slack
+  envs: ['connectors/slack/config.env']
