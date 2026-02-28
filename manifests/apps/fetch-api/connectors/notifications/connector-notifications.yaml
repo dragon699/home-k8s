@@ -27,7 +27,7 @@ spec:
         - name: registry-fetch-api
       containers:
         - name: connector-notifications
-          image: ghcr.io/dragon699/home-k8s/fetch-api/connectors/notifications:0.0.1
+          image: ghcr.io/dragon699/home-k8s/fetch-api/connectors/notifications:0.0.2
           imagePullPolicy: Always
           securityContext:
             runAsUser: 1000
