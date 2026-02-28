@@ -555,11 +555,9 @@ a {
 }
 
 .import-action-btn {
-  border-radius: 999px;
-  color: var(--ui-green-ink);
-  background: rgba(var(--ui-green-rgb), 0.22);
-  box-shadow: inset 0 0 0 1px var(--ui-stroke);
-  min-height: 56px;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.26),
+    inset 0 -2px 6px rgba(0,0,0,0.2);
 }
 
 .import-action-btn:active:not(:disabled) {
@@ -589,29 +587,9 @@ a {
 }
 
 .progress-bar-gradient {
-  background: rgba(var(--ui-green-rgb), 0.9);
-  box-shadow: inset 0 0 0 1px var(--ui-stroke);
-  animation: none;
-}
-
-.progress-track {
-  height: 10px;
-  width: 100%;
-  overflow: hidden;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.95);
-  box-shadow: inset 0 0 0 1px var(--ui-stroke);
-}
-
-.progress-fill {
-  height: 100%;
-  border-radius: inherit;
-  background: rgba(var(--ui-green-rgb), 0.9);
-  box-shadow: inset 0 0 0 1px var(--ui-stroke);
-}
-
-.progress-fill-muted {
-  box-shadow: none;
+  background: linear-gradient(90deg, #8b5cf6, #0080ff, #8b5cf6);
+  background-size: 200% 100%;
+  animation: gradientShift 3s ease infinite;
 }
 
 @keyframes torrentItemEnter {
@@ -706,21 +684,20 @@ a {
 
 .toggle-switch {
   position: relative;
-  width: 72px;
-  height: 40px;
-  border-radius: 999px;
-  border: 1px solid var(--ui-stroke);
-  background: rgba(255, 255, 255, 0.95);
+  width: 48px;
+  height: 28px;
+  border-radius: 12px;
+  border: none;
+  background: #e5e7eb;
   cursor: pointer;
-  transition: background-color 220ms ease, box-shadow 220ms ease, transform 220ms ease;
+  transition: background-color 220ms ease;
   flex-shrink: 0;
-  padding: 0 3px;
+  padding: 0;
   outline: none;
-  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
 }
 
 .toggle-switch[aria-checked="true"] {
-  background-color: rgba(var(--ui-green-rgb), 0.22);
+  background-color: var(--option-accent, var(--card-accent, #8b5cf6));
 }
 
 .toggle-switch:disabled {
@@ -729,18 +706,18 @@ a {
 }
 
 .toggle-switch:focus-visible {
-  box-shadow: 0 0 0 3px rgba(var(--ui-green-rgb), 0.25);
+  box-shadow: 0 0 0 3px rgba(var(--card-accent-rgb, 139, 92, 246), 0.3);
 }
 
 .toggle-thumb {
   position: absolute;
   left: 3px;
   top: 3px;
-  width: 32px;
-  height: 32px;
-  border-radius: 999px;
+  width: 22px;
+  height: 22px;
+  border-radius: 9px;
   background: white;
-  box-shadow: inset 0 0 0 1px var(--ui-stroke), 0 4px 10px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.22);
   transition: transform 220ms ease;
   pointer-events: none;
 }
@@ -779,7 +756,7 @@ a {
 }
 
 .toggle-switch[aria-checked="true"] .toggle-thumb {
-  transform: translateX(30px);
+  transform: translateX(20px);
 }
 
 .flat-input {
@@ -817,11 +794,11 @@ a {
 }
 
 .flat-input-wrap:focus-within .flat-input-line:not(.flat-input-line-anim) {
-  background: var(--card-accent, #cdef3c);
+  background: var(--card-accent, #8b5cf6);
 }
 
 .flat-input-line-error {
-  background: var(--card-accent, #cdef3c);
+  background: var(--card-accent, #8b5cf6);
 }
 
 .flat-input-line.flat-input-line-api-error {
@@ -832,7 +809,7 @@ a {
   content: '';
   position: absolute;
   inset: 0;
-  background: rgba(var(--ui-green-rgb), 0.9);
+  background: #f472b6;
   opacity: 0;
   transform: scaleX(1);
   transform-origin: center;
@@ -975,7 +952,7 @@ a {
 
 .query-dropdown:focus-within .query-dropdown-line,
 .query-dropdown-open .query-dropdown-line {
-  background: var(--card-accent, #cdef3c);
+  background: var(--card-accent, #8b5cf6);
 }
 
 /* Popup — plain inline collapse, visually part of the card (no floating card chrome) */
