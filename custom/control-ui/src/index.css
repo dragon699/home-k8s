@@ -13,7 +13,7 @@
   --ui-green: #cdef3c;
   --ui-green-rgb: 205, 239, 60;
   --ui-green-ink: #244133;
-  --ui-stroke: rgba(17, 24, 39, 0.15);
+  --ui-stroke: rgba(17, 24, 39, 0.135);
   --jellyfin-blue: #2c74d8;
   --jellyfin-blue-rgb: 44, 116, 216;
   --jellyfin-blue-soft: rgba(220, 228, 242, 0.95);
@@ -337,9 +337,10 @@ a {
 
 .btn-label-stack {
   position: relative;
-  width: 110px;
-  height: 20px;
+  width: 150px;
+  height: 22px;
   overflow: hidden;
+  margin-left: 10px;
 }
 
 .btn-icon-layer {
@@ -359,7 +360,7 @@ a {
   width: 100%;
   text-align: center;
   transform: translate(-50%, -50%);
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -771,7 +772,7 @@ a {
 }
 
 .toggle-switch[aria-checked="true"] {
-  background-color: rgba(var(--card-accent-rgb, 44, 116, 216), 0.32);
+  background-color: rgba(var(--card-accent-rgb, 44, 116, 216), 0.46);
   border-color: var(--ui-stroke);
 }
 
@@ -792,9 +793,7 @@ a {
   height: 22px;
   border-radius: 999px;
   background: white;
-  box-shadow:
-    inset 0 0 0 1px rgba(var(--card-accent-rgb, 44, 116, 216), 0.28),
-    0 2px 6px rgba(15, 23, 42, 0.12);
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.12);
   transition: transform 220ms ease;
   pointer-events: none;
 }
