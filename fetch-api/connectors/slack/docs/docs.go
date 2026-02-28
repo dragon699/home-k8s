@@ -219,6 +219,9 @@ const docTemplate = `{
                 "generatorURL": {
                     "type": "string"
                 },
+                "imageURL": {
+                    "type": "string"
+                },
                 "labels": {
                     "type": "object",
                     "additionalProperties": {
@@ -239,6 +242,10 @@ const docTemplate = `{
                 },
                 "valueString": {
                     "type": "string"
+                },
+                "values": {
+                    "type": "object",
+                    "additionalProperties": {}
                 }
             }
         },

@@ -24,11 +24,13 @@ type GrafanaAlert struct {
 	Annotations  map[string]string `json:"annotations,omitempty"`
 	StartsAt     string            `json:"startsAt,omitempty"`
 	EndsAt       string            `json:"endsAt,omitempty"`
+	Values       map[string]any    `json:"values,omitempty"`
 	GeneratorURL string            `json:"generatorURL,omitempty"`
 	Fingerprint  string            `json:"fingerprint,omitempty"`
 	SilenceURL   string            `json:"silenceURL,omitempty"`
 	DashboardURL string            `json:"dashboardURL,omitempty"`
 	PanelURL     string            `json:"panelURL,omitempty"`
+	ImageURL     string            `json:"imageURL,omitempty"`
 	ValueString  string            `json:"valueString,omitempty"`
 }
 

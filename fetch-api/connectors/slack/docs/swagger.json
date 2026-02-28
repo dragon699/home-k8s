@@ -211,6 +211,9 @@
                 "generatorURL": {
                     "type": "string"
                 },
+                "imageURL": {
+                    "type": "string"
+                },
                 "labels": {
                     "type": "object",
                     "additionalProperties": {
@@ -231,6 +234,10 @@
                 },
                 "valueString": {
                     "type": "string"
+                },
+                "values": {
+                    "type": "object",
+                    "additionalProperties": {}
                 }
             }
         },
