@@ -3,10 +3,10 @@ package handlers
 import (
 	"errors"
 
-	"notifications-controller/internal/config"
-	"notifications-controller/internal/http/dto/request"
-	"notifications-controller/internal/http/dto/response"
-	"notifications-controller/internal/slack"
+	"connector-notifications/internal/config"
+	"connector-notifications/internal/http/dto/request"
+	"connector-notifications/internal/http/dto/response"
+	"connector-notifications/internal/slack"
 
 	"github.com/gofiber/fiber/v2"
 )

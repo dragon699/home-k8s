@@ -4,7 +4,7 @@ import (
 	"log/slog"
 
 	"common/telemetry"
-	"notifications-controller/internal/config"
+	"connector-notifications/internal/config"
 )
 
 var Log *slog.Logger

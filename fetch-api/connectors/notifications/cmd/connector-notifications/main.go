@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"notifications-controller/internal/app"
+	"connector-notifications/internal/app"
 )
 
 func main() {

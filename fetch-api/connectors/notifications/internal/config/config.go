@@ -42,13 +42,13 @@ type Settings struct {
 }
 
 var defaultSettings = Settings{
-	Name:       "notifications-controller",
+	Name:       "connector-notifications",
 	ListenHost: "0.0.0.0",
 	ListenPort: 8080,
 
 	SlackSocketModeEnabled: true,
 
-	OtelServiceName:      "notifications-controller",
+	OtelServiceName:      "connector-notifications",
 	OtelServiceNamespace: "fetch-api",
 	OtelServiceVersion:   "",
 	OtlpEndpointGrpc:     "grpc.k8s.iaminyourpc.xyz:80",

@@ -1,9 +1,9 @@
 package routes
 
 import (
-	_ "notifications-controller/internal/http/dto/request"
-	_ "notifications-controller/internal/http/dto/response"
-	"notifications-controller/internal/http/handlers"
+	_ "connector-notifications/internal/http/dto/request"
+	_ "connector-notifications/internal/http/dto/response"
+	"connector-notifications/internal/http/handlers"
 
 	"github.com/gofiber/fiber/v2"
 )

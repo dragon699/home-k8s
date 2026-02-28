@@ -16,8 +16,8 @@ COPY connectors/notifications /app/connectors/notifications
 RUN CGO_ENABLED=0 \
     GOOS=linux \
     go build \
-    -o /app/bin/notifications-controller \
-    ./cmd/notifications
+    -o /app/bin/connector-notifications \
+    ./cmd/connector-notifications
 
 
 
@@ -25,7 +25,7 @@ FROM alpine:latest
 
 WORKDIR /app
 
-COPY --from=builder /app/bin/notifications-controller /app/notifications-controller
+COPY --from=builder /app/bin/connector-notifications /app/connector-notifications
 COPY --from=builder /app/connectors/notifications/VERSION /app/VERSION
 
-CMD ["/app/notifications-controller"]
+CMD ["/app/connector-notifications"]

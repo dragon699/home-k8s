@@ -6,7 +6,7 @@ import (
 	"fmt"
 
 	"common/utils"
-	"notifications-controller/internal/config"
+	"connector-notifications/internal/config"
 )
 
 //go:embed templates/*.tpl

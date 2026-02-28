@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"common/telemetry"
-	"notifications-controller/internal/config"
+	"connector-notifications/internal/config"
 
 	"github.com/gofiber/contrib/otelfiber/v2"
 	"github.com/gofiber/fiber/v2"

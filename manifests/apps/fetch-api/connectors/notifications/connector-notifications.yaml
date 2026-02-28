@@ -35,7 +35,7 @@ spec:
             runAsNonRoot: true
           ports:
             - containerPort: 9069
-          command: ["/app/notifications"]
+          command: ["/app/connector-notifications"]
           envFrom:
             - secretRef:
                 name: data-connector-notifications

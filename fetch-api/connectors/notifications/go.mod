@@ -1,4 +1,4 @@
-module notifications-controller
+module connector-notifications
 
 go 1.25.5
 

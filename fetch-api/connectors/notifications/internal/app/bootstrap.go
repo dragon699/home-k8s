@@ -12,15 +12,15 @@ import (
 	"os/signal"
 	"syscall"
 
-	"notifications-controller/internal/config"
-	t "notifications-controller/internal/telemetry"
+	"connector-notifications/internal/config"
+	t "connector-notifications/internal/telemetry"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 )
 
 var app = fiber.New(fiber.Config{
-	AppName: "notifications-controller",
+	AppName: "connector-notifications",
 })
 
 func Run() error {

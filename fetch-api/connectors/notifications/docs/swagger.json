@@ -23,7 +23,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/notifications-controller_internal_http_dto_response.HealthResponse"
+                            "$ref": "#/definitions/connector-notifications_internal_http_dto_response.HealthResponse"
                         }
                     }
                 }
@@ -42,7 +42,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/notifications-controller_internal_http_dto_response.ReadyResponse"
+                            "$ref": "#/definitions/connector-notifications_internal_http_dto_response.ReadyResponse"
                         }
                     }
                 }
@@ -68,7 +68,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/notifications-controller_internal_http_dto_request.DownloaderNotificationPayload"
+                            "$ref": "#/definitions/connector-notifications_internal_http_dto_request.DownloaderNotificationPayload"
                         }
                     }
                 ],
@@ -76,19 +76,19 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/notifications-controller_internal_http_dto_response.NotificationDeliveryResponse"
+                            "$ref": "#/definitions/connector-notifications_internal_http_dto_response.NotificationDeliveryResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/notifications-controller_internal_http_dto_response.ErrorResponse"
+                            "$ref": "#/definitions/connector-notifications_internal_http_dto_response.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/notifications-controller_internal_http_dto_response.ErrorResponse"
+                            "$ref": "#/definitions/connector-notifications_internal_http_dto_response.ErrorResponse"
                         }
                     }
                 }
@@ -114,7 +114,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/notifications-controller_internal_http_dto_request.GrafanaNotificationPayload"
+                            "$ref": "#/definitions/connector-notifications_internal_http_dto_request.GrafanaNotificationPayload"
                         }
                     }
                 ],
@@ -122,19 +122,19 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/notifications-controller_internal_http_dto_response.NotificationDeliveryResponse"
+                            "$ref": "#/definitions/connector-notifications_internal_http_dto_response.NotificationDeliveryResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/notifications-controller_internal_http_dto_response.ErrorResponse"
+                            "$ref": "#/definitions/connector-notifications_internal_http_dto_response.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/notifications-controller_internal_http_dto_response.ErrorResponse"
+                            "$ref": "#/definitions/connector-notifications_internal_http_dto_response.ErrorResponse"
                         }
                     }
                 }
@@ -142,13 +142,13 @@
         }
     },
     "definitions": {
-        "notifications-controller_internal_http_dto_request.DownloaderNotificationPayload": {
+        "connector-notifications_internal_http_dto_request.DownloaderNotificationPayload": {
             "type": "object",
             "properties": {
                 "actions": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/notifications-controller_internal_http_dto_request.NotificationAction"
+                        "$ref": "#/definitions/connector-notifications_internal_http_dto_request.NotificationAction"
                     }
                 },
                 "category": {
@@ -163,7 +163,7 @@
                 "fields": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/notifications-controller_internal_http_dto_request.NotificationField"
+                        "$ref": "#/definitions/connector-notifications_internal_http_dto_request.NotificationField"
                     }
                 },
                 "hash": {
@@ -190,7 +190,7 @@
                 }
             }
         },
-        "notifications-controller_internal_http_dto_request.GrafanaAlert": {
+        "connector-notifications_internal_http_dto_request.GrafanaAlert": {
             "type": "object",
             "properties": {
                 "annotations": {
@@ -234,13 +234,13 @@
                 }
             }
         },
-        "notifications-controller_internal_http_dto_request.GrafanaNotificationPayload": {
+        "connector-notifications_internal_http_dto_request.GrafanaNotificationPayload": {
             "type": "object",
             "properties": {
                 "alerts": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/notifications-controller_internal_http_dto_request.GrafanaAlert"
+                        "$ref": "#/definitions/connector-notifications_internal_http_dto_request.GrafanaAlert"
                     }
                 },
                 "channel": {
@@ -296,7 +296,7 @@
                 }
             }
         },
-        "notifications-controller_internal_http_dto_request.NotificationAction": {
+        "connector-notifications_internal_http_dto_request.NotificationAction": {
             "type": "object",
             "properties": {
                 "id": {
@@ -316,7 +316,7 @@
                 }
             }
         },
-        "notifications-controller_internal_http_dto_request.NotificationField": {
+        "connector-notifications_internal_http_dto_request.NotificationField": {
             "type": "object",
             "properties": {
                 "short": {
@@ -330,7 +330,7 @@
                 }
             }
         },
-        "notifications-controller_internal_http_dto_response.ErrorResponse": {
+        "connector-notifications_internal_http_dto_response.ErrorResponse": {
             "type": "object",
             "properties": {
                 "error": {
@@ -342,7 +342,7 @@
                 }
             }
         },
-        "notifications-controller_internal_http_dto_response.HealthResponse": {
+        "connector-notifications_internal_http_dto_response.HealthResponse": {
             "type": "object",
             "properties": {
                 "connector_name": {
@@ -359,7 +359,7 @@
                 }
             }
         },
-        "notifications-controller_internal_http_dto_response.NotificationDeliveryResponse": {
+        "connector-notifications_internal_http_dto_response.NotificationDeliveryResponse": {
             "type": "object",
             "properties": {
                 "channel": {
@@ -376,7 +376,7 @@
                 }
             }
         },
-        "notifications-controller_internal_http_dto_response.ReadyResponse": {
+        "connector-notifications_internal_http_dto_response.ReadyResponse": {
             "type": "object",
             "properties": {
                 "ready": {

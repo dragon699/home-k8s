@@ -1,10 +1,10 @@
 basePath: /
 definitions:
-  notifications-controller_internal_http_dto_request.DownloaderNotificationPayload:
+  connector-notifications_internal_http_dto_request.DownloaderNotificationPayload:
     properties:
       actions:
         items:
-          $ref: '#/definitions/notifications-controller_internal_http_dto_request.NotificationAction'
+          $ref: '#/definitions/connector-notifications_internal_http_dto_request.NotificationAction'
         type: array
       category:
         type: string
@@ -14,7 +14,7 @@ definitions:
         type: string
       fields:
         items:
-          $ref: '#/definitions/notifications-controller_internal_http_dto_request.NotificationField'
+          $ref: '#/definitions/connector-notifications_internal_http_dto_request.NotificationField'
         type: array
       hash:
         type: string
@@ -32,7 +32,7 @@ definitions:
       title:
         type: string
     type: object
-  notifications-controller_internal_http_dto_request.GrafanaAlert:
+  connector-notifications_internal_http_dto_request.GrafanaAlert:
     properties:
       annotations:
         additionalProperties:
@@ -61,11 +61,11 @@ definitions:
       valueString:
         type: string
     type: object
-  notifications-controller_internal_http_dto_request.GrafanaNotificationPayload:
+  connector-notifications_internal_http_dto_request.GrafanaNotificationPayload:
     properties:
       alerts:
         items:
-          $ref: '#/definitions/notifications-controller_internal_http_dto_request.GrafanaAlert'
+          $ref: '#/definitions/connector-notifications_internal_http_dto_request.GrafanaAlert'
         type: array
       channel:
         type: string
@@ -102,7 +102,7 @@ definitions:
       version:
         type: string
     type: object
-  notifications-controller_internal_http_dto_request.NotificationAction:
+  connector-notifications_internal_http_dto_request.NotificationAction:
     properties:
       id:
         type: string
@@ -115,7 +115,7 @@ definitions:
       value:
         type: string
     type: object
-  notifications-controller_internal_http_dto_request.NotificationField:
+  connector-notifications_internal_http_dto_request.NotificationField:
     properties:
       short:
         type: boolean
@@ -124,7 +124,7 @@ definitions:
       value:
         type: string
     type: object
-  notifications-controller_internal_http_dto_response.ErrorResponse:
+  connector-notifications_internal_http_dto_response.ErrorResponse:
     properties:
       error:
         type: string
@@ -132,7 +132,7 @@ definitions:
         additionalProperties: {}
         type: object
     type: object
-  notifications-controller_internal_http_dto_response.HealthResponse:
+  connector-notifications_internal_http_dto_response.HealthResponse:
     properties:
       connector_name:
         type: string
@@ -143,7 +143,7 @@ definitions:
       healthy:
         type: boolean
     type: object
-  notifications-controller_internal_http_dto_response.NotificationDeliveryResponse:
+  connector-notifications_internal_http_dto_response.NotificationDeliveryResponse:
     properties:
       channel:
         type: string
@@ -154,7 +154,7 @@ definitions:
       timestamp:
         type: string
     type: object
-  notifications-controller_internal_http_dto_response.ReadyResponse:
+  connector-notifications_internal_http_dto_response.ReadyResponse:
     properties:
       ready:
         type: boolean
@@ -173,7 +173,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/notifications-controller_internal_http_dto_response.HealthResponse'
+            $ref: '#/definitions/connector-notifications_internal_http_dto_response.HealthResponse'
       summary: Health check
       tags:
       - health
@@ -185,7 +185,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/notifications-controller_internal_http_dto_response.ReadyResponse'
+            $ref: '#/definitions/connector-notifications_internal_http_dto_response.ReadyResponse'
       summary: Readiness check
       tags:
       - health
@@ -201,22 +201,22 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/notifications-controller_internal_http_dto_request.DownloaderNotificationPayload'
+          $ref: '#/definitions/connector-notifications_internal_http_dto_request.DownloaderNotificationPayload'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/notifications-controller_internal_http_dto_response.NotificationDeliveryResponse'
+            $ref: '#/definitions/connector-notifications_internal_http_dto_response.NotificationDeliveryResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/notifications-controller_internal_http_dto_response.ErrorResponse'
+            $ref: '#/definitions/connector-notifications_internal_http_dto_response.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/notifications-controller_internal_http_dto_response.ErrorResponse'
+            $ref: '#/definitions/connector-notifications_internal_http_dto_response.ErrorResponse'
       summary: Forward a connector-downloader event payload to Slack
       tags:
       - notifications
@@ -231,22 +231,22 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/notifications-controller_internal_http_dto_request.GrafanaNotificationPayload'
+          $ref: '#/definitions/connector-notifications_internal_http_dto_request.GrafanaNotificationPayload'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/notifications-controller_internal_http_dto_response.NotificationDeliveryResponse'
+            $ref: '#/definitions/connector-notifications_internal_http_dto_response.NotificationDeliveryResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/notifications-controller_internal_http_dto_response.ErrorResponse'
+            $ref: '#/definitions/connector-notifications_internal_http_dto_response.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/notifications-controller_internal_http_dto_response.ErrorResponse'
+            $ref: '#/definitions/connector-notifications_internal_http_dto_response.ErrorResponse'
       summary: Forward a Grafana alert payload to Slack
       tags:
       - notifications

@@ -1,8 +1,8 @@
 package handlers
 
 import (
-	"notifications-controller/internal/config"
-	"notifications-controller/internal/http/dto/response"
+	"connector-notifications/internal/config"
+	"connector-notifications/internal/http/dto/response"
 
 	"github.com/gofiber/fiber/v2"
 )

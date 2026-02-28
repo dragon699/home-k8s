@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"common/utils"
-	"notifications-controller/internal/config"
-	t "notifications-controller/internal/telemetry"
+	"connector-notifications/internal/config"
+	t "connector-notifications/internal/telemetry"
 
 	slackapi "github.com/slack-go/slack"
 	"github.com/slack-go/slack/socketmode"

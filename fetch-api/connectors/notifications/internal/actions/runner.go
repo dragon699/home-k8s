@@ -3,9 +3,9 @@ package actions
 import (
 	"sync"
 
-	"notifications-controller/internal/config"
-	"notifications-controller/internal/slack"
-	t "notifications-controller/internal/telemetry"
+	"connector-notifications/internal/config"
+	"connector-notifications/internal/slack"
+	t "connector-notifications/internal/telemetry"
 )
 
 type Runner struct {

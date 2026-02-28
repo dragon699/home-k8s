@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-export DIR="./internal,./cmd/notifications"
+export DIR="./internal,./cmd/connector-notifications"
 export GENERAL_INFO="./app/bootstrap.go"
 export OUTPUT_DIR="./docs"
 
