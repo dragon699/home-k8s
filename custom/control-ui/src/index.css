@@ -5,16 +5,16 @@
 @tailwind utilities;
 
 :root {
-  --card-accent: #549ED8;
-  --card-accent-rgb: 84, 158, 216;
-  --card-accent-dark: #357fb8;
+  --card-accent: #707DE7;
+  --card-accent-rgb: 112, 125, 231;
+  --card-accent-dark: #5562cf;
   --ui-green: #cdef3c;
   --ui-green-rgb: 205, 239, 60;
   --ui-green-ink: #244133;
   --ui-stroke: rgba(17, 24, 39, 0.15);
-  --jellyfin-blue: #549ED8;
-  --jellyfin-blue-rgb: 84, 158, 216;
-  --jellyfin-blue-soft: rgba(84, 158, 216, 0.16);
+  --jellyfin-blue: #707DE7;
+  --jellyfin-blue-rgb: 112, 125, 231;
+  --jellyfin-blue-soft: rgba(112, 125, 231, 0.16);
 }
 
 body {
@@ -614,11 +614,17 @@ a {
 
 .import-action-btn {
   min-height: 52px;
-  border: 1.5px solid rgba(53, 127, 184, 0.72);
+  border: none;
   border-radius: 12px;
-  background: rgba(var(--card-accent-rgb, 84, 158, 216), 0.14);
+  background: rgba(var(--card-accent-rgb, 112, 125, 231), 0.14);
   color: var(--card-accent-dark, #357fb8);
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.55);
+  transition: background-color 500ms ease, color 500ms ease, transform 300ms ease;
+}
+
+.import-action-btn:hover:not(:disabled) {
+  background: var(--card-accent-dark, #5562cf);
+  color: #ffffff;
 }
 
 .import-action-btn:active:not(:disabled) {
@@ -648,7 +654,7 @@ a {
 }
 
 .progress-bar-gradient {
-  background: linear-gradient(90deg, rgba(84, 158, 216, 0.82), rgba(84, 158, 216, 0.96));
+  background: linear-gradient(90deg, rgba(112, 125, 231, 0.82), rgba(112, 125, 231, 0.96));
   background-size: 100% 100%;
   animation: none;
 }
@@ -748,8 +754,8 @@ a {
   width: 52px;
   height: 30px;
   border-radius: 999px;
-  border: 1px solid rgba(var(--card-accent-rgb, 84, 158, 216), 0.34);
-  background: rgba(var(--card-accent-rgb, 84, 158, 216), 0.18);
+  border: 1px solid rgba(var(--card-accent-rgb, 112, 125, 231), 0.34);
+  background: rgba(var(--card-accent-rgb, 112, 125, 231), 0.24);
   cursor: pointer;
   transition: background-color 220ms ease, border-color 220ms ease, box-shadow 220ms ease;
   flex-shrink: 0;
@@ -759,8 +765,8 @@ a {
 }
 
 .toggle-switch[aria-checked="true"] {
-  background-color: rgba(var(--card-accent-rgb, 84, 158, 216), 0.3);
-  border-color: rgba(var(--card-accent-rgb, 84, 158, 216), 0.5);
+  background-color: rgba(var(--card-accent-rgb, 112, 125, 231), 0.42);
+  border-color: rgba(var(--card-accent-rgb, 112, 125, 231), 0.62);
 }
 
 .toggle-switch:disabled {
@@ -769,7 +775,7 @@ a {
 }
 
 .toggle-switch:focus-visible {
-  box-shadow: 0 0 0 3px rgba(var(--card-accent-rgb, 84, 158, 216), 0.18);
+  box-shadow: 0 0 0 3px rgba(var(--card-accent-rgb, 112, 125, 231), 0.18);
 }
 
 .toggle-thumb {
@@ -781,7 +787,7 @@ a {
   border-radius: 999px;
   background: white;
   box-shadow:
-    inset 0 0 0 1px rgba(var(--card-accent-rgb, 84, 158, 216), 0.32),
+    inset 0 0 0 1px rgba(var(--card-accent-rgb, 112, 125, 231), 0.32),
     0 2px 6px rgba(15, 23, 42, 0.12);
   transition: transform 220ms ease;
   pointer-events: none;
