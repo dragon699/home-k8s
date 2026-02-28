@@ -731,7 +731,7 @@ export default function FetchApiActions() {
             disabled={buttonState === 'pending'}
             className="import-action-btn relative w-full overflow-hidden rounded-lg font-semibold py-3 px-4 flex items-center justify-center transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-70"
           >
-            <span className="relative z-10 inline-flex items-center justify-center">
+            <span className="relative z-10 inline-flex items-center justify-center download-btn-content">
               <span className="btn-icon-stack" aria-hidden="true">
                 {iconTransition ? (
                   <>

@@ -11,16 +11,6 @@ function QbittorrentNavIcon() {
   )
 }
 
-function PanelNavIcon() {
-  return (
-    <svg className="nav-item-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden="true">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M8 6 4 12l4 6" />
-      <path strokeLinecap="round" strokeLinejoin="round" d="M16 6l4 6-4 6" />
-      <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 18 13.5 6" />
-    </svg>
-  )
-}
-
 function MaskNavIcon({ url }) {
   return (
     <span
@@ -41,8 +31,8 @@ export default function ActionCenter({ activeTab, setActiveTab }) {
         id: 'custom',
         primaryLabel: 'Panel',
         secondaryLabel: 'fetch-api',
-        accent: { rgb: '205, 239, 60', ink: '#244133', secondary: '#627b12' },
-        icon: <PanelNavIcon />,
+        accent: { rgb: '205, 239, 60', ink: '#6f8715', secondary: '#6f8715' },
+        icon: <MaskNavIcon url="/panel-icon.png" />,
         component: <CustomActions />,
       },
       {
@@ -170,13 +160,7 @@ export default function ActionCenter({ activeTab, setActiveTab }) {
                 className="nav-item nav-linkout"
               >
                 <span className="nav-linkout-icon" aria-hidden="true">
-                  <span
-                    className="nav-item-icon-mask"
-                    style={{
-                      WebkitMaskImage: 'url(/glance-logo.png)',
-                      maskImage: 'url(/glance-logo.png)',
-                    }}
-                  />
+                  <img className="nav-item-icon nav-item-icon-glance" src="/glance-logo.png" alt="" />
                 </span>
                 <span>glance</span>
               </a>
