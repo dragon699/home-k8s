@@ -16,9 +16,10 @@ export default function ActionCenter({ activeTab, setActiveTab }) {
     () => [
       {
         id: 'custom',
-        singleLabel: 'custom',
+        primaryLabel: 'Custom request',
+        secondaryLabel: 'fetch-api',
         accent: { rgb: '205, 239, 60', ink: '#244133' },
-        icon: <img src="https://i.imgur.com/jffZhU0.png" alt="" className="nav-item-icon" />,
+        icon: <img src="https://i.imgur.com/wWCcoW6.png" alt="" className="nav-item-icon" />,
         component: <CustomActions />,
       },
       {
@@ -138,14 +139,10 @@ export default function ActionCenter({ activeTab, setActiveTab }) {
                   className={`nav-item ${activeTab === tab.id ? 'nav-item-active' : ''}`}
                 >
                   {tab.icon && <span className="nav-item-icon-wrap">{tab.icon}</span>}
-                  {tab.singleLabel ? (
-                    <span className="nav-item-single">{tab.singleLabel}</span>
-                  ) : (
-                    <span className="nav-item-copy">
-                      <span className="nav-item-primary">{tab.primaryLabel}</span>
-                      <span className="nav-item-secondary">{tab.secondaryLabel}</span>
-                    </span>
-                  )}
+                  <span className="nav-item-copy">
+                    <span className="nav-item-primary">{tab.primaryLabel}</span>
+                    <span className="nav-item-secondary">{tab.secondaryLabel}</span>
+                  </span>
                 </button>
               ))}
               <a
