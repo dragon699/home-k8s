@@ -28,8 +28,8 @@ export default function FetchApiActions() {
   const DEFAULT_TAGS_FALLBACK = 'fetch-api'
   const jellyfinUrl = '/__jellyfin__'
   const qbittorrentUrl = '/__qbittorrent__'
-  const jellyfinAccent = '#8b5cf6'
-  const jellyfinAccentRgb = '139, 92, 246'
+  const jellyfinAccent = '#0080ff'
+  const jellyfinAccentRgb = '0, 128, 255'
   const [movieName, setMovieName] = useState('')
   const [saveLocation, setSaveLocation] = useState('')
   const [qbittorrentCategory, setQbittorrentCategory] = useState('')
@@ -775,7 +775,7 @@ export default function FetchApiActions() {
 
           {/* JSON log */}
           <div className="mt-5">
-            <p className="toggle-subtext text-[10px] font-bold uppercase tracking-widest mb-4" style={{ color: jellyfinAccent }}>Response</p>
+            <p className="toggle-subtext text-[10px] font-bold uppercase tracking-widest mb-4 text-gray-400">Response</p>
             <div className="w-full rounded-lg bg-[#0d0d0d] p-4 min-h-[180px] border border-gray-800">
             <pre
               key={jsonKey}

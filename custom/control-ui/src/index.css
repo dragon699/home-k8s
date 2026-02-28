@@ -5,12 +5,15 @@
 @tailwind utilities;
 
 :root {
-  --card-accent: #cdef3c;
-  --card-accent-rgb: 205, 239, 60;
+  --card-accent: #0080ff;
+  --card-accent-rgb: 0, 128, 255;
   --ui-green: #cdef3c;
   --ui-green-rgb: 205, 239, 60;
   --ui-green-ink: #244133;
   --ui-stroke: rgba(17, 24, 39, 0.15);
+  --jellyfin-blue: #0080ff;
+  --jellyfin-blue-rgb: 0, 128, 255;
+  --jellyfin-blue-soft: rgba(0, 128, 255, 0.12);
 }
 
 body {
@@ -264,8 +267,8 @@ a {
 
 .nav-linkout-icon {
   display: inline-flex;
-  width: 1rem;
-  height: 1rem;
+  width: 1.3rem;
+  height: 1.3rem;
 }
 
 @media (max-width: 640px) {
@@ -609,9 +612,12 @@ a {
 }
 
 .import-action-btn {
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.26),
-    inset 0 -2px 6px rgba(0,0,0,0.2);
+  min-height: 52px;
+  border: 1px solid rgba(var(--card-accent-rgb, 0, 128, 255), 0.28);
+  border-radius: 12px;
+  background: rgba(var(--card-accent-rgb, 0, 128, 255), 0.12);
+  color: var(--card-accent, #0080ff);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.55);
 }
 
 .import-action-btn:active:not(:disabled) {
@@ -641,9 +647,9 @@ a {
 }
 
 .progress-bar-gradient {
-  background: linear-gradient(90deg, #8b5cf6, #0080ff, #8b5cf6);
-  background-size: 200% 100%;
-  animation: gradientShift 3s ease infinite;
+  background: linear-gradient(90deg, rgba(0, 128, 255, 0.82), rgba(0, 128, 255, 0.96));
+  background-size: 100% 100%;
+  animation: none;
 }
 
 @keyframes torrentItemEnter {
@@ -738,20 +744,22 @@ a {
 
 .toggle-switch {
   position: relative;
-  width: 48px;
-  height: 28px;
-  border-radius: 12px;
-  border: none;
-  background: #e5e7eb;
+  width: 52px;
+  height: 30px;
+  border-radius: 999px;
+  border: 1px solid rgba(var(--card-accent-rgb, 0, 128, 255), 0.22);
+  background: rgba(var(--card-accent-rgb, 0, 128, 255), 0.08);
   cursor: pointer;
-  transition: background-color 220ms ease;
+  transition: background-color 220ms ease, border-color 220ms ease, box-shadow 220ms ease;
   flex-shrink: 0;
   padding: 0;
   outline: none;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
 }
 
 .toggle-switch[aria-checked="true"] {
-  background-color: var(--option-accent, var(--card-accent, #8b5cf6));
+  background-color: rgba(var(--card-accent-rgb, 0, 128, 255), 0.18);
+  border-color: rgba(var(--card-accent-rgb, 0, 128, 255), 0.34);
 }
 
 .toggle-switch:disabled {
@@ -760,7 +768,7 @@ a {
 }
 
 .toggle-switch:focus-visible {
-  box-shadow: 0 0 0 3px rgba(var(--card-accent-rgb, 139, 92, 246), 0.3);
+  box-shadow: 0 0 0 3px rgba(var(--card-accent-rgb, 0, 128, 255), 0.18);
 }
 
 .toggle-thumb {
@@ -769,9 +777,11 @@ a {
   top: 3px;
   width: 22px;
   height: 22px;
-  border-radius: 9px;
+  border-radius: 999px;
   background: white;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.22);
+  box-shadow:
+    inset 0 0 0 1px rgba(var(--card-accent-rgb, 0, 128, 255), 0.24),
+    0 2px 6px rgba(15, 23, 42, 0.12);
   transition: transform 220ms ease;
   pointer-events: none;
 }
@@ -848,11 +858,11 @@ a {
 }
 
 .flat-input-wrap:focus-within .flat-input-line:not(.flat-input-line-anim) {
-  background: var(--card-accent, #8b5cf6);
+  background: var(--card-accent, #0080ff);
 }
 
 .flat-input-line-error {
-  background: var(--card-accent, #8b5cf6);
+  background: var(--card-accent, #0080ff);
 }
 
 .flat-input-line.flat-input-line-api-error {
@@ -863,7 +873,7 @@ a {
   content: '';
   position: absolute;
   inset: 0;
-  background: #f472b6;
+  background: rgba(var(--card-accent-rgb, 0, 128, 255), 0.9);
   opacity: 0;
   transform: scaleX(1);
   transform-origin: center;
@@ -1088,7 +1098,7 @@ a {
 }
 
 .query-dropdown-item:hover {
-  background: rgba(var(--card-accent-rgb, 139, 92, 246), 0.06);
+  background: rgba(var(--card-accent-rgb, 0, 128, 255), 0.06);
 }
 
 .query-dropdown-item-results {
@@ -1123,7 +1133,7 @@ a {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: var(--card-accent, #8b5cf6);
+  background: var(--card-accent, #0080ff);
   animation: searchBounce 0.9s ease-in-out infinite;
 }
 
@@ -1156,7 +1166,7 @@ a {
 }
 
 .query-dropdown-result-item:hover .query-result-icon {
-  color: var(--card-accent, #8b5cf6);
+  color: var(--card-accent, #0080ff);
 }
 
 .query-result-text {
@@ -1188,11 +1198,11 @@ a {
 }
 
 .query-dropdown-result-item:hover .query-result-name::after {
-  background: linear-gradient(to right, transparent, rgba(var(--card-accent-rgb, 139, 92, 246), 0.04) 60%, rgba(var(--card-accent-rgb, 139, 92, 246), 0.04));
+  background: linear-gradient(to right, transparent, rgba(var(--card-accent-rgb, 0, 128, 255), 0.04) 60%, rgba(var(--card-accent-rgb, 0, 128, 255), 0.04));
 }
 
 .query-dropdown-result-item-selected .query-result-name::after {
-  background: linear-gradient(to right, transparent, rgba(var(--card-accent-rgb, 139, 92, 246), 0.07) 60%, rgba(var(--card-accent-rgb, 139, 92, 246), 0.07));
+  background: linear-gradient(to right, transparent, rgba(var(--card-accent-rgb, 0, 128, 255), 0.07) 60%, rgba(var(--card-accent-rgb, 0, 128, 255), 0.07));
 }
 
 .query-result-meta {
@@ -1246,7 +1256,7 @@ a {
   justify-content: center;
   font-size: 12px;
   font-weight: 600;
-  color: var(--card-accent, #8b5cf6);
+  color: var(--card-accent, #0080ff);
   background: none;
   border: none;
   cursor: pointer;
@@ -1282,7 +1292,7 @@ a {
 .query-ripple {
   position: absolute;
   border-radius: 50%;
-  background: rgba(var(--card-accent-rgb, 139, 92, 246), 0.22);
+  background: rgba(var(--card-accent-rgb, 0, 128, 255), 0.22);
   transform: scale(0);
   animation: queryRippleAnim 500ms ease-out forwards;
   pointer-events: none;
@@ -1293,13 +1303,13 @@ a {
 
 /* ── Selected result item ────────────────────────────────────────── */
 .query-dropdown-result-item-selected {
-  background: rgba(var(--card-accent-rgb, 139, 92, 246), 0.07);
+  background: rgba(var(--card-accent-rgb, 0, 128, 255), 0.07);
 }
 .query-dropdown-result-item-selected .query-result-icon {
-  color: var(--card-accent, #8b5cf6);
+  color: var(--card-accent, #0080ff);
 }
 .query-dropdown-result-item-selected .query-result-name {
-  color: var(--card-accent, #8b5cf6);
+  color: var(--card-accent, #0080ff);
 }
 
 /* ── Torrent item expand on hover ───────────────────────────────── */
@@ -1330,7 +1340,7 @@ a {
   gap: 5px;
   padding: 5px 10px;
   border-radius: 7px;
-  border: 1.5px solid #e5e7eb;
+  border: 1.5px solid rgba(var(--card-accent-rgb, 0, 128, 255), 0.16);
   background: transparent;
   color: #9ca3af;
   font-size: 11px;
@@ -1345,15 +1355,15 @@ a {
 }
 
 .torrent-pill:hover:not(.torrent-pill-active):not(.torrent-pill-error):not(:disabled) {
-  border-color: var(--card-accent, #8b5cf6);
-  color: var(--card-accent, #8b5cf6);
-  background: rgba(var(--card-accent-rgb, 139, 92, 246), 0.06);
+  border-color: var(--card-accent, #0080ff);
+  color: var(--card-accent, #0080ff);
+  background: rgba(var(--card-accent-rgb, 0, 128, 255), 0.06);
 }
 
 .torrent-pill-active {
-  background: rgba(var(--card-accent-rgb, 139, 92, 246), 0.07);
-  border-color: var(--card-accent, #8b5cf6);
-  color: var(--card-accent, #8b5cf6);
+  background: rgba(var(--card-accent-rgb, 0, 128, 255), 0.07);
+  border-color: var(--card-accent, #0080ff);
+  color: var(--card-accent, #0080ff);
 }
 
 /* Active + button-hovered with a destructive label → turn red */
