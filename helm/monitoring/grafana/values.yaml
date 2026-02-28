@@ -82,6 +82,11 @@ grafana.ini:
   users:
     viewers_can_edit: true
 
+  unified_storage.folders.folder.grafana.app:
+    enableMigration: true
+  unified_storage.dashboards.dashboard.grafana.app:
+    enableMigration: true
+
 
 # Grafana provisioning
 extraVolumes:
