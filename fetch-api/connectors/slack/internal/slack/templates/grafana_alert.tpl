@@ -1,13 +1,13 @@
 {
-  "channel": "{{ .Channel }}",
-  "text": "{{ if .Title }}{{ .Title }}{{ else if .Message }}{{ .Message }}{{ else }}Grafana alert: {{ .Status }}{{ end }}",
+  "channel": {{ json .Channel }},
+  "text": {{ json (or .Title (or .Message (printf "Grafana alert: %s" (or .Status "unknown")))) }},
   "unfurl_links": false,
   "blocks": [
     {
       "type": "header",
       "text": {
         "type": "plain_text",
-        "text": "{{ if .Title }}{{ .Title }}{{ else }}Grafana alert: {{ .Status }}{{ end }}"
+        "text": {{ json (or .Title (printf "Grafana alert: %s" (or .Status "unknown"))) }}
       }
     },
     {
@@ -15,11 +15,11 @@
       "fields": [
         {
           "type": "mrkdwn",
-          "text": "*Status*\n{{ if .Status }}{{ .Status }}{{ else }}unknown{{ end }}"
+          "text": {{ json (printf "*Status*\n%s" (or .Status "unknown")) }}
         },
         {
           "type": "mrkdwn",
-          "text": "*Receiver*\n{{ if .Receiver }}{{ .Receiver }}{{ else }}n/a{{ end }}"
+          "text": {{ json (printf "*Receiver*\n%s" (or .Receiver "n/a")) }}
         }
       ]
     },
@@ -27,7 +27,7 @@
       "type": "section",
       "text": {
         "type": "mrkdwn",
-        "text": "{{ if .Message }}{{ .Message }}{{ else }}{{ if .CommonAnnotations.summary }}{{ .CommonAnnotations.summary }}{{ else }}No summary provided.{{ end }}{{ end }}"
+        "text": {{ json (or .Message (or .CommonAnnotations.summary "No summary provided.")) }}
       }
     }
     {{- if .ExternalURL }},
@@ -37,10 +37,10 @@
         {
           "type": "button",
           "text": {
-            "type": "plain_text",
-            "text": "Open Grafana"
+          "type": "plain_text",
+          "text": "Open Grafana"
           },
-          "url": "{{ .ExternalURL }}"
+          "url": {{ json .ExternalURL }}
         }
       ]
     }

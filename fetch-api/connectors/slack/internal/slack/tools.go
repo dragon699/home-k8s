@@ -4,6 +4,8 @@ import (
 	"embed"
 	"encoding/json"
 	"fmt"
+	"strings"
+	"text/template"
 
 	"common/utils"
 	"connector-slack/internal/config"
@@ -20,7 +22,7 @@ func RenderTemplate(templateName string, templateVars any) (map[string]any, erro
 		return nil, fmt.Errorf("[%s] Invalid template file: %s", err, tplPath)
 	}
 
-	tplContent, err := utils.RenderTemplateContent(tplPath, string(tplBytes), templateVars)
+	tplContent, err := renderTemplateContent(tplPath, string(tplBytes), templateVars)
 
 	if err != nil {
 		return nil, fmt.Errorf("[%s] Failed to render embedded template file: %w", tplPath, err)
@@ -33,6 +35,31 @@ func RenderTemplate(templateName string, templateVars any) (map[string]any, erro
 	}
 
 	return slackBody, nil
+}
+
+func renderTemplateContent(templateName string, templateContent string, vars any) (string, error) {
+	tpl, err := template.New(templateName).Funcs(template.FuncMap{
+		"json": templateJSON,
+	}).Parse(templateContent)
+	if err != nil {
+		return "", err
+	}
+
+	var out strings.Builder
+	if err := tpl.Execute(&out, vars); err != nil {
+		return "", err
+	}
+
+	return out.String(), nil
+}
+
+func templateJSON(value any) string {
+	body, err := json.Marshal(value)
+	if err != nil {
+		return `""`
+	}
+
+	return string(body)
 }
 
 type SendResult struct {
