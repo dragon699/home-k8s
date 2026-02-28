@@ -10,7 +10,7 @@
   --ui-green: #cdef3c;
   --ui-green-rgb: 205, 239, 60;
   --ui-green-ink: #244133;
-  --ui-stroke: rgba(17, 24, 39, 0.4);
+  --ui-stroke: rgba(17, 24, 39, 0.2);
 }
 
 body {
