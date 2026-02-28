@@ -31,15 +31,25 @@ export default function ActionCenter({ activeTab, setActiveTab }) {
         id: 'custom',
         primaryLabel: 'Panel',
         secondaryLabel: 'fetch-api',
-        accent: { rgb: '205, 239, 60', ink: '#6f8715', secondary: '#6f8715' },
-        icon: <MaskNavIcon url="/panel-icon.png" />,
+        accent: {
+          rgb: '205, 239, 60',
+          ink: '#6f8715',
+          secondary: '#6f8715',
+          filter: 'brightness(0) saturate(100%) invert(39%) sepia(87%) saturate(501%) hue-rotate(33deg) brightness(90%) contrast(90%)',
+        },
+        icon: <img className="nav-item-icon nav-item-icon-tintable" src="/panel-icon.png" alt="" />,
         component: <CustomActions />,
       },
       {
         id: 'fetch-api',
         primaryLabel: 'connector-downloader',
         secondaryLabel: 'fetch-api',
-        accent: { rgb: '44, 116, 216', ink: '#1f63c2', secondary: '#3c84d7' },
+        accent: {
+          rgb: '44, 116, 216',
+          ink: '#1f63c2',
+          secondary: '#3c84d7',
+          filter: 'brightness(0) saturate(100%) invert(36%) sepia(82%) saturate(1649%) hue-rotate(205deg) brightness(93%) contrast(92%)',
+        },
         icon: <QbittorrentNavIcon />,
         component: <FetchApiActions />,
       },
@@ -47,7 +57,12 @@ export default function ActionCenter({ activeTab, setActiveTab }) {
         id: 'overview',
         primaryLabel: 'connector-grafana',
         secondaryLabel: 'fetch-api',
-        accent: { rgb: '243, 130, 32', ink: '#c75c07', secondary: '#d9731d' },
+        accent: {
+          rgb: '243, 130, 32',
+          ink: '#c75c07',
+          secondary: '#d9731d',
+          filter: 'brightness(0) saturate(100%) invert(50%) sepia(93%) saturate(1386%) hue-rotate(355deg) brightness(97%) contrast(93%)',
+        },
         icon: <MaskNavIcon url="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/grafana.svg" />,
         component: <ApplicationActions />,
       },
@@ -137,6 +152,7 @@ export default function ActionCenter({ activeTab, setActiveTab }) {
                 '--nav-accent-rgb': activeAccent.rgb,
                 '--nav-accent-ink': activeAccent.ink,
                 '--nav-accent-secondary': activeAccent.secondary ?? activeAccent.ink,
+                '--nav-accent-filter': activeAccent.filter ?? 'brightness(0) saturate(100%) invert(39%) sepia(10%) saturate(458%) hue-rotate(174deg) brightness(89%) contrast(88%)',
               }}
             >
               {tabs.map((tab) => (
@@ -160,7 +176,7 @@ export default function ActionCenter({ activeTab, setActiveTab }) {
                 className="nav-item nav-linkout"
               >
                 <span className="nav-linkout-icon" aria-hidden="true">
-                  <img className="nav-item-icon nav-item-icon-glance" src="/glance-logo.png" alt="" />
+                  <img className="nav-item-icon nav-item-icon-tintable" src="/glance-logo.png" alt="" />
                 </span>
                 <span>glance</span>
               </a>
