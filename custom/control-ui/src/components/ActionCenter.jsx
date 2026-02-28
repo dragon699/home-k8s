@@ -11,15 +11,28 @@ function QbittorrentNavIcon() {
   )
 }
 
+function MaskNavIcon({ url }) {
+  return (
+    <span
+      aria-hidden="true"
+      className="nav-item-icon-mask"
+      style={{
+        WebkitMaskImage: `url(${url})`,
+        maskImage: `url(${url})`,
+      }}
+    />
+  )
+}
+
 export default function ActionCenter({ activeTab, setActiveTab }) {
   const tabs = useMemo(
     () => [
       {
         id: 'custom',
-        primaryLabel: 'Request',
+        primaryLabel: 'Panel',
         secondaryLabel: 'fetch-api',
         accent: { rgb: '205, 239, 60', ink: '#244133', secondary: '#7d9821' },
-        icon: <img src="https://i.imgur.com/wWCcoW6.png" alt="" className="nav-item-icon" />,
+        icon: <MaskNavIcon url="https://i.imgur.com/wWCcoW6.png" />,
         component: <CustomActions />,
       },
       {
@@ -35,13 +48,7 @@ export default function ActionCenter({ activeTab, setActiveTab }) {
         primaryLabel: 'connector-grafana',
         secondaryLabel: 'fetch-api',
         accent: { rgb: '243, 130, 32', ink: '#c75c07', secondary: '#d9731d' },
-        icon: (
-          <img
-            src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/grafana.svg"
-            alt=""
-            className="nav-item-icon nav-item-icon-black"
-          />
-        ),
+        icon: <MaskNavIcon url="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/grafana.svg" />,
         component: <ApplicationActions />,
       },
     ],
