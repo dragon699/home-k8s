@@ -54,7 +54,7 @@
 					"text": {{ json (printf "*Status*\n%s" $status) }}
 				}
 				{{- range $key, $value := .Labels }}
-				{{- if and (ne $key "alertname") (ne $key "grafana_folder") }},
+				{{- if and (ne $key "alertname") (not (hasPrefix $key "grafana_")) }},
 				{
 					"type": "mrkdwn",
 					"text": {{ json (printf "*%s*\n%s" (capitalize $key) $value) }}
