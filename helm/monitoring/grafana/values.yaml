@@ -48,6 +48,9 @@ grafana.ini:
   unified_alerting.screenshots:
     capture: true
 
+  external_image_storage:
+    provider: local
+
   auth.anonymous:
     hide_version: true
 
