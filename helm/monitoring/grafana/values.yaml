@@ -47,6 +47,7 @@ grafana.ini:
 
   unified_alerting.screenshots:
     capture: true
+    upload_external_image_storage: true
 
   external_image_storage:
     provider: local
