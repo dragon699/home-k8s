@@ -56,6 +56,52 @@ const docTemplate = `{
                 }
             }
         },
+        "/notifications": {
+            "post": {
+                "description": "Send a custom notification to Slack with specified options.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "notifications"
+                ],
+                "summary": "Send a custom notification to Slack",
+                "parameters": [
+                    {
+                        "description": "Custom notification payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/connector-slack_internal_http_dto_request.NotificationPayload"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/connector-slack_internal_http_dto_response.NotificationStatus"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/connector-slack_internal_http_dto_response.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/connector-slack_internal_http_dto_response.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/notifications/connector-downloader/torrent": {
             "post": {
                 "description": "Accepts a payload from connector-downloader and posts it to Slack as a message.",
@@ -123,52 +169,6 @@ const docTemplate = `{
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/connector-slack_internal_http_dto_request.GrafanaAlertNotificationPayload"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/connector-slack_internal_http_dto_response.NotificationStatus"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/connector-slack_internal_http_dto_response.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/connector-slack_internal_http_dto_response.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/notifications/send": {
-            "post": {
-                "description": "Send a custom notification to Slack with specified options.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "notifications"
-                ],
-                "summary": "Send a custom notification to Slack",
-                "parameters": [
-                    {
-                        "description": "Custom notification payload",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/connector-slack_internal_http_dto_request.NotificationPayload"
                         }
                     }
                 ],
@@ -263,6 +263,13 @@ const docTemplate = `{
         "connector-slack_internal_http_dto_request.NotificationPayload": {
             "type": "object",
             "properties": {
+                "attachments": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "additionalProperties": {}
+                    }
+                },
                 "blocks": {
                     "type": "array",
                     "items": {

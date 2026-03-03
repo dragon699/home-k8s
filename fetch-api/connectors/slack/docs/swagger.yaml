@@ -44,6 +44,11 @@ definitions:
     type: object
   connector-slack_internal_http_dto_request.NotificationPayload:
     properties:
+      attachments:
+        items:
+          additionalProperties: {}
+          type: object
+        type: array
       blocks:
         items:
           additionalProperties: {}
@@ -159,6 +164,36 @@ paths:
       summary: Readiness check
       tags:
       - health
+  /notifications:
+    post:
+      consumes:
+      - application/json
+      description: Send a custom notification to Slack with specified options.
+      parameters:
+      - description: Custom notification payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/connector-slack_internal_http_dto_request.NotificationPayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/connector-slack_internal_http_dto_response.NotificationStatus'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/connector-slack_internal_http_dto_response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/connector-slack_internal_http_dto_response.ErrorResponse'
+      summary: Send a custom notification to Slack
+      tags:
+      - notifications
   /notifications/connector-downloader/torrent:
     post:
       consumes:
@@ -220,36 +255,6 @@ paths:
           schema:
             $ref: '#/definitions/connector-slack_internal_http_dto_response.ErrorResponse'
       summary: Forward a Grafana alert payload to send a Slack message
-      tags:
-      - notifications
-  /notifications/send:
-    post:
-      consumes:
-      - application/json
-      description: Send a custom notification to Slack with specified options.
-      parameters:
-      - description: Custom notification payload
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/connector-slack_internal_http_dto_request.NotificationPayload'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/connector-slack_internal_http_dto_response.NotificationStatus'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/connector-slack_internal_http_dto_response.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/connector-slack_internal_http_dto_response.ErrorResponse'
-      summary: Send a custom notification to Slack
       tags:
       - notifications
 produces:

@@ -22,12 +22,14 @@
 
 {{- $dashboardURL := or .PanelURL .DashboardURL -}}
 
+{{- $screenshotURL := .ImageURL --}}
+
 
 {
   "channel": {{ json $slackChannel }},
   "username": {{ json $slackAsUser }},
   "icon_url": {{ json $slackAsUserIcon }},
-  "text": {{ json $titleText }},
+  "text": {{ json $notification }},
   "blocks": [
 		{
 			"type": "section",
@@ -107,6 +109,17 @@
 					},
 					"url": {{ json $dashboardURL }},
 					"action_id": "grafana_alert_button_view_in_dashboard"
+				}
+				{{- end }}
+				{{- if $screenshotURL -}},
+				{
+					"type": "button",
+					"text": {
+						"type": "plain_text",
+						"text": "🖼  View screenshot"
+					},
+					"url": {{ json $screenshotURL }},
+					"action_id": "grafana_alert_button_view_screenshot"
 				}
 				{{- end }}
 			]
