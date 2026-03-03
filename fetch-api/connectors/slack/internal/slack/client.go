@@ -50,19 +50,9 @@ func (instance *SlackClient) Ping() error {
 }
 
 func (instance *SlackClient) SendMsg(channelID string, blocks []map[string]any, options ...slackapi.MsgOption) (*Response, error) {
-	blocksJSON, err := json.Marshal(map[string]any{"blocks": blocks})
-	if err != nil {
-		return nil, fmt.Errorf("failed to marshal blocks: %w", err)
-	}
-
-	var slackBlocks slackapi.Blocks
-	if err = json.Unmarshal(blocksJSON, &slackBlocks); err != nil {
-		return nil, fmt.Errorf("failed to parse blocks: %w", err)
-	}
-
 	opts := append(
 		[]slackapi.MsgOption{
-			slackapi.MsgOptionBlocks(slackBlocks.BlockSet...),
+			slackapi.MsgOptionBlocks(toBlockSet(blocks)...),
 		},
 		options...,
 	)
@@ -99,19 +89,9 @@ func (instance *SlackClient) SendMsgFromTemplate(templateName string, templateVa
 		return nil, fmt.Errorf("failed to unmarshal notification template %q: %w", templateName, err)
 	}
 
-	blocksJSON, err := json.Marshal(map[string]any{"blocks": msg.Blocks})
-	if err != nil {
-		return nil, fmt.Errorf("failed to marshal blocks for %q: %w", templateName, err)
-	}
-
-	var slackBlocks slackapi.Blocks
-	if err = json.Unmarshal(blocksJSON, &slackBlocks); err != nil {
-		return nil, fmt.Errorf("failed to parse blocks for %q: %w", templateName, err)
-	}
-
 	opts := []slackapi.MsgOption{
 		slackapi.MsgOptionText(msg.Text, false),
-		slackapi.MsgOptionBlocks(slackBlocks.BlockSet...),
+		slackapi.MsgOptionBlocks(toBlockSet(msg.Blocks)...),
 	}
 
 	if msg.Username != "" {

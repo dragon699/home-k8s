@@ -17,7 +17,6 @@ type NotificationOptionsPayload struct {
 }
 
 type TemplatedNotificationPayload[TemplateParams any] struct {
-	NotificationName string         `json:"notification_name"`
 	Params           TemplateParams `json:"params"`
 }
 
