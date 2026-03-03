@@ -17,13 +17,12 @@ type Settings struct {
 	ListenPort int    `json:"listen_port"                   env:"LISTEN_PORT"`
 	ListenUrl  string `json:"listen_url"`
 
-	SlackBotToken          string `json:"slack_bot_token"           env:"SLACK_BOT_TOKEN"`
-	SlackAppToken          string `json:"slack_app_token"           env:"SLACK_APP_TOKEN"`
-	SlackDefaultChannel    string `json:"slack_default_channel"     env:"SLACK_DEFAULT_CHANNEL"`
-	SlackGrafanaChannel    string `json:"slack_grafana_channel"     env:"SLACK_GRAFANA_CHANNEL"`
-	SlackDownloaderChannel string `json:"slack_downloader_channel"  env:"SLACK_DOWNLOADER_CHANNEL"`
-	SlackSocketModeEnabled bool   `json:"slack_socket_mode_enabled" env:"SLACK_SOCKET_MODE_ENABLED"`
-	SlackSocketDebug       bool   `json:"slack_socket_debug"        env:"SLACK_SOCKET_DEBUG"`
+	SlackBotToken                     string `json:"slack_bot_token"                       env:"SLACK_BOT_TOKEN"`
+	SlackAppToken                     string `json:"slack_app_token"                       env:"SLACK_APP_TOKEN"`
+	SlackDefaultChannelID             string `json:"slack_default_channel_id"              env:"SLACK_DEFAULT_CHANNEL_ID"`
+	SlackGrafanaAlertsChannelID       string `json:"slack_grafana_alerts_channel_id"       env:"SLACK_GRAFANA_ALERTS_CHANNEL_ID"`
+	SlackConnectorDownloaderChannelID string `json:"slack_connector_downloader_channel_id" env:"SLACK_CONNECTOR_DOWNLOADER_CHANNEL_ID"`
+	SlackSocketDebug                  bool   `json:"slack_socket_debug"                    env:"SLACK_SOCKET_DEBUG"`
 
 	OtelServiceName      string `json:"otel_service_name"             env:"OTEL_SERVICE_NAME"`
 	OtelServiceNamespace string `json:"otel_service_namespace"        env:"OTEL_SERVICE_NAMESPACE"`
@@ -46,7 +45,7 @@ var defaultSettings = Settings{
 	ListenHost: "0.0.0.0",
 	ListenPort: 8080,
 
-	SlackSocketModeEnabled: true,
+	SlackSocketDebug: false,
 
 	OtelServiceName:      "connector-slack",
 	OtelServiceNamespace: "fetch-api",

@@ -1,8 +1,7 @@
 package response
 
-type SlackDeliveryResponse struct {
+type NotificationStatus struct {
 	Success   bool   `json:"success"`
-	Message   string `json:"message,omitempty"`
 	Channel   string `json:"channel,omitempty"`
 	Timestamp string `json:"timestamp,omitempty"`
 }

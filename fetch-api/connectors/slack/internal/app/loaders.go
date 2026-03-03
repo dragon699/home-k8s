@@ -5,7 +5,6 @@ import (
 	"time"
 
 	docs "connector-slack/docs"
-	actions "connector-slack/internal/actions"
 	"connector-slack/internal/config"
 	"connector-slack/internal/health"
 	"connector-slack/internal/http/routes"
@@ -21,24 +20,23 @@ var scheduler = gocron.NewScheduler(time.UTC)
 var healthChecker = health.HealthChecker{
 	Scheduler: scheduler,
 }
-var actionsRunner = actions.Runner{}
-
-func LoadSlackClient() {
-	slack.Client = &slack.SlackClient{}
-	slack.Client.Init()
-}
 
 func LoadHealthChecker() {
 	healthChecker.CreateSchedule()
 	scheduler.StartAsync()
 }
 
-func LoadActionsRunner() {
-	actionsRunner.Start()
+func LoadSlackClient() {
+	slack.Client = &slack.SlackClient{}
+	slack.Client.Init()
 }
 
-func ShutdownActionsRunner() {
-	actionsRunner.Stop()
+func LoadSlackSocketMode() error {
+	if slack.Client == nil {
+		return fmt.Errorf("slack client is not initialized")
+	}
+
+	return slack.SocketMode.Start()
 }
 
 func LoadSwagger() fiber.Handler {
@@ -59,10 +57,15 @@ func LoadSwagger() fiber.Handler {
 func LoadRoutes(app fiber.Router) {
 	routes.Health(app)
 	routes.Ready(app)
-	routes.SlackGrafana(app)
-	routes.SlackDownloader(app)
+	routes.SendNotification(app)
+	routes.SendGrafanaAlertNotification(app)
+	routes.SendTorrentNotification(app)
 
 	swaggerHandler := LoadSwagger()
 	app.Get("/swagger/*", swaggerHandler)
 	app.Get("/docs", swagger.Handler("/swagger/doc.json"))
+}
+
+func UnloadSlackSocketMode() {
+	slack.SocketMode.Stop()
 }

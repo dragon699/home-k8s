@@ -56,9 +56,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/slack/downloader": {
+        "/notifications/connector-downloader/torrent": {
             "post": {
-                "description": "Accepts a downloader-originated Slack payload and posts it to Slack.",
+                "description": "Accepts a payload from connector-downloader and posts it to Slack as a message.",
                 "consumes": [
                     "application/json"
                 ],
@@ -68,15 +68,15 @@ const docTemplate = `{
                 "tags": [
                     "slack"
                 ],
-                "summary": "Forward a connector-downloader event payload to Slack",
+                "summary": "Forward a connector-downloader notification payload to send a Slack message",
                 "parameters": [
                     {
-                        "description": "Downloader Slack payload",
+                        "description": "Notification payload from connector-downloader",
                         "name": "request",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/connector-slack_internal_http_dto_request.DownloaderSlackPayload"
+                            "$ref": "#/definitions/connector-slack_internal_http_dto_request.TorrentNotificationPayload"
                         }
                     }
                 ],
@@ -84,7 +84,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/connector-slack_internal_http_dto_response.SlackDeliveryResponse"
+                            "$ref": "#/definitions/connector-slack_internal_http_dto_response.NotificationStatus"
                         }
                     },
                     "400": {
@@ -102,9 +102,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/slack/grafana": {
+        "/notifications/grafana/alerts": {
             "post": {
-                "description": "Accepts a Grafana Alerting webhook payload and posts it to Slack.",
+                "description": "Accepts a Grafana Alerting webhook payload and posts it to Slack as a message.",
                 "consumes": [
                     "application/json"
                 ],
@@ -114,15 +114,15 @@ const docTemplate = `{
                 "tags": [
                     "slack"
                 ],
-                "summary": "Forward a Grafana alert payload to Slack",
+                "summary": "Forward a Grafana alert payload to send a Slack message",
                 "parameters": [
                     {
-                        "description": "Grafana Slack payload",
+                        "description": "Webhook payload from Grafana Alerting",
                         "name": "request",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/connector-slack_internal_http_dto_request.GrafanaSlackPayload"
+                            "$ref": "#/definitions/connector-slack_internal_http_dto_request.GrafanaAlertNotificationPayload"
                         }
                     }
                 ],
@@ -130,7 +130,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/connector-slack_internal_http_dto_response.SlackDeliveryResponse"
+                            "$ref": "#/definitions/connector-slack_internal_http_dto_response.NotificationStatus"
                         }
                     },
                     "400": {
@@ -150,55 +150,130 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "connector-slack_internal_http_dto_request.DownloaderSlackPayload": {
+        "connector-slack_internal_http_dto_request.GrafanaAlertNotificationPayload": {
             "type": "object",
             "properties": {
-                "actions": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/connector-slack_internal_http_dto_request.SlackAction"
-                    }
-                },
-                "category": {
+                "notification_name": {
                     "type": "string"
                 },
+                "params": {
+                    "$ref": "#/definitions/notifications.GrafanaAlert"
+                }
+            }
+        },
+        "connector-slack_internal_http_dto_request.TorrentNotificationPayload": {
+            "type": "object",
+            "properties": {
+                "notification_name": {
+                    "type": "string"
+                },
+                "params": {
+                    "$ref": "#/definitions/notifications.Torrent"
+                }
+            }
+        },
+        "connector-slack_internal_http_dto_response.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                },
+                "upstream_response": {
+                    "type": "object",
+                    "additionalProperties": {}
+                }
+            }
+        },
+        "connector-slack_internal_http_dto_response.HealthResponse": {
+            "type": "object",
+            "properties": {
+                "connector_name": {
+                    "type": "string"
+                },
+                "health_last_check": {
+                    "type": "string"
+                },
+                "health_next_check": {
+                    "type": "string"
+                },
+                "healthy": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "connector-slack_internal_http_dto_response.NotificationStatus": {
+            "type": "object",
+            "properties": {
                 "channel": {
                     "type": "string"
                 },
-                "event": {
-                    "type": "string"
+                "success": {
+                    "type": "boolean"
                 },
-                "fields": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/connector-slack_internal_http_dto_request.SlackField"
-                    }
-                },
-                "hash": {
-                    "type": "string"
-                },
-                "message": {
-                    "type": "string"
-                },
-                "metadata": {
-                    "type": "object",
-                    "additionalProperties": {}
-                },
-                "severity": {
-                    "type": "string"
-                },
-                "tags": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "title": {
+                "timestamp": {
                     "type": "string"
                 }
             }
         },
-        "connector-slack_internal_http_dto_request.GrafanaAlert": {
+        "connector-slack_internal_http_dto_response.ReadyResponse": {
+            "type": "object",
+            "properties": {
+                "ready": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "notifications.GrafanaAlert": {
+            "type": "object",
+            "properties": {
+                "alerts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/notifications.GrafanaAlertItem"
+                    }
+                },
+                "commonAnnotations": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "commonLabels": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "externalURL": {
+                    "type": "string"
+                },
+                "groupKey": {
+                    "type": "string"
+                },
+                "groupLabels": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "orgId": {
+                    "type": "integer"
+                },
+                "receiver": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "truncatedAlerts": {
+                    "type": "integer"
+                },
+                "version": {
+                    "type": "string"
+                }
+            }
+        },
+        "notifications.GrafanaAlertItem": {
             "type": "object",
             "properties": {
                 "annotations": {
@@ -240,161 +315,25 @@ const docTemplate = `{
                 "status": {
                     "type": "string"
                 },
-                "valueString": {
-                    "type": "string"
-                },
                 "values": {
                     "type": "object",
                     "additionalProperties": {}
                 }
             }
         },
-        "connector-slack_internal_http_dto_request.GrafanaSlackPayload": {
+        "notifications.Torrent": {
             "type": "object",
             "properties": {
-                "alerts": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/connector-slack_internal_http_dto_request.GrafanaAlert"
-                    }
-                },
-                "channel": {
+                "category": {
                     "type": "string"
                 },
-                "commonAnnotations": {
-                    "type": "object",
-                    "additionalProperties": {
-                        "type": "string"
-                    }
-                },
-                "commonLabels": {
-                    "type": "object",
-                    "additionalProperties": {
-                        "type": "string"
-                    }
-                },
-                "externalURL": {
+                "jellyfin_url": {
                     "type": "string"
                 },
-                "groupKey": {
+                "name": {
                     "type": "string"
                 },
-                "groupLabels": {
-                    "type": "object",
-                    "additionalProperties": {
-                        "type": "string"
-                    }
-                },
-                "message": {
-                    "type": "string"
-                },
-                "orgId": {
-                    "type": "integer"
-                },
-                "receiver": {
-                    "type": "string"
-                },
-                "state": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "string"
-                },
-                "title": {
-                    "type": "string"
-                },
-                "truncatedAlerts": {
-                    "type": "integer"
-                },
-                "version": {
-                    "type": "string"
-                }
-            }
-        },
-        "connector-slack_internal_http_dto_request.SlackAction": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "string"
-                },
-                "label": {
-                    "type": "string"
-                },
-                "style": {
-                    "type": "string"
-                },
-                "url": {
-                    "type": "string"
-                },
-                "value": {
-                    "type": "string"
-                }
-            }
-        },
-        "connector-slack_internal_http_dto_request.SlackField": {
-            "type": "object",
-            "properties": {
-                "short": {
-                    "type": "boolean"
-                },
-                "title": {
-                    "type": "string"
-                },
-                "value": {
-                    "type": "string"
-                }
-            }
-        },
-        "connector-slack_internal_http_dto_response.ErrorResponse": {
-            "type": "object",
-            "properties": {
-                "error": {
-                    "type": "string"
-                },
-                "upstream_response": {
-                    "type": "object",
-                    "additionalProperties": {}
-                }
-            }
-        },
-        "connector-slack_internal_http_dto_response.HealthResponse": {
-            "type": "object",
-            "properties": {
-                "connector_name": {
-                    "type": "string"
-                },
-                "health_last_check": {
-                    "type": "string"
-                },
-                "health_next_check": {
-                    "type": "string"
-                },
-                "healthy": {
-                    "type": "boolean"
-                }
-            }
-        },
-        "connector-slack_internal_http_dto_response.ReadyResponse": {
-            "type": "object",
-            "properties": {
-                "ready": {
-                    "type": "boolean"
-                }
-            }
-        },
-        "connector-slack_internal_http_dto_response.SlackDeliveryResponse": {
-            "type": "object",
-            "properties": {
-                "channel": {
-                    "type": "string"
-                },
-                "message": {
-                    "type": "string"
-                },
-                "success": {
-                    "type": "boolean"
-                },
-                "timestamp": {
+                "qbittorrent_url": {
                     "type": "string"
                 }
             }

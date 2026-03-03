@@ -1,7 +1,8 @@
 {
-  "channel": "{{ .Channel }}",
+  "channel": {{ json .Channel }},
+  "username": "connector-downloader",
+  "icon_url": "https://i.imgur.com/wWCcoW6.png",
   "text": "{{ if .Title }}{{ .Title }}{{ else }}Downloader event: {{ .Event }}{{ end }}",
-  "unfurl_links": false,
   "blocks": [
     {
       "type": "header",

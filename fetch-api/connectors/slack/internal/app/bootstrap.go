@@ -1,7 +1,7 @@
 // connector-slack bootstrap
 //
 // @title           Slack Connector
-// @description     A connector that accepts payloads and forwards them to Slack channels.
+// @description     A connector that sends notification messages in Slack channels.
 // @BasePath        /
 // @produce         json
 package app
@@ -35,7 +35,11 @@ func Run() error {
 	LoadSlackClient()
 	LoadHealthChecker()
 	LoadRoutes(app)
-	LoadActionsRunner()
+
+	if err := LoadSlackSocketMode(); err != nil {
+		t.Log.Error("Failed to initialize Slack socket mode", "error", err.Error())
+		return err
+	}
 
 	t.Log.Info("Starting Fiber..",
 		"host", config.Config.ListenHost,
@@ -54,7 +58,7 @@ func Run() error {
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
-	ShutdownActionsRunner()
+	UnloadSlackSocketMode()
 
 	if err := app.Shutdown(); err != nil {
 		t.Log.Error("Failed to shutdown server", "error", err.Error())

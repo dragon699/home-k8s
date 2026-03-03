@@ -11,7 +11,7 @@ import (
 	"connector-slack/internal/config"
 )
 
-//go:embed templates/*.tpl
+//go:embed templates/*/*.tpl
 var templateFiles embed.FS
 
 func RenderTemplate(templateName string, templateVars any) (map[string]any, error) {
@@ -19,7 +19,7 @@ func RenderTemplate(templateName string, templateVars any) (map[string]any, erro
 	tplBytes, err := templateFiles.ReadFile(tplPath)
 
 	if err != nil {
-		return nil, fmt.Errorf("[%s] Invalid template file: %s", err, tplPath)
+		return nil, fmt.Errorf("[%s] Invalid or missing template file: %s", err, tplPath)
 	}
 
 	tplContent, err := renderTemplateContent(tplPath, string(tplBytes), templateVars)
@@ -60,31 +60,6 @@ func templateJSON(value any) string {
 	}
 
 	return string(body)
-}
-
-type SendResult struct {
-	Channel   string
-	Timestamp string
-}
-
-func resolveChannel(templateName string, body map[string]any, client *SlackClient) string {
-	if channel, ok := body["channel"].(string); ok && channel != "" {
-		return channel
-	}
-
-	switch templateName {
-	case "grafana_alert":
-		if client.GrafanaChannel != "" {
-			return client.GrafanaChannel
-		}
-
-	case "downloader_event":
-		if client.DownloaderChannel != "" {
-			return client.DownloaderChannel
-		}
-	}
-
-	return client.DefaultChannel
 }
 
 func wrapReqError(message string, err error) error {

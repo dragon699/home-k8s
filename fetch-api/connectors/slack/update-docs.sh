@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-export DIR="./internal,./cmd/connector-slack"
+export DIR="./internal,./cmd/slack"
 export GENERAL_INFO="./app/bootstrap.go"
 export OUTPUT_DIR="./docs"
 

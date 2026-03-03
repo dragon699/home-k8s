@@ -1,7 +1,8 @@
 {
   "channel": {{ json .Channel }},
+  "username": "Alerts",
+  "icon_url": "https://cdn.iconscout.com/icon/free/png-512/free-grafana-logo-icon-svg-download-png-2944910.png?f=webp&w=512",
   "text": {{ json (or .Title (or .Message (printf "Grafana alert: %s" (or .Status "unknown")))) }},
-  "unfurl_links": false,
   "blocks": [
     {
       "type": "header",
