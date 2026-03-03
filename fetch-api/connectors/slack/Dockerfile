@@ -16,8 +16,8 @@ COPY connectors/slack /app/connectors/slack
 RUN CGO_ENABLED=0 \
     GOOS=linux \
     go build \
-    -o /app/bin/connector-slack \
-    ./cmd/connector-slack
+    -o /app/bin/slack \
+    ./cmd/slack
 
 
 
@@ -25,7 +25,7 @@ FROM alpine:latest
 
 WORKDIR /app
 
-COPY --from=builder /app/bin/connector-slack /app/connector-slack
+COPY --from=builder /app/bin/slack /app/slack
 COPY --from=builder /app/connectors/slack/VERSION /app/VERSION
 
-CMD ["/app/connector-slack"]
+CMD ["/app/slack"]
