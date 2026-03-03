@@ -1,50 +1,118 @@
+{{- $slackChannel := "C0AJMC5RMLH" -}}
+{{- $slackAsUser := "Alerts" -}}
+{{- $slackAsUserIcon := "https://cdn.iconscout.com/icon/free/png-512/free-grafana-logo-icon-svg-download-png-2944910.png?f=webp&w=512" -}}
+
+{{- $status := "Firing" -}}
+{{- $titleIcon := ":grafana_alert:" -}}
+{{- if eq .Status "resolved" -}}
+  {{- $status = "Recovered" -}}
+  {{- $titleIcon = ":grafana_alert_resolved:" -}}
+{{- end -}}
+{{- $titleText := or (index .Annotations "summary") (index .Labels "alertname") -}}
+{{- $title := printf "%s  %s > %s" $titleIcon $status $titleText -}}
+
+{{- $description := or (index .Annotations "description") "" -}}
+
+{{- $footer := printf "Detected %s" (beautifyTime .StartsAt) -}}
+{{- if not (hasPrefix .EndsAt "0001") -}}
+  {{- $footer = printf "%s\nRecovered %s" $footer (beautifyTime .EndsAt) -}}
+{{- end -}}
+
+{{- $dashboardURL := or .PanelURL .DashboardURL -}}
+
+
 {
-  "channel": {{ json .Channel }},
-  "username": "Alerts",
-  "icon_url": "https://cdn.iconscout.com/icon/free/png-512/free-grafana-logo-icon-svg-download-png-2944910.png?f=webp&w=512",
-  "text": {{ json (or .Title (or .Message (printf "Grafana alert: %s" (or .Status "unknown")))) }},
+  "channel": {{ json $slackChannel }},
+  "username": {{ json $slackAsUser }},
+  "icon_url": {{ json $slackAsUserIcon }},
+  "text": {{ json $title }},
   "blocks": [
-    {
-      "type": "header",
-      "text": {
-        "type": "plain_text",
-        "text": {{ json (or .Title (printf "Grafana alert: %s" (or .Status "unknown"))) }}
-      }
-    },
-    {
-      "type": "section",
-      "fields": [
-        {
-          "type": "mrkdwn",
-          "text": {{ json (printf "*Status*\n%s" (or .Status "unknown")) }}
-        },
-        {
-          "type": "mrkdwn",
-          "text": {{ json (printf "*Receiver*\n%s" (or .Receiver "n/a")) }}
-        }
-      ]
-    },
-    {
-      "type": "section",
-      "text": {
-        "type": "mrkdwn",
-        "text": {{ json (or .Message (or .CommonAnnotations.summary "No summary provided.")) }}
-      }
-    }
-    {{- if .ExternalURL }},
-    {
-      "type": "actions",
-      "elements": [
-        {
-          "type": "button",
-          "text": {
-          "type": "plain_text",
-          "text": "Open Grafana"
-          },
-          "url": {{ json .ExternalURL }}
-        }
-      ]
-    }
-    {{- end }}
-  ]
+		{
+			"type": "section",
+			"text": {
+				"type": "mrkdwn",
+				"text": {{ json $title }}
+			}
+		},
+		{{- if $description -}}
+		{
+			"type": "section",
+			"text": {
+				"type": "mrkdwn",
+				"text": {{ json $description }}
+			}
+		},
+		{{- end -}}
+		{
+			"type": "section",
+			"fields": [
+				{
+					"type": "mrkdwn",
+					"text": {{ json (printf "*Status*\n%s" $status) }}
+				}
+				{{- range $key, $value := .Labels }}
+				{{- if ne $key "alertname" }},
+				{
+					"type": "mrkdwn",
+					"text": {{ json (printf "*%s*\n%s" $key $value) }}
+				}
+				{{- end }}
+				{{- end }}
+				{{- range $key, $value := .Annotations }}
+				{{- if and (ne $key "summary") (ne $key "description") }},
+				{
+					"type": "mrkdwn",
+					"text": {{ json (printf "*%s*\n%s" $key $value) }}
+				}
+				{{- end }}
+				{{- end }}
+			]
+		},
+		{
+			"type": "context",
+			"elements": [
+				{
+					"type": "mrkdwn",
+					"text": {{ json $footer }}
+				}
+			]
+		},
+		{
+			"type": "actions",
+			"elements": [
+				{
+					"type": "button",
+					"text": {
+						"type": "plain_text",
+						"text": "☉ Investigate"
+					},
+					"action_id": "grafana_alert_button_investigate"
+				},
+				{
+					"type": "button",
+					"text": {
+						"type": "plain_text",
+						"text": "⇲  Values"
+					},
+					"action_id": "grafana_alert_button_values"
+				}
+			]
+		}
+		{{- if $dashboardURL -}},
+		{
+			"type": "actions",
+			"elements": [
+				{
+					"type": "button",
+					"text": {
+						"type": "plain_text",
+						"text": "⚎  Open dashboard"
+					},
+					"url": {{ json $dashboardURL }},
+					"action_id": "grafana_alert_button_open_dashboard"
+				}
+			]
+		}
+		{{- end }}
+	]
 }

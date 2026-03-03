@@ -49,10 +49,11 @@ func (instance *SlackClient) Ping() error {
 	return nil
 }
 
-func (instance *SlackClient) SendMsg(channelID string, blocks []map[string]any, options ...slackapi.MsgOption) (*Response, error) {
+func (instance *SlackClient) SendMsg(channelID string, blocks []map[string]any, attachments []map[string]any, options ...slackapi.MsgOption) (*Response, error) {
 	opts := append(
 		[]slackapi.MsgOption{
 			slackapi.MsgOptionBlocks(toBlockSet(blocks)...),
+			slackapi.MsgOptionAttachments(toAttachmentSet(attachments)...),
 		},
 		options...,
 	)
@@ -92,6 +93,7 @@ func (instance *SlackClient) SendMsgFromTemplate(templateName string, templateVa
 	opts := []slackapi.MsgOption{
 		slackapi.MsgOptionText(msg.Text, false),
 		slackapi.MsgOptionBlocks(toBlockSet(msg.Blocks)...),
+		slackapi.MsgOptionAttachments(toAttachmentSet(msg.Attachments)...),
 	}
 
 	if msg.Username != "" {

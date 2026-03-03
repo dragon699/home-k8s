@@ -7,11 +7,12 @@ import (
 )
 
 type Message struct {
-	Channel  string           `json:"channel"`
-	Username string           `json:"username,omitempty"`
-	IconURL  string           `json:"icon_url,omitempty"`
-	Text     string           `json:"text,omitempty"`
-	Blocks   []map[string]any `json:"blocks,omitempty"`
+	Channel     string           `json:"channel"`
+	Username    string           `json:"username,omitempty"`
+	IconURL     string           `json:"icon_url,omitempty"`
+	Text        string           `json:"text,omitempty"`
+	Blocks      []map[string]any `json:"blocks,omitempty"`
+	Attachments []map[string]any `json:"attachments,omitempty"`
 }
 
 type Response struct {
@@ -48,4 +49,16 @@ func toBlockSet(blocks []map[string]any) []slackapi.Block {
 		blockSet[i] = rawBlock{data: b}
 	}
 	return blockSet
+}
+
+func toAttachmentSet(attachments []map[string]any) []slackapi.Attachment {
+	result := make([]slackapi.Attachment, 0, len(attachments))
+	for _, a := range attachments {
+		b, _ := json.Marshal(a)
+		var att slackapi.Attachment
+		if err := json.Unmarshal(b, &att); err == nil {
+			result = append(result, att)
+		}
+	}
+	return result
 }

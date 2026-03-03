@@ -1,5 +1,5 @@
 {
-  "channel": {{ json .Channel }},
+  "channel": "C0AJ52LCFNZ",
   "username": "connector-downloader",
   "icon_url": "https://i.imgur.com/wWCcoW6.png",
   "text": "{{ if .Title }}{{ .Title }}{{ else }}Downloader event: {{ .Event }}{{ end }}",

@@ -117,6 +117,15 @@ func TimeFromUnix(unixTime int64) string {
 	)
 }
 
+func TimeFromSlack(stringTime string) string {
+	t, err := time.Parse(time.RFC3339Nano, stringTime)
+
+	if err != nil {
+		return stringTime
+	}
+	return fmt.Sprintf("on *%02d/%02d* at *%02d:%02d*", t.Day(), t.Month(), t.Hour(), t.Minute())
+}
+
 func BytesToMegabytes(bytes int64) int64 {
 	return bytes / (1024 * 1024)
 }

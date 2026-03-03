@@ -20,7 +20,7 @@ const notificationsRouterName = "/notifications"
 // @Success      200      {object}  response.NotificationStatus
 // @Failure      400      {object}  response.ErrorResponse
 // @Failure      500      {object}  response.ErrorResponse
-// @Router       /notifications/send [post]
+// @Router       /notifications [post]
 func SendNotification(router fiber.Router) {
 	api := router.Group(notificationsRouterName)
 	api.Post("/", handlers.SendNotification)

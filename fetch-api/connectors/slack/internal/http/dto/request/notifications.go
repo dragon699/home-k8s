@@ -5,9 +5,10 @@ import (
 )
 
 type NotificationPayload struct {
-	ChannelID string                     `json:"channel_id"`
-	Blocks    []map[string]any           `json:"blocks,omitempty"`
-	Options   NotificationOptionsPayload `json:"options"`
+	ChannelID   string                     `json:"channel_id"`
+	Blocks      []map[string]any           `json:"blocks,omitempty"`
+	Attachments []map[string]any           `json:"attachments,omitempty"`
+	Options     NotificationOptionsPayload `json:"options"`
 }
 
 type NotificationOptionsPayload struct {

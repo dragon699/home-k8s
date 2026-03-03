@@ -24,10 +24,18 @@ func SendNotification(ctx *fiber.Ctx) error {
 		)
 	}
 
-	if len(reqPayload.Blocks) == 0 {
+	if reqPayload.ChannelID == "" {
 		return ctx.Status(400).JSON(
 			response.ErrorResponse{
-				Error: "Got 0 blocks in payload, at least 1 is required",
+				Error: "channel_id is required",
+			},
+		)
+	}
+
+	if len(reqPayload.Blocks) == 0 && len(reqPayload.Attachments) == 0 {
+		return ctx.Status(400).JSON(
+			response.ErrorResponse{
+				Error: "At least one block or attachment is required in blocks or attachments",
 			},
 		)
 	}
@@ -38,7 +46,7 @@ func SendNotification(ctx *fiber.Ctx) error {
 		slackapi.MsgOptionText(reqPayload.Options.ExtraText, false),
 	}
 
-	result, err := slack.Client.SendMsg(reqPayload.ChannelID, reqPayload.Blocks, options...)
+	result, err := slack.Client.SendMsg(reqPayload.ChannelID, reqPayload.Blocks, reqPayload.Attachments, options...)
 
 	if err != nil {
 		var clientErr *config.ClientError
@@ -88,31 +96,31 @@ func SendGrafanaAlertNotification(ctx *fiber.Ctx) error {
 
 	fmt.Println(reqPayload)
 
-	result, err := slack.Client.SendMsgFromTemplate("grafana/alert", reqPayload)
+	for _, alert := range reqPayload.Alerts {
+		_, err := slack.Client.SendMsgFromTemplate("grafana/alert", alert)
 
-	if err != nil {
-		var clientErr *config.ClientError
-		if errors.As(err, &clientErr) {
-			return ctx.Status(502).JSON(
+		if err != nil {
+			var clientErr *config.ClientError
+			if errors.As(err, &clientErr) {
+				return ctx.Status(502).JSON(
+					response.ErrorResponse{
+						Error:            err.Error(),
+						UpstreamResponse: clientErr.UpstreamResponse(),
+					},
+				)
+			}
+
+			return ctx.Status(500).JSON(
 				response.ErrorResponse{
-					Error:            err.Error(),
-					UpstreamResponse: clientErr.UpstreamResponse(),
+					Error: err.Error(),
 				},
 			)
 		}
-
-		return ctx.Status(500).JSON(
-			response.ErrorResponse{
-				Error: err.Error(),
-			},
-		)
 	}
 
 	return ctx.JSON(
 		response.NotificationStatus{
-			Success:   true,
-			Channel:   result.Channel,
-			Timestamp: result.Timestamp,
+			Success: true,
 		},
 	)
 }
