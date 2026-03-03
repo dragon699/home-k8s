@@ -21,8 +21,7 @@
 {{- end -}}
 
 {{- $dashboardURL := or .PanelURL .DashboardURL -}}
-
-{{- $screenshotURL := .ImageURL --}}
+{{- $screenshotURL := .ImageURL -}}
 
 
 {
