@@ -9,7 +9,7 @@
   {{- $titleIcon = ":grafana_alert_recovered:" -}}
 {{- end -}}
 {{- $titleText := or (index .Annotations "summary") (index .Labels "alertname") -}}
-{{- $title := printf "%s  %s > %s" $titleIcon $status $titleText -}}
+{{- $title := printf "%s *%s* > %s" $titleIcon $status $titleText -}}
 
 {{- $description := or (index .Annotations "description") "" -}}
 
