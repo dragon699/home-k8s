@@ -32,9 +32,8 @@ func LoadSlackClient() {
 }
 
 func LoadSlackSocketMode() error {
-	if slack.Client == nil {
-		return fmt.Errorf("slack client is not initialized")
-	}
+	slack.SocketMode = &slack.SlackSocketMode{}
+	slack.SocketMode.Init()
 
 	return slack.SocketMode.Start()
 }
