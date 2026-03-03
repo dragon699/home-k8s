@@ -7,7 +7,7 @@ require (
 	github.com/go-co-op/gocron v1.37.0
 	github.com/gofiber/contrib/otelfiber/v2 v2.2.3
 	github.com/gofiber/fiber/v2 v2.52.10
-	github.com/slack-go/slack v0.17.3
+	github.com/slack-go/slack v0.18.0
 	github.com/swaggo/fiber-swagger v1.3.0
 	github.com/swaggo/swag v1.16.4
 	go.opentelemetry.io/otel/trace v1.39.0

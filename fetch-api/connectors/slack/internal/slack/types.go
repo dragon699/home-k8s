@@ -15,7 +15,7 @@ type Message struct {
 	Attachments []map[string]any `json:"attachments,omitempty"`
 }
 
-type Response struct {
+type MessageResponse struct {
 	OK        bool
 	Channel   string
 	Timestamp string

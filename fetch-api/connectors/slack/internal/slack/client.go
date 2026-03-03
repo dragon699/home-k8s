@@ -1,10 +1,12 @@
 package slack
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
 
+	"common/utils"
 	"connector-slack/internal/config"
 
 	slackapi "github.com/slack-go/slack"
@@ -49,7 +51,7 @@ func (instance *SlackClient) Ping() error {
 	return nil
 }
 
-func (instance *SlackClient) SendMsg(channelID string, blocks []map[string]any, attachments []map[string]any, options ...slackapi.MsgOption) (*Response, error) {
+func (instance *SlackClient) SendMsg(channelID string, blocks []map[string]any, attachments []map[string]any, options ...slackapi.MsgOption) (*MessageResponse, error) {
 	opts := append(
 		[]slackapi.MsgOption{
 			slackapi.MsgOptionBlocks(toBlockSet(blocks)...),
@@ -68,13 +70,13 @@ func (instance *SlackClient) SendMsg(channelID string, blocks []map[string]any, 
 		)
 	}
 
-	return &Response{
+	return &MessageResponse{
 		Channel:   ch,
 		Timestamp: ts,
 	}, nil
 }
 
-func (instance *SlackClient) SendMsgFromTemplate(templateName string, templateVars any) (*Response, error) {
+func (instance *SlackClient) SendMsgFromTemplate(templateName string, templateVars any) (*MessageResponse, error) {
 	raw, err := RenderTemplate(templateName, templateVars)
 	if err != nil {
 		return nil, fmt.Errorf("failed to render notification template %q: %w", templateName, err)
@@ -114,8 +116,34 @@ func (instance *SlackClient) SendMsgFromTemplate(templateName string, templateVa
 		)
 	}
 
-	return &Response{
+	return &MessageResponse{
 		Channel:   ch,
 		Timestamp: ts,
 	}, nil
+}
+
+func (instance *SlackClient) UploadImage(url string) (string, error) {
+	httpClient := utils.Req{}
+
+	srcImageResult, err := httpClient.GET(url, nil, nil)
+	if err != nil {
+		return "", fmt.Errorf("failed to fetch image from %q: %w", url, err)
+	}
+
+	imagebytes := srcImageResult.Bytes
+
+	destImageResult, err := instance.Client.UploadFile(slackapi.UploadFileParameters{
+		Filename: "screenshot.png",
+		Reader:   bytes.NewReader(imagebytes),
+	})
+	if err != nil {
+		return "", fmt.Errorf("failed to upload image to Slack: %w", err)
+	}
+
+	destImageInfo, _, _, err := instance.Client.GetFileInfo(destImageResult.ID, 0, 0)
+	if err != nil {
+		return "", fmt.Errorf("failed to get metadata from Slack for uploaded image: %w", err)
+	}
+
+	return destImageInfo.URLPrivate, nil
 }

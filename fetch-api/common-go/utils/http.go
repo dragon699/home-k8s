@@ -17,6 +17,7 @@ type Req struct {
 type Response struct {
 	StatusCode int
 	Body       any
+	Bytes      []byte
 }
 
 type ClientError struct {
@@ -196,6 +197,7 @@ func (r *Req) GET(url string, headers map[string]string, params map[string]any) 
 	return &Response{
 		StatusCode: resp.StatusCode,
 		Body:       parsedBody,
+		Bytes:      respBody,
 	}, nil
 }
 

@@ -97,6 +97,19 @@ func SendGrafanaAlertNotification(ctx *fiber.Ctx) error {
 	fmt.Println(reqPayload)
 
 	for _, alert := range reqPayload.Alerts {
+		if alert.ImageURL != "" {
+			ImageSlackURL, err := slack.Client.UploadImage(alert.ImageURL)
+			if err != nil {
+				return ctx.Status(500).JSON(
+					response.ErrorResponse{
+						Error: fmt.Sprintf("failed to upload image for alert: %v", err),
+					},
+				)
+			}
+
+			alert.ImageURL = ImageSlackURL
+		}
+
 		_, err := slack.Client.SendMsgFromTemplate("grafana/alert", alert)
 
 		if err != nil {

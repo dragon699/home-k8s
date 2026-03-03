@@ -110,18 +110,13 @@
 					"action_id": "grafana_alert_button_view_in_dashboard"
 				}
 				{{- end }}
-				{{- if $screenshotURL -}},
-				{
-					"type": "button",
-					"text": {
-						"type": "plain_text",
-						"text": "🖼  View screenshot"
-					},
-					"url": {{ json $screenshotURL }},
-					"action_id": "grafana_alert_button_view_screenshot"
-				}
-				{{- end }}
 			]
+		}
+		{{- if $screenshotURL -}}
+		{
+			"type": "image",
+			"image_url": {{ json $screenshotURL }},
+			"alt_text": "From the dashboard"
 		}
 	]
 }
