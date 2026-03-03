@@ -86,6 +86,8 @@ func SendGrafanaAlertNotification(ctx *fiber.Ctx) error {
 		)
 	}
 
+	fmt.Println(reqPayload)
+
 	result, err := slack.Client.SendMsgFromTemplate("grafana/alert", reqPayload)
 
 	if err != nil {
@@ -125,8 +127,6 @@ func SendTorrentNotification(ctx *fiber.Ctx) error {
 			},
 		)
 	}
-
-	fmt.Println(reqPayload)
 
 	result, err := slack.Client.SendMsgFromTemplate("connector-downloader/torrent", reqPayload)
 
