@@ -16,10 +16,6 @@ persistence:
 
 imageRenderer:
   enabled: true
-  image:
-    repository: grafana/grafana-image-renderer
-    # There's a bug causing Internal 500 error with later versions of image-renderer;
-    tag: 3.11.0
 
 envFromSecrets:
 - name: data-postgresql-shared-monitoring-grafana
