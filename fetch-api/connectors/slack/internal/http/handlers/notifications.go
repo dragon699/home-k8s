@@ -77,7 +77,7 @@ func SendGrafanaAlertNotification(ctx *fiber.Ctx) error {
 		)
 	}
 
-	if len(reqPayload.Params.Alerts) == 0 {
+	if len(reqPayload.Alerts) == 0 {
 		return ctx.Status(400).JSON(
 			response.ErrorResponse{
 				Error: "Got 0 alerts in payload, at least 1 is required",

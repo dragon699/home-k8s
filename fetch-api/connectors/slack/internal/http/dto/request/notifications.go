@@ -16,9 +16,5 @@ type NotificationOptionsPayload struct {
 	ExtraText string `json:"extra_text,omitempty"`
 }
 
-type TemplatedNotificationPayload[TemplateParams any] struct {
-	Params           TemplateParams `json:"params"`
-}
-
-type GrafanaAlertNotificationPayload = TemplatedNotificationPayload[notifications.GrafanaAlert]
-type TorrentNotificationPayload = TemplatedNotificationPayload[notifications.Torrent]
+type GrafanaAlertNotificationPayload = notifications.GrafanaAlert
+type TorrentNotificationPayload = notifications.Torrent
