@@ -117,12 +117,20 @@ func TimeFromUnix(unixTime int64) string {
 	)
 }
 
-func TimeFromSlack(stringTime string) string {
+func TimeFromGrafana(stringTime string) string {
 	t, err := time.Parse(time.RFC3339Nano, stringTime)
 
 	if err != nil {
 		return stringTime
 	}
+
+	loc, err := time.LoadLocation("Europe/Sofia")
+
+	if err != nil {
+		loc = time.UTC
+	}
+
+	t.In(loc)
 	return fmt.Sprintf("on *%02d/%02d* at *%02d:%02d*", t.Day(), t.Month(), t.Hour(), t.Minute())
 }
 

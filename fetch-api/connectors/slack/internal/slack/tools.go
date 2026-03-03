@@ -40,10 +40,11 @@ func RenderTemplate(templateName string, templateVars any) (map[string]any, erro
 func renderTemplateContent(templateName string, templateContent string, vars any) (string, error) {
 	tpl, err := template.New(templateName).Funcs(template.FuncMap{
 		"json":         templateJSON,
-		"beautifyTime": utils.TimeFromSlack,
+		"beautifyTime": utils.TimeFromGrafana,
 		"hasPrefix":    strings.HasPrefix,
 		"contains":     strings.Contains,
 		"capitalize":   utils.CapitalizeString,
+		"toUpper":      strings.ToUpper,
 	}).Parse(templateContent)
 
 	if err != nil {

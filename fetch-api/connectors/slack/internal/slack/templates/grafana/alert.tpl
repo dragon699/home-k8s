@@ -1,16 +1,18 @@
 {{- $slackChannel := "C0AJMC5RMLH" -}}
-{{- $slackAsUser := "Alerts" -}}
+{{- $slackAsUser := "Grafana" -}}
 {{- $slackAsUserIcon := "https://cdn.iconscout.com/icon/free/png-512/free-grafana-logo-icon-svg-download-png-2944910.png?f=webp&w=512" -}}
 
 {{- $status := "Firing" -}}
+
 {{- $titleIcon := ":grafana_alert:" -}}
 {{- if eq .Status "resolved" -}}
   {{- $status = "Recovered" -}}
   {{- $titleIcon = ":grafana_alert_recovered:" -}}
 {{- end -}}
 {{- $titleText := or (index .Annotations "summary") (index .Labels "alertname") -}}
-{{- $title := printf "%s *%s* > %s" $titleIcon $status $titleText -}}
 
+{{- $notification := printf "%s > %s" (toUpper $status) $titleText -}}
+{{- $title := printf "%s *%s* > %s" $titleIcon $status $titleText -}}
 {{- $description := or (index .Annotations "description") "" -}}
 
 {{- $footer := printf "Detected %s" (beautifyTime .StartsAt) -}}
@@ -25,7 +27,7 @@
   "channel": {{ json $slackChannel }},
   "username": {{ json $slackAsUser }},
   "icon_url": {{ json $slackAsUserIcon }},
-  "text": {{ json $title }},
+  "text": {{ json $titleText }},
   "blocks": [
 		{
 			"type": "section",
