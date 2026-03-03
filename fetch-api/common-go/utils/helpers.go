@@ -167,6 +167,14 @@ func SecondsToMinutes(seconds int64) int64 {
 	return seconds / 60
 }
 
+func CapitalizeString(text string) string {
+	if text == "" {
+		return text
+	}
+
+	return strings.ToUpper(text[:1]) + strings.ToLower(text[1:])
+}
+
 var seasonEpisodeRe = regexp.MustCompile(`(?i)\b(?:S(?:eason)?\s*(\d{1,2})\s*(?:E(?:pisode)?\s*(\d{1,2}))|E(?:pisode)?\s*(\d{1,2})\s*S(?:eason)?\s*(\d{1,2}))\b`)
 var seasonOnlyRe = regexp.MustCompile(`(?i)\bS(?:eason)?\s*(\d{1,2})\b`)
 var episodeOnlyRe = regexp.MustCompile(`(?i)\bE(?:pisode)?\s*(\d{1,2})\b`)

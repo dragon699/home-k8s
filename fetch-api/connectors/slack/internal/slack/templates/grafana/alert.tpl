@@ -51,10 +51,10 @@
 					"text": {{ json (printf "*Status*\n%s" $status) }}
 				}
 				{{- range $key, $value := .Labels }}
-				{{- if ne $key "alertname" }},
+				{{- if and (ne $key "alertname") (ne $key "grafana_folder") }},
 				{
 					"type": "mrkdwn",
-					"text": {{ json (printf "*%s*\n%s" $key $value) }}
+					"text": {{ json (printf "*%s*\n%s" (capitalize $key) $value) }}
 				}
 				{{- end }}
 				{{- end }}
@@ -62,7 +62,7 @@
 				{{- if and (ne $key "summary") (ne $key "description") }},
 				{
 					"type": "mrkdwn",
-					"text": {{ json (printf "*%s*\n%s" $key $value) }}
+					"text": {{ json (printf "*%s*\n%s" (capitalize $key) $value) }}
 				}
 				{{- end }}
 				{{- end }}
@@ -96,23 +96,18 @@
 					},
 					"action_id": "grafana_alert_button_values"
 				}
-			]
-		}
-		{{- if $dashboardURL -}},
-		{
-			"type": "actions",
-			"elements": [
+				{{- if $dashboardURL -}},
 				{
 					"type": "button",
 					"text": {
 						"type": "plain_text",
-						"text": "⚎  Open dashboard"
+						"text": "⚎  View in dashboard"
 					},
 					"url": {{ json $dashboardURL }},
-					"action_id": "grafana_alert_button_open_dashboard"
+					"action_id": "grafana_alert_button_view_in_dashboard"
 				}
+				{{- end }}
 			]
 		}
-		{{- end }}
 	]
 }

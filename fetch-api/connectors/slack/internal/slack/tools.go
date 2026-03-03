@@ -43,6 +43,7 @@ func renderTemplateContent(templateName string, templateContent string, vars any
 		"beautifyTime": utils.TimeFromSlack,
 		"hasPrefix":    strings.HasPrefix,
 		"contains":     strings.Contains,
+		"capitalize":   utils.CapitalizeString,
 	}).Parse(templateContent)
 
 	if err != nil {
