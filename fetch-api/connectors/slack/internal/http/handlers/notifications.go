@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"errors"
+	"fmt"
 
 	"connector-slack/internal/config"
 	"connector-slack/internal/http/dto/request"
@@ -124,6 +125,8 @@ func SendTorrentNotification(ctx *fiber.Ctx) error {
 			},
 		)
 	}
+
+	fmt.Println(reqPayload)
 
 	result, err := slack.Client.SendMsgFromTemplate("connector-downloader/torrent", reqPayload)
 

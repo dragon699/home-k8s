@@ -66,7 +66,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "slack"
+                    "notifications"
                 ],
                 "summary": "Forward a connector-downloader notification payload to send a Slack message",
                 "parameters": [
@@ -112,7 +112,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "slack"
+                    "notifications"
                 ],
                 "summary": "Forward a Grafana alert payload to send a Slack message",
                 "parameters": [
@@ -147,28 +147,151 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/notifications/send": {
+            "post": {
+                "description": "Send a custom notification to Slack with specified options.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "notifications"
+                ],
+                "summary": "Send a custom notification to Slack",
+                "parameters": [
+                    {
+                        "description": "Custom notification payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/connector-slack_internal_http_dto_request.NotificationPayload"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/connector-slack_internal_http_dto_response.NotificationStatus"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/connector-slack_internal_http_dto_response.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/connector-slack_internal_http_dto_response.ErrorResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
         "connector-slack_internal_http_dto_request.GrafanaAlertNotificationPayload": {
             "type": "object",
             "properties": {
-                "notification_name": {
+                "alerts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/notifications.GrafanaAlertItem"
+                    }
+                },
+                "commonAnnotations": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "commonLabels": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "externalURL": {
                     "type": "string"
                 },
-                "params": {
-                    "$ref": "#/definitions/notifications.GrafanaAlert"
+                "groupKey": {
+                    "type": "string"
+                },
+                "groupLabels": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "orgId": {
+                    "type": "integer"
+                },
+                "receiver": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "truncatedAlerts": {
+                    "type": "integer"
+                },
+                "version": {
+                    "type": "string"
+                }
+            }
+        },
+        "connector-slack_internal_http_dto_request.NotificationOptionsPayload": {
+            "type": "object",
+            "properties": {
+                "extra_text": {
+                    "type": "string"
+                },
+                "user": {
+                    "type": "string"
+                },
+                "user_icon": {
+                    "type": "string"
+                }
+            }
+        },
+        "connector-slack_internal_http_dto_request.NotificationPayload": {
+            "type": "object",
+            "properties": {
+                "blocks": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "additionalProperties": {}
+                    }
+                },
+                "channel_id": {
+                    "type": "string"
+                },
+                "options": {
+                    "$ref": "#/definitions/connector-slack_internal_http_dto_request.NotificationOptionsPayload"
                 }
             }
         },
         "connector-slack_internal_http_dto_request.TorrentNotificationPayload": {
             "type": "object",
             "properties": {
-                "notification_name": {
+                "category": {
                     "type": "string"
                 },
-                "params": {
-                    "$ref": "#/definitions/notifications.Torrent"
+                "jellyfin_url": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "qbittorrent_url": {
+                    "type": "string"
                 }
             }
         },
@@ -223,56 +346,6 @@ const docTemplate = `{
                 }
             }
         },
-        "notifications.GrafanaAlert": {
-            "type": "object",
-            "properties": {
-                "alerts": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/notifications.GrafanaAlertItem"
-                    }
-                },
-                "commonAnnotations": {
-                    "type": "object",
-                    "additionalProperties": {
-                        "type": "string"
-                    }
-                },
-                "commonLabels": {
-                    "type": "object",
-                    "additionalProperties": {
-                        "type": "string"
-                    }
-                },
-                "externalURL": {
-                    "type": "string"
-                },
-                "groupKey": {
-                    "type": "string"
-                },
-                "groupLabels": {
-                    "type": "object",
-                    "additionalProperties": {
-                        "type": "string"
-                    }
-                },
-                "orgId": {
-                    "type": "integer"
-                },
-                "receiver": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "string"
-                },
-                "truncatedAlerts": {
-                    "type": "integer"
-                },
-                "version": {
-                    "type": "string"
-                }
-            }
-        },
         "notifications.GrafanaAlertItem": {
             "type": "object",
             "properties": {
@@ -320,23 +393,6 @@ const docTemplate = `{
                     "additionalProperties": {}
                 }
             }
-        },
-        "notifications.Torrent": {
-            "type": "object",
-            "properties": {
-                "category": {
-                    "type": "string"
-                },
-                "jellyfin_url": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "qbittorrent_url": {
-                    "type": "string"
-                }
-            }
         }
     }
 }`
@@ -348,7 +404,7 @@ var SwaggerInfo = &swag.Spec{
 	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "Slack Connector",
-	Description:      "A connector that accepts payloads and forwards them to Slack channels.",
+	Description:      "A connector that sends notification messages in Slack channels.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

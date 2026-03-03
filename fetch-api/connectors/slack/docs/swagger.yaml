@@ -2,17 +2,68 @@ basePath: /
 definitions:
   connector-slack_internal_http_dto_request.GrafanaAlertNotificationPayload:
     properties:
-      notification_name:
+      alerts:
+        items:
+          $ref: '#/definitions/notifications.GrafanaAlertItem'
+        type: array
+      commonAnnotations:
+        additionalProperties:
+          type: string
+        type: object
+      commonLabels:
+        additionalProperties:
+          type: string
+        type: object
+      externalURL:
         type: string
-      params:
-        $ref: '#/definitions/notifications.GrafanaAlert'
+      groupKey:
+        type: string
+      groupLabels:
+        additionalProperties:
+          type: string
+        type: object
+      orgId:
+        type: integer
+      receiver:
+        type: string
+      status:
+        type: string
+      truncatedAlerts:
+        type: integer
+      version:
+        type: string
+    type: object
+  connector-slack_internal_http_dto_request.NotificationOptionsPayload:
+    properties:
+      extra_text:
+        type: string
+      user:
+        type: string
+      user_icon:
+        type: string
+    type: object
+  connector-slack_internal_http_dto_request.NotificationPayload:
+    properties:
+      blocks:
+        items:
+          additionalProperties: {}
+          type: object
+        type: array
+      channel_id:
+        type: string
+      options:
+        $ref: '#/definitions/connector-slack_internal_http_dto_request.NotificationOptionsPayload'
     type: object
   connector-slack_internal_http_dto_request.TorrentNotificationPayload:
     properties:
-      notification_name:
+      category:
         type: string
-      params:
-        $ref: '#/definitions/notifications.Torrent'
+      jellyfin_url:
+        type: string
+      name:
+        type: string
+      qbittorrent_url:
+        type: string
     type: object
   connector-slack_internal_http_dto_response.ErrorResponse:
     properties:
@@ -47,39 +98,6 @@ definitions:
       ready:
         type: boolean
     type: object
-  notifications.GrafanaAlert:
-    properties:
-      alerts:
-        items:
-          $ref: '#/definitions/notifications.GrafanaAlertItem'
-        type: array
-      commonAnnotations:
-        additionalProperties:
-          type: string
-        type: object
-      commonLabels:
-        additionalProperties:
-          type: string
-        type: object
-      externalURL:
-        type: string
-      groupKey:
-        type: string
-      groupLabels:
-        additionalProperties:
-          type: string
-        type: object
-      orgId:
-        type: integer
-      receiver:
-        type: string
-      status:
-        type: string
-      truncatedAlerts:
-        type: integer
-      version:
-        type: string
-    type: object
   notifications.GrafanaAlertItem:
     properties:
       annotations:
@@ -112,20 +130,9 @@ definitions:
         additionalProperties: {}
         type: object
     type: object
-  notifications.Torrent:
-    properties:
-      category:
-        type: string
-      jellyfin_url:
-        type: string
-      name:
-        type: string
-      qbittorrent_url:
-        type: string
-    type: object
 info:
   contact: {}
-  description: A connector that accepts payloads and forwards them to Slack channels.
+  description: A connector that sends notification messages in Slack channels.
   title: Slack Connector
 paths:
   /api/health:
@@ -183,7 +190,7 @@ paths:
       summary: Forward a connector-downloader notification payload to send a Slack
         message
       tags:
-      - slack
+      - notifications
   /notifications/grafana/alerts:
     post:
       consumes:
@@ -214,7 +221,37 @@ paths:
             $ref: '#/definitions/connector-slack_internal_http_dto_response.ErrorResponse'
       summary: Forward a Grafana alert payload to send a Slack message
       tags:
-      - slack
+      - notifications
+  /notifications/send:
+    post:
+      consumes:
+      - application/json
+      description: Send a custom notification to Slack with specified options.
+      parameters:
+      - description: Custom notification payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/connector-slack_internal_http_dto_request.NotificationPayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/connector-slack_internal_http_dto_response.NotificationStatus'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/connector-slack_internal_http_dto_response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/connector-slack_internal_http_dto_response.ErrorResponse'
+      summary: Send a custom notification to Slack
+      tags:
+      - notifications
 produces:
 - application/json
 swagger: "2.0"
