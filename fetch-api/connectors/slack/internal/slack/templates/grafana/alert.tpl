@@ -116,7 +116,7 @@
 		{
 			"type": "image",
 			"slack_file": {
-				"id": {{ json $imageID }},
+				"id": {{ json $imageID }}
 			},
 			"alt_text": "Visualization preview"
 		}
