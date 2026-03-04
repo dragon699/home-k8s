@@ -98,7 +98,7 @@ func SendGrafanaAlertNotification(ctx *fiber.Ctx) error {
 
 	for _, alert := range reqPayload.Alerts {
 		if alert.ImageURL != "" {
-			imageSlackFileID, err := slack.Client.UploadImage(alert.ImageURL)
+			imageSlackURL, err := slack.Client.UploadImage(alert.ImageURL)
 			if err != nil {
 				return ctx.Status(500).JSON(
 					response.ErrorResponse{
@@ -107,7 +107,7 @@ func SendGrafanaAlertNotification(ctx *fiber.Ctx) error {
 				)
 			}
 
-			alert.ImageSlackFileID = imageSlackFileID
+			alert.ImageSlackURL = imageSlackURL
 		}
 
 		_, err := slack.Client.SendMsgFromTemplate("grafana/alert", alert)

@@ -141,5 +141,10 @@ func (instance *SlackClient) UploadImage(url string) (string, error) {
 		return "", fmt.Errorf("failed to upload image to Slack: %w", err)
 	}
 
-	return destImageResult.ID, nil
+	destImageInfo, _, _, err := instance.Client.GetFileInfo(destImageResult.ID, 0, 0)
+	if err != nil {
+		return "", fmt.Errorf("failed to get uploaded image info from Slack: %w", err)
+	}
+
+	return destImageInfo.URLPrivate, nil
 }
