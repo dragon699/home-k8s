@@ -118,5 +118,6 @@
 			"image_url": {{ json $screenshotURL }},
 			"alt_text": "From the dashboard"
 		}
+		{{- end }}
 	]
 }
