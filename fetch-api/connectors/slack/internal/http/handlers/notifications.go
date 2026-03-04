@@ -97,7 +97,7 @@ func SendGrafanaAlertNotification(ctx *fiber.Ctx) error {
 	fmt.Println(reqPayload)
 
 	for _, alert := range reqPayload.Alerts {
-		_, err := slack.Client.SendMsgFromTemplate("grafana/alert", alert)
+		result, err := slack.Client.SendMsgFromTemplate("grafana/alert", alert)
 
 		if err != nil {
 			var clientErr *config.ClientError
@@ -115,6 +115,47 @@ func SendGrafanaAlertNotification(ctx *fiber.Ctx) error {
 					Error: err.Error(),
 				},
 			)
+		}
+
+		if alert.ImageURL != "" {
+			options := []slackapi.MsgOption{
+				slackapi.MsgOptionText(fmt.Sprintf("Screenshot attached -> %s", alert.Labels["alertname"]), false),
+				slackapi.MsgOptionUsername(result.Meta["username"]),
+				slackapi.MsgOptionIconURL(result.Meta["icon_url"]),
+				slackapi.MsgOptionTS(result.Timestamp),
+			}
+			blocks := []map[string]any{
+				{
+					"type": "image",
+					"title": map[string]any{
+						"type": "plain_text",
+						"text": "I love tacos",
+						"emoji": true,
+					},
+					"image_url": "https://assets3.thrillist.com/v1/image/1682388/size/tl-horizontal_main.jpg",
+					"alt_text": "delicious tacos",
+				},
+			}
+
+			_, err := slack.Client.SendMsg(result.Channel, blocks, []map[string]any{}, options...)
+
+			if err != nil {
+				var clientErr *config.ClientError
+				if errors.As(err, &clientErr) {
+					return ctx.Status(502).JSON(
+						response.ErrorResponse{
+							Error:            err.Error(),
+							UpstreamResponse: clientErr.UpstreamResponse(),
+						},
+					)
+				}
+
+				return ctx.Status(500).JSON(
+					response.ErrorResponse{
+						Error: err.Error(),
+					},
+				)
+			}
 		}
 	}
 

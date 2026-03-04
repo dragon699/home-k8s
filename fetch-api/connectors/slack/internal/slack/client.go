@@ -119,5 +119,9 @@ func (instance *SlackClient) SendMsgFromTemplate(templateName string, templateVa
 	return &MessageResponse{
 		Channel:   ch,
 		Timestamp: ts,
+		Meta: map[string]string{
+			"username": msg.Username,
+			"icon_url": msg.IconURL,
+		},
 	}, nil
 }

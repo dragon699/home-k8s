@@ -15,13 +15,15 @@
 {{- $title := printf "%s *%s* > %s" $titleIcon $status $titleText -}}
 {{- $description := or (index .Annotations "description") "" -}}
 
+{{- $willAttachScreenshot := .ImageURL -}}
+
 {{- $footer := printf "Detected %s" (beautifyTime .StartsAt) -}}
 {{- if not (hasPrefix .EndsAt "0001") -}}
   {{- $footer = printf "%s\nRecovered %s" $footer (beautifyTime .EndsAt) -}}
 {{- end -}}
 
 {{- $dashboardURL := or .PanelURL .DashboardURL -}}
-{{- $screenshotURL := .ImageURL -}}
+
 
 
 {
@@ -71,6 +73,15 @@
 				{{- end }}
 			]
 		},
+		{{- if $willAttachScreenshot -}}
+		{
+			"type": "section",
+			"text": {
+				"type": "plain_text",
+				"text": "Screenshot attached to this message."
+			}
+		},
+		{{- end -}}
 		{
 			"type": "context",
 			"elements": [
@@ -112,16 +123,5 @@
 				{{- end }}
 			]
 		}
-		{{- if $screenshotURL -}},
-		{
-			"type": "image",
-			"title": {
-				"type": "plain_text",
-				"text": "Screenshot"
-			},
-			"image_url": {{ json $screenshotURL }},
-			"alt_text": "Screenshot"
-		}
-		{{- end }}
 	]
 }
