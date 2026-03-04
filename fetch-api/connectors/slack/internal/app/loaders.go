@@ -9,6 +9,7 @@ import (
 	"connector-slack/internal/health"
 	"connector-slack/internal/http/routes"
 	"connector-slack/internal/slack"
+	"connector-slack/internal/slack/socket"
 	"connector-slack/internal/swagger"
 
 	"github.com/go-co-op/gocron"
@@ -32,10 +33,10 @@ func LoadSlackClient() {
 }
 
 func LoadSlackSocketMode() error {
-	slack.SocketMode = &slack.SlackSocketMode{}
-	slack.SocketMode.Init()
+	socket.SocketMode = &socket.SlackSocketMode{}
+	socket.SocketMode.Init()
 
-	return slack.SocketMode.Start()
+	return socket.SocketMode.Start()
 }
 
 func LoadSwagger() fiber.Handler {
@@ -66,5 +67,5 @@ func LoadRoutes(app fiber.Router) {
 }
 
 func UnloadSlackSocketMode() {
-	slack.SocketMode.Stop()
+	socket.SocketMode.Stop()
 }

@@ -94,8 +94,6 @@ func SendGrafanaAlertNotification(ctx *fiber.Ctx) error {
 		)
 	}
 
-	fmt.Println(reqPayload)
-
 	for _, alert := range reqPayload.Alerts {
 		result, err := slack.Client.SendMsgFromTemplate("grafana/alert", alert)
 

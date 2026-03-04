@@ -85,14 +85,21 @@ func (instance *SlackClient) SendMsgFromTemplate(templateName string, templateVa
 		return nil, fmt.Errorf("failed to marshal notification template %q: %w", templateName, err)
 	}
 
-	fmt.Printf("[SendMsgFromTemplate] %s rendered JSON:\n%s\n", templateName, string(rawJSON))
-
 	var msg Message
 	if err := json.Unmarshal(rawJSON, &msg); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal notification template %q: %w", templateName, err)
 	}
 
+	var metaPayload map[string]any
+	if metaJSON, err := json.Marshal(templateVars); err == nil {
+		_ = json.Unmarshal(metaJSON, &metaPayload)
+	}
+
 	opts := []slackapi.MsgOption{
+		slackapi.MsgOptionMetadata(slackapi.SlackMetadata{
+			EventType:    templateName,
+			EventPayload: metaPayload,
+		}),
 		slackapi.MsgOptionText(msg.Text, false),
 		slackapi.MsgOptionBlocks(toBlockSet(msg.Blocks)...),
 		slackapi.MsgOptionAttachments(toAttachmentSet(msg.Attachments)...),

@@ -1,12 +1,13 @@
-package slack
+package socket
 
 import (
 	"context"
-	"fmt"
-	"strings"
+	"encoding/json"
 	"sync"
 
 	"connector-slack/internal/config"
+	"connector-slack/internal/slack"
+	"connector-slack/internal/slack/socket/handlers/grafana"
 	t "connector-slack/internal/telemetry"
 
 	slackapi "github.com/slack-go/slack"
@@ -24,7 +25,7 @@ type SlackSocketMode struct {
 
 func (instance *SlackSocketMode) Init() {
 	instance.Debug = config.Config.SlackSocketDebug
-	instance.Socket = socketmode.New(Client.Client)
+	instance.Socket = socketmode.New(slack.Client.Client)
 }
 
 func (instance *SlackSocketMode) Start() error {
@@ -99,22 +100,14 @@ func (instance *SlackSocketMode) handleInteraction(callback slackapi.Interaction
 		return
 	}
 
+	d, _ := json.Marshal(callback)
+	t.Log.Info("Interaction payload received", "payload", string(d))
+
 	action := callback.ActionCallback.BlockActions[0]
-	message := fmt.Sprintf("Action received: %s", action.ActionID)
 
-	if strings.TrimSpace(action.Value) != "" {
-		message = fmt.Sprintf("%s (%s)", message, action.Value)
-	}
-
-	_, err := Client.Client.PostEphemeral(
-		callback.Channel.ID,
-		callback.User.ID,
-		slackapi.MsgOptionText(message, false),
-	)
-
-	if err != nil {
-		t.Log.Error("Failed to post Slack ephemeral action response", "error", err.Error(), "action_id", action.ActionID)
-		return
+	switch action.ActionID {
+	case "grafana_alert_button_investigate":
+		grafana.ButtonInvestigate(action.Value)
 	}
 
 	t.Log.Info("Handled Slack interactive action", "action_id", action.ActionID, "user", callback.User.Name)
