@@ -112,7 +112,7 @@
 				{{- end }}
 			]
 		}
-		{{- if $screenshotURL -}}
+		{{- if $screenshotURL -}},
 		{
 			"type": "image",
 			"image_url": {{ json $screenshotURL }},
