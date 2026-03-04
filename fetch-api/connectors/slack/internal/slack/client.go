@@ -87,6 +87,8 @@ func (instance *SlackClient) SendMsgFromTemplate(templateName string, templateVa
 		return nil, fmt.Errorf("failed to marshal notification template %q: %w", templateName, err)
 	}
 
+	fmt.Printf("[SendMsgFromTemplate] %s rendered JSON:\n%s\n", templateName, string(rawJSON))
+
 	var msg Message
 	if err := json.Unmarshal(rawJSON, &msg); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal notification template %q: %w", templateName, err)
