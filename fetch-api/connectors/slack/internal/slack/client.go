@@ -134,6 +134,7 @@ func (instance *SlackClient) UploadImage(url string) (string, error) {
 
 	destImageResult, err := instance.Client.UploadFile(slackapi.UploadFileParameters{
 		Filename: "screenshot.png",
+		FileSize: len(imagebytes),
 		Reader:   bytes.NewReader(imagebytes),
 	})
 	if err != nil {
