@@ -15,19 +15,19 @@ type GrafanaAlert struct {
 }
 
 type GrafanaAlertItem struct {
-	Status       string            `json:"status,omitempty"`
-	Labels       map[string]string `json:"labels,omitempty"`
-	Annotations  map[string]string `json:"annotations,omitempty"`
-	StartsAt     string            `json:"startsAt,omitempty"`
-	EndsAt       string            `json:"endsAt,omitempty"`
-	Values       map[string]any    `json:"values,omitempty"`
-	GeneratorURL string            `json:"generatorURL,omitempty"`
-	Fingerprint  string            `json:"fingerprint,omitempty"`
-	SilenceURL   string            `json:"silenceURL,omitempty"`
-	DashboardURL string            `json:"dashboardURL,omitempty"`
-	PanelURL     string            `json:"panelURL,omitempty"`
-	ImageURL     string            `json:"imageURL,omitempty"`
-	ImageSlackID string            `json:"imageSlackID,omitempty"`
+	Status        string            `json:"status,omitempty"`
+	Labels        map[string]string `json:"labels,omitempty"`
+	Annotations   map[string]string `json:"annotations,omitempty"`
+	StartsAt      string            `json:"startsAt,omitempty"`
+	EndsAt        string            `json:"endsAt,omitempty"`
+	Values        map[string]any    `json:"values,omitempty"`
+	GeneratorURL  string            `json:"generatorURL,omitempty"`
+	Fingerprint   string            `json:"fingerprint,omitempty"`
+	SilenceURL    string            `json:"silenceURL,omitempty"`
+	DashboardURL  string            `json:"dashboardURL,omitempty"`
+	PanelURL      string            `json:"panelURL,omitempty"`
+	ImageURL      string            `json:"imageURL,omitempty"`
+	ImageSlackURL string            `json:"imageSlackURL,omitempty"`
 }
 
 type Torrent struct {
