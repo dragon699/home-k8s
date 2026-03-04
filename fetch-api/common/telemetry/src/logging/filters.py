@@ -44,6 +44,7 @@ class Filters:
             for current_field, renamed_field in renamed_fields.items():
                 if hasattr(record, current_field):
                     setattr(record, renamed_field, getattr(record, current_field))
-                    delattr(record, current_field)
+                    if current_field != 'name':
+                        delattr(record, current_field)
 
             return True

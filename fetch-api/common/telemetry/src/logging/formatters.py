@@ -16,7 +16,7 @@ class Formatters:
                 for key, value in record.__dict__.items():
                     if key in ['component', 'msg', 'args', 'created', 'filename', 'funcName', 
                               'level', 'levelno', 'lineno', 'module', 'msecs', 
-                              'message', 'pathname', 'process', 'processName', 'relativeCreated',
+                              'message', 'name', 'pathname', 'process', 'processName', 'relativeCreated',
                               'thread', 'threadName', 'exc_info', 'exc_text', 'stack_info',
                               'asctime', 'taskName']:
                         continue
@@ -39,6 +39,8 @@ class Formatters:
     class Json(JsonFormatter):
         def add_fields(self, log_record: dict, record: logging.LogRecord, message_dict: dict) -> None:
             super().add_fields(log_record, record, message_dict)
+
+            log_record.pop('name', None)
 
             if 'msg' in log_record:
                 log_record['msg'] = record.getMessage()
