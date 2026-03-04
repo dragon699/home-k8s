@@ -21,7 +21,7 @@
 {{- end -}}
 
 {{- $dashboardURL := or .PanelURL .DashboardURL -}}
-{{- $screenshotURL := .ImageSlackURL -}}
+{{- $screenshotURL := .ImageURL -}}
 
 
 {
@@ -115,10 +115,12 @@
 		{{- if $screenshotURL -}},
 		{
 			"type": "image",
-			"slack_file": {
-				"url": {{ json $screenshotURL }}
+			"title": {
+				"type": "plain_text",
+				"text": "Screenshot"
 			},
-			"alt_text": "Visualization preview"
+			"image_url": {{ json $screenshotURL }},
+			"alt_text": "Screenshot"
 		}
 		{{- end }}
 	]

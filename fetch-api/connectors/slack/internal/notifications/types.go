@@ -27,7 +27,6 @@ type GrafanaAlertItem struct {
 	DashboardURL  string            `json:"dashboardURL,omitempty"`
 	PanelURL      string            `json:"panelURL,omitempty"`
 	ImageURL      string            `json:"imageURL,omitempty"`
-	ImageSlackURL string            `json:"imageSlackURL,omitempty"`
 }
 
 type Torrent struct {

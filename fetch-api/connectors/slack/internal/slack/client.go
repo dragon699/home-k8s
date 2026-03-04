@@ -1,12 +1,10 @@
 package slack
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
 
-	"common/utils"
 	"connector-slack/internal/config"
 
 	slackapi "github.com/slack-go/slack"
@@ -122,32 +120,4 @@ func (instance *SlackClient) SendMsgFromTemplate(templateName string, templateVa
 		Channel:   ch,
 		Timestamp: ts,
 	}, nil
-}
-
-func (instance *SlackClient) UploadImage(url string) (string, error) {
-	httpClient := utils.Req{}
-
-	srcImageResult, err := httpClient.GET(url, nil, nil)
-	if err != nil {
-		return "", fmt.Errorf("failed to fetch image from %q: %w", url, err)
-	}
-
-	imagebytes := srcImageResult.Bytes
-
-	destImageResult, err := instance.Client.UploadFile(slackapi.UploadFileParameters{
-		Filename: "screenshot.png",
-		FileSize: len(imagebytes),
-		Reader:   bytes.NewReader(imagebytes),
-		Channel:  config.Config.SlackGrafanaAlertsChannelID,
-	})
-	if err != nil {
-		return "", fmt.Errorf("failed to upload image to Slack: %w", err)
-	}
-
-	destImageInfo, _, _, err := instance.Client.GetFileInfo(destImageResult.ID, 0, 0)
-	if err != nil {
-		return "", fmt.Errorf("failed to get uploaded image info from Slack: %w", err)
-	}
-
-	return destImageInfo.URLPrivate, nil
 }
