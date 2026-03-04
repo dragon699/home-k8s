@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"connector-slack/internal/config"
 
@@ -95,9 +96,11 @@ func (instance *SlackClient) SendMsgFromTemplate(templateName string, templateVa
 		_ = json.Unmarshal(metaJSON, &metaPayload)
 	}
 
+	eventType := strings.NewReplacer("/", "_", "-", "_").Replace(templateName)
+
 	opts := []slackapi.MsgOption{
 		slackapi.MsgOptionMetadata(slackapi.SlackMetadata{
-			EventType:    templateName,
+			EventType:    eventType,
 			EventPayload: metaPayload,
 		}),
 		slackapi.MsgOptionText(msg.Text, false),
