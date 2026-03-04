@@ -15,7 +15,7 @@ class Formatters:
             if hasattr(record, '__dict__'):
                 for key, value in record.__dict__.items():
                     if key in ['component', 'msg', 'args', 'created', 'filename', 'funcName', 
-                              'level', 'levelno', 'lineno', 'module', 'msecs', 
+                              'level', 'levelname', 'levelno', 'lineno', 'module', 'msecs', 
                               'message', 'name', 'pathname', 'process', 'processName', 'relativeCreated',
                               'thread', 'threadName', 'exc_info', 'exc_text', 'stack_info',
                               'asctime', 'taskName']:
@@ -41,6 +41,7 @@ class Formatters:
             super().add_fields(log_record, record, message_dict)
 
             log_record.pop('name', None)
+            log_record.pop('levelname', None)
 
             if 'msg' in log_record:
                 log_record['msg'] = record.getMessage()

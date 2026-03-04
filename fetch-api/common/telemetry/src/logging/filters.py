@@ -41,10 +41,12 @@ class Filters:
                 'otelSpanID': 'span_id'
             }
 
+            preserved = {'name', 'levelname'}
+
             for current_field, renamed_field in renamed_fields.items():
                 if hasattr(record, current_field):
                     setattr(record, renamed_field, getattr(record, current_field))
-                    if current_field != 'name':
+                    if not current_field in preserved:
                         delattr(record, current_field)
 
             return True
