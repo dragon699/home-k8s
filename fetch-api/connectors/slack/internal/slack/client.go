@@ -138,6 +138,7 @@ func (instance *SlackClient) UploadImage(url string) (string, error) {
 		Filename: "screenshot.png",
 		FileSize: len(imagebytes),
 		Reader:   bytes.NewReader(imagebytes),
+		Channel:  config.Config.SlackGrafanaAlertsChannelID,
 	})
 	if err != nil {
 		return "", fmt.Errorf("failed to upload image to Slack: %w", err)
