@@ -129,11 +129,11 @@ func SendGrafanaAlertNotification(ctx *fiber.Ctx) error {
 					"type": "image",
 					"title": map[string]any{
 						"type": "plain_text",
-						"text": "I love tacos",
+						"text": "Screenshot from dashboard",
 						"emoji": true,
 					},
-					"image_url": "https://assets3.thrillist.com/v1/image/1682388/size/tl-horizontal_main.jpg",
-					"alt_text": "delicious tacos",
+					"image_url": alert.ImageURL,
+					"alt_text": "Dashboard preview",
 				},
 			}
 
