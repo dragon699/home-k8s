@@ -104,7 +104,7 @@ func (instance *SlackSocketMode) handleInteraction(callback slackapi.Interaction
 	t.Log.Info("Interaction payload received", "payload", string(d))
 
 	switch callback.Message.Metadata.EventType {
-	case "grafana_alert":
+	case "alert":
 		switch callback.ActionCallback.BlockActions[0].ActionID {
 		case "grafana_alert_button_investigate":
 			grafana_alert.ButtonInvestigate(
