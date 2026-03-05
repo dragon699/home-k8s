@@ -84,7 +84,10 @@ func ButtonInvestigate(value string, message slackapi.Message, user string) {
 	}
 
 	templatePath := fmt.Sprintf("%s/notifications/grafana/%s.tpl", config.Config.TemplatesBasePath, "alert_summary")
-	aiMessage, err := slack.Client.SendMsgFromTemplate(config.Config.SlackGrafanaAlertsChannelID, "ai", templatePath, alert)
+	aiMessage, err := slack.Client.SendMsgFromTemplate(
+		config.Config.SlackGrafanaAlertsChannelID, "ai", templatePath, alert,
+		slackapi.MsgOptionTS(message.Timestamp),
+	)
 
 	if err != nil {
 		t.Log.Error("Failed to send alert summary message", "error", err)
@@ -138,7 +141,7 @@ func ButtonInvestigate(value string, message slackapi.Message, user string) {
 				"elements": []any{
 					map[string]any{
 						"type": "text",
-						"text": "Successfully pinged ",
+						"text": "Pinged ",
 					},
 					map[string]any{
 						"type": "text",
@@ -163,11 +166,11 @@ func ButtonInvestigate(value string, message slackapi.Message, user string) {
 				"elements": []any{
 					map[string]any{
 						"type": "text",
-						"text": "Submitting alert details to ",
+						"text": "Submitting alert metadata to ",
 					},
 					map[string]any{
 						"type": "text",
-						"text": "connector-ml",
+						"text": "Ollama",
 						"style": map[string]any{
 							"bold": true,
 						},

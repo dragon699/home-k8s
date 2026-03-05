@@ -3,7 +3,7 @@
 		{
 			"type": "task_card",
 			"task_id": "grafana_alert_investigate_ai",
-			"title": "Investigating alert with Ollama",
+			"title": "Investigating alert..",
 			"status": "in_progress",
 			"output": {
 				"type": "rich_text",

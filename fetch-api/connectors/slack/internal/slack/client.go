@@ -105,7 +105,7 @@ func (instance *SlackClient) SendMsg(channelID string, blocks []map[string]any, 
 	}, nil
 }
 
-func (instance *SlackClient) SendMsgFromTemplate(channel string, app string, templatePath string, templateVars any) (*MessageResponse, error) {
+func (instance *SlackClient) SendMsgFromTemplate(channel string, app string, templatePath string, templateVars any, options ...slackapi.MsgOption) (*MessageResponse, error) {
 	var msg Message
 	var msgPayload map[string]any
 	var appName, appIcon string
@@ -145,6 +145,8 @@ func (instance *SlackClient) SendMsgFromTemplate(channel string, app string, tem
 		slackapi.MsgOptionBlocks(toBlockSet(msg.Blocks)...),
 		slackapi.MsgOptionAttachments(toAttachmentSet(msg.Attachments)...),
 	}
+
+	opts = append(opts, options...)
 
 	if appName != "" {
 		opts = append(opts, slackapi.MsgOptionUsername(appName))
