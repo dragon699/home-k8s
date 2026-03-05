@@ -15,7 +15,7 @@ spec:
     targetRevision: main
     ref: values
   - repoURL: https://otwld.github.io/ollama-helm/
-    targetRevision: 1.34.0
+    targetRevision: 1.48.0
     chart: ollama
     helm:
       skipCrds: false
