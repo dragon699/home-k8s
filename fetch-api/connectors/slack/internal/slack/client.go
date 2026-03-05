@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"path"
+	"strings"
 
 	"common/utils"
 	"connector-slack/internal/config"
@@ -107,7 +108,7 @@ func (instance *SlackClient) SendMsgFromTemplate(channel string, app string, tem
 	var msgPayload map[string]any
 	var appName, appIcon string
 
-	msgPayloadName := path.Base(templatePath)
+	msgPayloadName := strings.Split(path.Base(templatePath), ".")[0]
 
 	raw, err := utils.RenderTemplate(templatePath, templateVars, notificationTemplates)
 	if err != nil {
