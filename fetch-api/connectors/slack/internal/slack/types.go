@@ -16,11 +16,12 @@ type Message struct {
 }
 
 type MessageResponse struct {
-	OK        bool
-	Channel   string
-	Timestamp string
-	Message   
-	Meta      map[string]string
+	OK          bool
+	Channel     string
+	Timestamp   string
+	Blocks      []map[string]any
+	Attachments []map[string]any
+	Meta        map[string]string
 }
 
 type rawBlock struct {

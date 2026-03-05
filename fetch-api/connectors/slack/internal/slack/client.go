@@ -98,8 +98,10 @@ func (instance *SlackClient) SendMsg(channelID string, blocks []map[string]any, 
 	}
 
 	return &MessageResponse{
-		Channel:   ch,
-		Timestamp: ts,
+		Channel:     ch,
+		Timestamp:   ts,
+		Blocks:      blocks,
+		Attachments: attachments,
 	}, nil
 }
 
@@ -167,8 +169,10 @@ func (instance *SlackClient) SendMsgFromTemplate(channel string, app string, tem
 	}
 
 	return &MessageResponse{
-		Channel:   ch,
-		Timestamp: ts,
+		Channel:     ch,
+		Timestamp:   ts,
+		Blocks:      msg.Blocks,
+		Attachments: msg.Attachments,
 		Meta: map[string]string{
 			"username": appName,
 			"icon_url": appIcon,
@@ -197,7 +201,9 @@ func (instance *SlackClient) UpdateMsg(channelID string, ts string, blocks []map
 	}
 
 	return &MessageResponse{
-		Channel:   ch,
-		Timestamp: newTs,
+		Channel:     ch,
+		Timestamp:   newTs,
+		Blocks:      blocks,
+		Attachments: attachments,
 	}, nil
 }

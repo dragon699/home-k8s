@@ -2,10 +2,9 @@ package grafana_alert
 
 import (
 	"encoding/json"
-	// "fmt"
+	"fmt"
 
-	// "common/utils"
-	// "connector-slack/internal/config"
+	"common/utils"
 	"connector-slack/internal/config"
 	"connector-slack/internal/notifications"
 	"connector-slack/internal/slack"
@@ -16,26 +15,24 @@ import (
 
 func ButtonInvestigate(value string, message slackapi.Message, user string) {
 	var alert notifications.GrafanaAlertItem
-	// req := utils.Req{}
+	req := utils.Req{}
 
 	if value == "completed" {
 		slack.Client.SendEphemeralMsg(
-			config.Config.SlackGrafanaAlertsChannelID,
-			user,
-			nil,
-			nil,
+			config.Config.SlackGrafanaAlertsChannelID, user, nil, nil,
 			slackapi.MsgOptionText("Summary already attached to this message.", false),
+			slackapi.MsgOptionUsername(config.Config.SlackAIUsername),
+			slackapi.MsgOptionIconURL(config.Config.SlackAIIconURL),
 		)
 		return
 	}
 
 	if value == "in_progress" {
 		slack.Client.SendEphemeralMsg(
-			config.Config.SlackGrafanaAlertsChannelID,
-			user,
-			nil,
-			nil,
+			config.Config.SlackGrafanaAlertsChannelID, user, nil, nil,
 			slackapi.MsgOptionText("Hold your horses, I'm investigating.. Will reply to this message when ready.", false),
+			slackapi.MsgOptionUsername(config.Config.SlackAIUsername),
+			slackapi.MsgOptionIconURL(config.Config.SlackAIIconURL),
 		)
 		return
 	}
@@ -86,21 +83,108 @@ func ButtonInvestigate(value string, message slackapi.Message, user string) {
 		}
 	}
 
-	// templatePath := fmt.Sprintf("%s/notifications/grafana/%s.tpl", config.Config.TemplatesBasePath, "alert_summary")
-	// aiMessage, err := slack.Client.SendMsgFromTemplate(config.Config.SlackGrafanaAlertsChannelID, "ai", templatePath, alert)
+	templatePath := fmt.Sprintf("%s/notifications/grafana/%s.tpl", config.Config.TemplatesBasePath, "alert_summary")
+	aiMessage, err := slack.Client.SendMsgFromTemplate(config.Config.SlackGrafanaAlertsChannelID, "ai", templatePath, alert)
 
-	// if err != nil {
-	// 	t.Log.Error("Failed to send alert summary message", "error", err)
-	// 	return
-	// }
+	if err != nil {
+		t.Log.Error("Failed to send alert summary message", "error", err)
+		return
+	}
 
-	// aiStatus, err := req.GET(
-	// 	fmt.Sprintf("%s/api/health", config.Config.ConnectorMLURL),
-	// 	nil,
-	// 	nil,
-	// )
+	aiBlocks := aiMessage.Blocks
 
-	// if err != nil {
+	if _, err = req.GET(fmt.Sprintf("%s/api/health", config.Config.ConnectorMLURL), nil, nil); err != nil {
+		t.Log.Error(fmt.Sprintf("Connection to connector-ml failed: %s", config.Config.ConnectorMLURL), "error", err)
 
-	// }
+		aiBlocks[0]["status"] = "error"
+		aiBlocks[0]["output"] = map[string]any{
+			"type": "rich_text",
+			"elements": []any{
+				map[string]any{
+					"type": "rich_text_section",
+					"elements": []any{
+						map[string]any{
+							"type": "text",
+							"text": "Failed to ping ",
+						},
+						map[string]any{
+							"type": "text",
+							"text": "connector-ml",
+							"style": map[string]any{
+								"bold": true,
+							},
+						},
+						map[string]any{
+							"type": "text",
+							"text": "!",
+						},
+					},
+				},
+			},
+		}
+
+		if _, err := slack.Client.UpdateMsg(config.Config.SlackGrafanaAlertsChannelID, aiMessage.Timestamp, aiBlocks, nil); err != nil {
+			t.Log.Error("Failed to update message status", "error", err)
+		}
+
+		return
+	}
+
+	aiBlocks[0]["details"] = map[string]any{
+		"type": "rich_text",
+		"elements": []any{
+			map[string]any{
+				"type": "rich_text_section",
+				"elements": []any{
+					map[string]any{
+						"type": "text",
+						"text": "Successfully pinged ",
+					},
+					map[string]any{
+						"type": "text",
+						"text": "connector-ml",
+						"style": map[string]any{
+							"bold": true,
+						},
+					},
+					map[string]any{
+						"type": "text",
+						"text": ".",
+					},
+				},
+			},
+		},
+	}
+	aiBlocks[0]["output"] = map[string]any{
+		"type": "rich_text",
+		"elements": []any{
+			map[string]any{
+				"type": "rich_text_section",
+				"elements": []any{
+					map[string]any{
+						"type": "text",
+						"text": "Submitting alert details to ",
+					},
+					map[string]any{
+						"type": "text",
+						"text": "connector-ml",
+						"style": map[string]any{
+							"bold": true,
+						},
+					},
+					map[string]any{
+						"type": "text",
+						"text": "..",
+					},
+				},
+			},
+		},
+	}
+
+	aiMessage, err = slack.Client.UpdateMsg(config.Config.SlackGrafanaAlertsChannelID, aiMessage.Timestamp, aiBlocks, nil)
+
+	if err != nil {
+		t.Log.Error("Failed to update message status", "error", err)
+		return
+	}
 }
