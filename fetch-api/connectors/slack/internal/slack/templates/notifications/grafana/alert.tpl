@@ -22,8 +22,8 @@
 
 
 {
-  "text": {{ json $notification }},
-  "blocks": [
+    "text": {{ json $notification }},
+    "blocks": [
 		{
 			"type": "section",
 			"text": {
