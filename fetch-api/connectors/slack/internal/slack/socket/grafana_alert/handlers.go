@@ -253,7 +253,8 @@ func ButtonInvestigate(value string, message slackapi.Message, user string) {
 			nil,
 			map[string]any{
 				"prompt":                fmt.Sprintf("Now, analyze the following alert:\n%s", alertJSON),
-				"instructions_template": "grafana-alerts",
+				"instructions_template": config.Config.ConnectorMLInstructionsTemplate,
+				"model":                 config.Config.ConnectorMLModel,
 			},
 		)
 

@@ -33,7 +33,9 @@ type Settings struct {
 
 	TemplatesBasePath string `json:"templates_base_path"                   env:"TEMPLATES_BASE_PATH"`
 
-	ConnectorMLURL string `json:"connector_ml_url"                      env:"CONNECTOR_ML_URL"`
+	ConnectorMLURL                  string `json:"connector_ml_url"                      env:"CONNECTOR_ML_URL"`
+	ConnectorMLInstructionsTemplate string `json:"connector_ml_instructions_template"    env:"CONNECTOR_ML_INSTRUCTIONS_TEMPLATE"`
+	ConnectorMLModel                string `json:"connector_ml_model"                    env:"CONNECTOR_ML_MODEL"`
 
 	OtelServiceName      string `json:"otel_service_name"             env:"OTEL_SERVICE_NAME"`
 	OtelServiceNamespace string `json:"otel_service_namespace"        env:"OTEL_SERVICE_NAMESPACE"`
@@ -67,7 +69,9 @@ var defaultSettings = Settings{
 
 	TemplatesBasePath: "templates",
 
-	ConnectorMLURL: "http://connector-ml.fetch-api.svc:9069",
+	ConnectorMLURL:                  "http://connector-ml.fetch-api.svc:9069",
+	ConnectorMLInstructionsTemplate: "grafana-alerts",
+	ConnectorMLModel:                "qwen2.5:14b-instruct-q4_K_M",
 
 	OtelServiceName:      "connector-slack",
 	OtelServiceNamespace: "fetch-api",
