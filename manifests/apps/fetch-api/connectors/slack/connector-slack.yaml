@@ -27,7 +27,7 @@ spec:
         - name: registry-fetch-api
       containers:
         - name: connector-slack
-          image: ghcr.io/dragon699/home-k8s/fetch-api/connectors/slack:0.0.44
+          image: ghcr.io/dragon699/home-k8s/fetch-api/connectors/slack:0.0.45
           imagePullPolicy: Always
           securityContext:
             runAsUser: 1000
