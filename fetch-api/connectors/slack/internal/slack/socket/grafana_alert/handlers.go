@@ -6,6 +6,7 @@ import (
 
 	// "common/utils"
 	// "connector-slack/internal/config"
+	"connector-slack/internal/config"
 	"connector-slack/internal/notifications"
 	"connector-slack/internal/slack"
 	t "connector-slack/internal/telemetry"
@@ -19,7 +20,7 @@ func ButtonInvestigate(value string, message slackapi.Message, user string) {
 
 	if value == "completed" {
 		slack.Client.SendEphemeralMsg(
-			message.Channel,
+			config.Config.SlackGrafanaAlertsChannelID,
 			user,
 			nil,
 			nil,
@@ -30,7 +31,7 @@ func ButtonInvestigate(value string, message slackapi.Message, user string) {
 
 	if value == "in_progress" {
 		slack.Client.SendEphemeralMsg(
-			message.Channel,
+			config.Config.SlackGrafanaAlertsChannelID,
 			user,
 			nil,
 			nil,
@@ -71,7 +72,7 @@ func ButtonInvestigate(value string, message slackapi.Message, user string) {
 				_ = json.Unmarshal(raw, &blocks)
 			}
 
-			if _, err := slack.Client.UpdateMsg(message.Channel, message.Timestamp, blocks, nil); err != nil {
+			if _, err := slack.Client.UpdateMsg(config.Config.SlackGrafanaAlertsChannelID, message.Timestamp, blocks, nil); err != nil {
 				t.Log.Error("Failed to update message status", "error", err)
 				return
 			}
@@ -100,6 +101,6 @@ func ButtonInvestigate(value string, message slackapi.Message, user string) {
 	// )
 
 	// if err != nil {
-		
+
 	// }
 }
