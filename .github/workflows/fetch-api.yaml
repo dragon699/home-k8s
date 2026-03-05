@@ -2,6 +2,7 @@ name: fetch-api
 run-name: Deploy fetch-api
 
 on:
+  workflow_dispatch:
   push:
     paths:
     - '.github/workflows/fetch-api.yaml'

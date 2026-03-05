@@ -2,6 +2,7 @@ name: fetch-api-connector-grafana
 run-name: Deploy connector-grafana
 
 on:
+  workflow_dispatch:
   push:
     paths:
     - '.github/workflows/fetch-api-connector-grafana.yaml'

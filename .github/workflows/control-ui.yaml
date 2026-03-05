@@ -2,6 +2,7 @@ name: control-ui
 run-name: Deploy control-ui
 
 on:
+  workflow_dispatch:
   push:
     paths:
     - '.github/workflows/control-ui.yaml'

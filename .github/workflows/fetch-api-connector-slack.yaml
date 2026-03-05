@@ -2,6 +2,7 @@ name: fetch-api-connector-slack
 run-name: Deploy connector-slack
 
 on:
+  workflow_dispatch:
   push:
     paths:
     - '.github/workflows/fetch-api-connector-slack.yaml'
