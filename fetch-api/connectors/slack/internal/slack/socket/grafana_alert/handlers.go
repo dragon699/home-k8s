@@ -347,7 +347,10 @@ func ButtonInvestigate(value string, message slackapi.Message, user string) {
 		return
 	}
 
-	if err := json.Unmarshal(aiReqResponse.Bytes, &aiResponse); err != nil {
+	if raw, err := json.Marshal(aiReqResponse.Body); err != nil {
+		t.Log.Error("Failed to serialize connector-ml response", "error", err)
+		return
+	} else if err := json.Unmarshal(raw, &aiResponse); err != nil {
 		t.Log.Error("Failed to parse connector-ml response", "error", err)
 		return
 	}
