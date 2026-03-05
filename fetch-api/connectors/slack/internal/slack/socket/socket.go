@@ -7,7 +7,7 @@ import (
 
 	"connector-slack/internal/config"
 	"connector-slack/internal/slack"
-	"connector-slack/internal/slack/socket/handlers/grafana"
+	"connector-slack/internal/slack/socket/grafana_alert"
 	t "connector-slack/internal/telemetry"
 
 	slackapi "github.com/slack-go/slack"
@@ -103,12 +103,15 @@ func (instance *SlackSocketMode) handleInteraction(callback slackapi.Interaction
 	d, _ := json.Marshal(callback)
 	t.Log.Info("Interaction payload received", "payload", string(d))
 
-	action := callback.ActionCallback.BlockActions[0]
-
-	switch action.ActionID {
-	case "grafana_alert_button_investigate":
-		grafana.ButtonInvestigate(action.Value)
+	switch callback.Message.Metadata.EventType {
+	case "grafana_alert":
+		switch callback.ActionCallback.BlockActions[0].ActionID {
+		case "grafana_alert_button_investigate":
+			grafana_alert.ButtonInvestigate(
+				callback.ActionCallback.BlockActions[0].Value,
+				callback.Message,
+				callback.User.ID,
+			)
+		}
 	}
-
-	t.Log.Info("Handled Slack interactive action", "action_id", action.ActionID, "user", callback.User.Name)
 }

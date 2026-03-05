@@ -1,7 +1,8 @@
 package utils
 
 import (
-	"bytes"
+	"embed"
+	"encoding/json"
 	"fmt"
 	"math"
 	"os"
@@ -54,32 +55,6 @@ func ReadFile(path string) (string, error) {
 
 func WriteFile(path string, content string) error {
 	return os.WriteFile(path, []byte(content), 0644)
-}
-
-func RenderTemplate(templatePath string, vars any) (string, error) {
-	tplBytes, err := os.ReadFile(templatePath)
-
-	if err != nil {
-		return "", err
-	}
-
-	return RenderTemplateContent(templatePath, string(tplBytes), vars)
-}
-
-func RenderTemplateContent(templateName string, templateContent string, vars any) (string, error) {
-	tpl, err := template.New(templateName).Parse(templateContent)
-
-	if err != nil {
-		return "", err
-	}
-
-	var tplOut bytes.Buffer
-
-	if err := tpl.Execute(&tplOut, vars); err != nil {
-		return "", err
-	}
-
-	return tplOut.String(), nil
 }
 
 func TrimKubeTime(time metav1.Time) string {
@@ -363,4 +338,52 @@ func BeautifyMovieName(name string) string {
 
 	name = removeJunk(name)
 	return titleCase(name)
+}
+
+func templateJSON(value any) string {
+	body, err := json.Marshal(value)
+	if err != nil {
+		return `""`
+	}
+
+	return string(body)
+}
+
+func RenderTemplate(templatePath string, templateVars any, embeddedFiles embed.FS) (string, error) {
+	templateBytes, err := embeddedFiles.ReadFile(templatePath)
+
+	if err != nil {
+		return "", fmt.Errorf("[%s] Invalid or missing template file: %s", err, templatePath)
+	}
+
+	templateContent, err := renderTemplateContent(templatePath, string(templateBytes), templateVars)
+
+	if err != nil {
+		return "", fmt.Errorf("[%s] Failed to render embedded template file: %w", templatePath, err)
+	}
+
+	return templateContent, nil
+}
+
+func renderTemplateContent(templateName string, templateContent string, vars any) (string, error) {
+	tpl, err := template.New(templateName).Funcs(template.FuncMap{
+		"json":         templateJSON,
+		"beautifyTime": TimeFromGrafana,
+		"hasPrefix":    strings.HasPrefix,
+		"contains":     strings.Contains,
+		"capitalize":   CapitalizeString,
+		"toUpper":      strings.ToUpper,
+	}).Parse(templateContent)
+
+	if err != nil {
+		return "", err
+	}
+
+	var out strings.Builder
+
+	if err := tpl.Execute(&out, vars); err != nil {
+		return "", err
+	}
+
+	return out.String(), nil
 }

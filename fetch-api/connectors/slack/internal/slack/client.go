@@ -2,15 +2,19 @@ package slack
 
 import (
 	"context"
+	"embed"
 	"encoding/json"
 	"fmt"
-	"strings"
+	"path"
 
+	"common/utils"
 	"connector-slack/internal/config"
 
 	slackapi "github.com/slack-go/slack"
 )
 
+//go:embed templates/notifications/*/*.tpl
+var notificationTemplates embed.FS
 var Client *SlackClient
 
 type SlackClient struct {
@@ -50,6 +54,29 @@ func (instance *SlackClient) Ping() error {
 	return nil
 }
 
+func (instance *SlackClient) SendEphemeralMsg(channelID string, userID string, blocks []map[string]any, attachments []map[string]any, options ...slackapi.MsgOption) error {
+	opts := append(
+		[]slackapi.MsgOption{
+			slackapi.MsgOptionBlocks(toBlockSet(blocks)...),
+			slackapi.MsgOptionAttachments(toAttachmentSet(attachments)...),
+		},
+		options...,
+	)
+
+	_, err := instance.Client.PostEphemeral(channelID, userID, opts...)
+
+	if err != nil {
+		return config.NewUpstreamError(
+			fmt.Sprintf("chat.postEphemeral failed for channel %q and user %q", channelID, userID),
+			0,
+			nil,
+			err,
+		)
+	}
+
+	return nil
+}
+
 func (instance *SlackClient) SendMsg(channelID string, blocks []map[string]any, attachments []map[string]any, options ...slackapi.MsgOption) (*MessageResponse, error) {
 	opts := append(
 		[]slackapi.MsgOption{
@@ -75,51 +102,63 @@ func (instance *SlackClient) SendMsg(channelID string, blocks []map[string]any, 
 	}, nil
 }
 
-func (instance *SlackClient) SendMsgFromTemplate(templateName string, templateVars any) (*MessageResponse, error) {
-	raw, err := RenderTemplate(templateName, templateVars)
-	if err != nil {
-		return nil, fmt.Errorf("failed to render notification template %q: %w", templateName, err)
-	}
-
-	rawJSON, err := json.Marshal(raw)
-	if err != nil {
-		return nil, fmt.Errorf("failed to marshal notification template %q: %w", templateName, err)
-	}
-
+func (instance *SlackClient) SendMsgFromTemplate(channel string, app string, templatePath string, templateVars any) (*MessageResponse, error) {
 	var msg Message
-	if err := json.Unmarshal(rawJSON, &msg); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal notification template %q: %w", templateName, err)
+	var msgPayload map[string]any
+	var appName, appIcon string
+
+	msgPayloadName := path.Base(templatePath)
+
+	raw, err := utils.RenderTemplate(templatePath, templateVars, notificationTemplates)
+	if err != nil {
+		return nil, fmt.Errorf("failed to render notification template %q: %w", templatePath, err)
 	}
 
-	var metaPayload map[string]any
+	if err := json.Unmarshal([]byte(raw), &msg); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal notification template %q: %w", templatePath, err)
+	}
+
 	if metaJSON, err := json.Marshal(templateVars); err == nil {
-		_ = json.Unmarshal(metaJSON, &metaPayload)
+		_ = json.Unmarshal(metaJSON, &msgPayload)
 	}
 
-	eventType := strings.NewReplacer("/", "_", "-", "_").Replace(templateName)
+	switch app {
+	case "grafana":
+		appName = config.Config.SlackGrafanaUsername
+		appIcon = config.Config.SlackGrafanaIconURL
+	case "connector-downloader":
+		appName = config.Config.SlackConnectorDownloaderUsername
+		appIcon = config.Config.SlackConnectorDownloaderIconURL
+	case "ai":
+		appName = config.Config.SlackAIUsername
+		appIcon = config.Config.SlackAIIconURL
+	}
 
 	opts := []slackapi.MsgOption{
 		slackapi.MsgOptionMetadata(slackapi.SlackMetadata{
-			EventType:    eventType,
-			EventPayload: metaPayload,
+			EventType:    msgPayloadName,
+			EventPayload: msgPayload,
 		}),
-		slackapi.MsgOptionText(msg.Text, false),
 		slackapi.MsgOptionBlocks(toBlockSet(msg.Blocks)...),
 		slackapi.MsgOptionAttachments(toAttachmentSet(msg.Attachments)...),
 	}
 
-	if msg.Username != "" {
-		opts = append(opts, slackapi.MsgOptionUsername(msg.Username))
+	if appName != "" {
+		opts = append(opts, slackapi.MsgOptionUsername(appName))
 	}
 
-	if msg.IconURL != "" {
-		opts = append(opts, slackapi.MsgOptionIconURL(msg.IconURL))
+	if appIcon != "" {
+		opts = append(opts, slackapi.MsgOptionIconURL(appIcon))
 	}
 
-	ch, ts, err := instance.Client.PostMessage(msg.Channel, opts...)
+	if msg.Text != "" {
+		opts = append(opts, slackapi.MsgOptionText(msg.Text, false))
+	}
+
+	ch, ts, err := instance.Client.PostMessage(channel, opts...)
 	if err != nil {
 		return nil, config.NewUpstreamError(
-			fmt.Sprintf("chat.postMessage failed for %q", templateName),
+			fmt.Sprintf("chat.postMessage failed for %q", templatePath),
 			0,
 			nil,
 			err,
@@ -130,8 +169,34 @@ func (instance *SlackClient) SendMsgFromTemplate(templateName string, templateVa
 		Channel:   ch,
 		Timestamp: ts,
 		Meta: map[string]string{
-			"username": msg.Username,
-			"icon_url": msg.IconURL,
+			"username": appName,
+			"icon_url": appIcon,
 		},
+	}, nil
+}
+
+func (instance *SlackClient) UpdateMsg(channelID string, ts string, blocks []map[string]any, attachments []map[string]any, options ...slackapi.MsgOption) (*MessageResponse, error) {
+	opts := append(
+		[]slackapi.MsgOption{
+			slackapi.MsgOptionBlocks(toBlockSet(blocks)...),
+			slackapi.MsgOptionAttachments(toAttachmentSet(attachments)...),
+		},
+		options...,
+	)
+	// _, _, _, err := instance.Client.UpdateMessage(channelID, ts, opts...)
+	ch, newTs, _, err := instance.Client.UpdateMessage(channelID, ts, opts...)
+
+	if err != nil {
+		return nil, config.NewUpstreamError(
+			fmt.Sprintf("chat.update failed for channel %q and timestamp %q", channelID, ts),
+			0,
+			nil,
+			err,
+		)
+	}
+
+	return &MessageResponse{
+		Channel:   ch,
+		Timestamp: newTs,
 	}, nil
 }

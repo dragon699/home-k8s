@@ -19,6 +19,7 @@ type MessageResponse struct {
 	OK        bool
 	Channel   string
 	Timestamp string
+	Message   
 	Meta      map[string]string
 }
 

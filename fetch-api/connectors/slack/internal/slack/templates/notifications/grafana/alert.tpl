@@ -1,9 +1,4 @@
-{{- $slackChannel := "C0AJMC5RMLH" -}}
-{{- $slackAsUser := "Grafana" -}}
-{{- $slackAsUserIcon := "https://cdn.iconscout.com/icon/free/png-512/free-grafana-logo-icon-svg-download-png-2944910.png?f=webp&w=512" -}}
-
 {{- $status := "Firing" -}}
-
 {{- $titleIcon := ":grafana_alert:" -}}
 {{- if eq .Status "resolved" -}}
   {{- $status = "Recovered" -}}
@@ -27,9 +22,6 @@
 
 
 {
-  "channel": {{ json $slackChannel }},
-  "username": {{ json $slackAsUser }},
-  "icon_url": {{ json $slackAsUserIcon }},
   "text": {{ json $notification }},
   "blocks": [
 		{
@@ -100,7 +92,8 @@
 						"type": "plain_text",
 						"text": "☉ Investigate"
 					},
-					"action_id": "grafana_alert_button_investigate"
+					"action_id": "grafana_alert_button_investigate",
+					"value": "pending"
 				},
 				{
 					"type": "button",

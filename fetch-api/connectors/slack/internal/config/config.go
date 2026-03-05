@@ -17,12 +17,23 @@ type Settings struct {
 	ListenPort int    `json:"listen_port"                   env:"LISTEN_PORT"`
 	ListenUrl  string `json:"listen_url"`
 
-	SlackBotToken                     string `json:"slack_bot_token"                       env:"SLACK_BOT_TOKEN"`
-	SlackAppToken                     string `json:"slack_app_token"                       env:"SLACK_APP_TOKEN"`
+	SlackBotToken    string `json:"slack_bot_token"                       env:"SLACK_BOT_TOKEN"`
+	SlackAppToken    string `json:"slack_app_token"                       env:"SLACK_APP_TOKEN"`
+	SlackSocketDebug bool   `json:"slack_socket_debug"                    env:"SLACK_SOCKET_DEBUG"`
+
 	SlackDefaultChannelID             string `json:"slack_default_channel_id"              env:"SLACK_DEFAULT_CHANNEL_ID"`
 	SlackGrafanaAlertsChannelID       string `json:"slack_grafana_alerts_channel_id"       env:"SLACK_GRAFANA_ALERTS_CHANNEL_ID"`
+	SlackGrafanaUsername              string `json:"slack_grafana_username"                env:"SLACK_GRAFANA_USERNAME"`
+	SlackGrafanaIconURL               string `json:"slack_grafana_icon_url"                env:"SLACK_GRAFANA_ICON_URL"`
 	SlackConnectorDownloaderChannelID string `json:"slack_connector_downloader_channel_id" env:"SLACK_CONNECTOR_DOWNLOADER_CHANNEL_ID"`
-	SlackSocketDebug                  bool   `json:"slack_socket_debug"                    env:"SLACK_SOCKET_DEBUG"`
+	SlackConnectorDownloaderUsername  string `json:"slack_connector_downloader_username"   env:"SLACK_CONNECTOR_DOWNLOADER_USERNAME"`
+	SlackConnectorDownloaderIconURL   string `json:"slack_connector_downloader_icon_url"   env:"SLACK_CONNECTOR_DOWNLOADER_ICON_URL"`
+	SlackAIUsername                   string `json:"slack_ai_username"                     env:"SLACK_AI_USERNAME"`
+	SlackAIIconURL                    string `json:"slack_ai_icon_url"                     env:"SLACK_AI_ICON_URL"`
+
+	TemplatesBasePath string `json:"templates_base_path"                   env:"TEMPLATES_BASE_PATH"`
+
+	ConnectorMLURL string `json:"connector_ml_url"                      env:"CONNECTOR_ML_URL"`
 
 	OtelServiceName      string `json:"otel_service_name"             env:"OTEL_SERVICE_NAME"`
 	OtelServiceNamespace string `json:"otel_service_namespace"        env:"OTEL_SERVICE_NAMESPACE"`
@@ -46,6 +57,17 @@ var defaultSettings = Settings{
 	ListenPort: 8080,
 
 	SlackSocketDebug: false,
+
+	SlackGrafanaUsername:             "Grafana",
+	SlackGrafanaIconURL:              "https://i.imgur.com/1wHJjeZ.jpeg",
+	SlackConnectorDownloaderUsername: "qBittorrent",
+	SlackConnectorDownloaderIconURL:  "https://i.imgur.com/YsiUNNN.png",
+	SlackAIUsername:                  "God",
+	SlackAIIconURL:                   "https://i.imgur.com/knDmBYB.png",
+
+	TemplatesBasePath: "templates",
+
+	ConnectorMLURL: "http://connector-ml.fetch-api.svc:9069",
 
 	OtelServiceName:      "connector-slack",
 	OtelServiceNamespace: "fetch-api",
