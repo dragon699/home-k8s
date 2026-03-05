@@ -14,7 +14,7 @@
 			"type": "section",
 			"text": {
 				"type": "mrkdwn",
-				"text": "{{ .Answer }}"
+				"text": "{{ json .Answer }}"
 			}
 		}
 	]
