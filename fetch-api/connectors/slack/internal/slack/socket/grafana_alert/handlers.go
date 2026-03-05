@@ -463,7 +463,7 @@ func ButtonInvestigate(value string, message slackapi.Message, user string) {
 				"elements": []any{
 					map[string]any{
 						"type": "text",
-						"text": "Summary attached below.",
+						"text": "Summary attached",
 						"style": map[string]any{
 							"bold": true,
 						},

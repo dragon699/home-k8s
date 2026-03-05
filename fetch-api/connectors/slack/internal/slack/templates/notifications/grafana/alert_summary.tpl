@@ -6,7 +6,7 @@
 			"elements": [
 				{
 					"type": "mrkdwn",
-					"text": "Thinked *{{ .DurationSeconds }}* seconds."
+					"text": {{ json (printf "Thinked *%.1f* seconds." .DurationSeconds) }}
 				}
 			]
 		},
@@ -14,7 +14,7 @@
 			"type": "section",
 			"text": {
 				"type": "mrkdwn",
-				"text": "{{ json .Answer }}"
+				"text": {{ json .Answer }}
 			}
 		}
 	]

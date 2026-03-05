@@ -86,6 +86,7 @@
 		{
 			"type": "actions",
 			"elements": [
+				{{- if eq $status "Firing" -}}
 				{
 					"type": "button",
 					"text": {
@@ -95,6 +96,7 @@
 					"action_id": "grafana_alert_button_investigate",
 					"value": "pending"
 				},
+				{{- end -}}
 				{
 					"type": "button",
 					"text": {
