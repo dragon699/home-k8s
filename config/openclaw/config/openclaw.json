@@ -1,0 +1,127 @@
+{
+  "agents": {
+    "defaults": {
+      "compaction": {
+        "mode": "safeguard"
+      },
+      "maxConcurrent": 4,
+      "model": {
+        "primary": "ollama/minimax-m2.5:cloud"
+      },
+      "subagents": {
+        "maxConcurrent": 8
+      },
+      "workspace": "/home/node/.openclaw/workspace"
+    }
+  },
+  "channels": {
+    "slack": {
+      "allowFrom": [
+        "*"
+      ],
+      "appToken": "${SLACK_APP_TOKEN}",
+      "botToken": "${SLACK_BOT_TOKEN}",
+      "dmPolicy": "open",
+      "enabled": true,
+      "groupPolicy": "allowlist",
+      "mode": "socket",
+      "nativeStreaming": true,
+      "streaming": "partial",
+      "userTokenReadOnly": true,
+      "webhookPath": "/slack/events"
+    },
+    "telegram": {
+      "botToken": "${TELEGRAM_BOT_TOKEN}",
+      "dmPolicy": "pairing",
+      "enabled": true,
+      "groupPolicy": "allowlist",
+      "streaming": "partial"
+    }
+  },
+  "commands": {
+    "native": "auto",
+    "nativeSkills": "auto",
+    "ownerDisplay": "raw",
+    "restart": true
+  },
+  "gateway": {
+    "auth": {
+      "mode": "token",
+      "token": "${OPENCLAW_GATEWAY_TOKEN}"
+    },
+    "bind": "lan",
+    "mode": "local",
+    "nodes": {
+      "denyCommands": []
+    },
+    "port": 18789,
+    "tailscale": {
+      "mode": "off",
+      "resetOnExit": false
+    }
+  },
+  "memory": {
+    "backend": "builtin"
+  },
+  "messages": {
+    "ackReactionScope": "group-mentions"
+  },
+  "models": {
+    "providers": {
+      "ollama": {
+        "api": "ollama",
+        "apiKey": "ollama-local",
+        "baseUrl": "http://${OLLAMA_HOST}:${OLLAMA_PORT}/v1",
+        "models": [
+          {
+            "contextWindow": 204800,
+            "cost": {
+              "cacheRead": 0,
+              "cacheWrite": 0,
+              "input": 0,
+              "output": 0
+            },
+            "id": "minimax-m2.5:cloud",
+            "input": [
+              "text"
+            ],
+            "maxTokens": 128000,
+            "name": "minimax-m2.5:cloud",
+            "reasoning": true
+          }
+        ]
+      }
+    }
+  },
+  "plugins": {
+    "entries": {
+      "mcp-bridge": {
+        "config": {
+          "autoDiscover": true,
+          "mode": "traditional"
+        },
+        "enabled": true
+      },
+      "openclaw-web-search": {
+        "enabled": true
+      },
+      "telegram": {
+        "enabled": true
+      }
+    }
+  },
+  "session": {
+    "dmScope": "per-channel-peer"
+  },
+  "tools": {
+    "profile": "full",
+    "web": {
+      "search": {
+        "enabled": true
+      }
+    }
+  },
+  "web": {
+    "enabled": true
+  }
+}

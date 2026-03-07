@@ -1,4 +1,6 @@
 app-template:
+  configMode: overwrite
+
   controllers:
     main:
       containers:
@@ -9,16 +11,23 @@ app-template:
 
   configMaps:
     config:
-      data:
-        openclaw.json: |
-          {
-            // Gateway configuration
-            "gateway": {
-              "port": 18789,
-              "mode": "local",
-              "trustedProxies": [],
-              "controlUi": {
-                "dangerouslyAllowHostHeaderOriginFallback": true
-              }
-            }
-          }
+      enabled: false
+
+  persistence:
+    config:
+      type: configMap
+      name: config-openclaw
+      advancedMounts:
+        main:
+          init-config:
+            - path: /config
+              readOnly: true
+    bash-aliases:
+      type: configMap
+      name: config-openclaw
+      advancedMounts:
+        main:
+          main:
+            - path: /home/node/.bash_aliases
+              subPath: bash_aliases
+              readOnly: true
