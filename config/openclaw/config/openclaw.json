@@ -58,6 +58,10 @@
     "tailscale": {
       "mode": "off",
       "resetOnExit": false
+    },
+    "trusted_proxies": [],
+    "controlUi": {
+      "dangerouslyAllowHostHeaderOriginFallback": true
     }
   },
   "memory": {
