@@ -104,7 +104,10 @@ app-template:
                     "toNumber": "${TWILIO_TO_NUMBER}",
                     "serve": {
                       "bind": "0.0.0.0"
-                    }
+                    },
+                    "inboundPolicy": "allowlist",
+                    "inboundAllowlist": ["+359879000301"],
+                    "inboundGreeting": "Hello! I'm Stitch and i like to make compilations of Dankata."
                   }
                 }
               }
