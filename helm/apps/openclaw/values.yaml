@@ -102,6 +102,7 @@ app-template:
                     },
                     "fromNumber": "${TWILIO_FROM_NUMBER}",
                     "toNumber": "${TWILIO_TO_NUMBER}",
+                    "publicUrl": "${TWILIO_PUBLIC_URL}",
                     "serve": {
                       "bind": "0.0.0.0"
                     },
