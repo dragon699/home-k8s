@@ -29,3 +29,32 @@ spec:
             name: openclaw-main
             port:
               number: 18789
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: openclaw-twilio
+  namespace: openclaw
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-home
+    kubernetes.io/ingress.class: nginx
+  labels:
+    app: openclaw
+    env: home
+spec:
+  tls:
+  - hosts:
+    - call.stitch.iaminyourpc.xyz
+    secretName: tls-call-stitch-iaminyourpc-xyz
+  rules:
+  - host: call.stitch.iaminyourpc.xyz
+    http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: openclaw-twilio
+            port:
+              number: 3334
