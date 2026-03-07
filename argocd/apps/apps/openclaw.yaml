@@ -17,9 +17,9 @@ spec:
   - repoURL: https://chrisbattarbee.github.io/openclaw-helm
     targetRevision: 0.1.12
     chart: openclaw
-  #   helm:
-  #     valueFiles:
-  #     - '$values/helm/apps/openclaw/values.yaml'
+    helm:
+      valueFiles:
+      - '$values/helm/apps/openclaw/values.yaml'
   # - repoURL: git@github.com:dragon699/home-k8s.git
   #   targetRevision: main
   #   path: manifests/apps/openclaw

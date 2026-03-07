@@ -1,0 +1,3 @@
+gateway:
+  controlUi:
+    dangerouslyAllowHostHeaderOriginFallback: true
