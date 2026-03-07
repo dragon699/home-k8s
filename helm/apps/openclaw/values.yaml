@@ -98,7 +98,7 @@ app-template:
                     "provider": "twilio",
                     "twilio": {
                       "accountSid": "${TWILIO_ACCOUNT_SID}",
-                      "authToken": "${TWILIO_AUTH_TOKEN}",
+                      "authToken": "${TWILIO_AUTH_TOKEN}"
                     },
                     "fromNumber": "${TWILIO_FROM_NUMBER}",
                     "toNumber": "${TWILIO_TO_NUMBER}",
@@ -111,8 +111,8 @@ app-template:
                       "preStartTimeoutMs": 5000,
                       "maxPendingConnections": 32,
                       "maxPendingConnectionsPerIp": 4,
-                      "maxConnections": 128,
-                    },
+                      "maxConnections": 128
+                    }
                   }
                 }
               }
