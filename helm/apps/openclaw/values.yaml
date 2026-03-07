@@ -9,7 +9,7 @@ app-template:
           - sh
           - -c
           - |
-            SKILLS="weather gog mcporter goplaces gh ffmpeg spogo"
+            SKILLS="weather gog mcporter goplaces gh ffmpeg"
 
             log() { echo "[$(date -Iseconds)] [init-skills] $*"; }
 
