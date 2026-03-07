@@ -9,7 +9,7 @@ app-template:
           - sh
           - -c
           - |
-            SKILLS="weather gog mcporter goplaces"
+            SKILLS="weather gog mcporter goplaces gh ffmpeg spogo"
 
             log() { echo "[$(date -Iseconds)] [init-skills] $*"; }
 
@@ -66,6 +66,26 @@ app-template:
           alias openclaw='node /app/dist/index.js'
         openclaw.json: |
           {
+            "plugins": {
+              "entries": {
+                "mcp-bridge": {
+                  "config": {
+                    "autoDiscover": true,
+                    "mode": "traditional"
+                  },
+                  "enabled": true
+                },
+                "openclaw-web-search": {
+                  "enabled": true
+                },
+                "telegram": {
+                  "enabled": true
+                },
+                "voice-call": {
+                  "enabled": true
+                }
+              }
+            },
             "agents": {
               "defaults": {
                 "compaction": {
