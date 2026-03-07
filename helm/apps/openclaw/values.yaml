@@ -11,4 +11,4 @@ app-template:
 
   configMaps:
     config:
-      enabled: false
+      enabled: true
