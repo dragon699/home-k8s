@@ -8,6 +8,8 @@ app-template:
           envFrom:
             - secretRef:
                 name: data-openclaw
+          securityContext:
+            readOnlyRootFilesystem: false
 
   configMaps:
     config:
