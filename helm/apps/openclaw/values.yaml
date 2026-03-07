@@ -105,8 +105,11 @@ app-template:
                     "serve": {
                       "bind": "0.0.0.0"
                     },
-                    "inboundPolicy": "allowlist",
-                    "inboundAllowlist": ["+359879000301"]
+                    "inbound": {
+                      "policy": "allowlist",
+                      "allowlist": ["+359879000301"],
+                      "greeting": "Hello! I'm Stitch and i like to make compilations of Dankata."
+                    }
                   }
                 }
               }
