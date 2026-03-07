@@ -1,6 +1,13 @@
 app-template:
   configMode: overwrite
 
+  service:
+    twilio:
+      controller: main
+      ports:
+        http:
+          port: 3334
+
   controllers:
     main:
       initContainers:
