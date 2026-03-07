@@ -104,14 +104,6 @@ app-template:
                     "toNumber": "${TWILIO_TO_NUMBER}",
                     "serve": {
                       "bind": "0.0.0.0"
-                    },
-                    "streaming": {
-                      "enabled": true,
-                      "streamPath": "/voice/stream",
-                      "preStartTimeoutMs": 5000,
-                      "maxPendingConnections": 32,
-                      "maxPendingConnectionsPerIp": 4,
-                      "maxConnections": 128
                     }
                   }
                 }
