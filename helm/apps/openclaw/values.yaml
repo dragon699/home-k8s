@@ -78,7 +78,14 @@ app-template:
                 "mode": "off",
                 "resetOnExit": false
               },
-              "trustedProxies": []
+              "trustedProxies": [],
+              "http": {
+                "endpoints": {
+                  "chatCompletions": {
+                    "enabled": true
+                  }
+                }
+              }
             },
             "memory": {
               "backend": "builtin"
@@ -108,23 +115,6 @@ app-template:
                       "reasoning": true
                     }
                   ]
-                }
-              }
-            },
-            "plugins": {
-              "entries": {
-                "mcp-bridge": {
-                  "config": {
-                    "autoDiscover": true,
-                    "mode": "traditional"
-                  },
-                  "enabled": true
-                },
-                "openclaw-web-search": {
-                  "enabled": true
-                },
-                "telegram": {
-                  "enabled": true
                 }
               }
             },
