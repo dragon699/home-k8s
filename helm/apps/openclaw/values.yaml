@@ -93,7 +93,12 @@ app-template:
                   "enabled": true
                 },
                 "voice-call": {
-                  "enabled": true
+                  "enabled": true,
+                  "config": {
+                    "serve": {
+                      "bind": "0.0.0.0"
+                    }
+                  }
                 }
               }
             },
