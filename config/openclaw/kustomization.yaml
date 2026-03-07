@@ -5,7 +5,7 @@ namespace: openclaw
 generatorOptions:
   disableNameSuffixHash: true
 configMapGenerator:
-- name: config-openclaw
+- name: openclaw-config
   files:
   - openclaw.json=config/openclaw.json
   - bash_aliases=config/bash_aliases

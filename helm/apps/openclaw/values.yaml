@@ -12,26 +12,3 @@ app-template:
   configMaps:
     config:
       enabled: false
-
-  persistence:
-    config:
-      enabled: true
-      type: configMap
-      identifier: null
-      name: config-openclaw
-      advancedMounts:
-        main:
-          init-config:
-            - path: /config
-              readOnly: true
-    bash-aliases:
-      enabled: true
-      type: configMap
-      identifier: null
-      name: config-openclaw
-      advancedMounts:
-        main:
-          main:
-            - path: /home/node/.bash_aliases
-              subPath: bash_aliases
-              readOnly: true
