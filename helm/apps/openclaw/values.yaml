@@ -16,10 +16,9 @@ app-template:
   persistence:
     config:
       enabled: true
-      type: custom
-      volumeSpec:
-        configMap:
-          name: config-openclaw
+      type: configMap
+      identifier: null
+      name: config-openclaw
       advancedMounts:
         main:
           init-config:
@@ -27,10 +26,9 @@ app-template:
               readOnly: true
     bash-aliases:
       enabled: true
-      type: custom
-      volumeSpec:
-        configMap:
-          name: config-openclaw
+      type: configMap
+      identifier: null
+      name: config-openclaw
       advancedMounts:
         main:
           main:
