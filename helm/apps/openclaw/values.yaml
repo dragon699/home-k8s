@@ -15,6 +15,7 @@ app-template:
 
   persistence:
     config:
+      enabled: true
       type: configMap
       name: config-openclaw
       advancedMounts:
@@ -23,6 +24,7 @@ app-template:
             - path: /config
               readOnly: true
     bash-aliases:
+      enabled: true
       type: configMap
       name: config-openclaw
       advancedMounts:
