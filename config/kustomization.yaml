@@ -9,4 +9,3 @@ resources:
 - postgresql-shared
 - fetch-api
 - control-ui
-- openclaw
