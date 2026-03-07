@@ -59,6 +59,10 @@ app-template:
             log "Skills initialization complete"
       containers:
         main:
+          ports:
+          - name: twilio
+            containerPort: 3334
+            protocol: TCP
           envFrom:
             - secretRef:
                 name: data-openclaw
