@@ -113,7 +113,8 @@ app-template:
                       "enabled": true,
                       "streamPath": "/voice/stream"
                     },
-                    "responseModel": "openai/gpt-4o-mini"
+                    "responseModel": "openai/gpt-4o-mini",
+                    "responseTimeoutMs": 60000
                   }
                 }
               }
