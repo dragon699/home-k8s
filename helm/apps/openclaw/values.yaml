@@ -95,9 +95,24 @@ app-template:
                 "voice-call": {
                   "enabled": true,
                   "config": {
+                    "provider": "twilio",
+                    "twilio": {
+                      "accountSid": "${TWILIO_ACCOUNT_SID}",
+                      "authToken": "${TWILIO_AUTH_TOKEN}",
+                    },
+                    "fromNumber": "${TWILIO_FROM_NUMBER}",
+                    "toNumber": "${TWILIO_TO_NUMBER}",
                     "serve": {
                       "bind": "0.0.0.0"
-                    }
+                    },
+                    "streaming": {
+                      "enabled": true,
+                      "streamPath": "/voice/stream",
+                      "preStartTimeoutMs": 5000,
+                      "maxPendingConnections": 32,
+                      "maxPendingConnectionsPerIp": 4,
+                      "maxConnections": 128,
+                    },
                   }
                 }
               }
