@@ -112,7 +112,8 @@ app-template:
                     "streaming": {
                       "enabled": true,
                       "streamPath": "/voice/stream"
-                    }
+                    },
+                    "responseModel": "openai/gpt-4o-mini"
                   }
                 }
               }
