@@ -1,5 +1,9 @@
 app-template:
-  configMode: overwrite
+  configMode: merge
+
+  configMaps:
+    config:
+      enabled: true
 
   controllers:
     main:
@@ -8,7 +12,3 @@ app-template:
           envFrom:
             - secretRef:
                 name: data-openclaw
-
-  configMaps:
-    config:
-      enabled: true
