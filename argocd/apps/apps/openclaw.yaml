@@ -14,17 +14,17 @@ spec:
   - repoURL: git@github.com:dragon699/home-k8s.git
     targetRevision: main
     ref: values
-  - repoURL: https://chrisbattarbee.github.io/openclaw-helm
-    targetRevision: 0.1.12
+  - repoURL: https://serhanekicii.github.io/openclaw-helm
+    targetRevision: 1.4.4
     chart: openclaw
     helm:
       valueFiles:
       - '$values/helm/apps/openclaw/values.yaml'
-  # - repoURL: git@github.com:dragon699/home-k8s.git
-  #   targetRevision: main
-  #   path: manifests/apps/openclaw
-  #   directory:
-  #     recurse: true
+  - repoURL: git@github.com:dragon699/home-k8s.git
+    targetRevision: main
+    path: manifests/apps/openclaw
+    directory:
+      recurse: true
   destination:
     server: https://kubernetes.default.svc
     namespace: openclaw

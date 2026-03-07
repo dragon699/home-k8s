@@ -1,0 +1,41 @@
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: auth-openclaw
+  namespace: openclaw
+spec:
+  refreshInterval: 5m0s
+  secretStoreRef:
+    name: home-vault
+    kind: ClusterSecretStore
+  target:
+    name: auth-openclaw
+    creationPolicy: Owner
+  dataFrom:
+  - extract:
+      key: home/openclaw/auth-openclaw
+      conversionStrategy: Default
+      decodingStrategy: None
+      metadataPolicy: None
+
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: data-openclaw
+  namespace: openclaw
+spec:
+  refreshInterval: 5m0s
+  secretStoreRef:
+    name: home-vault
+    kind: ClusterSecretStore
+  target:
+    name: data-openclaw
+    creationPolicy: Owner
+  dataFrom:
+  - extract:
+      key: home/openclaw/data-openclaw
+      conversionStrategy: Default
+      decodingStrategy: None
+      metadataPolicy: None
