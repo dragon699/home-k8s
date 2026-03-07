@@ -107,14 +107,7 @@ app-template:
                     },
                     "inboundPolicy": "allowlist",
                     "allowFrom": ["+359879000301"],
-                    "inboundGreeting": "Hello! I'm Stitch and i like to make compilations of Dankata.",
-                    "tts": {
-                      "provider": "openai",
-                      "openai": {
-                        "apiKey": "${OPENAI_API_KEY}",
-                        "voice": "alloy"
-                      }
-                    }
+                    "inboundGreeting": "Hello! I'm Stitch and i like to make compilations of Dankata."
                   }
                 }
               }
@@ -193,7 +186,14 @@ app-template:
               "backend": "builtin"
             },
             "messages": {
-              "ackReactionScope": "group-mentions"
+              "ackReactionScope": "group-mentions",
+              "tts": {
+                "provider": "openai",
+                "openai": {
+                  "apiKey": "${OPENAI_API_KEY}",
+                  "voice": "alloy"
+                }
+              }
             },
             "models": {
               "providers": {
