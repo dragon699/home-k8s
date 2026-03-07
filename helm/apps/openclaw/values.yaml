@@ -93,10 +93,7 @@ app-template:
                   "enabled": true
                 },
                 "voice-call": {
-                  "enabled": true,
-                  "config": {
-                    "webhookHost": "0.0.0.0"
-                  }
+                  "enabled": true
                 }
               }
             },
