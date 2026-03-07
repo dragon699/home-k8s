@@ -3,6 +3,18 @@ app-template:
 
   controllers:
     main:
+      initContainers:
+        init-skills:
+          command:
+          - sh
+          - -c
+          - |
+            cd /home/node/.openclaw/workspace && mkdir -p skills
+            for skill in weather gog mcporter goplaces; do
+              if ! npx -y clawhub install "$skill" --no-input; then
+                echo "WARNING: Failed to install skill: $skill"
+              fi
+            done
       containers:
         main:
           envFrom:
