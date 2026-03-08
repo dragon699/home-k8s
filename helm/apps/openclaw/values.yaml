@@ -79,16 +79,6 @@ app-template:
           {
             "plugins": {
               "entries": {
-                "mcp-bridge": {
-                  "config": {
-                    "autoDiscover": true,
-                    "mode": "traditional"
-                  },
-                  "enabled": true
-                },
-                "openclaw-web-search": {
-                  "enabled": true
-                },
                 "telegram": {
                   "enabled": true
                 },
