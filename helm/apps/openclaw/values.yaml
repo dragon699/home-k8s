@@ -136,7 +136,7 @@ app-template:
             },
             "channels": {
               "slack": {
-                "allowFrom": ["U0AFBG79RRV"],
+                "allowFrom": ["*"],
                 "appToken": "${SLACK_APP_TOKEN}",
                 "botToken": "${SLACK_BOT_TOKEN}",
                 "dmPolicy": "open",
