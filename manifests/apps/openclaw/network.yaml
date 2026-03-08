@@ -7,9 +7,6 @@ metadata:
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-home
     kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/limit-rps: "20"
-    nginx.ingress.kubernetes.io/limit-connections: "30"
-    nginx.ingress.kubernetes.io/limit-burst-multiplier: "5"
   labels:
     app: openclaw
     env: home
