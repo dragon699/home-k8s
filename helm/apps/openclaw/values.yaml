@@ -64,7 +64,7 @@ app-template:
               cpu: 100m
               memory: 512Mi
             limits:
-              cpu: 6
+              cpu: 6000m
               memory: 4Gi
         main:
           ports:
