@@ -58,6 +58,14 @@ app-template:
             done
             log "Skills initialization complete"
       containers:
+        chromium:
+          resources:
+            requests:
+              cpu: 100m
+              memory: 512Mi
+            limits:
+              cpu: 6
+              memory: 4Gi
         main:
           ports:
           - name: twilio
