@@ -146,7 +146,13 @@ app-template:
                 "nativeStreaming": false,
                 "streaming": "partial",
                 "userTokenReadOnly": true,
-                "webhookPath": "/slack/events"
+                "webhookPath": "/slack/events",
+                "channels": {
+                  "C0AJMC5RMLH": {
+                    "requireMention": true,
+                    "users": ["U0AFBG79RRV"]
+                  }
+                }
               },
               "telegram": {
                 "botToken": "${TELEGRAM_BOT_TOKEN}",
