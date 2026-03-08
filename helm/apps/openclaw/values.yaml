@@ -142,6 +142,7 @@ app-template:
                 "dmPolicy": "open",
                 "enabled": true,
                 "groupPolicy": "allowlist",
+                "groupAllowFrom": ["U0AFBG79RRV"],
                 "mode": "socket",
                 "nativeStreaming": true,
                 "streaming": "partial",
@@ -222,6 +223,51 @@ app-template:
                       "maxTokens": 128000,
                       "name": "minimax-m2.5:cloud",
                       "reasoning": true
+                    }
+                  ]
+                },
+                "openai": {
+                  "api": "openai",
+                  "apiKey": "${OPENAI_API_KEY}",
+                  "models": [
+                    {
+                      "id": "gpt-4o",
+                      "name": "GPT-4o",
+                      "input": ["text", "image"],
+                      "maxTokens": 16384,
+                      "contextWindow": 128000,
+                      "cost": {
+                        "input": 2.5,
+                        "output": 10,
+                        "cacheRead": 1.25,
+                        "cacheWrite": 10
+                      }
+                    },
+                    {
+                      "id": "gpt-5",
+                      "name": "GPT-5",
+                      "input": ["text", "image"],
+                      "maxTokens": 128000,
+                      "contextWindow": 400000,
+                      "cost": {
+                        "input": 1.25,
+                        "output": 10,
+                        "cacheRead": 0.125,
+                        "cacheWrite": 10
+                      }
+                    },
+                    {
+                      "id": "gpt-4o-mini",
+                      "name": "GPT-4o Mini",
+                      "input": ["text", "image"],
+                      "maxTokens": 16384,
+                      "contextWindow": 128000,
+                      "cost": {
+                        "input": 0.15,
+                        "output": 0.6,
+                        "cacheRead": 0.075,
+                        "cacheWrite": 0.3
+                      }
                     }
                   ]
                 }
