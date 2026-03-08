@@ -136,14 +136,14 @@ app-template:
             },
             "channels": {
               "slack": {
-                "allowFrom": ["*"],
+                "allowFrom": ["U0AFBG79RRV"],
                 "appToken": "${SLACK_APP_TOKEN}",
                 "botToken": "${SLACK_BOT_TOKEN}",
                 "dmPolicy": "open",
                 "enabled": true,
-                "groupPolicy": "allowlist",
+                "groupPolicy": "open",
                 "mode": "socket",
-                "nativeStreaming": true,
+                "nativeStreaming": false,
                 "streaming": "partial",
                 "userTokenReadOnly": true,
                 "webhookPath": "/slack/events"
