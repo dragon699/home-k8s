@@ -142,7 +142,6 @@ app-template:
                 "dmPolicy": "open",
                 "enabled": true,
                 "groupPolicy": "allowlist",
-                "groupAllowFrom": ["U0AFBG79RRV"],
                 "mode": "socket",
                 "nativeStreaming": true,
                 "streaming": "partial",
@@ -227,8 +226,9 @@ app-template:
                   ]
                 },
                 "openai": {
-                  "api": "openai",
+                  "api": "openai-completions",
                   "apiKey": "${OPENAI_API_KEY}",
+                  "baseUrl": "https://api.openai.com/v1",
                   "models": [
                     {
                       "id": "gpt-4o",
