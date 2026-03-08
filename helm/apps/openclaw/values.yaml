@@ -16,7 +16,7 @@ app-template:
           - sh
           - -c
           - |
-            SKILLS="weather gog mcporter goplaces gh ffmpeg"
+            SKILLS="weather gog mcporter goplaces gh ffmpeg peekaboo"
 
             log() { echo "[$(date -Iseconds)] [init-skills] $*"; }
 
