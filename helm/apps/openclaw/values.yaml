@@ -77,6 +77,25 @@ app-template:
           alias openclaw='node /app/dist/index.js'
         openclaw.json: |
           {
+            "browser": {
+              "enabled": true,
+              "ssrfPolicy": {
+                "dangerouslyAllowPrivateNetwork": true
+              },
+              "remoteCdpTimeoutMs": 1500,
+              "remoteCdpHandshakeTimeoutMs": 3000,
+              "defaultProfile": "openclaw",
+              "color": "#FF4500",
+              "headless": false,
+              "noSandbox": false,
+              "attachOnly": false,
+              "profiles": {
+                "openclaw": {
+                  "cdpUrl": "http://${BROWSER_CDP_HOST}:${BROWSER_CDP_PORT}",
+                  "color": "#FF4500"
+                }
+              }
+            },
             "plugins": {
               "entries": {
                 "telegram": {
