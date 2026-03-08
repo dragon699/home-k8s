@@ -213,7 +213,7 @@ app-template:
                 "ollama": {
                   "api": "ollama",
                   "apiKey": "ollama-local",
-                  "baseUrl": "http://${OLLAMA_HOST}:${OLLAMA_PORT}/v1",
+                  "baseUrl": "http://${OLLAMA_HOST}:${OLLAMA_PORT}",
                   "models": [
                     {
                       "contextWindow": 204800,
