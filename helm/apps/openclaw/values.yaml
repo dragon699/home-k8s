@@ -126,7 +126,7 @@ app-template:
                 },
                 "maxConcurrent": 4,
                 "model": {
-                  "primary": "ollama/minimax-m2.5:cloud"
+                  "primary": "openai/gpt-5"
                 },
                 "subagents": {
                   "maxConcurrent": 8
@@ -228,7 +228,7 @@ app-template:
                 "openai": {
                   "api": "openai-completions",
                   "apiKey": "${OPENAI_API_KEY}",
-                  "baseUrl": "https://api.openai.com/v1",
+                  "baseUrl": "${OPENAI_BASE_URL}",
                   "models": [
                     {
                       "id": "gpt-4o",
