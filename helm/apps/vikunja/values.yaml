@@ -8,6 +8,7 @@ vikunja:
 
   persistence:
     cache:
+      enabled: true
       type: emptyDir
       mountPath: /.cache
 
