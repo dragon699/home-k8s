@@ -6,6 +6,12 @@ vikunja:
     main:
       enabled: false
 
+  persistence:
+    cache:
+      type: emptyDir
+      globalMounts:
+        - path: /.cache
+
   configMaps:
     config:
       enabled: true
