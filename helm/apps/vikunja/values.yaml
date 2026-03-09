@@ -18,7 +18,6 @@ vikunja:
             apiKey: "typesense"
 
   env:
-    HOME: /tmp
     VIKUNJA_DATABASE_TYPE: postgres
     VIKUNJA_DATABASE_HOST:
       valueFrom:
