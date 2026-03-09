@@ -6,7 +6,19 @@ vikunja:
     main:
       enabled: false
 
+  configMaps:
+    config:
+      enabled: true
+      data:
+        config.yml: |
+          service:
+            publicurl: "https://board.iaminyourpc.xyz"
+          typesense:
+            url: "http://vikunja-typesense:8108"
+            apiKey: "typesense"
+
   env:
+    HOME: /tmp
     VIKUNJA_DATABASE_TYPE: postgres
     VIKUNJA_DATABASE_HOST:
       valueFrom:
