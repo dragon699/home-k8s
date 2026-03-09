@@ -7,7 +7,7 @@ vikunja:
       enabled: false
 
   configMaps:
-    config:
+    api-config:
       enabled: true
       data:
         config.yml: |
