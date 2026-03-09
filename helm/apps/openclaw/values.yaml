@@ -301,6 +301,9 @@ app-template:
             },
             "tools": {
               "profile": "full",
+              "sessions": {
+                "visibility": "all"
+              },
               "web": {
                 "search": {
                   "enabled": true

@@ -15,7 +15,7 @@ spec:
     targetRevision: main
     ref: values
   - repoURL: oci://ghcr.io/go-vikunja/helm-chart/vikunja
-    targetRevision: 1.0.0
+    targetRevision: 2.0.2
     chart: vikunja
     helm:
       skipCrds: false

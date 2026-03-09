@@ -1,4 +1,7 @@
 vikunja:
+  image:
+    tag: "2.1.0"
+
   ingress:
     main:
       enabled: false
