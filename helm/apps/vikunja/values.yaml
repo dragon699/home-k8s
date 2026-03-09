@@ -9,8 +9,7 @@ vikunja:
   persistence:
     cache:
       type: emptyDir
-      globalMounts:
-        - path: /.cache
+      mountPath: /.cache
 
   configMaps:
     config:
