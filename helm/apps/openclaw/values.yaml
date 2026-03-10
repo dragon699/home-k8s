@@ -159,6 +159,7 @@ app-template:
                 "dmPolicy": "pairing",
                 "enabled": true,
                 "groupPolicy": "allowlist",
+                "allowBots": true,
                 "mode": "socket",
                 "nativeStreaming": false,
                 "streaming": "progress",
