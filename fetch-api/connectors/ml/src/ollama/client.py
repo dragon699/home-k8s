@@ -30,7 +30,7 @@ class OllamaClient:
 
 
     @traced('ask ollama')
-    def ask(self, prompt: str, model: str, instructions: str = '', span=None) -> BaseMessage:
+    def ask_ollama(self, prompt: str, model: str, instructions: str = '', span=None) -> BaseMessage:
         span.set_attributes(
             reword({
                 'ollama.operation': 'ask',

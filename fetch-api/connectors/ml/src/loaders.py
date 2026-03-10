@@ -27,11 +27,10 @@ class SettingsLoader:
 class RoutesLoader:
     @staticmethod
     def load(app, settings):
-        from connectors.ml.src.routes import (internal, ollama)
+        from connectors.ml.src.routes import (internal, ask)
 
         app.include_router(internal.router, prefix="/api")
-        app.include_router(ollama.router)
-
+        app.include_router(ask.router, prefix="/ask")
         log.info(
             f'Listening for incoming query requests on {settings.listen_host}:{settings.listen_port} and forwarding to Ollama at {settings.url}'
         )

@@ -42,16 +42,17 @@ class Querier:
 
     
     @traced('commit query')
-    def commit(self, prompt: str, model: str | None = None, instructions: str = '', instructions_template: str | None = None, span=None) -> dict | None:
+    def commit(self, provider: str, prompt: str, model: str | None = None, instructions: str = '', instructions_template: str | None = None, span=None) -> dict | None:
         try:
             full_instructions = self.fetch(instructions, instructions_template)
             payload = self.render(prompt, model, full_instructions)
-            response = self.send(*payload.values())
+            response = self.send(provider, *payload.values())
             result = self.process(response)
 
             span.set_attributes(
                 reword({
                     'querier.query.status': 'successful',
+                    'querier.query.provider': provider,
                     'querier.query.prompt': payload['prompt'],
                     'querier.query.model': payload['model'],
                     'querier.query.instructions': payload['instructions'],
@@ -123,9 +124,9 @@ class Querier:
 
 
     @traced('send query')
-    def send(self, prompt: str, model: str = None, instructions: str = '', span=None) -> BaseMessage | None:
+    def send(self, provider: str, prompt: str, model: str = None, instructions: str = '', span=None) -> BaseMessage | None:
         try:
-            response = self.client.ask(
+            response = self.client.ask_ollama(
                 prompt=prompt,
                 model=model,
                 instructions=instructions

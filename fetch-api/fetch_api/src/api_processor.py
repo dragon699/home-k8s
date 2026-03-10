@@ -86,7 +86,7 @@ class APIProcessor:
                         requests_timeout=settings.ai_summary_requests_timeout
                     )
 
-                    upstream_ml_endpoint = 'ask'
+                    upstream_ml_endpoint = 'ask/ollama'
                     commong_ml_log_attributes = {
                         **common_log_attributes,
                         'upstream_ml_endpoint': upstream_ml_endpoint
