@@ -167,6 +167,7 @@ app-template:
                 "channels": {
                   "#alerts": {
                     "allow": true,
+                    "allowBots": true,
                     "requireMention": true,
                     "users": ["U0AG5TS8UTB"],
                     "systemPrompt": "You give your best to provide root cause analysis to alerts fired from Grafana, utilizing the access you have to and everything relevant. In the end of the message, you include 1 joke or sarcastic comment to lighten up the mood."
