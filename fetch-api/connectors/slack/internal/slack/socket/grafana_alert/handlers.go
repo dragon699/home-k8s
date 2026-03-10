@@ -19,7 +19,7 @@ func ButtonInvestigate(value string, message slackapi.Message, user string) {
 			"type": "section",
 			"text": map[string]any{
 				"type": "mrkdwn",
-				"text": "@OpenClaw, check this one :point_up::skin-tone-3:",
+				"text": fmt.Sprintf("<@%s>, check it please :point_up::skin-tone-3:", user),
 			},
 		},
 	}

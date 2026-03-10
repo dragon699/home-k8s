@@ -28,8 +28,7 @@ type Settings struct {
 	SlackConnectorDownloaderChannelID string `json:"slack_connector_downloader_channel_id" env:"SLACK_CONNECTOR_DOWNLOADER_CHANNEL_ID"`
 	SlackConnectorDownloaderUsername  string `json:"slack_connector_downloader_username"   env:"SLACK_CONNECTOR_DOWNLOADER_USERNAME"`
 	SlackConnectorDownloaderIconURL   string `json:"slack_connector_downloader_icon_url"   env:"SLACK_CONNECTOR_DOWNLOADER_ICON_URL"`
-	SlackAIUsername                   string `json:"slack_ai_username"                     env:"SLACK_AI_USERNAME"`
-	SlackAIIconURL                    string `json:"slack_ai_icon_url"                     env:"SLACK_AI_ICON_URL"`
+	SlackOpenClawUserID               string `json:"slack_openclaw_user_id"                env:"SLACK_OPENCLAW_USER_ID"`
 
 	TemplatesBasePath string `json:"templates_base_path"                   env:"TEMPLATES_BASE_PATH"`
 
@@ -64,8 +63,7 @@ var defaultSettings = Settings{
 	SlackGrafanaIconURL:              "https://i.imgur.com/1wHJjeZ.jpeg",
 	SlackConnectorDownloaderUsername: "qBittorrent",
 	SlackConnectorDownloaderIconURL:  "https://i.imgur.com/YsiUNNN.png",
-	SlackAIUsername:                  "God",
-	SlackAIIconURL:                   "https://i.imgur.com/knDmBYB.png",
+	SlackOpenClawUserID:              "U0AJZCFBQR1",
 
 	TemplatesBasePath: "templates",
 

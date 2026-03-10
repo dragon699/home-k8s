@@ -132,9 +132,6 @@ func (instance *SlackClient) SendMsgFromTemplate(channel string, app string, tem
 	case "connector-downloader":
 		appName = config.Config.SlackConnectorDownloaderUsername
 		appIcon = config.Config.SlackConnectorDownloaderIconURL
-	case "ai":
-		appName = config.Config.SlackAIUsername
-		appIcon = config.Config.SlackAIIconURL
 	}
 
 	opts := []slackapi.MsgOption{
