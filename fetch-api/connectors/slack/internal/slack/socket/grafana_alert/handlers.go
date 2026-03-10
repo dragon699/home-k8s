@@ -19,7 +19,7 @@ func ButtonInvestigate(value string, message slackapi.Message, user string) {
 			"type": "section",
 			"text": map[string]any{
 				"type": "mrkdwn",
-				"text": "@Openclaw, check this one :point_up::skin-tone-3:",
+				"text": "@OpenClaw, check this one :point_up::skin-tone-3:",
 			},
 		},
 	}
@@ -44,8 +44,6 @@ func ButtonInvestigate(value string, message slackapi.Message, user string) {
 		t.Log.Error("Failed to send message", "error", err)
 	}
 
-	msgStatusUpdated := false
-
 	for i := len(message.Blocks.BlockSet) - 1; i >= 0; i-- {
 		actionsBlock, ok := message.Blocks.BlockSet[i].(*slackapi.ActionBlock)
 
@@ -53,31 +51,31 @@ func ButtonInvestigate(value string, message slackapi.Message, user string) {
 			continue
 		}
 
+		filtered := actionsBlock.Elements.ElementSet[:0]
 		for _, element := range actionsBlock.Elements.ElementSet {
 			button, ok := element.(*slackapi.ButtonBlockElement)
-
-			if !ok || button.ActionID != "grafana_alert_button_investigate" {
+			if ok && button.ActionID == "grafana_alert_button_investigate" {
 				continue
 			}
-
-			remaining := append(message.Blocks.BlockSet[:i], message.Blocks.BlockSet[i+1:]...)
-
-			var blocks []map[string]any
-			if raw, err := json.Marshal(remaining); err == nil {
-				_ = json.Unmarshal(raw, &blocks)
-			}
-
-			if _, err := slack.Client.UpdateMsg(config.Config.SlackGrafanaAlertsChannelID, message.Timestamp, blocks, nil); err != nil {
-				t.Log.Error("Failed to update message status", "error", err)
-				return
-			}
-
-			msgStatusUpdated = true
-			break
+			filtered = append(filtered, element)
 		}
 
-		if msgStatusUpdated {
-			break
+		if len(filtered) == len(actionsBlock.Elements.ElementSet) {
+			continue
 		}
+
+		actionsBlock.Elements.ElementSet = filtered
+
+		var blocks []map[string]any
+		if raw, err := json.Marshal(message.Blocks.BlockSet); err == nil {
+			_ = json.Unmarshal(raw, &blocks)
+		}
+
+		if _, err := slack.Client.UpdateMsg(config.Config.SlackGrafanaAlertsChannelID, message.Timestamp, blocks, nil); err != nil {
+			t.Log.Error("Failed to update message status", "error", err)
+			return
+		}
+
+		break
 	}
 }
