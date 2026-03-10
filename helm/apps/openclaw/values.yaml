@@ -304,6 +304,10 @@ app-template:
             },
             "tools": {
               "profile": "full",
+              "exec": {
+                "security": "full",
+                "ask": "off"
+              },
               "sessions": {
                 "visibility": "all"
               },
