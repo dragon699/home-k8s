@@ -70,7 +70,7 @@ var defaultSettings = Settings{
 	ConnectorMLURL:                  "http://connector-ml.fetch-api.svc:9069",
 	ConnectorMLInstructionsTemplate: "grafana-alerts",
 	ConnectorMLModel:                "qwen2.5:14b-instruct-q4_K_M",
-
+ 
 	OtelServiceName:      "connector-slack",
 	OtelServiceNamespace: "fetch-api",
 	OtelServiceVersion:   "",
