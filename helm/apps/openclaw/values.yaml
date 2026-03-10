@@ -162,7 +162,7 @@ app-template:
                 "allowBots": true,
                 "mode": "socket",
                 "nativeStreaming": false,
-                "streaming": "progress",
+                "streaming": "partial",
                 "userTokenReadOnly": true,
                 "webhookPath": "/slack/events",
                 "channels": {
