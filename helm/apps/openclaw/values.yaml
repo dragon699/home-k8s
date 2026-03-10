@@ -156,18 +156,20 @@ app-template:
                 "allowFrom": ["*"],
                 "appToken": "${SLACK_APP_TOKEN}",
                 "botToken": "${SLACK_BOT_TOKEN}",
-                "dmPolicy": "open",
+                "dmPolicy": "pairing",
                 "enabled": true,
-                "groupPolicy": "open",
+                "groupPolicy": "allowlist",
                 "mode": "socket",
                 "nativeStreaming": false,
-                "streaming": "partial",
+                "streaming": "progress",
                 "userTokenReadOnly": true,
                 "webhookPath": "/slack/events",
                 "channels": {
-                  "C0AJMC5RMLH": {
+                  "#alerts": {
+                    "allow": true,
                     "requireMention": true,
-                    "users": ["U0AFBG79RRV"]
+                    "users": ["U0AG5TS8UTB"],
+                    "systemPrompt": "You give your best to provide root cause analysis to alerts fired from Grafana, utilizing the access you have to and everything relevant. In the end of the message, you include 1 joke or sarcastic comment to lighten up the mood."
                   }
                 }
               },
