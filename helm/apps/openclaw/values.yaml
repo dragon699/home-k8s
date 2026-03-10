@@ -7,6 +7,11 @@ app-template:
       ports:
         http:
           port: 3334
+    oauth-callback:
+      controller: main
+      ports:
+        http:
+          port: 1455
 
   controllers:
     main:
@@ -70,6 +75,9 @@ app-template:
           ports:
           - name: twilio
             containerPort: 3334
+            protocol: TCP
+          - name: oauth-callback
+            containerPort: 1455
             protocol: TCP
           envFrom:
             - secretRef:
@@ -143,7 +151,7 @@ app-template:
                 },
                 "maxConcurrent": 4,
                 "model": {
-                  "primary": "ollama/minimax-m2.5:cloud",
+                  "primary": "ollama/minimax-m2.5:cloud"
                 },
                 "subagents": {
                   "maxConcurrent": 8
