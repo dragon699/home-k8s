@@ -199,7 +199,8 @@ app-template:
               },
               "mode": "local",
               "nodes": {
-                "denyCommands": []
+                "denyCommands": [],
+                "allowCommands": ["system.run", "system.run.prepare", "system.which"]
               },
               "port": 18789,
               "tailscale": {
