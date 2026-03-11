@@ -33,6 +33,13 @@ spec:
       releaseName: gha-runner-fetch-ui
       valueFiles:
       - '$values/helm/infra/github-actions/values-fetch-ui.yaml'
+  - repoURL: oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set
+    targetRevision: 0.13.0
+    chart: gha-runner-scale-set
+    helm:
+      releaseName: gha-runner-fetch-api
+      valueFiles:
+      - '$values/helm/infra/github-actions/values-fetch-api.yaml'
   - repoURL: git@github.com:dragon699/home-k8s.git
     targetRevision: main
     path: manifests/infra/github-actions
