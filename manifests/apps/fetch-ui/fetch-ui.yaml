@@ -24,7 +24,7 @@ spec:
         - name: registry-fetch-ui
       containers:
         - name: fetch-ui
-          image: ghcr.io/dragon699/home-k8s/fetch-ui:0.1.14
+          image: ghcr.io/dragon699/home-k8s/fetch-ui:0.1.15
           imagePullPolicy: Always
           ports:
             - containerPort: 80
