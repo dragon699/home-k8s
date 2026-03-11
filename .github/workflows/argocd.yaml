@@ -83,7 +83,7 @@ jobs:
           done
         done
 
-        mapfile -t ITEMS_TO_SYNC < <(printf '%s\n' "${ITEMS_TO_SYNC[@]}" | sort -u)
+        mapfile -t ITEMS_TO_SYNC < <(printf '%s\n' "${ITEMS_TO_SYNC[@]}" | sed '/^$/d' | sort -u)
 
         ITEMS_JSON=""
         for NAME in "${ITEMS_TO_SYNC[@]}"; do
