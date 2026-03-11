@@ -34,8 +34,6 @@ func ButtonInvestigate(value string, message slackapi.Message, user string) {
 		config.Config.SlackGrafanaAlertsChannelID,
 		askMsg,
 		nil,
-		slackapi.MsgOptionIconURL(config.Config.SlackGrafanaIconURL),
-		slackapi.MsgOptionUsername(config.Config.SlackGrafanaUsername),
 		slackapi.MsgOptionText(fmt.Sprintf("%s > Investigation requested from Stitch", alert.Labels["alert_name"]), false),
 		slackapi.MsgOptionTS(message.Timestamp),
 	)
