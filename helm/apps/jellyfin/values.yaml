@@ -2,10 +2,10 @@ resources:
   jellyfin:
     requests:
       memory: 256Mi
-      cpu: 0.2
+      cpu: 200m
     limits:
       memory: 6Gi
-      cpu: 6
+      cpu: 6000m
 
 jellyfin:
   mediaVolumes:

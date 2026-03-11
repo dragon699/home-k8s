@@ -101,6 +101,7 @@ jobs:
     strategy:
       matrix: ${{ fromJson(needs.Inspect.outputs.items) }}
       fail-fast: false
+    timeout-minutes: 5
 
     steps:
     - name: Fetch code
