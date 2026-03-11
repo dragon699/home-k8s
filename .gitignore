@@ -3,6 +3,4 @@
 **/__pycache__/
 **/.cache
 
-fetch-api/local/env
-
 scripts/test*
