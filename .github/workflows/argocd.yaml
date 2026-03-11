@@ -93,8 +93,8 @@ jobs:
 
         printf 'items={"include":[%s]}\n' "$ITEMS_JSON" >> "$GITHUB_OUTPUT"
 
-  Deploy:
-    name: Deploy ${{ matrix.name || ' ' }}
+  Sync:
+    name: Sync ${{ matrix.name || ' ' }}
     needs: Inspect
     runs-on: gha-runner-home-k8s
     if: ${{ needs.Inspect.outputs.items != '{"include":[]}' }}
