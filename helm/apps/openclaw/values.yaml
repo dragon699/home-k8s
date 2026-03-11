@@ -136,6 +136,14 @@ app-template:
                 }
               }
             },
+            "auth": {
+              "profiles": {
+                "openai-codex:default": {
+                  "provider": "openai-codex",
+                  "mode": "oauth"
+                }
+              }
+            },
             "agents": {
               "defaults": {
                 "compaction": {
@@ -252,6 +260,11 @@ app-template:
                       "reasoning": true
                     }
                   ]
+                },
+                "openai-codex": {
+                  "baseUrl": "https://chatgpt.com/backend-api",
+                  "api": "openai-codex-responses",
+                  "models": []
                 },
                 "openai": {
                   "api": "openai-completions",
