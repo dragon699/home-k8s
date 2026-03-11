@@ -1,5 +1,5 @@
 name: argocd
-run-name: Sync in ArgoCD
+run-name: Reconcile cluster
 
 on:
   workflow_dispatch:
@@ -106,7 +106,7 @@ jobs:
     - name: Fetch code
       uses: actions/checkout@v6
 
-    - name: Reconcile in ArgoCD
+    - name: Sync in ArgoCD
       uses: clowdhaus/argo-cd-action/@main
       with:
         download-url: ${{ env.ARGOCD_BIN_URL }}
