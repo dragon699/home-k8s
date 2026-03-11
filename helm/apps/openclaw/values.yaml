@@ -143,7 +143,7 @@ app-template:
                 },
                 "maxConcurrent": 4,
                 "model": {
-                  "primary": "ollama/minimax-m2.5:cloud",
+                  "primary": "openai-codex/gpt-5.4",
                 },
                 "subagents": {
                   "maxConcurrent": 8
