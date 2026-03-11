@@ -22,7 +22,7 @@ env:
 jobs:
 
   Inspect:
-    runs-on: gha-runner-fetch-api
+    runs-on: gha-runner-home-k8s
     outputs:
       items: ${{ steps.items_to_sync.outputs.items }}
     
@@ -96,7 +96,7 @@ jobs:
   Deploy:
     name: Deploy ${{ matrix.name || ' ' }}
     needs: Inspect
-    runs-on: gha-runner-fetch-api
+    runs-on: gha-runner-home-k8s
     if: ${{ needs.Inspect.outputs.items != '{"include":[]}' }}
     strategy:
       matrix: ${{ fromJson(needs.Inspect.outputs.items) }}
