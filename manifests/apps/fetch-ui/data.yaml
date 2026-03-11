@@ -2,15 +2,15 @@
 apiVersion: external-secrets.io/v1
 kind: ExternalSecret
 metadata:
-  name: registry-control-ui
-  namespace: control-ui
+  name: registry-fetch-ui
+  namespace: fetch-ui
 spec:
   refreshInterval: 5m0s
   secretStoreRef:
     name: home-vault
     kind: ClusterSecretStore
   target:
-    name: registry-control-ui
+    name: registry-fetch-ui
     creationPolicy: Owner
     template:
       type: kubernetes.io/dockerconfigjson
@@ -28,7 +28,7 @@ spec:
           }
   dataFrom:
   - extract:
-      key: home/control-ui/registry-control-ui
+      key: home/fetch-ui/registry-fetch-ui
       conversionStrategy: Default
       decodingStrategy: None
       metadataPolicy: None
@@ -37,19 +37,19 @@ spec:
 apiVersion: external-secrets.io/v1
 kind: ExternalSecret
 metadata:
-  name: auth-control-ui
-  namespace: control-ui
+  name: auth-fetch-ui
+  namespace: fetch-ui
 spec:
   refreshInterval: 5m0s
   secretStoreRef:
     name: home-vault
     kind: ClusterSecretStore
   target:
-    name: auth-control-ui
+    name: auth-fetch-ui
     creationPolicy: Owner
   dataFrom:
   - extract:
-      key: home/control-ui/auth-control-ui
+      key: home/fetch-ui/auth-fetch-ui
       conversionStrategy: Default
       decodingStrategy: None
       metadataPolicy: None
