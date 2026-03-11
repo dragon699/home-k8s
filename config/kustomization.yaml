@@ -8,4 +8,4 @@ resources:
 - krakend
 - postgresql-shared
 - fetch-api
-- control-ui
+- fetch-ui

@@ -2,7 +2,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: control-ui
+  name: fetch-ui
   namespace: argocd
   finalizers:
   - resources-finalizer.argocd.argoproj.io
@@ -13,12 +13,12 @@ spec:
   sources:
   - repoURL: git@github.com:dragon699/home-k8s.git
     targetRevision: main
-    path: manifests/apps/control-ui
+    path: manifests/apps/fetch-ui
     directory:
       recurse: true
   destination:
     server: https://kubernetes.default.svc
-    namespace: control-ui
+    namespace: fetch-ui
   syncPolicy:
     automated:
       prune: true
