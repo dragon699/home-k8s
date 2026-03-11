@@ -3,7 +3,6 @@ package grafana_alert
 import (
 	"encoding/json"
 	"fmt"
-	"time"
 
 	"connector-slack/internal/config"
 	"connector-slack/internal/notifications"
@@ -31,7 +30,7 @@ func ButtonInvestigate(value string, message slackapi.Message, user string) {
 		_ = json.Unmarshal(alertJSON, &alert)
 	}
 
-	askResult, err := slack.Client.SendMsg(
+	_, err = slack.Client.SendMsg(
 		config.Config.SlackGrafanaAlertsChannelID,
 		askMsg,
 		nil,
@@ -41,19 +40,6 @@ func ButtonInvestigate(value string, message slackapi.Message, user string) {
 
 	if err != nil {
 		t.Log.Error("Failed to send message", "error", err)
-	} else {
-		time.Sleep(1 * time.Second)
-
-		if _, updateErr := slack.Client.UpdateMsg(
-			askResult.Channel,
-			askResult.Timestamp,
-			askMsg,
-			nil,
-			slackapi.MsgOptionUsername(config.Config.SlackGrafanaUsername),
-			slackapi.MsgOptionIconURL(config.Config.SlackGrafanaIconURL),
-		); updateErr != nil {
-			t.Log.Error("Failed to restyle message with Grafana identity", "error", updateErr)
-		}
 	}
 
 	for i := len(message.Blocks.BlockSet) - 1; i >= 0; i-- {
