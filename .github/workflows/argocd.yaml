@@ -1,0 +1,121 @@
+name: argocd
+run-name: Sync in ArgoCD
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+    - '.github/workflows/argocd.yaml'
+    - 'argocd/**'
+    - 'config/**'
+    - 'helm/**'
+    - 'manifests/**'
+
+permissions:
+  contents: read
+
+env:
+  ARGOCD_BIN_URL: "https://${{ secrets.ARGOCD_SERVER }}/download/argocd-linux-amd64"
+
+
+
+jobs:
+
+  Inspect:
+    runs-on: gha-runner-fetch-api
+    outputs:
+      items: ${{ steps.items_to_sync.outputs.items }}
+    
+    steps:
+    - name: Fetch code
+      uses: actions/checkout@v6
+      with:
+        fetch-depth: 0
+
+    - name: Prepare sync items
+      id: items_to_sync
+      run: |
+        set -euo pipefail
+
+        trim() {
+          local value="$1"
+          value="${value#"${value%%[![:space:]]*}"}"
+          value="${value%"${value##*[![:space:]]}"}"
+          printf '%s' "$value"
+        }
+
+        BASE_SHA="${{ github.event.before }}"
+        ITEMS=(
+          "app-of-apps         | argocd"
+          "configmap-generator | config"
+        )
+        ITEMS_TO_SYNC=()
+
+        if [[ -z "$BASE_SHA" || "$BASE_SHA" =~ ^0+$ ]]; then
+          if git rev-parse --verify "${{ github.sha }}^" >/dev/null 2>&1; then
+            BASE_SHA="$(git rev-parse --verify "${{ github.sha }}^")"
+          else
+            BASE_SHA="$(git hash-object -t tree /dev/null)"
+          fi
+        fi
+
+        CHANGED_FILES="$(git diff --name-only "$BASE_SHA" "${{ github.sha }}")"
+
+        for ITEM in "${ITEMS[@]}"; do
+          IFS='|' read -r RAW_NAME RAW_PATH <<< "$ITEM"
+          NAME="$(trim "$RAW_NAME")"
+          ITEM_PATH="$(trim "$RAW_PATH")"
+
+          if grep -qE "^${ITEM_PATH}/" <<< "$CHANGED_FILES"; then
+            ITEMS_TO_SYNC+=("${NAME}")
+          fi
+        done
+
+        for DIR in helm manifests; do
+          for PROJECT in apps infra monitoring; do
+            PROJECT_APPS=$(ls "${DIR}/${PROJECT}" 2>/dev/null || true)
+
+            for APP in $PROJECT_APPS; do
+              if grep -qE "^${DIR}/${PROJECT}/${APP}/" <<< "$CHANGED_FILES"; then
+                ITEMS_TO_SYNC+=("${APP}")
+              fi
+            done
+          done
+        done
+
+        mapfile -t ITEMS_TO_SYNC < <(printf '%s\n' "${ITEMS_TO_SYNC[@]}" | sort -u)
+
+        ITEMS_JSON=""
+        for NAME in "${ITEMS_TO_SYNC[@]}"; do
+          [[ -n "$ITEMS_JSON" ]] && ITEMS_JSON+=","
+          ITEMS_JSON+="{\"name\":\"${NAME}\"}"
+        done
+
+        printf 'items={"include":[%s]}\n' "$ITEMS_JSON" >> "$GITHUB_OUTPUT"
+
+  Deploy:
+    name: Deploy ${{ matrix.name || ' ' }}
+    needs: Inspect
+    runs-on: gha-runner-fetch-api
+    if: ${{ needs.Inspect.outputs.items != '{"include":[]}' }}
+    strategy:
+      matrix: ${{ fromJson(needs.Inspect.outputs.items) }}
+      fail-fast: false
+
+    steps:
+    - name: Fetch code
+      uses: actions/checkout@v6
+
+    - name: Reconcile in ArgoCD
+      uses: clowdhaus/argo-cd-action/@main
+      with:
+        download-url: ${{ env.ARGOCD_BIN_URL }}
+        command: app sync ${{ matrix.name }}
+        options: >-
+          --auth-token ${{ secrets.ARGOCD_TOKEN }}
+          --server ${{ secrets.ARGOCD_SERVER }}
+          --grpc-web
+          --retry-limit 15
+          --retry-backoff-duration 10s
+          --retry-backoff-max-duration 10s
+          --retry-backoff-factor 1
