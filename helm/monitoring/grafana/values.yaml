@@ -30,6 +30,9 @@ admin:
   userKey: GRAFANA_ADMIN_USER
   passwordKey: GRAFANA_ADMIN_PASSWORD
 
+plugins:
+- volkovlabs-image-panel
+
 grafana.ini:
   server:
     root_url: https://grafana.k8s.iaminyourpc.xyz
