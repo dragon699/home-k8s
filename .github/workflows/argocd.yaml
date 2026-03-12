@@ -45,10 +45,6 @@ jobs:
         }
 
         BASE_SHA="${{ github.event.before }}"
-        ITEMS=(
-          "app-of-apps         | argocd"
-          "configmap-generator | config"
-        )
         ITEMS_TO_SYNC=()
 
         if [[ -z "$BASE_SHA" || "$BASE_SHA" =~ ^0+$ ]]; then
@@ -61,15 +57,13 @@ jobs:
 
         CHANGED_FILES="$(git diff --name-only "$BASE_SHA" "${{ github.sha }}")"
 
-        for ITEM in "${ITEMS[@]}"; do
-          IFS='|' read -r RAW_NAME RAW_PATH <<< "$ITEM"
-          NAME="$(trim "$RAW_NAME")"
-          ITEM_PATH="$(trim "$RAW_PATH")"
+        if grep -qE "^argocd/apps/" <<< "$CHANGED_FILES"; then
+          ITEMS_TO_SYNC+=("argocd-apps")
+        fi
 
-          if grep -qE "^${ITEM_PATH}/" <<< "$CHANGED_FILES"; then
-            ITEMS_TO_SYNC+=("${NAME}")
-          fi
-        done
+        if grep -qE "^config/" <<< "$CHANGED_FILES"; then
+          ITEMS_TO_SYNC+=("configmap-generator")
+        fi
 
         for DIR in helm manifests; do
           for PROJECT in apps infra monitoring; do
