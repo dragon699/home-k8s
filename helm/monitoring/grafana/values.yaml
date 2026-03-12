@@ -32,6 +32,7 @@ admin:
 
 plugins:
 - volkovlabs-image-panel
+- yesoreyeram-infinity-datasource
 
 grafana.ini:
   server:
