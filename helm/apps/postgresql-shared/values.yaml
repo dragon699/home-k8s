@@ -1,5 +1,5 @@
-image: perconalab/percona-postgresql-operator:main-ppg17-postgres
-postgresVersion: 17
+image: perconalab/percona-postgresql-operator:main-ppg18-postgres
+postgresVersion: 18
 
 backups:
   enabled: false

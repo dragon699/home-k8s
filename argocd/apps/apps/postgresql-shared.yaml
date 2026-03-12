@@ -15,10 +15,10 @@ spec:
     targetRevision: main
     ref: values
   - repoURL: https://percona.github.io/percona-helm-charts/
-    targetRevision: 2.7.0
+    targetRevision: 2.8.2
     chart: pg-operator
   - repoURL: https://percona.github.io/percona-helm-charts/
-    targetRevision: 2.7.0
+    targetRevision: 2.8.2
     chart: pg-db
     helm:
       valueFiles:
