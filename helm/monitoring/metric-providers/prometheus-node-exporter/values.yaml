@@ -13,6 +13,7 @@ extraArgs:
 - --collector.filesystem
 - --collector.loadavg
 - --collector.meminfo
+- --collector.hwmon
 - --collector.vmstat
 - --collector.netdev
 - --collector.processes
