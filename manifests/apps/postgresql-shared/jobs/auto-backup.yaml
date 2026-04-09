@@ -27,7 +27,7 @@ spec:
                   path: key.json
           containers:
           - name: pg-backup
-            image: skullfighter6/python:3.13-utils
+            image: skullfighter6/python:3.13-utils-new
             imagePullPolicy: IfNotPresent
             volumeMounts:
             - name: script-pg-auto-backup
