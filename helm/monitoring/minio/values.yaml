@@ -27,13 +27,13 @@ provisioning:
     - id: retention
       disabled: false
       expiry:
-        days: 45
+        days: 30
   - name: loki-ruler
     lifecycle:
     - id: retention
       disabled: false
       expiry:
-        days: 45
+        days: 30
   - name: tempo
     lifecycle:
     - id: retention
