@@ -17,6 +17,10 @@ loki:
     chunk_encoding: snappy
   tracing:
     enabled: false
+
+  compactor:
+    retention_enabled: true
+    delete_request_store: s3
   querier:
     max_concurrent: 4
 
@@ -29,6 +33,7 @@ loki:
     max_query_series: 1000000
     max_query_parallelism: 4
     query_timeout: 45s
+    retention_period: 720h
 
   storage:
     type: s3
