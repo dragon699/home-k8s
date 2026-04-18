@@ -124,7 +124,7 @@ compactor:
       name: auth-minio
   config:
     compaction:
-      block_retention: 4300h
+      block_retention: 240h
 
 querier:
   resources:
