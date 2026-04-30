@@ -15,7 +15,7 @@ spec:
     targetRevision: main
     ref: values
   - repoURL: https://grafana-community.github.io/helm-charts
-    targetRevision: 11.2.2
+    targetRevision: 12.3.0
     chart: grafana
     helm:
       skipCrds: false
