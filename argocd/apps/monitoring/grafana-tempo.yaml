@@ -15,7 +15,7 @@ spec:
     targetRevision: main
     ref: values
   - repoURL: https://grafana.github.io/helm-charts
-    targetRevision: 1.40.1
+    targetRevision: 1.61.3
     chart: tempo-distributed
     helm:
       skipCrds: false

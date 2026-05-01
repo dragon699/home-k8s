@@ -23,20 +23,5 @@ provisioning:
   enabled: true
   buckets:
   - name: loki-chunks
-    lifecycle:
-    - id: retention
-      disabled: false
-      expiry:
-        days: 30
   - name: loki-ruler
-    lifecycle:
-    - id: retention
-      disabled: false
-      expiry:
-        days: 30
   - name: tempo
-    lifecycle:
-    - id: retention
-      disabled: false
-      expiry:
-        days: 10

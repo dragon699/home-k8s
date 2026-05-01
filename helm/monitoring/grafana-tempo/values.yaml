@@ -124,7 +124,10 @@ compactor:
       name: auth-minio
   config:
     compaction:
-      block_retention: 240h
+      block_retention: 168h
+      compacted_block_retention: 1h
+      retention_concurrency: 10
+      max_time_per_tenant: 10m
 
 querier:
   resources:
