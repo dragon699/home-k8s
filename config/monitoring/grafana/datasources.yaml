@@ -46,7 +46,7 @@ datasources:
 - name: Tempo
   type: tempo
   uid: internal-tempo
-  url: http://grafana-tempo-query-frontend.monitoring.svc:3100
+  url: http://grafana-tempo-query-frontend.monitoring.svc:3200
   access: proxy
   isDefault: false
   editable: false
