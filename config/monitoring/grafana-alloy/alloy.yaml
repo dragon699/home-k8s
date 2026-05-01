@@ -145,6 +145,12 @@ loki.source.kubernetes "home_logs" {
   forward_to      = [loki.process.home_logs.receiver]
 }
 
+// Tail k8s events
+loki.source.kubernetes_events "home_k8s_events" {
+  log_format      = "json"
+  forward_to      = [loki.process.home_k8s_events.receiver]
+}
+
 // [2] Aggregate logs
 // Relabel logs
 loki.process "home_logs" {
@@ -152,6 +158,18 @@ loki.process "home_logs" {
     values        = {
       "cluster"   = "home-k8s",
       "source"    = "kubernetes-logs",
+    }
+  }
+
+  forward_to      = [loki.write.home_logs.receiver]
+}
+
+// Aggregate events
+loki.process "home_k8s_events" {
+  stage.static_labels {
+    values        = {
+      "cluster"   = "home-k8s",
+      "source"    = "kubernetes-events",
     }
   }
 
