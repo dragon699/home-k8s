@@ -43,8 +43,8 @@ metricsGenerator:
       span_metrics:
         enable_target_info: true
         dimensions:
-        - service.name
-        - service.namespace
+        - resource.service.name
+        - resource.service.namespace
         - span.name
         - span.kind
         - k8s.namespace.name
