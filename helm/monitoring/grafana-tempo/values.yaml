@@ -1,13 +1,14 @@
-global_overrides:
+overrides:
   defaults:
     ingestion:
       rate_limit_bytes: 32000000
       burst_size_bytes: 48000000
       max_traces_per_user: 50000
-  metrics_generator_processors:
-  - local-blocks
-  - service-graphs
-  - span-metrics
+    metrics_generator:
+      processors:
+      - local-blocks
+      - service-graphs
+      - span-metrics
 
 traces:
   otlp:
