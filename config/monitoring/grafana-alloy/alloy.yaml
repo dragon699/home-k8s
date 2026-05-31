@@ -66,11 +66,11 @@ otelcol.processor.batch "home_otelcol" {
   output {
     metrics                    = [
       otelcol.exporter.prometheus.home_otelcol.input,
-      otelcol.exporter.otlphttp.home_otelcol_launchdarkly.input
+      otelcol.exporter.otlphttp.home_otelcol_launchdarkly.input,
     ]
     traces                     = [
       otelcol.exporter.otlphttp.home_otelcol.input,
-      otelcol.exporter.otlphttp.home_otelcol_launchdarkly.input
+      otelcol.exporter.otlphttp.home_otelcol_launchdarkly.input,
     ]
   }
 }
