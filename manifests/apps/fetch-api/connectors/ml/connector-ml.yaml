@@ -39,6 +39,8 @@ spec:
             - containerPort: 9069
           command: ["python", "-m", "connectors.ml.app"]
           envFrom:
+            - configMapRef:
+                name: data-fetch-api
             - secretRef:
                 name: data-connector-ml
             - configMapRef:
