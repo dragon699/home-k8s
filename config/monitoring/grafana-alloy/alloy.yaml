@@ -11,65 +11,61 @@ livedebugging {
 
 // Data pipelines
 
+//////////////////////////////////////////////
+// Collect traces and metrics from OTLP-based sources
+//////////////////////////////////////////////
 
-//////////////////////////////////////////////////
-// Collect logs and metrics from external OTLPHTTP
-//////////////////////////////////////////////////
-
-// External OTLPHTTP receiver authentication handler
-otelcol.auth.bearer "home_external_auth" {
-  token              = sys.env("OTLP_TOKEN")
-}
-
-// Create external OTLPHTTP receiver
-otelcol.receiver.otlp "home_external" {
+// Create internal OTLP receiver for traces and metrics
+otelcol.receiver.otlp "home_otelcol" {
   http {
-    endpoint         = "0.0.0.0:4318"
-    auth             = otelcol.auth.bearer.home_external_auth.handler
-
-    logs_url_path    = "/v1/logs"
-    metrics_url_path = "/v1/metrics"
+    endpoint                   = "0.0.0.0:4318"
   }
 
   output {
-    logs             = [otelcol.processor.batch.home_external.input]
-    metrics          = [otelcol.processor.batch.home_external.input]
+    metrics                    = [otelcol.processor.deltatocumulative.home_otelcol.input]
+    traces                     = [otelcol.processor.batch.home_otelcol.input]
   }
 }
 
-// Batch external logs and metrics
-otelcol.processor.batch "home_external" {
-  timeout             = "10s"
-  send_batch_size     = 512
-  send_batch_max_size = 1024
+// Convert delta to cumulative metrics
+otelcol.processor.deltatocumulative "home_otelcol" {
+  output {
+    metrics                    = [otelcol.processor.batch.home_otelcol.input]
+  }
+}
+
+// Batch traces and metrics
+otelcol.processor.batch "home_otelcol" {
+  timeout                      = "10s"
+  send_batch_size              = 512
 
   output {
-    logs             = [otelcol.exporter.loki.home_external.input]
-    metrics          = [otelcol.exporter.prometheus.home_external.input]
+    metrics                    = [otelcol.exporter.prometheus.home_otelcol.input]
+    traces                     = [otelcol.exporter.otlphttp.home_otelcol.input]
   }
 }
 
-// Convert logs to Loki-based format
-otelcol.exporter.loki "home_external" {
-  forward_to         = [loki.write.home_external.receiver]
+// Convert metrics from OTLP to Prometheus-based format
+otelcol.exporter.prometheus "home_otelcol" {
+  forward_to                   = [prometheus.remote_write.home_otelcol.receiver]
 }
 
-// Convert metrics to Prometheus-based format
-otelcol.exporter.prometheus "home_external" {
-  forward_to         = [prometheus.remote_write.home_external.receiver]
-}
-
-// Write logs to Loki
-loki.write "home_external" {
+// Write metrics to VictoriaMetrics via Remote Write
+prometheus.remote_write "home_otelcol" {
   endpoint {
-    url              = sys.env("ENDPOINT_LOKI")
+    url                        = sys.env("ENDPOINT_VICTORIAMETRICS")
   }
 }
 
-// Write metrics to VictoriaMetrics
-prometheus.remote_write "home_external" {
-  endpoint {
-    url              = sys.env("ENDPOINT_VICTORIAMETRICS")
+// Write traces to Tempo
+otelcol.exporter.otlphttp "home_otelcol" {
+  client {
+    endpoint                   = sys.env("ENDPOINT_TEMPO_OTLPHTTP")
+
+    tls {
+      insecure                 = true
+      insecure_skip_verify     = true
+    }
   }
 }
 
