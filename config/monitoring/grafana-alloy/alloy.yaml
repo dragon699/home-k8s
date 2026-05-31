@@ -23,14 +23,38 @@ otelcol.receiver.otlp "home_otelcol" {
 
   output {
     metrics                    = [otelcol.processor.deltatocumulative.home_otelcol.input]
-    traces                     = [otelcol.processor.batch.home_otelcol.input]
+    traces                     = [otelcol.processor.transform.home_otelcol_launchdarkly_resource.input]
   }
 }
 
 // Convert delta to cumulative metrics
 otelcol.processor.deltatocumulative "home_otelcol" {
   output {
+    metrics                    = [otelcol.processor.transform.home_otelcol_launchdarkly_resource.input]
+  }
+}
+
+// Add LaunchDarkly project mapping to telemetry resource attributes.
+otelcol.processor.transform "home_otelcol_launchdarkly_resource" {
+  error_mode                   = "ignore"
+
+  trace_statements {
+    context                    = "resource"
+    statements                 = [
+      "set(attributes[\"launchdarkly.project_id\"], \"" + sys.env("LAUNCHDARKLY_PROJECT_ID") + "\")",
+    ]
+  }
+
+  metric_statements {
+    context                    = "resource"
+    statements                 = [
+      "set(attributes[\"launchdarkly.project_id\"], \"" + sys.env("LAUNCHDARKLY_PROJECT_ID") + "\")",
+    ]
+  }
+
+  output {
     metrics                    = [otelcol.processor.batch.home_otelcol.input]
+    traces                     = [otelcol.processor.batch.home_otelcol.input]
   }
 }
 
@@ -40,8 +64,14 @@ otelcol.processor.batch "home_otelcol" {
   send_batch_size              = 512
 
   output {
-    metrics                    = [otelcol.exporter.prometheus.home_otelcol.input]
-    traces                     = [otelcol.exporter.otlphttp.home_otelcol.input]
+    metrics                    = [
+      otelcol.exporter.prometheus.home_otelcol.input,
+      otelcol.exporter.otlphttp.home_otelcol_launchdarkly.input
+    ]
+    traces                     = [
+      otelcol.exporter.otlphttp.home_otelcol.input,
+      otelcol.exporter.otlphttp.home_otelcol_launchdarkly.input
+    ]
   }
 }
 
@@ -66,6 +96,14 @@ otelcol.exporter.otlphttp "home_otelcol" {
       insecure                 = true
       insecure_skip_verify     = true
     }
+  }
+}
+
+// Write traces and metrics to LaunchDarkly Observability.
+otelcol.exporter.otlphttp "home_otelcol_launchdarkly" {
+  client {
+    endpoint                   = sys.env("ENDPOINT_LAUNCHDARKLY")
+    compression                = "gzip"
   }
 }
 

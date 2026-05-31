@@ -53,4 +53,4 @@ alloy:
   - configMapRef:
       name: config-grafana-alloy
   - secretRef:
-      name: grafana-alloy-otlp-token
+      name: data-grafana-alloy
