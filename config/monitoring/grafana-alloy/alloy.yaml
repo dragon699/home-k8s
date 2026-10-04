@@ -1,7 +1,8 @@
 // Configuration
 
 logging {
-  level  = "warn"
+  // Beyla subprocess output (including its warnings) is logged at info.
+  level  = "info"
   format = "logfmt"
 }
 

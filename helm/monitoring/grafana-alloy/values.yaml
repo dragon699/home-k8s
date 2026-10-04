@@ -26,10 +26,17 @@ alloy:
   resources:
     requests:
       cpu: 0.2
-      memory: 256Mi
+      memory: 1Gi
     limits:
       cpu: 4
-      memory: 3Gi
+      # Alloy and its Beyla subprocess share this container limit.
+      memory: 6Gi
+
+  extraEnv:
+  # Each Go process inherits this advisory heap budget; leave headroom for
+  # both processes, eBPF maps, and non-Go allocations under the shared limit.
+  - name: GOMEMLIMIT
+    value: 1536MiB
 
   clustering:
     enabled: false
