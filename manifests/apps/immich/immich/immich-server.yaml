@@ -10,7 +10,7 @@ metadata:
 spec:
   replicas: 1
   strategy:
-    type: RollingUpdate
+    type: Recreate
   progressDeadlineSeconds: 600
   selector:
     matchLabels:
@@ -33,7 +33,7 @@ spec:
           claimName: immich-server-photos
       containers:
       - name: immich-server
-        image: ghcr.io/immich-app/immich-server:v2.1.0
+        image: ghcr.io/immich-app/immich-server:v3.2.4
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -60,7 +60,7 @@ spec:
             scheme: HTTP
           periodSeconds: 10
           successThreshold: 1
-          failureThreshold: 3
+          failureThreshold: 60
           timeoutSeconds: 1
         ports:
         - containerPort: 2283
@@ -68,6 +68,8 @@ spec:
         - name: library
           mountPath: /usr/src/app/upload
         env:
+        - name: IMMICH_MEDIA_LOCATION
+          value: "/usr/src/app/upload"
         - name: UPLOAD_LOCATION
           value: "/usr/src/app/upload/library"
         - name: IMMICH_MACHINE_LEARNING_URL

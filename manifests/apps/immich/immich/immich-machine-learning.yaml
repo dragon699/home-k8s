@@ -33,7 +33,7 @@ spec:
           claimName: immich-machine-learning
       containers:
       - name: immich-machine-learning
-        image: ghcr.io/immich-app/immich-machine-learning:v2.1.0
+        image: ghcr.io/immich-app/immich-machine-learning:v3.2.4
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -60,7 +60,7 @@ spec:
             scheme: HTTP
           periodSeconds: 10
           successThreshold: 1
-          failureThreshold: 3
+          failureThreshold: 60
           timeoutSeconds: 1
         ports:
         - containerPort: 3003

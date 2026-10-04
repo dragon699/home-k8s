@@ -9,6 +9,9 @@ metadata:
     env: home
 spec:
   replicas: 1
+  # The database volume must have only one PostgreSQL writer.
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: postgresql
@@ -37,7 +40,7 @@ spec:
           subPath: pgdata
       containers:
       - name: postgresql
-        image: tensorchord/pgvecto-rs:pg16-v0.2.0
+        image: ghcr.io/immich-app/postgres:16-vectorchord0.4.3-pgvectors0.2.0
         env:
         - name: PGDATA
           value: /var/lib/postgresql/data/pgdata
