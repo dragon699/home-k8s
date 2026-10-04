@@ -1,6 +1,13 @@
 controller:
   replicaCount: 1
   hostNetwork: true
+
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+
   allowSnippetAnnotations: true
 
   service:
