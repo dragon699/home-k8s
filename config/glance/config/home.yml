@@ -72,7 +72,7 @@
       cache: 10s
       url: http://fetch-api.fetch-api.svc:8069/grafana/car-info
       method: POST
-      body: {"ai": false}
+      body: {"ai": true}
       template: |
         {{/* --- API data extraction --- */}}
         {{ $items := .JSON.Array "items" }}
@@ -412,7 +412,7 @@
       method: POST
       parameters:
         number_of_drives: 10
-      body: {"ai": false}
+      body: {"ai": true}
       template: |
         <style>
           :root {
