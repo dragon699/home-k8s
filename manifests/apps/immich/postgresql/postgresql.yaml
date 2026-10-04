@@ -12,6 +12,7 @@ spec:
   # The database volume must have only one PostgreSQL writer.
   strategy:
     type: Recreate
+    rollingUpdate: null
   selector:
     matchLabels:
       app: postgresql
