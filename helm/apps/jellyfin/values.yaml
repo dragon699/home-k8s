@@ -7,6 +7,18 @@ resources:
       memory: 6Gi
       cpu: 6000m
 
+persistence:
+  config:
+    volumeClaimSpec:
+      resources:
+        requests:
+          storage: 10Gi
+  cache:
+    volumeClaimSpec:
+      resources:
+        requests:
+          storage: 10Gi
+
 probes:
   startupProbe:
     enabled: true
