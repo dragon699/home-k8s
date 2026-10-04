@@ -9,6 +9,9 @@ metadata:
     env: home
 spec:
   replicas: 1
+  # Run a single logger while replacing the pod and migrating its database.
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: teslamate
@@ -27,7 +30,7 @@ spec:
           claimName: teslamate
       containers:
       - name: teslamate
-        image: teslamate/teslamate:3.0.0
+        image: teslamate/teslamate:4.3.0
         ports:
         - containerPort: 4000
         volumeMounts:
