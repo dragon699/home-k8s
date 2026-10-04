@@ -130,6 +130,22 @@ app-template:
               },
               "controlUi": {
                 "allowedOrigins": ["https://stitch.iaminyourpc.xyz"]
+              },
+              "nodes": {
+                "commands": {
+                  "allow": [
+                    "camera.snap",
+                    "camera.clip",
+                    "camera.ptz.control",
+                    "screen.record",
+                    "contacts.add",
+                    "calendar.add",
+                    "reminders.add",
+                    "health.summary",
+                    "sms.send",
+                    "sms.search"
+                  ]
+                }
               }
             }
           }
