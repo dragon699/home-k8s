@@ -32,6 +32,41 @@ spec:
       - name: library
         persistentVolumeClaim:
           claimName: immich-server-photos
+      initContainers:
+      - name: prepare-database
+        image: skullfighter6/percona-postgresql-vectorchord:18.1-3-vchord0.5.3
+        command: ["/bin/sh", "-ec"]
+        args:
+        - |
+          psql -v ON_ERROR_STOP=1 <<'SQL'
+          ALTER ROLE immich IN DATABASE immich SET search_path = public;
+          SET search_path = public;
+          CREATE EXTENSION IF NOT EXISTS vchord CASCADE;
+          CREATE EXTENSION IF NOT EXISTS earthdistance CASCADE;
+          CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+          CREATE EXTENSION IF NOT EXISTS unaccent;
+          CREATE EXTENSION IF NOT EXISTS pg_trgm;
+          SQL
+        env:
+        - name: PGHOST
+          value: "postgresql-shared-pg-ha.shared.svc"
+        - name: PGSSLMODE
+          value: "require"
+        - name: PGDATABASE
+          valueFrom:
+            secretKeyRef:
+              name: data-postgresql-shared-immich
+              key: dbname
+        - name: PGUSER
+          valueFrom:
+            secretKeyRef:
+              name: data-postgresql-shared-immich
+              key: user
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: data-postgresql-shared-immich
+              key: password
       containers:
       - name: immich-server
         image: ghcr.io/immich-app/immich-server:v3.2.4
@@ -80,23 +115,34 @@ spec:
         - name: IMMICH_TELEMETRY_INCLUDE
           value: "all"
         - name: REDIS_HOSTNAME
-          value: "redis.immich.svc"
+          value: "redis-shared.shared.svc"
         - name: REDIS_PORT
           value: "6379"
+        - name: REDIS_DBINDEX
+          value: "2"
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: data-redis-shared
+              key: password
+        - name: DB_VECTOR_EXTENSION
+          value: "vectorchord"
+        - name: DB_SSL_MODE
+          value: "require"
         - name: DB_HOSTNAME
-          value: "postgresql.immich.svc"
+          value: "postgresql-shared-pg-ha.shared.svc"
         - name: DB_DATABASE_NAME
           valueFrom:
             secretKeyRef:
-              name: data-postgresql
+              name: data-postgresql-shared-immich
               key: dbname
         - name: DB_USERNAME
           valueFrom:
             secretKeyRef:
-              name: data-postgresql
+              name: data-postgresql-shared-immich
               key: user
         - name: DB_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: data-postgresql
+              name: data-postgresql-shared-immich
               key: password
