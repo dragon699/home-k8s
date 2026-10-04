@@ -7,6 +7,17 @@ resources:
       memory: 6Gi
       cpu: 6000m
 
+probes:
+  startupProbe:
+    enabled: true
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 180
+  livenessProbe:
+    timeoutSeconds: 5
+  readinessProbe:
+    timeoutSeconds: 5
+
 jellyfin:
   mediaVolumes:
     - name: data

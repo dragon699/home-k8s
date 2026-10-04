@@ -15,7 +15,7 @@ spec:
     targetRevision: main
     ref: values
   - repoURL: https://djjudas21.github.io/charts/
-    targetRevision: 3.2.7
+    targetRevision: 4.0.8
     chart: jellyfin
     helm:
       skipCrds: false
