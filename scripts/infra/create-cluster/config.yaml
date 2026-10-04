@@ -61,6 +61,9 @@ cluster_nodes:
   port: 22
   keyPath: /root/.ssh/id_rsa
   role: controller+worker
+  # Optional: Ethernet interface on hosts managed by NetworkManager;
+  # Keeps network-online.target waiting for a slow carrier at boot (up to 30s);
+  networkmanager_interface: enp42s0
 
 ######
 

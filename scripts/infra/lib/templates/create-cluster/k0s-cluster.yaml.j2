@@ -11,6 +11,16 @@ spec:
       port: {{ node['port'] }}
       keyPath: {{ node['keyPath'] }}
     role: {{ node['role'] }}
+    {% if node['networkmanager_interface'] is defined %}
+    files:
+      - name: k0s-network-online
+        dst: /etc/NetworkManager/conf.d/90-k0s-network-online.conf
+        perm: 0644
+        data: |
+          [device-k0s-uplink]
+          match-device=interface-name:{{ node['networkmanager_interface'] }}
+          carrier-wait-timeout=30000
+    {% endif %}
     {% if cluster_nodes | length == 1 %}
     installFlags:
       - --no-taints
@@ -34,6 +44,9 @@ spec:
         name: {{ cluster_name | default('procredit-event-tracking') }}
       spec:
         api:
+          {% if cluster_nodes | length == 1 %}
+          address: {{ cluster_nodes[0]['address'] }}
+          {% endif %}
           k0sApiPort: 9443
           port: 6443
           tunneledNetworkingMode: false
@@ -69,8 +82,10 @@ spec:
           defaultPolicy: 00-k0s-privileged
         storage:
           type: etcd
-          externalCluster: null
-          peerAddress: {{ cluster_nodes[0]['address'] }}
+          {% if cluster_nodes | length == 1 %}
+          etcd:
+            peerAddress: {{ cluster_nodes[0]['address'] }}
+          {% endif %}
         telemetry:
           enabled: true
         extensions:

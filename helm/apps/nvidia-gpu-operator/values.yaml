@@ -1,6 +1,7 @@
 operator:
   defaultRuntime: containerd
 
+# Use the NVIDIA drivers installed on the host.
 driver:
   enabled: false
 
@@ -12,3 +13,5 @@ toolkit:
     value: /run/k0s/containerd.sock
   - name: CONTAINERD_RUNTIME_CLASS
     value: nvidia
+  - name: RUNTIME_CONFIG_SOURCE
+    value: file=/run/k0s/containerd-cri.toml
