@@ -6,6 +6,7 @@ from google.cloud import storage
 
 # Usage: python backup.py <service>
 # Example: python backup.py --backup-vault
+#                           --backup-pg-databases
 
 # Required env variables
 ENV = {

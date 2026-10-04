@@ -16,12 +16,12 @@ qbittorrent:
     runAsNonRoot: true
 
   volumes:
-  - name: qbittorrent-windows-data
+  - name: qbittorrent-data
     persistentVolumeClaim:
-      claimName: qbittorrent-windows-data
+      claimName: qbittorrent-data
 
   volumeMounts:
-  - name: qbittorrent-windows-data
+  - name: qbittorrent-data
     mountPath: /data
 
   config:

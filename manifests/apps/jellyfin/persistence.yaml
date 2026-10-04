@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: jellyfin-media-windows-data
+  name: jellyfin-media-data
   labels:
     app: jellyfin
     env: home
@@ -21,7 +21,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: jellyfin-media-windows-data
+  name: jellyfin-media-data
   namespace: jellyfin
   labels:
     app: jellyfin
@@ -33,4 +33,4 @@ spec:
     requests:
       storage: 1Ti
   storageClassName: manual
-  volumeName: jellyfin-media-windows-data
+  volumeName: jellyfin-media-data

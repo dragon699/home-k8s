@@ -26,9 +26,9 @@ spec:
       imagePullSecrets:
         - name: registry-fetch-api
       volumes:
-        - name: connector-downloader-windows-data
+        - name: connector-downloader-data
           persistentVolumeClaim:
-            claimName: connector-downloader-windows-data
+            claimName: connector-downloader-data
       #   - name: script-health-probe
       #     configMap:
       #       name: script-health-probe
@@ -42,7 +42,7 @@ spec:
             runAsGroup: 1000
             runAsNonRoot: true
           volumeMounts:
-            - name: connector-downloader-windows-data
+            - name: connector-downloader-data
               mountPath: /data
           #   - name: script-health-probe
           #     mountPath: /home/health-probe.py

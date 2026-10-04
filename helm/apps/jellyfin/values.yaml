@@ -9,6 +9,6 @@ resources:
 
 jellyfin:
   mediaVolumes:
-    - name: windows-data
+    - name: data
       readOnly: false
-      existingClaim: jellyfin-media-windows-data
+      existingClaim: jellyfin-media-data

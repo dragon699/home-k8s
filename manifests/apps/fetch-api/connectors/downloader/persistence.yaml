@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: connector-downloader-windows-data
+  name: connector-downloader-data
   labels:
     app: connector-downloader
     env: home
@@ -21,7 +21,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: connector-downloader-windows-data
+  name: connector-downloader-data
   namespace: fetch-api
   labels:
     app: connector-downloader
@@ -33,4 +33,4 @@ spec:
     requests:
       storage: 1Ti
   storageClassName: manual
-  volumeName: connector-downloader-windows-data
+  volumeName: connector-downloader-data
