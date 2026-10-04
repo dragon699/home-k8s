@@ -20,7 +20,7 @@ app-template:
           command:
           - sh
           - -c
-          - chown 1000:1000 /home/node/.openclaw
+          - chown 1000:1000 /home/node/.openclaw && chmod 1777 /tmp
           securityContext:
             runAsUser: 0
             runAsGroup: 0
@@ -110,6 +110,11 @@ app-template:
         main:
           fix-permissions:
           - path: /home/node/.openclaw
+    tmp:
+      advancedMounts:
+        main:
+          fix-permissions:
+          - path: /tmp
 
   configMaps:
     config:
