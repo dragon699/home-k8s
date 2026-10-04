@@ -262,7 +262,8 @@ beyla.ebpf "home_discovery" {
   }
 
   ebpf {
-    context_propagation        = "disabled"
+    // Beyla's FIONREAD kernel workaround requires the host tracefs mount.
+    context_propagation        = "all"
     track_request_headers      = true
     high_request_volume        = true
     heuristic_sql_detect       = false

@@ -1,6 +1,12 @@
+image:
+  tag: v1.20.1
+
 controller:
   replicas: 1
   type: deployment
+  # One host-networked collector owns the OTLP ports and eBPF hooks.
+  updateStrategy:
+    type: Recreate
 
   hostPID: true
   hostNetwork: true
@@ -11,6 +17,10 @@ controller:
     - name: cgroup
       hostPath:
         path: /sys/fs/cgroup
+    - name: tracefs
+      hostPath:
+        path: /sys/kernel/tracing
+        type: Directory
 
 alloy:
   resources:
@@ -43,6 +53,8 @@ alloy:
     extra:
     - name: cgroup
       mountPath: /sys/fs/cgroup
+    - name: tracefs
+      mountPath: /sys/kernel/tracing
 
   configMap:
     create: false
