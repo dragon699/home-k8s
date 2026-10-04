@@ -87,6 +87,13 @@ app-template:
               cpu: 6000m
               memory: 4Gi
         main:
+          resources:
+            requests:
+              cpu: 200m
+              memory: 1Gi
+            limits:
+              cpu: 2000m
+              memory: 4Gi
           ports:
           - name: twilio
             containerPort: 3334
