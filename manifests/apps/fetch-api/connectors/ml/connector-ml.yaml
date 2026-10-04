@@ -40,8 +40,6 @@ spec:
           command: ["python", "-m", "connectors.ml.app"]
           envFrom:
             - secretRef:
-                name: data-fetch-api
-            - secretRef:
                 name: data-connector-ml
             - configMapRef:
                 name: config-connector-ml
