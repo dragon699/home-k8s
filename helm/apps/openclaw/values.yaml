@@ -28,11 +28,10 @@ app-template:
             cd /home/node/.openclaw/workspace
             install_skill() {
               skill="$1"
-              SKILL_NAME="$(basename "$skill")"
               if [ -z "$skill" ]; then
                 return 0
               fi
-              if [ -d "skills/$SKILL_NAME" ]; then
+              if [ -d "skills/$skill" ]; then
                 log "Skill already installed: $skill"
                 return 0
               fi
