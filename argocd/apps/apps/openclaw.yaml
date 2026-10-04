@@ -15,7 +15,7 @@ spec:
     targetRevision: main
     ref: values
   - repoURL: https://serhanekicii.github.io/openclaw-helm
-    targetRevision: 1.5.15
+    targetRevision: 1.5.40
     chart: openclaw
     helm:
       valueFiles:
