@@ -4,6 +4,6 @@ The prepare-database init container enables the required extensions and sets the
 
 The Immich database user follows this cluster's existing SUPERUSER convention so that extensions and migrations can be managed automatically. Changing to a restricted role would require preparing/updating extensions as an administrator and revisiting Immich's built-in database backups.
 
-Redis queues use redis-shared.shared.svc, with credentials from the existing ExternalSecret and database index2 (other current data was in index1).
+Redis queues use redis-shared.shared.svc, with credentials from the existing ExternalSecret and database index 2, chosen because it was unused while other current data was in index 1. The number is not an Immich requirement; it keeps queue keys separate but shares the same Redis process and resources.
 
-The former standalone PostgreSQL deployment/service and Redis deployment/service are removed. The old PostgreSQL PVC and its original credential ExternalSecret are retained for recovery; no old Immich data was copied into the new database and no photo files were deleted. The app starts at the welcome page to create a new administrator account.
+The former standalone PostgreSQL and Redis resources are removed. Immich started with a fresh shared database; no old database records were migrated. Photo storage remains at /media/martin/Data/Photos/immich. Database backups from before the cutover remain under /home/martin/ubuntu-diagnostics-2026-10-04/immich-upgrade.
