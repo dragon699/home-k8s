@@ -27,3 +27,11 @@ spec:
     - Validate=true
     - PrunePropagationPolicy=foreground
     - PruneLast=true
+    - RespectIgnoreDifferences=true
+  ignoreDifferences:
+  - group: argoproj.io
+    kind: Application
+    jqPathExpressions:
+    - .metadata.finalizers[]? | select(startswith("pre-delete-finalizer.argocd.argoproj.io") or startswith("post-delete-finalizer.argocd.argoproj.io"))
+    - .spec.source.kustomize | select(. == {})
+    - .spec.sources[]?.helm.skipCrds | select(. == false)
