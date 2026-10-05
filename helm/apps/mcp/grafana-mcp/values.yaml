@@ -1,7 +1,7 @@
 grafana:
   url: "http://grafana.monitoring.svc"
   apiKeySecret:
-    name: auth-grafana
+    name: auth-grafana-mcp
     key: GRAFANA_SA_TOKEN
 
 extraArgs:
@@ -10,4 +10,4 @@ extraArgs:
 - -address
 - 0.0.0.0:8000
 - -allowed-hosts
-- grafana-mcp.monitoring.svc.cluster.local:8000,grafana-mcp.monitoring.svc:8000,grafana-mcp.monitoring:8000
+- grafana-mcp.mcp.svc.cluster.local:8000,grafana-mcp.mcp.svc:8000,grafana-mcp.mcp:8000
