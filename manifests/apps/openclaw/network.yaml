@@ -34,7 +34,7 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: openclaw-twilio
+  name: openclaw-mcp-apps
   namespace: openclaw
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-home
@@ -45,16 +45,16 @@ metadata:
 spec:
   tls:
   - hosts:
-    - call.stitch.iaminyourpc.xyz
-    secretName: tls-call-stitch-iaminyourpc-xyz
+    - apps.stitch.iaminyourpc.xyz
+    secretName: tls-apps-stitch-iaminyourpc-xyz
   rules:
-  - host: call.stitch.iaminyourpc.xyz
+  - host: apps.stitch.iaminyourpc.xyz
     http:
       paths:
       - pathType: Prefix
         path: /
         backend:
           service:
-            name: openclaw-twilio
+            name: openclaw-mcp-apps
             port:
-              number: 3334
+              number: 18790
