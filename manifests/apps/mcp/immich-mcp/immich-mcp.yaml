@@ -1,0 +1,65 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: immich-mcp
+  namespace: mcp
+  labels:
+    app: immich-mcp
+    env: home
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: immich-mcp
+  template:
+    metadata:
+      labels:
+        app: immich-mcp
+        env: home
+    spec:
+      restartPolicy: Always
+      containers:
+      - name: immich-mcp
+        image: ghcr.io/barryw/immichmcp:v3.3.3
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5000
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+        env:
+        - name: IMMICH_BASE_URL
+          value: "http://immich-server.immich.svc:2283"
+        - name: IMMICH_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: auth-immich-mcp
+              key: IMMICH_API_KEY
+        - name: IMMICH_TOOL_MODE
+          value: gateway
+        - name: MCP_PUBLIC_URL
+          value: "http://immich-mcp.mcp.svc:5000"
+        resources:
+          requests:
+            cpu: 50m
+            memory: 128Mi
+          limits:
+            memory: 512Mi
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 10
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /health/ready
+            port: 5000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 6

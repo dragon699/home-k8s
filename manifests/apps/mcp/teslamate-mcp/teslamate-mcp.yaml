@@ -1,0 +1,78 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: teslamate-mcp
+  namespace: mcp
+  labels:
+    app: teslamate-mcp
+    env: home
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: teslamate-mcp
+  template:
+    metadata:
+      labels:
+        app: teslamate-mcp
+        env: home
+    spec:
+      restartPolicy: Always
+      volumes:
+      - name: pg-root-ca
+        secret:
+          secretName: postgresql-shared-pg-cluster-ca-cert
+      containers:
+      - name: teslamate-mcp
+        image: ghcr.io/cobanov/teslamate-mcp:0.10.1
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8888
+        volumeMounts:
+        - name: pg-root-ca
+          mountPath: /etc/postgres-ca/root.crt
+          subPath: root.crt
+          readOnly: true
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: data-postgresql-shared-teslamate-teslamate
+              key: uri
+        - name: PGSSLMODE
+          value: verify-ca
+        - name: PGSSLROOTCERT
+          value: /etc/postgres-ca/root.crt
+        - name: AUTH_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: auth-teslamate-mcp
+              key: AUTH_TOKEN
+        - name: REPORT_TIMEZONE
+          value: Europe/Sofia
+        resources:
+          requests:
+            cpu: 20m
+            memory: 96Mi
+          limits:
+            memory: 384Mi
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8888
+          initialDelaySeconds: 10
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8888
+          initialDelaySeconds: 5
+          periodSeconds: 10

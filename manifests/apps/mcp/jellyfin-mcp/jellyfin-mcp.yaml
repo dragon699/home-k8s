@@ -1,0 +1,79 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jellyfin-mcp
+  namespace: mcp
+  labels:
+    app: jellyfin-mcp
+    env: home
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: jellyfin-mcp
+  template:
+    metadata:
+      labels:
+        app: jellyfin-mcp
+        env: home
+    spec:
+      restartPolicy: Always
+      containers:
+      - name: jellyfin-mcp
+        image: ghcr.io/jaredtrent/jellyfin-mcp:2026.924.1
+        imagePullPolicy: IfNotPresent
+        args:
+        - "--http"
+        - "--addr"
+        - "0.0.0.0:8080"
+        - "--disable-destructive"
+        ports:
+        - containerPort: 8080
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+        env:
+        - name: JELLYFIN_URL
+          value: "http://jellyfin.jellyfin.svc:8096"
+        - name: JELLYFIN_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: auth-jellyfin-mcp
+              key: JELLYFIN_API_KEY
+        - name: HTTP_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: auth-jellyfin-mcp
+              key: HTTP_TOKEN
+        - name: TZ
+          value: Europe/Sofia
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+        resources:
+          requests:
+            cpu: 20m
+            memory: 64Mi
+          limits:
+            memory: 512Mi
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 10
+      volumes:
+      - name: tmp
+        emptyDir: {}
