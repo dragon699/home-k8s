@@ -9,3 +9,5 @@ extraArgs:
 - streamable-http
 - -address
 - 0.0.0.0:8000
+- -allowed-hosts
+- grafana-mcp.monitoring.svc.cluster.local:8000,grafana-mcp.monitoring.svc:8000,grafana-mcp.monitoring:8000
