@@ -4,8 +4,6 @@ kind: Application
 metadata:
   name: configmap-generator
   namespace: argocd
-  finalizers:
-  - resources-finalizer.argocd.argoproj.io
   annotations:
     env: home
 spec:
