@@ -37,7 +37,7 @@ spec:
       #       defaultMode: 0755
       containers:
         - name: connector-downloader
-          image: ghcr.io/dragon699/fetch-api/connectors/downloader:1.0.2
+          image: ghcr.io/dragon699/fetch-api/connectors/downloader:1.0.3
           imagePullPolicy: Always
           securityContext:
             runAsUser: 1000
