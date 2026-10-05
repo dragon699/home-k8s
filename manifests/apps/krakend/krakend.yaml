@@ -7,6 +7,8 @@ metadata:
   labels:
     app: krakend
     env: home
+  annotations:
+    reloader.stakater.com/auto: "true"
 spec:
   selector:
     matchLabels:
