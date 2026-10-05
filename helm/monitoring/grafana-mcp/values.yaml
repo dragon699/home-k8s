@@ -1,0 +1,11 @@
+grafana:
+  url: "http://grafana.monitoring.svc"
+  apiKeySecret:
+    name: auth-grafana
+    key: GRAFANA_SA_TOKEN
+
+extraArgs:
+- -transport
+- streamable-http
+- -address
+- 0.0.0.0:8000
