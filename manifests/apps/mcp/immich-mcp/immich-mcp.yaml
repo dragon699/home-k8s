@@ -41,7 +41,7 @@ spec:
               name: auth-immich-mcp
               key: IMMICH_API_KEY
         - name: IMMICH_TOOL_MODE
-          value: gateway
+          value: static
         - name: MCP_PUBLIC_URL
           value: "http://immich-mcp.mcp.svc:5000"
         resources:
