@@ -1,0 +1,73 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vault-mcp
+  namespace: mcp
+  labels:
+    app: vault-mcp
+    env: home
+  annotations:
+    reloader.stakater.com/auto: "true"
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: vault-mcp
+  template:
+    metadata:
+      labels:
+        app: vault-mcp
+        env: home
+    spec:
+      restartPolicy: Always
+      containers:
+      - name: vault-mcp
+        image: hashicorp/vault-mcp-server:0.2.0
+        imagePullPolicy: IfNotPresent
+        command: ["/bin/vault-mcp-server", "http"]
+        ports:
+        - containerPort: 8080
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 65532
+          runAsGroup: 65532
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+        env:
+        - name: TRANSPORT_MODE
+          value: http
+        - name: TRANSPORT_HOST
+          value: 0.0.0.0
+        - name: TRANSPORT_PORT
+          value: "8080"
+        - name: VAULT_ADDR
+          value: http://vault.vault.svc:8200
+        - name: VAULT_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: auth-vault-mcp
+              key: VAULT_TOKEN
+        resources:
+          requests:
+            cpu: 10m
+            memory: 32Mi
+          limits:
+            memory: 128Mi
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 3
+          periodSeconds: 10
