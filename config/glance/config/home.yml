@@ -50,7 +50,7 @@
         icon: di:loki
         timeout: 10s
       - title: tempo
-        check-url: http://grafana-tempo-querier.monitoring.svc:3100/ready
+        check-url: http://grafana-tempo-querier.monitoring.svc:3200/ready
         url: https://argocd.k8s.iaminyourpc.xyz/applications/argocd/grafana-tempo?view=tree&resource=
         icon: https://grafana.com/static/assets/img/blog/tempo.png
         timeout: 10s
