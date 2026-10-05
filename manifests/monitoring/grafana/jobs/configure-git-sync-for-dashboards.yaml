@@ -1,0 +1,125 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: grafana-configure-sync-dashboards
+  namespace: monitoring
+  annotations:
+    argocd.argoproj.io/hook: PostSync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+spec:
+  activeDeadlineSeconds: 180
+  backoffLimit: 1
+  template:
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        fsGroup: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      restartPolicy: OnFailure
+      volumes:
+      - name: config-grafana-dashboards
+        configMap:
+          name: config-grafana-dashboards
+      containers:
+      - name: configure-git-sync-dashboards
+        # Needs sh, curl and envsubst (gettext); nginx itself is never started
+        image: nginx:1.29-alpine
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            cpu: 10m
+            memory: 16Mi
+          limits:
+            cpu: 250m
+            memory: 256Mi
+        readinessProbe:
+          exec:
+            command:
+            - /bin/sh
+            - -ec
+            - curl -fsS "${GRAFANA_URL}/api/health" >/dev/null
+          initialDelaySeconds: 5
+          timeoutSeconds: 3
+          periodSeconds: 10
+          successThreshold: 1
+          failureThreshold: 3
+        startupProbe:
+          exec:
+            command:
+            - /bin/sh
+            - -ec
+            - curl -fsS "${GRAFANA_URL}/api/health" >/dev/null
+          initialDelaySeconds: 5
+          timeoutSeconds: 3
+          periodSeconds: 5
+          successThreshold: 1
+          failureThreshold: 24
+        securityContext:
+          privileged: false
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+        volumeMounts:
+        - name: config-grafana-dashboards
+          mountPath: /provisioning
+          readOnly: true
+        command: ["/bin/sh", "-ec"]
+        args:
+        - |
+          until curl -fsS "${GRAFANA_URL}/api/health"; do
+            sleep 5
+          done
+
+          envsubst < /provisioning/dashboards.yaml > /tmp/dashboard-repositories.yaml
+
+          curl -fsS \
+            -u "${GRAFANA_USER}:${GRAFANA_PASSWORD}" \
+            -H "Content-Type: application/yaml" \
+            -X PUT \
+            --data-binary @/tmp/dashboard-repositories.yaml \
+            "${GRAFANA_URL}/apis/provisioning.grafana.app/v0alpha1/namespaces/default/repositories/repository-stitch-dashboards"
+
+          until curl -fsS \
+            -u "${GRAFANA_USER}:${GRAFANA_PASSWORD}" \
+            "${GRAFANA_URL}/api/dashboards/uid/${DEFAULT_HOME_DASHBOARD_UID}" >/dev/null; do
+            sleep 5
+          done
+
+          curl -fsS \
+            -u "${GRAFANA_USER}:${GRAFANA_PASSWORD}" \
+            -H "Content-Type: application/json" \
+            -X PATCH \
+            --data "{\"homeDashboardUID\":\"${DEFAULT_HOME_DASHBOARD_UID}\"}" \
+            "${GRAFANA_URL}/api/org/preferences"
+        env:
+        - name: DASHBOARDS_GIT_REPO_URL
+          value: "https://github.com/dragon699/dashboards.git"
+        - name: GRAFANA_URL
+          value: "http://grafana.monitoring.svc"
+        - name: GRAFANA_USER
+          valueFrom:
+            secretKeyRef:
+              name: auth-grafana
+              key: GRAFANA_ADMIN_USER
+        - name: GRAFANA_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: auth-grafana
+              key: GRAFANA_ADMIN_PASSWORD
+        - name: DASHBOARDS_GIT_REPO_BRANCH
+          value: main
+        - name: DASHBOARDS_GIT_TOKEN_USER
+          value: dragon699
+        - name: DASHBOARDS_GIT_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: auth-grafana-sync-dashboards
+              key: pat
+        - name: DEFAULT_HOME_DASHBOARD_UID
+          value: kOuP_Fggz
