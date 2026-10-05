@@ -122,6 +122,7 @@ app-template:
       data:
         bash_aliases: |
           alias openclaw='node /app/dist/index.js'
+        # This config merges with the one already present in the OpenClaw container (PVC)
         openclaw.json: |
           {
             "gateway": {
