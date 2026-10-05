@@ -29,6 +29,15 @@ spec:
       - name: teslamate-mcp
         image: ghcr.io/cobanov/teslamate-mcp:0.10.1
         imagePullPolicy: IfNotPresent
+        # Chart views send `clientInfo` in ui/initialize, but the MCP Apps spec
+        # requires `appInfo`, so hosts reject the handshake and charts time out.
+        # Remove once upstream ships the fix (cobanov/teslamate-mcp#14).
+        command:
+        - sh
+        - -c
+        - |
+          sed -i 's/clientInfo: {/appInfo: {/' /app/.venv/lib/python3.12/site-packages/teslamate_mcp/apps/*.html
+          exec teslamate-mcp http --host 0.0.0.0 --port 8888 --json-response --stateless
         ports:
         - containerPort: 8888
         volumeMounts:
