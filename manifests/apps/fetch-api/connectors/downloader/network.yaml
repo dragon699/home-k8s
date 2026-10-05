@@ -14,3 +14,31 @@ spec:
     targetPort: 9069
   selector:
     app: connector-downloader
+
+# Only OpenClaw and fetch-ui are able to connect to connector-downloader through the mcp service
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: connector-downloader
+  namespace: fetch-api
+  labels:
+    env: home
+spec:
+  podSelector:
+    matchLabels:
+      app: connector-downloader
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - podSelector: {}
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: fetch-ui
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: openclaw
+    ports:
+    - protocol: TCP
+      port: 9069
