@@ -1,0 +1,47 @@
+config:
+  timezone: Europe/Sofia
+  frontendUrl: https://me.iaminyourpc.xyz
+
+ingress:
+  enabled: false
+
+server:
+  secrets:
+    generate: false
+    existingSecret: auth-sparkyfitness
+  appDatabase:
+    existingSecret: auth-sparkyfitness
+    existingSecretKeys:
+      username: app_db_username
+      password: app_db_password
+  extraEnv:
+    PGSSLMODE: verify-full
+    NODE_EXTRA_CA_CERTS: /etc/postgres-ca/root.crt
+  extraVolumes:
+  - name: pg-root-ca
+    secret:
+      secretName: postgresql-shared-pg-cluster-ca-cert
+  extraVolumeMounts:
+  - name: pg-root-ca
+    mountPath: /etc/postgres-ca/root.crt
+    subPath: root.crt
+    readOnly: true
+
+  persistence:
+    uploads:
+      size: 5Gi
+    backup:
+      size: 2Gi
+
+postgresql:
+  enabled: false
+
+externalDatabase:
+  host: postgresql-shared-pg-primary.shared.svc
+  port: 5432
+  database: sparkyfitness
+  auth:
+    existingSecret: data-postgresql-shared-sparkyfitness
+    existingSecretKeys:
+      username: user
+      password: password

@@ -1,0 +1,30 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: sparkyfitness
+  namespace: sparkyfitness
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-home
+    kubernetes.io/ingress.class: nginx
+    # Health Connect syncs and photo uploads can exceed the 1m default
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+  labels:
+    app: sparkyfitness
+    env: home
+spec:
+  tls:
+  - hosts:
+    - me.iaminyourpc.xyz
+    secretName: tls-me-iaminyourpc-xyz
+  rules:
+  - host: me.iaminyourpc.xyz
+    http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: sparkyfitness-frontend
+            port:
+              number: 80
