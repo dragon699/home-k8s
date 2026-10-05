@@ -128,6 +128,16 @@ app-template:
               "mode": "local",
               "port": 18789,
               "bind": "lan",
+              "http": {
+                "endpoints": {
+                  "chatCompletions": {
+                    "enabled": true
+                  },
+                  "responses": {
+                    "enabled": true
+                  }
+                }
+              },
               "trustedProxies": ["192.168.1.170"],
               "auth": {
                 "mode": "token",
