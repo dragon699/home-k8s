@@ -7,6 +7,8 @@ metadata:
   labels:
     app: teslamate
     env: home
+  annotations:
+    reloader.stakater.com/auto: "true"
 spec:
   replicas: 1
   # Run a single logger while replacing the pod and migrating its database.

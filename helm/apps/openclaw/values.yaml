@@ -13,6 +13,8 @@ app-template:
 
   controllers:
     main:
+      annotations:
+        reloader.stakater.com/auto: "true"
       initContainers:
         fix-permissions:
           image:

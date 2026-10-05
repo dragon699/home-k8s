@@ -2,6 +2,10 @@ vikunja:
   image:
     tag: "2.1.0"
 
+  controller:
+    annotations:
+      reloader.stakater.com/auto: "true"
+
   ingress:
     main:
       enabled: false

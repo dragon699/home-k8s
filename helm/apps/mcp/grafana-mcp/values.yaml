@@ -1,3 +1,6 @@
+annotations:
+  reloader.stakater.com/auto: "true"
+
 grafana:
   url: "http://grafana.monitoring.svc"
   apiKeySecret:

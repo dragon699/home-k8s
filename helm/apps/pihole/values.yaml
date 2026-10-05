@@ -1,5 +1,8 @@
 replicaCount: 1
 
+deploymentAnnotations:
+  reloader.stakater.com/auto: "true"
+
 persistentVolumeClaim:
   enabled: true
 
