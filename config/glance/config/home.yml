@@ -17,8 +17,8 @@
         url: https://vault.k8s.iaminyourpc.xyz
         icon: https://docs.rconfig.com/images/logos/vault-hashicorp-logo-920x920-sue-v1.png
         timeout: 10s
-      - title: kubewall
-        url: http://kube.k8s.iaminyourpc.xyz
+      - title: radar
+        url: https://kube.k8s.iaminyourpc.xyz
         icon: https://img.icons8.com/color/200/kubernetes.png
         timeout: 10s
       - title: longhorn

@@ -2,19 +2,19 @@
 apiVersion: external-secrets.io/v1
 kind: ExternalSecret
 metadata:
-  name: auth-kubewall
-  namespace: kubewall
+  name: auth-radar
+  namespace: radar
 spec:
   refreshInterval: 5m0s
   secretStoreRef:
     name: home-vault
     kind: ClusterSecretStore
   target:
-    name: auth-kubewall
+    name: auth-radar
     creationPolicy: Owner
   dataFrom:
   - extract:
-      key: home/kubewall/auth-kubewall
+      key: home/radar/auth-radar
       conversionStrategy: Default
       decodingStrategy: None
       metadataPolicy: None

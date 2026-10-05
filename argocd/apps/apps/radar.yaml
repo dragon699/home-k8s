@@ -2,7 +2,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: kubewall
+  name: radar
   namespace: argocd
   finalizers:
   - resources-finalizer.argocd.argoproj.io
@@ -14,21 +14,20 @@ spec:
   - repoURL: git@github.com:dragon699/home-k8s.git
     targetRevision: main
     ref: values
-  - repoURL: oci://ghcr.io/kubewall/charts/kubewall
-    targetRevision: 0.0.14
-    chart: kubewall
+  - repoURL: https://skyhook-io.github.io/helm-charts
+    targetRevision: 1.15.0
+    chart: radar
     helm:
-      skipCrds: false
       valueFiles:
-      - '$values/helm/apps/kubewall/values.yaml'
+      - '$values/helm/apps/radar/values.yaml'
   - repoURL: git@github.com:dragon699/home-k8s.git
     targetRevision: main
-    path: manifests/apps/kubewall
+    path: manifests/apps/radar
     directory:
       recurse: true
   destination:
     server: https://kubernetes.default.svc
-    namespace: kubewall
+    namespace: radar
   syncPolicy:
     automated:
       prune: true
