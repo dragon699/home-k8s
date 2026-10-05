@@ -19,6 +19,11 @@ persistence:
 
 imageRenderer:
   enabled: true
+  # The chart's generated token relies on Helm lookup, which Argo CD doesn't support,
+  # so it was regenerated on every sync and broke rendering with 401s
+  existingSecret: auth-grafana-image-renderer
+  annotations:
+    reloader.stakater.com/auto: "true"
 
 envFromSecrets:
 - name: data-postgresql-shared-monitoring-grafana
@@ -97,8 +102,7 @@ grafana.ini:
 
 
 # Grafana provisioning
-# Dashboards are synced from github.com/dragon699/dashboards via Git Sync
-# (manifests/monitoring/grafana/jobs/configure-git-sync-for-dashboards.yaml)
+# Dashboards sourced via GitSync (@dashboards repo)
 extraVolumes:
 - name: datasources
   configMap:
