@@ -243,6 +243,7 @@ beyla.ebpf "home_discovery" {
       "application_process",
       "application_service_graph",
       "application_span",
+      "network",
     ]
   }
 
@@ -354,6 +355,26 @@ prometheus.scrape "home_metrics" {
   scrape_interval              = "10s"
 
   forward_to                   = [otelcol.receiver.prometheus.home_metrics.receiver]
+}
+
+// Scrape Beyla's own metrics (build info, network flows) for Radar
+prometheus.scrape "radar_beyla" {
+  targets                      = beyla.ebpf.home_discovery.targets
+  job_name                     = "beyla"
+
+  scrape_interval              = "15s"
+
+  forward_to                   = [prometheus.relabel.radar_beyla.receiver]
+}
+
+prometheus.relabel "radar_beyla" {
+  rule {
+    source_labels              = ["__name__"]
+    regex                      = "beyla_.*"
+    action                     = "keep"
+  }
+
+  forward_to                   = [prometheus.remote_write.home_metrics.receiver]
 }
 
 // Convert metrics from Prometheus to OTLP-based format

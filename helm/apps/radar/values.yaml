@@ -10,6 +10,8 @@ rbac:
 
 traffic:
   prometheusUrl: http://victoriametrics-vmselect.monitoring.svc:8481/select/0/prometheus
+  # Set by the radar_beyla scrape in grafana-alloy
+  beylaJobSelector: job="beyla"
 
 resources:
   requests:
