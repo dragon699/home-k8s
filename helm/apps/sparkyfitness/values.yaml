@@ -33,6 +33,9 @@ server:
     backup:
       size: 2Gi
 
+frontend:
+  port: 8080
+
 postgresql:
   enabled: false
 
