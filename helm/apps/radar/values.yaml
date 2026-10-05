@@ -1,16 +1,41 @@
-# Auth is handled by ingress-nginx basic auth + IP whitelist (see manifests/apps/radar)
 auth:
   mode: none
 
+mcp:
+  enabled: true
+
 rbac:
-  podExec: true
+  helm: true
   secrets: true
   viewRBAC: true
   viewWebhooks: true
+  viewNodeRuntime: true
+  podExec: true
+  podLogs: true
+  portForward: true
+  additionalRules:
+  - apiGroups: ["*"]
+    resources: ["*"]
+    verbs: ["*"]
+  - nonResourceURLs: ["*"]
+    verbs: ["*"]
+
+timeline:
+  storage: sqlite
+  retention: 168h
+
+persistence:
+  enabled: true
+  storageClassName: longhorn
+  size: 1Gi
+
+argocd:
+  url: http://argocd-server.argocd.svc
+  existingSecret: auth-radar-argocd
+  existingSecretKey: token
 
 traffic:
   prometheusUrl: http://victoriametrics-vmselect.monitoring.svc:8481/select/0/prometheus
-  # Set by the radar_beyla scrape in grafana-alloy
   beylaJobSelector: job="beyla"
 
 resources:
