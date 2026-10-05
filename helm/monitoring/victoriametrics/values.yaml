@@ -38,6 +38,9 @@ vmstorage:
   - '--storage.cacheSizeIndexDBTagFilters=32MB'
 
 vmagent:
+  # Scrape config comes from config-generator and isn't re-read without a restart
+  annotations:
+    reloader.stakater.com/auto: "true"
   resources:
     requests:
       cpu: 0.2
