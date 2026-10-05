@@ -62,7 +62,7 @@ jobs:
         fi
 
         if grep -qE "^config/" <<< "$CHANGED_FILES"; then
-          ITEMS_TO_SYNC+=("configmap-generator")
+          ITEMS_TO_SYNC+=("config-generator")
         fi
 
         for DIR in helm manifests; do
