@@ -8,6 +8,17 @@ projects:
       path: config
       directory: false
 
+  - name: secrets-loader
+    project: default
+    sources:
+    - repo: values_repo
+      ref: values
+    - repo: charts_repo
+      path: secrets-loader
+      helm:
+        valueFiles:
+        - $values/helm/infra/secrets-loader/values.yaml
+
   - name: config-reloader
     sources:
     - repo: values_repo

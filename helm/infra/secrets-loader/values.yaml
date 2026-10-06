@@ -1,0 +1,6 @@
+secrets:
+  teslamate:
+    data-teslamate:
+      provider: vault
+    auth-teslamate:
+      provider: vault
