@@ -21,12 +21,18 @@ secrets:
     data-fleet-api:
       provider: vault
       path: home/fetch-api/fleet-api/data-fleet-api
+    data-redis-shared:
+      provider: shared
 
   fetch-ui:
     registry-fetch-ui:
       provider: vault
       type: dockerconfigjson
     auth-fetch-ui:
+      provider: vault
+
+  github:
+    data-github-actions:
       provider: vault
 
   glance:
@@ -38,6 +44,12 @@ secrets:
   immich:
     data-postgresql-shared-immich:
       provider: shared
+    data-redis-shared:
+      provider: shared
+
+  longhorn:
+    auth-longhorn:
+      provider: vault
 
   mcp:
     auth-grafana-mcp:
@@ -53,6 +65,30 @@ secrets:
     auth-teslamate-mcp:
       provider: vault
     auth-vault-mcp:
+      provider: vault
+
+  monitoring:
+    data-postgresql-shared-monitoring-grafana:
+      provider: shared
+    data-postgresql-shared-teslamate-teslamate:
+      provider: shared
+    auth-grafana-alloy:
+      provider: vault
+    data-grafana-alloy:
+      provider: vault
+    auth-grafana:
+      provider: vault
+    auth-grafana-image-renderer:
+      provider: vault
+    auth-grafana-sync-dashboards:
+      provider: vault
+    auth-immich:
+      provider: vault
+    auth-jellyfin:
+      provider: vault
+    auth-pihole:
+      provider: vault
+    auth-minio:
       provider: vault
 
   openclaw:
@@ -102,3 +138,18 @@ secrets:
       provider: vault
     auth-teslamate:
       provider: vault
+    data-postgresql-shared-teslamate-teslamate:
+      provider: shared
+    postgresql-shared-pg-cluster-ca-cert:
+      provider: shared
+
+  vault:
+    data-vault-sensitive:
+      provider: vault
+    auth-gcloud-storage:
+      provider: vault
+      path: home/shared/auth-gcloud-storage
+
+  vikunja:
+    data-postgresql-shared-vikunja:
+      provider: shared
