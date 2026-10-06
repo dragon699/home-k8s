@@ -16,6 +16,11 @@ spec:
     helm:
       valueFiles:
       - $values/argocd/apps/*.yaml
+      valuesObject:
+        # Children without resources-finalizer: deleting an Application
+        # orphans its workloads instead of deleting them (and their data).
+        template:
+          finalizers: []
   - repoURL: git@github.com:dragon699/home-k8s.git
     targetRevision: main
     ref: values
