@@ -1,0 +1,148 @@
+---
+projects:
+  infra:
+  - name: cert-manager
+    sources:
+    - repo: values_repo
+      ref: values
+    - repoURL: https://charts.jetstack.io
+      targetRevision: 1.17.0
+      chart: cert-manager
+      helm:
+        valueFiles:
+        - $values/helm/infra/cert-manager/values.yaml
+    - repo: gitops_repo
+      path: manifests/infra/cert-manager
+    target:
+      namespace: cert-manager
+
+  - name: config-generator
+    project: default
+    sources:
+    - repo: gitops_repo
+      path: config
+      kustomize: true
+
+  - name: config-reloader
+    sources:
+    - repo: values_repo
+      ref: values
+    - repoURL: https://stakater.github.io/stakater-charts
+      targetRevision: 2.2.18
+      chart: reloader
+      helm:
+        valueFiles:
+        - $values/helm/infra/config-reloader/values.yaml
+    target:
+      namespace: config-reloader
+
+  - name: external-secrets
+    sources:
+    - repo: values_repo
+      ref: values
+    - repoURL: https://charts.external-secrets.io
+      targetRevision: 0.20.3
+      chart: external-secrets
+      helm:
+        valueFiles:
+        - $values/helm/infra/external-secrets/values.yaml
+    - repo: gitops_repo
+      path: manifests/infra/external-secrets
+    target:
+      namespace: external-secrets
+
+  - name: github-actions
+    sources:
+    - repo: values_repo
+      ref: values
+    - repoURL: oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set-controller
+      targetRevision: 0.13.0
+      chart: gha-runner-scale-set-controller
+      helm:
+        releaseName: gha-runner-scale-set-controller
+    - repoURL: oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set
+      targetRevision: 0.13.0
+      chart: gha-runner-scale-set
+      helm:
+        releaseName: gha-runner-home-k8s
+        valueFiles:
+        - $values/helm/infra/github-actions/values-home-k8s.yaml
+    - repoURL: oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set
+      targetRevision: 0.13.0
+      chart: gha-runner-scale-set
+      helm:
+        releaseName: gha-runner-fetch-ui
+        valueFiles:
+        - $values/helm/infra/github-actions/values-fetch-ui.yaml
+    - repoURL: oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set
+      targetRevision: 0.13.0
+      chart: gha-runner-scale-set
+      helm:
+        releaseName: gha-runner-fetch-api
+        valueFiles:
+        - $values/helm/infra/github-actions/values-fetch-api.yaml
+    - repo: gitops_repo
+      path: manifests/infra/github-actions
+    target:
+      namespace: github
+
+  - name: ingress-nginx
+    sources:
+    - repo: values_repo
+      ref: values
+    - repoURL: https://kubernetes.github.io/ingress-nginx
+      targetRevision: 4.11.3
+      chart: ingress-nginx
+      helm:
+        valueFiles:
+        - $values/helm/infra/ingress-nginx/values.yaml
+    target:
+      namespace: ingress-nginx
+
+  - name: longhorn
+    sources:
+    - repo: values_repo
+      ref: values
+    - repoURL: https://charts.longhorn.io
+      targetRevision: 1.8.1
+      chart: longhorn
+      helm:
+        valueFiles:
+        - $values/helm/infra/longhorn/values.yaml
+    - repo: gitops_repo
+      path: manifests/infra/longhorn
+    target:
+      namespace: longhorn
+
+  - name: metallb
+    sources:
+    - repoURL: https://metallb.github.io/metallb
+      targetRevision: 0.14.9
+      chart: metallb
+    - repo: gitops_repo
+      path: manifests/infra/metallb
+    target:
+      namespace: metallb-system
+    sync:
+      options:
+      - RespectIgnoreDifferences=true
+    ignoreDifferences:
+    - group: apiextensions.k8s.io
+      kind: CustomResourceDefinition
+      jsonPointers:
+      - /spec/conversion/webhook/clientConfig/caBundle
+
+  - name: vault
+    sources:
+    - repo: values_repo
+      ref: values
+    - repoURL: https://helm.releases.hashicorp.com
+      targetRevision: 0.31.0
+      chart: vault
+      helm:
+        valueFiles:
+        - $values/helm/infra/vault/values.yaml
+    - repo: gitops_repo
+      path: manifests/infra/vault
+    target:
+      namespace: vault

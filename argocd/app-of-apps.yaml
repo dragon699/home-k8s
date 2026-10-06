@@ -2,26 +2,32 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
+  # Must stay `argocd-apps`: child Applications are tracked by this name.
   name: argocd-apps
   namespace: argocd
-  finalizers:
-  - resources-finalizer.argocd.argoproj.io
+  # No resources-finalizer on purpose: deleting this parent orphans the
+  # child Applications instead of cascading into every workload.
 spec:
   project: default
-  source:
-    repoURL: git@github.com:dragon699/home-k8s.git
-    path: argocd/apps
+  sources:
+  - repoURL: git@github.com:dragon699/charts.git
     targetRevision: main
-    directory:
-      recurse: true
+    path: argocd-apps
+    helm:
+      valueFiles:
+      - $values/argocd/apps/*.yaml
+  - repoURL: git@github.com:dragon699/home-k8s.git
+    targetRevision: main
+    ref: values
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd
   syncPolicy:
+    # Removing an app from argocd/apps/*.yaml never deletes it; delete it by hand.
     automated:
-      prune: true
+      enabled: false
+      prune: false
       selfHeal: true
-      allowEmpty: true
     syncOptions:
     - CreateNamespace=true
     - Validate=true
@@ -33,5 +39,5 @@ spec:
     kind: Application
     jqPathExpressions:
     - .metadata.finalizers[]? | select(startswith("pre-delete-finalizer.argocd.argoproj.io") or startswith("post-delete-finalizer.argocd.argoproj.io"))
-    - .spec.source.kustomize | select(. == {})
+    - .spec.sources[]?.kustomize | select(. == {})
     - .spec.sources[]?.helm.skipCrds | select(. == false)

@@ -1,0 +1,268 @@
+---
+projects:
+  apps:
+  # Not needed for now
+  - name: home-assistant
+    deploy: false
+    sources:
+    - repo: values_repo
+      ref: values
+    - repoURL: http://pajikos.github.io/home-assistant-helm-chart
+      targetRevision: 0.3.31
+      chart: home-assistant
+      helm:
+        valueFiles:
+        - $values/helm/apps/home-assistant/values.yaml
+    - repo: gitops_repo
+      path: manifests/apps/home-assistant
+    target:
+      namespace: home-assistant
+
+  - name: ollama
+    deploy: false
+    sources:
+    - repo: values_repo
+      ref: values
+    - repoURL: https://otwld.github.io/ollama-helm/
+      targetRevision: 1.48.0
+      chart: ollama
+      helm:
+        valueFiles:
+        - $values/helm/apps/ollama/values.yaml
+    - repo: gitops_repo
+      path: manifests/apps/ollama
+    target:
+      namespace: ollama
+
+  - name: open-webui
+    deploy: false
+    sources:
+    - repo: values_repo
+      ref: values
+    - repoURL: https://helm.openwebui.com
+      targetRevision: 8.14.0
+      chart: open-webui
+      helm:
+        valueFiles:
+        - $values/helm/apps/open-webui/values.yaml
+    - repo: gitops_repo
+      path: manifests/apps/open-webui
+    target:
+      namespace: open-webui
+  ###
+
+  - name: fetch-api
+    sources:
+    - repo: values_repo
+      ref: values
+    - repo: gitops_repo
+      path: manifests/apps/fetch-api
+    target:
+      namespace: fetch-api
+
+  - name: fetch-ui
+    sources:
+    - repo: gitops_repo
+      path: manifests/apps/fetch-ui
+    target:
+      namespace: fetch-ui
+
+  - name: glance
+    sources:
+    - repo: gitops_repo
+      path: manifests/apps/glance
+    target:
+      namespace: glance
+
+  - name: immich
+    sources:
+    - repo: gitops_repo
+      path: manifests/apps/immich
+    target:
+      namespace: immich
+
+  - name: jellyfin
+    sources:
+    - repo: values_repo
+      ref: values
+    - repoURL: https://djjudas21.github.io/charts/
+      targetRevision: 4.0.8
+      chart: jellyfin
+      helm:
+        valueFiles:
+        - $values/helm/apps/jellyfin/values.yaml
+    - repo: gitops_repo
+      path: manifests/apps/jellyfin
+    target:
+      namespace: jellyfin
+
+  - name: krakend
+    sources:
+    - repo: gitops_repo
+      path: manifests/apps/krakend
+    target:
+      namespace: krakend
+
+  - name: mcp
+    sources:
+    - repo: values_repo
+      ref: values
+    - repoURL: https://grafana-community.github.io/helm-charts
+      targetRevision: 0.27.0
+      chart: grafana-mcp
+      helm:
+        releaseName: grafana-mcp
+        valueFiles:
+        - $values/helm/apps/mcp/grafana-mcp/values.yaml
+    - repo: gitops_repo
+      path: manifests/apps/mcp/grafana-mcp
+    - repo: gitops_repo
+      path: manifests/apps/mcp/immich-mcp
+    - repo: gitops_repo
+      path: manifests/apps/mcp/jellyfin-mcp
+    - repo: gitops_repo
+      path: manifests/apps/mcp/teslamate-mcp
+    - repo: gitops_repo
+      path: manifests/apps/mcp/vault-mcp
+    target:
+      namespace: mcp
+
+  - name: nvidia-gpu-operator
+    sources:
+    - repo: values_repo
+      ref: values
+    - repoURL: https://helm.ngc.nvidia.com/nvidia
+      targetRevision: 25.10.1
+      chart: gpu-operator
+      helm:
+        valueFiles:
+        - $values/helm/apps/nvidia-gpu-operator/values.yaml
+    target:
+      namespace: nvidia
+
+  - name: openclaw
+    sources:
+    - repo: values_repo
+      ref: values
+    - repoURL: https://serhanekicii.github.io/openclaw-helm
+      targetRevision: 1.5.40
+      chart: openclaw
+      helm:
+        valueFiles:
+        - $values/helm/apps/openclaw/values.yaml
+    - repo: gitops_repo
+      path: manifests/apps/openclaw
+    target:
+      namespace: openclaw
+
+  - name: pihole
+    sources:
+    - repo: values_repo
+      ref: values
+    - repoURL: https://mojo2600.github.io/pihole-kubernetes/
+      targetRevision: 2.34.0
+      chart: pihole
+      helm:
+        valueFiles:
+        - $values/helm/apps/pihole/values.yaml
+    - repo: gitops_repo
+      path: manifests/apps/pihole
+    target:
+      namespace: pihole
+
+  - name: postgresql-shared
+    sources:
+    - repo: values_repo
+      ref: values
+    - repoURL: https://percona.github.io/percona-helm-charts/
+      targetRevision: 2.8.2
+      chart: pg-operator
+    - repoURL: https://percona.github.io/percona-helm-charts/
+      targetRevision: 2.8.2
+      chart: pg-db
+      helm:
+        valueFiles:
+        - $values/helm/apps/postgresql-shared/values.yaml
+    - repo: gitops_repo
+      path: manifests/apps/postgresql-shared
+    target:
+      namespace: shared
+
+  - name: qbittorrent
+    sources:
+    - repo: values_repo
+      ref: values
+    - repoURL: oci://ghcr.io/sudo-kraken/helm-charts/qbittorrent
+      targetRevision: 5.1.4
+      chart: qbittorrent
+      helm:
+        valueFiles:
+        - $values/helm/apps/qbittorrent/values.yaml
+    - repo: gitops_repo
+      path: manifests/apps/qbittorrent
+    target:
+      namespace: qbittorrent
+
+  - name: radar
+    sources:
+    - repo: values_repo
+      ref: values
+    - repoURL: https://skyhook-io.github.io/helm-charts
+      targetRevision: 1.15.0
+      chart: radar
+      helm:
+        valueFiles:
+        - $values/helm/apps/radar/values.yaml
+    - repo: gitops_repo
+      path: manifests/apps/radar
+    target:
+      namespace: radar
+
+  - name: redis-shared
+    sources:
+    - repo: values_repo
+      ref: values
+    - repoURL: https://ot-container-kit.github.io/helm-charts
+      targetRevision: 0.22.2
+      chart: redis-operator
+    - repo: gitops_repo
+      path: manifests/apps/redis-shared
+    target:
+      namespace: shared
+
+  - name: sparkyfitness
+    sources:
+    - repo: values_repo
+      ref: values
+    - repoURL: oci://ghcr.io/codewithcj/charts/sparkyfitness
+      targetRevision: 1.7.3
+      chart: sparkyfitness
+      helm:
+        valueFiles:
+        - $values/helm/apps/sparkyfitness/values.yaml
+    - repo: gitops_repo
+      path: manifests/apps/sparkyfitness
+    target:
+      namespace: sparkyfitness
+
+  - name: teslamate
+    sources:
+    - repo: gitops_repo
+      path: manifests/apps/teslamate
+    target:
+      namespace: teslamate
+
+  - name: vikunja
+    sources:
+    - repo: values_repo
+      ref: values
+    - repoURL: oci://ghcr.io/go-vikunja/helm-chart/vikunja
+      targetRevision: v2.0.2
+      chart: vikunja
+      helm:
+        valueFiles:
+        - $values/helm/apps/vikunja/values.yaml
+    - repo: gitops_repo
+      path: manifests/apps/vikunja
+    target:
+      namespace: vikunja

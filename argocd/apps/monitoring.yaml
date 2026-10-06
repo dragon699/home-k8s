@@ -1,0 +1,111 @@
+---
+projects:
+  monitoring:
+  - name: grafana
+    sources:
+    - repo: values_repo
+      ref: values
+    - repoURL: https://grafana-community.github.io/helm-charts
+      targetRevision: 13.2.7
+      chart: grafana
+      helm:
+        valueFiles:
+        - $values/helm/monitoring/grafana/values.yaml
+    - repo: gitops_repo
+      path: manifests/monitoring/grafana
+    target:
+      namespace: monitoring
+
+  - name: grafana-alloy
+    sources:
+    - repo: values_repo
+      ref: values
+    - repoURL: https://grafana.github.io/helm-charts
+      targetRevision: 1.8.0
+      chart: alloy
+      helm:
+        valueFiles:
+        - $values/helm/monitoring/grafana-alloy/values.yaml
+    - repo: gitops_repo
+      path: manifests/monitoring/grafana-alloy
+    target:
+      namespace: monitoring
+
+  - name: grafana-loki
+    sources:
+    - repo: values_repo
+      ref: values
+    - repoURL: https://grafana.github.io/helm-charts
+      targetRevision: 7.0.0
+      chart: loki
+      helm:
+        valueFiles:
+        - $values/helm/monitoring/grafana-loki/values.yaml
+    target:
+      namespace: monitoring
+
+  - name: grafana-tempo
+    sources:
+    - repo: values_repo
+      ref: values
+    - repoURL: https://grafana.github.io/helm-charts
+      targetRevision: 1.61.3
+      chart: tempo-distributed
+      helm:
+        valueFiles:
+        - $values/helm/monitoring/grafana-tempo/values.yaml
+    target:
+      namespace: monitoring
+
+  - name: metric-providers
+    sources:
+    - repo: values_repo
+      ref: values
+    - repoURL: https://prometheus-community.github.io/helm-charts
+      targetRevision: 4.46.0
+      chart: prometheus-node-exporter
+      helm:
+        releaseName: prometheus-node-exporter
+        valueFiles:
+        - $values/helm/monitoring/metric-providers/prometheus-node-exporter/values.yaml
+    - repoURL: oci://registry-1.docker.io/bitnamicharts/kube-state-metrics
+      targetRevision: '*'
+      chart: kube-state-metrics
+      helm:
+        releaseName: kube-state-metrics
+    - repo: gitops_repo
+      path: manifests/monitoring/metric-providers/immich-exporter
+    - repo: gitops_repo
+      path: manifests/monitoring/metric-providers/pihole-exporter
+    - repo: gitops_repo
+      path: manifests/monitoring/metric-providers/jellyfin-exporter
+    target:
+      namespace: monitoring
+
+  - name: minio
+    sources:
+    - repo: values_repo
+      ref: values
+    - repoURL: https://charts.bitnami.com/bitnami
+      targetRevision: 14.7.0
+      chart: minio
+      helm:
+        valueFiles:
+        - $values/helm/monitoring/minio/values.yaml
+    - repo: gitops_repo
+      path: manifests/monitoring/minio
+    target:
+      namespace: monitoring
+
+  - name: victoriametrics
+    sources:
+    - repo: values_repo
+      ref: values
+    - repoURL: oci://registry-1.docker.io/bitnamicharts/victoriametrics
+      targetRevision: 0.x.x
+      chart: victoriametrics
+      helm:
+        valueFiles:
+        - $values/helm/monitoring/victoriametrics/values.yaml
+    target:
+      namespace: monitoring
