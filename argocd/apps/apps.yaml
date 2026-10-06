@@ -115,8 +115,6 @@ projects:
         valueFiles:
         - $values/helm/apps/mcp/grafana-mcp/values.yaml
     - repo: gitops_repo
-      path: manifests/apps/mcp/grafana-mcp
-    - repo: gitops_repo
       path: manifests/apps/mcp/immich-mcp
     - repo: gitops_repo
       path: manifests/apps/mcp/jellyfin-mcp
