@@ -247,10 +247,24 @@ projects:
 
   - name: teslamate
     sources:
-    - repo: gitops_repo
-      path: manifests/apps/teslamate
+    - repo: values_repo
+      ref: values
+    - repo: charts_repo
+      path: deploy-app
+      helm:
+        releaseName: mosquitto
+        valueFiles:
+        - $values/helm/apps/teslamate/values-mosquitto.yaml
+    - repo: charts_repo
+      path: deploy-app
+      helm:
+        releaseName: teslamate
+        valueFiles:
+        - $values/helm/apps/teslamate/values-teslamate.yaml
     target:
       namespace: teslamate
+    sync:
+      enabled: false
 
   - name: vikunja
     sources:

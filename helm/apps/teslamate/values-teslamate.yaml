@@ -1,0 +1,102 @@
+global:
+  createDefaultServiceAccount: false
+
+defaultPodOptions:
+  automountServiceAccountToken: true
+  enableServiceLinks: true
+
+controllers:
+  teslamate:
+    annotations:
+      reloader.stakater.com/auto: "true"
+    replicas: 1
+    revisionHistoryLimit: 1
+    strategy: Recreate
+    containers:
+      teslamate:
+        image:
+          repository: teslamate/teslamate
+          tag: 4.3.0
+        securityContext:
+          capabilities:
+            drop: [ALL]
+        env:
+          ENCRYPTION_KEY:
+            valueFrom:
+              secretKeyRef:
+                name: data-teslamate
+                key: encryption_key
+          MQTT_HOST: mosquitto
+          DATABASE_HOST:
+            valueFrom:
+              secretKeyRef:
+                name: data-postgresql-shared-teslamate-teslamate
+                key: host
+          DATABASE_NAME:
+            valueFrom:
+              secretKeyRef:
+                name: data-postgresql-shared-teslamate-teslamate
+                key: dbname
+          DATABASE_USER:
+            valueFrom:
+              secretKeyRef:
+                name: data-postgresql-shared-teslamate-teslamate
+                key: user
+          DATABASE_PASS:
+            valueFrom:
+              secretKeyRef:
+                name: data-postgresql-shared-teslamate-teslamate
+                key: password
+          DATABASE_SSL: "true"
+          DATABASE_SSLMODE: require
+          DATABASE_SSL_CA_CERT_FILE: /etc/postgres-ca/root.crt
+
+service:
+  teslamate:
+    controller: teslamate
+    ports:
+      teslamate:
+        port: 4000
+
+ingress:
+  teslamate:
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-home
+      kubernetes.io/ingress.class: nginx
+      nginx.ingress.kubernetes.io/auth-type: basic
+      nginx.ingress.kubernetes.io/auth-secret: auth-teslamate
+      nginx.ingress.kubernetes.io/auth-realm: "Authentication Required"
+    hosts:
+    - host: car.k8s.iaminyourpc.xyz
+      paths:
+      - path: /
+        pathType: Prefix
+        service:
+          identifier: teslamate
+          port: 4000
+    tls:
+    - hosts:
+      - car.k8s.iaminyourpc.xyz
+      secretName: tls-car-k8s-iaminyourpc-xyz
+
+persistence:
+  teslamate-data:
+    forceRename: teslamate
+    type: persistentVolumeClaim
+    accessMode: ReadWriteOnce
+    size: 5Gi
+    globalMounts:
+    - path: /opt/app/import
+  pg-root-ca:
+    type: secret
+    name: postgresql-shared-pg-cluster-ca-cert
+    globalMounts:
+    - path: /etc/postgres-ca/root.crt
+      subPath: root.crt
+      readOnly: true
+
+secrets:
+  data-teslamate:
+    provider: vault
+  auth-teslamate:
+    provider: vault
