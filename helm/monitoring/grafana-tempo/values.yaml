@@ -93,6 +93,11 @@ ingester:
       memory: 4Gi
   config:
     replication_factor: 1
+    max_block_duration: 5m
+    max_block_bytes: 100000000
+  extraEnv:
+  - name: GOMEMLIMIT
+    value: 1536MiB
   extraArgs:
   - '-config.expand-env=true'
   extraEnvFrom:
@@ -100,6 +105,9 @@ ingester:
       name: auth-minio
 
 compactor:
+  extraEnv:
+  - name: GOMEMLIMIT
+    value: 768MiB
   resources:
     requests:
       cpu: 0.1
@@ -118,6 +126,9 @@ compactor:
       compacted_block_retention: 1h
       retention_concurrency: 10
       max_time_per_tenant: 10m
+      max_compaction_objects: 1000000
+      max_block_bytes: 1073741824
+      v2_prefetch_traces_count: 500
 
 querier:
   resources:

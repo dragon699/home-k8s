@@ -203,6 +203,13 @@ beyla.ebpf "home_discovery" {
       include                  = ["*"]
       exclude                  = ["nothing"]
     }
+
+    // Network flows: keep only the k8s-level attributes Radar's traffic map uses.
+    // Ephemeral ports, IPs and interfaces made the series count unbounded.
+    select {
+      attr                     = "beyla_network_flow_bytes"
+      exclude                  = ["src.port", "src.address", "dst.address", "src.name", "dst.name", "iface", "iface.direction", "beyla.ip", "client.port", "server.port", "src.zone", "dst.zone", "k8s.src.node.ip", "k8s.dst.node.ip", "k8s.src.node.name", "k8s.dst.node.name"]
+    }
   }
 
   discovery {
@@ -354,24 +361,31 @@ prometheus.scrape "home_metrics" {
   honor_labels                 = true
   scrape_interval              = "10s"
 
+  forward_to                   = [prometheus.relabel.home_metrics.receiver, prometheus.relabel.radar_beyla.receiver]
+}
+
+// Beyla's own beyla_* metrics go straight to VictoriaMetrics (see radar_beyla)
+prometheus.relabel "home_metrics" {
+  rule {
+    source_labels              = ["__name__"]
+    regex                      = "beyla_.*"
+    action                     = "drop"
+  }
+
   forward_to                   = [otelcol.receiver.prometheus.home_metrics.receiver]
 }
 
-// Scrape Beyla's own metrics (build info, network flows) for Radar
-prometheus.scrape "radar_beyla" {
-  targets                      = beyla.ebpf.home_discovery.targets
-  job_name                     = "beyla"
-
-  scrape_interval              = "15s"
-
-  forward_to                   = [prometheus.relabel.radar_beyla.receiver]
-}
-
+// Beyla's own metrics (build info, network flows) for Radar
 prometheus.relabel "radar_beyla" {
   rule {
     source_labels              = ["__name__"]
     regex                      = "beyla_.*"
     action                     = "keep"
+  }
+
+  rule {
+    target_label               = "job"
+    replacement                = "beyla"
   }
 
   forward_to                   = [prometheus.remote_write.home_metrics.receiver]
