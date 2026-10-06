@@ -6,6 +6,7 @@ controllerServiceAccount:
 
 template:
   spec:
+    serviceAccountName: gha-runner-fetch-ui
     containers:
     - name: runner
       image: ghcr.io/actions/actions-runner:latest

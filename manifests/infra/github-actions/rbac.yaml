@@ -36,3 +36,83 @@ subjects:
 - kind: ServiceAccount
   name: gha-runner-home-k8s
   namespace: github
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: gha-runner-fetch-api
+  namespace: github
+  labels:
+    env: home
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: gha-runner-fetch-api-sync
+  namespace: argocd
+  labels:
+    env: home
+rules:
+- apiGroups: ["argoproj.io"]
+  resources: ["applications"]
+  resourceNames: ["fetch-api"]
+  verbs: ["get", "patch"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: gha-runner-fetch-api-sync
+  namespace: argocd
+  labels:
+    env: home
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: gha-runner-fetch-api-sync
+subjects:
+- kind: ServiceAccount
+  name: gha-runner-fetch-api
+  namespace: github
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: gha-runner-fetch-ui
+  namespace: github
+  labels:
+    env: home
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: gha-runner-fetch-ui-sync
+  namespace: argocd
+  labels:
+    env: home
+rules:
+- apiGroups: ["argoproj.io"]
+  resources: ["applications"]
+  resourceNames: ["fetch-ui"]
+  verbs: ["get", "patch"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: gha-runner-fetch-ui-sync
+  namespace: argocd
+  labels:
+    env: home
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: gha-runner-fetch-ui-sync
+subjects:
+- kind: ServiceAccount
+  name: gha-runner-fetch-ui
+  namespace: github
