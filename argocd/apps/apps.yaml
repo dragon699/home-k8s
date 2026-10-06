@@ -108,8 +108,6 @@ projects:
         - $values/helm/apps/krakend/values.yaml
     target:
       namespace: krakend
-    sync:
-      enabled: false
 
   - name: mcp
     sources:
