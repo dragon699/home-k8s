@@ -10,6 +10,7 @@ metadata:
   annotations:
     reloader.stakater.com/auto: "true"
 spec:
+  revisionHistoryLimit: 1
   replicas: 1
   # Run a single logger while replacing the pod and migrating its database.
   strategy:

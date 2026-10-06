@@ -13,6 +13,7 @@ app-template:
 
   controllers:
     main:
+      revisionHistoryLimit: 1
       annotations:
         reloader.stakater.com/auto: "true"
       initContainers:

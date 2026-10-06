@@ -8,8 +8,8 @@ metadata:
     app: tesla-public-key-hoster
     env: home
 spec:
+  revisionHistoryLimit: 1
   replicas: 1
-  revisionHistoryLimit: 0
   selector:
     matchLabels:
       app: tesla-public-key-hoster

@@ -15,3 +15,13 @@ toolkit:
     value: nvidia
   - name: RUNTIME_CONFIG_SOURCE
     value: file=/run/k0s/containerd-cri.toml
+
+node-feature-discovery:
+  master:
+    revisionHistoryLimit: 1
+  worker:
+    revisionHistoryLimit: 1
+  gc:
+    revisionHistoryLimit: 1
+  topologyUpdater:
+    revisionHistoryLimit: 1

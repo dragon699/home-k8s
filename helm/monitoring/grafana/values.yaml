@@ -1,3 +1,5 @@
+revisionHistoryLimit: 1
+
 replicas: 1
 
 annotations:
@@ -18,6 +20,7 @@ persistence:
   enabled: false
 
 imageRenderer:
+  revisionHistoryLimit: 1
   enabled: true
   # The chart's generated token relies on Helm lookup, which Argo CD doesn't support,
   # so it was regenerated on every sync and broke rendering with 401s

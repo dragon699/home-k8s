@@ -3,6 +3,7 @@ vikunja:
     tag: "2.1.0"
 
   controller:
+    revisionHistoryLimit: 1
     annotations:
       reloader.stakater.com/auto: "true"
 

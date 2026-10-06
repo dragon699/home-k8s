@@ -8,6 +8,7 @@ metadata:
     app: immich-machine-learning
     env: home
 spec:
+  revisionHistoryLimit: 1
   replicas: 1
   strategy:
     type: RollingUpdate

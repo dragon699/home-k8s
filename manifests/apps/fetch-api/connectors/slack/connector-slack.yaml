@@ -10,8 +10,8 @@ metadata:
   annotations:
     reloader.stakater.com/auto: "true"
 spec:
+  revisionHistoryLimit: 1
   replicas: 1
-  revisionHistoryLimit: 0
   selector:
     matchLabels:
       app: connector-slack

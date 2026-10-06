@@ -1,0 +1,7 @@
+revisionHistoryLimit: 1
+
+certController:
+  revisionHistoryLimit: 1
+
+webhook:
+  revisionHistoryLimit: 1

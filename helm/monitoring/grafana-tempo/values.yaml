@@ -157,3 +157,6 @@ queryFrontend:
   extraEnvFrom:
   - secretRef:
       name: auth-minio
+
+tempo:
+  revisionHistoryLimit: 1

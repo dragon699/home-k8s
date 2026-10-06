@@ -1,3 +1,5 @@
+revisionHistoryLimit: 1
+
 replicaCount: 1
 
 deploymentAnnotations:

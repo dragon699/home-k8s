@@ -10,6 +10,7 @@ metadata:
   annotations:
     reloader.stakater.com/auto: "true"
 spec:
+  revisionHistoryLimit: 1
   selector:
     matchLabels:
       app: krakend

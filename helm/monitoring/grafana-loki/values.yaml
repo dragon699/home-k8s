@@ -1,6 +1,7 @@
 deploymentMode: SimpleScalable
 
 loki:
+  revisionHistoryLimit: 1
   commonConfig:
     replication_factor: 1
 

@@ -6,6 +6,7 @@ reloader:
   readOnlyRootFileSystem: true
 
   deployment:
+    revisionHistoryLimit: 1
     resources:
       requests:
         cpu: 10m
