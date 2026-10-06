@@ -1,4 +1,102 @@
 secrets:
+  fetch-api:
+    data-connector-downloader:
+      provider: vault
+      path: home/fetch-api/connectors/data-connector-downloader
+    data-connector-grafana:
+      provider: vault
+      path: home/fetch-api/connectors/data-connector-grafana
+    data-connector-ml:
+      provider: vault
+      path: home/fetch-api/connectors/data-connector-ml
+    data-connector-slack:
+      provider: vault
+      path: home/fetch-api/connectors/data-connector-slack
+    registry-fetch-api:
+      provider: vault
+      type: dockerconfigjson
+    fleet-api-private-key:
+      provider: vault
+      path: home/fetch-api/fleet-api/private-key
+    data-fleet-api:
+      provider: vault
+      path: home/fetch-api/fleet-api/data-fleet-api
+
+  fetch-ui:
+    registry-fetch-ui:
+      provider: vault
+      type: dockerconfigjson
+    auth-fetch-ui:
+      provider: vault
+
+  glance:
+    data-glance:
+      provider: vault
+    auth-glance-services:
+      provider: vault
+
+  immich:
+    data-postgresql-shared-immich:
+      provider: shared
+
+  mcp:
+    auth-grafana-mcp:
+      provider: vault
+    auth-immich-mcp:
+      provider: vault
+    auth-jellyfin-mcp:
+      provider: vault
+    data-postgresql-shared-teslamate-teslamate:
+      provider: shared
+    postgresql-shared-pg-cluster-ca-cert:
+      provider: shared
+    auth-teslamate-mcp:
+      provider: vault
+    auth-vault-mcp:
+      provider: vault
+
+  openclaw:
+    data-openclaw:
+      provider: vault
+
+  pihole:
+    auth-pihole:
+      provider: vault
+
+  qbittorrent:
+    auth-qbittorrent:
+      provider: vault
+
+  radar:
+    auth-radar:
+      provider: vault
+    auth-radar-argocd:
+      provider: vault
+
+  shared:
+    auth-gcloud-storage:
+      provider: vault
+    data-redis-shared:
+      spec:
+        refreshInterval: 0m0s
+        target:
+          name: data-redis-shared
+          creationPolicy: Owner
+        dataFrom:
+        - sourceRef:
+            generatorRef:
+              apiVersion: generators.external-secrets.io/v1alpha1
+              kind: Password
+              name: data-redis-shared
+
+  sparkyfitness:
+    data-postgresql-shared-sparkyfitness:
+      provider: shared
+    postgresql-shared-pg-cluster-ca-cert:
+      provider: shared
+    auth-sparkyfitness:
+      provider: vault
+
   teslamate:
     data-teslamate:
       provider: vault
