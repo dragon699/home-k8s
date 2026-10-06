@@ -14,10 +14,6 @@ on:
 permissions:
   contents: read
 
-env:
-  ARGOCD_BIN_URL: "https://${{ secrets.ARGOCD_SERVER }}/download/argocd-linux-amd64"
-
-
 
 jobs:
 
@@ -95,22 +91,44 @@ jobs:
     strategy:
       matrix: ${{ fromJson(needs.Inspect.outputs.items) }}
       fail-fast: false
-    timeout-minutes: 5
+    timeout-minutes: 10
 
     steps:
-    - name: Fetch code
-      uses: actions/checkout@v6
-
     - name: Sync in ArgoCD
-      uses: clowdhaus/argo-cd-action/@main
-      with:
-        download-url: ${{ env.ARGOCD_BIN_URL }}
-        command: app sync ${{ matrix.name }}
-        options: >-
-          --auth-token ${{ secrets.ARGOCD_TOKEN }}
-          --server ${{ secrets.ARGOCD_SERVER }}
-          --grpc-web
-          --retry-limit 15
-          --retry-backoff-duration 10s
-          --retry-backoff-max-duration 10s
-          --retry-backoff-factor 1
+      env:
+        APP: ${{ matrix.name }}
+      run: |
+        set -euo pipefail
+
+        SA=/var/run/secrets/kubernetes.io/serviceaccount
+        URL="https://kubernetes.default.svc/apis/argoproj.io/v1alpha1/namespaces/argocd/applications/${APP}"
+        kube() { curl -sS --fail-with-body --cacert "$SA/ca.crt" -H "Authorization: Bearer $(cat "$SA/token")" "$@"; }
+
+        # Wait for a running operation (e.g. an auto-sync) to finish first
+        for i in $(seq 1 60); do
+          [ "$(kube "$URL" | jq -r '.operation != null')" = "false" ] && break
+          echo "Waiting for the current operation on ${APP} to finish..."
+          sleep 5
+        done
+
+        STARTED=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+        kube -X PATCH -H "Content-Type: application/merge-patch+json" "$URL" -d '{
+          "operation": {
+            "initiatedBy": {"username": "github-actions"},
+            "sync": {"prune": false},
+            "retry": {"limit": 15, "backoff": {"duration": "10s", "factor": 1, "maxDuration": "10s"}}
+          }
+        }' >/dev/null
+        echo "Sync of ${APP} requested at ${STARTED}"
+
+        for i in $(seq 1 100); do
+          read -r STARTED_AT PHASE < <(kube "$URL" | jq -r '[.status.operationState.startedAt // "", .status.operationState.phase // ""] | @tsv')
+          if [[ ! "$STARTED_AT" < "$STARTED" ]] && [[ "$PHASE" =~ ^(Succeeded|Failed|Error)$ ]]; then
+            kube "$URL" | jq -r '"\(.status.operationState.phase): \(.status.operationState.message)",
+              "sync: \(.status.sync.status), health: \(.status.health.status)"'
+            [ "$PHASE" = "Succeeded" ] && exit 0 || exit 1
+          fi
+          sleep 5
+        done
+        echo "Timed out waiting for the sync of ${APP}"
+        exit 1

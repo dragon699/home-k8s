@@ -1,0 +1,38 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: gha-runner-home-k8s
+  namespace: github
+  labels:
+    env: home
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: gha-runner-home-k8s-sync
+  namespace: argocd
+  labels:
+    env: home
+rules:
+- apiGroups: ["argoproj.io"]
+  resources: ["applications"]
+  verbs: ["get", "patch"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: gha-runner-home-k8s-sync
+  namespace: argocd
+  labels:
+    env: home
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: gha-runner-home-k8s-sync
+subjects:
+- kind: ServiceAccount
+  name: gha-runner-home-k8s
+  namespace: github
