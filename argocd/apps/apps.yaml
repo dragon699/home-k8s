@@ -102,8 +102,6 @@ projects:
       path: manifests/apps/krakend
     target:
       namespace: krakend
-    sync:
-      enabled: false
 
   - name: mcp
     sources:
@@ -253,8 +251,6 @@ projects:
       path: manifests/apps/teslamate
     target:
       namespace: teslamate
-    sync:
-      enabled: false
 
   - name: vikunja
     sources:
