@@ -263,8 +263,6 @@ projects:
         - $values/helm/apps/teslamate/values-teslamate.yaml
     target:
       namespace: teslamate
-    sync:
-      enabled: false
 
   - name: vikunja
     sources:
