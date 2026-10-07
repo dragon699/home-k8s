@@ -1,0 +1,2 @@
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+00 04 * * * root bash /home/martin/stuff/home-k8s/scripts/backup/immich/backup.sh >> /var/log/backup-immich.log 2>&1
