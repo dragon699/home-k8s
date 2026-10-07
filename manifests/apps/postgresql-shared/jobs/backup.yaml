@@ -27,7 +27,7 @@ spec:
                   path: key.json
           - name: backups
             hostPath:
-              path: /media/martin/Data/Backups/PostgreSQL
+              path: /media/martin/Data/Backups/home-k8s/PostgreSQL
               type: Directory
           containers:
           - name: pg-backup

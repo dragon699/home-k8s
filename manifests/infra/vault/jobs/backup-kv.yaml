@@ -27,7 +27,7 @@ spec:
                   path: key.json
           - name: backups
             hostPath:
-              path: /media/martin/Data/Backups/Vault
+              path: /media/martin/Data/Backups/home-k8s/Vault
               type: Directory
           containers:
           - name: vault-backup-kv

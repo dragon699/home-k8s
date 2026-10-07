@@ -239,7 +239,7 @@ class Backups:
         file_name = os.path.basename(file_path)
 
         if self.service == 'vault':
-            file_name = f'vault-kv-{file_name}'
+            file_name = f'vault-kv@{file_name.split('@', 1)[1]}'
 
         file_prefix = file_name.split('@')[0]
         local_dir = self.params['LOCAL_BACKUP_DIR']
