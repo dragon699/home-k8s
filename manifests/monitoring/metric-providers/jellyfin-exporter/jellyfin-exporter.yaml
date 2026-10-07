@@ -31,7 +31,6 @@ spec:
         args:
           - "--jellyfin.address=http://$(JELLYFIN_HOST)"
           - "--jellyfin.token=$(JELLYFIN_API_KEY)"
-          - "--collector.activity"
         ports:
         - containerPort: 9594
         env:
