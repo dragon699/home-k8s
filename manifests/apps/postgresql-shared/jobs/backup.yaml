@@ -38,7 +38,7 @@ spec:
             command: ["/bin/sh", "-c", "set -e; python /scripts/backup.py --backup-pg-databases"]
             env:
             - name: DATABASES
-              value: "teslamate-teslamate"
+              value: "teslamate-teslamate,immich,monitoring-grafana,vikunja,sparkyfitness"
             - name: GCP_PROJECT
               value: "home-k8s"
             - name: GCP_BUCKET
