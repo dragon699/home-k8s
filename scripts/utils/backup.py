@@ -15,6 +15,11 @@ ENV = {
         'GCP_BUCKET', # Backups destination GCP bucket
         'GOOGLE_APPLICATION_CREDENTIALS' # Path to GCP service account JSON key file
     ],
+    'encryption': {
+        'optional': {
+            'AGE_RECIPIENT': os.getenv('AGE_RECIPIENT') # age public key (age1...) - when set, archives are encrypted before upload
+        }
+    },
     'local-backup': {
         'required': [
             'LOCAL_BACKUP_DIR' # Required with --enable-local-backup - directory in which to save backup archives in addition to GCP
@@ -101,6 +106,12 @@ class Backups:
 
         for var in ENV['required']:
             set_param(var)
+
+        for var, default in ENV['encryption']['optional'].items():
+            self.params[var] = default
+
+        if self.params['AGE_RECIPIENT'] and not self.params['AGE_RECIPIENT'].startswith('age1'):
+            self.log('AGE_RECIPIENT: Must be an age public key (age1...)', crash=True)
 
         for var in ENV[self.service]['required']:
             set_param(var)
@@ -281,6 +292,40 @@ class Backups:
                 self.remove_local(os.path.join(local_dir, old_name))
 
 
+    def encrypt_archives(self):
+        if not self.params['AGE_RECIPIENT']:
+            self.log('age: AGE_RECIPIENT not set, archives will NOT be encrypted', warn=True)
+            return True
+
+        encrypted = []
+
+        for file_path in self.created:
+            file_name = os.path.basename(file_path)
+            encrypted_path = f'{file_path}.age'
+
+            try:
+                self.log(f'age: Encrypting "{file_name}"..')
+                self.run_cmd([
+                    'age',
+                    '-r', self.params['AGE_RECIPIENT'],
+                    '-o', encrypted_path,
+                    file_path
+                ])
+
+                encrypted.append(encrypted_path)
+
+            except Exception as err:
+                # Never fall back to uploading the plaintext archive
+                self.log(f'age: Failed to encrypt "{file_name}", got this -> {err}', warn=True)
+                self.success = False
+                self.remove_local(encrypted_path)
+
+            finally:
+                self.remove_local(file_path)
+
+        self.created = encrypted
+
+
     def upload_archives(self):
         bucket = None
 
@@ -353,6 +398,7 @@ if __name__ == '__main__':
     elif backup_service == 'pg-databases':
         backups.create_pg_backup()
 
+    backups.encrypt_archives()
     backups.upload_archives()
 
     if not backups.success:

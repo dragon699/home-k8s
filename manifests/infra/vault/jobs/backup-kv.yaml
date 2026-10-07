@@ -51,6 +51,8 @@ spec:
               value: "1"
             - name: LOCAL_BACKUP_DIR
               value: "/backups"
+            - name: AGE_RECIPIENT
+              value: "age170llv6tf2j4sgj6s6tvdycutptmqwsyl3ek3w74fjs4jfewqc5qqfqxsvf" # age public key, private key is kept offline
             - name: VAULT_SCHEME
               value: "http"
             - name: VAULT_ADDRESS

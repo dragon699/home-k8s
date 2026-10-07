@@ -13,16 +13,31 @@ BACKUP_DISK="/media/martin/Data"
 # Backup directory to store backups in
 BACKUP_DIR="${BACKUP_DISK}/Backups/home-k8s/k0s"
 
-# Backup file names
-BACKUP_REGEX='^k0s_backup_.*\.tar\.gz$'
+# Backup file names (plaintext .tar.gz kept in the regex so old unencrypted backups get cleaned up)
+BACKUP_REGEX='^k0s_backup_.*\.tar\.gz(\.age)?$'
+
+# age public key to encrypt backups with - the archive holds every k8s Secret and the cluster PKI
+AGE_RECIPIENT="age170llv6tf2j4sgj6s6tvdycutptmqwsyl3ek3w74fjs4jfewqc5qqfqxsvf"
 
 
 function backup() {
     say "Starting backup.."
 
+    # Plaintext backup stays on the root disk only, never on Data
+    TMP_DIR=$(mktemp -d)
+    trap 'rm -rf "${TMP_DIR}"' EXIT
+
     mkdir -p "${BACKUP_DIR}"
-    k0s backup --save-path="${BACKUP_DIR}"
+    k0s backup --save-path="${TMP_DIR}"
     [[ ${?} -ne 0 ]] && fail "Backup failed!"
+
+    for BACKUP_PATH in "${TMP_DIR}"/k0s_backup_*.tar.gz; do
+        BACKUP_NAME="$(basename "${BACKUP_PATH}")"
+
+        say "Encrypting ${BACKUP_NAME}.."
+        age -r "${AGE_RECIPIENT}" -o "${BACKUP_DIR}/${BACKUP_NAME}.age" "${BACKUP_PATH}"
+        [[ ${?} -ne 0 ]] && rm -f "${BACKUP_DIR}/${BACKUP_NAME}.age" && fail "Encryption failed!"
+    done
 
     say "Backup completed successfully!"
 }
