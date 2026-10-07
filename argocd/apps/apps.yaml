@@ -119,6 +119,8 @@ projects:
     - repo: gitops_repo
       path: manifests/apps/mcp/jellyfin-mcp
     - repo: gitops_repo
+      path: manifests/apps/mcp/pihole-mcp
+    - repo: gitops_repo
       path: manifests/apps/mcp/teslamate-mcp
     - repo: gitops_repo
       path: manifests/apps/mcp/vault-mcp

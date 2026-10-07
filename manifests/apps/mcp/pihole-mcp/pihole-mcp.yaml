@@ -1,0 +1,81 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pihole-mcp
+  namespace: mcp
+  labels:
+    app: pihole-mcp
+    env: home
+  annotations:
+    reloader.stakater.com/auto: "true"
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: pihole-mcp
+  template:
+    metadata:
+      labels:
+        app: pihole-mcp
+        env: home
+    spec:
+      restartPolicy: Always
+      containers:
+      - name: pihole-mcp
+        image: ghcr.io/hexamatic/pihole-mcp:0.9.0
+        imagePullPolicy: IfNotPresent
+        args:
+        - "-transport"
+        - "http"
+        - "-address"
+        - "0.0.0.0:8080"
+        ports:
+        - containerPort: 8080
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 65532
+          runAsGroup: 65532
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+        env:
+        - name: PIHOLE_URL
+          value: "http://pihole-web.pihole.svc:80"
+        - name: PIHOLE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: auth-pihole-mcp
+              key: PIHOLE_PASSWORD
+        - name: PIHOLE_HTTP_AUTH_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: auth-pihole-mcp
+              key: HTTP_TOKEN
+        - name: PIHOLE_ALLOWED_ORIGINS
+          value: "localhost,127.0.0.1,pihole-mcp,pihole-mcp.mcp,pihole-mcp.mcp.svc,pihole-mcp.mcp.svc.cluster.local"
+        - name: PIHOLE_READ_ONLY
+          value: "false"
+        - name: TZ
+          value: Europe/Sofia
+        resources:
+          requests:
+            cpu: 10m
+            memory: 32Mi
+          limits:
+            memory: 128Mi
+        livenessProbe:
+          tcpSocket:
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 30
+        readinessProbe:
+          tcpSocket:
+            port: 8080
+          initialDelaySeconds: 3
+          periodSeconds: 10

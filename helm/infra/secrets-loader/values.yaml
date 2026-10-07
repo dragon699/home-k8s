@@ -58,6 +58,8 @@ secrets:
       provider: vault
     auth-jellyfin-mcp:
       provider: vault
+    auth-pihole-mcp:
+      provider: vault
     data-postgresql-shared-teslamate-teslamate:
       provider: shared
     postgresql-shared-pg-cluster-ca-cert:
