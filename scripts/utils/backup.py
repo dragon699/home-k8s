@@ -22,7 +22,6 @@ ENV = {
     },
     'vault': {
         'required': [
-            'VAULT_KV_NAMES', # Comma-separated list of Vault KV names to backup
             'VAULT_ADDRESS', # Vault hostname and port
             'VAULT_ROOT_TOKEN' # Vault root token
         ],
@@ -86,7 +85,7 @@ class Backups:
             if not os.getenv(var_name):
                 self.log(f'{var_name}: Missing environment variable', crash=True)
 
-            if var_name in ['DATABASES', 'VAULT_KV_NAMES']:
+            if var_name in ['DATABASES']:
                 self.params[var_name] = [
                     item.strip()
                     for item in os.getenv(var_name, '').split(',')
@@ -155,9 +154,17 @@ class Backups:
 
     def create_vault_backup(self):
         def export_kv(path_prefix: str, dir: str):
-            items = json.loads(
-                self.run_cmd(['vault', 'kv', 'list', '-format=json', path_prefix])
-            )
+            try:
+                items = json.loads(
+                    self.run_cmd(['vault', 'kv', 'list', '-format=json', path_prefix])
+                )
+
+            except RuntimeError as err:
+                # Empty KV / path
+                if 'No value found' in str(err):
+                    return True
+
+                raise
 
             for item in items:
                 if item.endswith('/'):
@@ -178,35 +185,52 @@ class Backups:
                         file.write(secret_data)
 
 
-        for item in self.params['VAULT_KV_NAMES']:
-            kv_path = f'{item}/'
-            kv_dir = os.path.join(self.dir, item.replace('/', '_'))
+        try:
+            mounts = json.loads(
+                self.run_cmd(['vault', 'secrets', 'list', '-format=json'])
+            )
 
-            time = self.get_time()
-            archive_name = f'{item}@{time}.zip'
-            file_path = os.path.join(self.dir, archive_name)
+        except Exception as err:
+            self.log(f'vault: Unable to list secret engines, got this -> {err}', crash=True)
 
-            os.makedirs(kv_dir, exist_ok=True)
+        kv_names = sorted(
+            path.strip('/')
+            for path, mount in mounts.items()
+            if mount.get('type') == 'kv'
+        )
 
-            try:
+        if len(kv_names) == 0:
+            self.log('vault: No KV secret engines found', crash=True)
+
+        time = self.get_time()
+        archive_name = f'vault-kv@{time}.zip'
+        file_path = os.path.join(self.dir, archive_name)
+        export_dir = os.path.join(self.dir, 'vault-kv')
+
+        try:
+            for item in kv_names:
+                kv_dir = os.path.join(export_dir, item.replace('/', '_'))
+                os.makedirs(kv_dir, exist_ok=True)
+
                 self.log(f'vault: Exporting secrets from "{item}"..')
-                export_kv(kv_path, kv_dir)
+                export_kv(f'{item}/', kv_dir)
 
-                self.log(f'vault: Inflating "{archive_name}"..')
-                self.run_cmd(
-                    ['zip', '-r', file_path, os.path.basename(kv_dir)],
-                    cwd=self.dir
-                )
+            self.log(f'vault: Inflating "{archive_name}"..')
+            self.run_cmd(
+                ['zip', '-r', file_path, os.path.basename(export_dir)],
+                cwd=self.dir
+            )
 
-                self.created.append(file_path)
+            self.created.append(file_path)
 
-            except Exception as err:
-                self.log(f'vault: Failed to backup "{item}", got this -> {err}', warn=True)
-                self.success = False
-                self.remove_local(file_path)
+        except Exception as err:
+            # Skip the archive entirely, so a partial backup never replaces the last full one
+            self.log(f'vault: Failed to backup KVs, got this -> {err}', warn=True)
+            self.success = False
+            self.remove_local(file_path)
 
-            finally:
-                self.remove_local(kv_dir)
+        finally:
+            self.remove_local(export_dir)
 
 
     def create_pg_backup(self):
@@ -237,10 +261,6 @@ class Backups:
 
     def save_local(self, file_path: str):
         file_name = os.path.basename(file_path)
-
-        if self.service == 'vault':
-            file_name = f'vault-kv@{file_name.split('@', 1)[1]}'
-
         file_prefix = file_name.split('@')[0]
         local_dir = self.params['LOCAL_BACKUP_DIR']
 
