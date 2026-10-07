@@ -234,6 +234,7 @@ class Backups:
 
             except Exception as err:
                 self.log(f'gcp: Failed to upload "{file_name}", got this -> {err}', warn=True)
+                self.success = False
 
 
 if __name__ == '__main__':
@@ -258,5 +259,8 @@ if __name__ == '__main__':
         backups.create_pg_backup()
 
     backups.upload_archives()
+
+    if not backups.success:
+        backups.log('Finished with errors, see the warnings above', crash=True)
 
     backups.log('Have a good day <:')
