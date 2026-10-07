@@ -31,6 +31,7 @@ spec:
       enableServiceLinks: true
       terminationGracePeriodSeconds: 30
       restartPolicy: Always
+      runtimeClassName: nvidia
       volumes:
       - name: library
         persistentVolumeClaim:
@@ -74,6 +75,9 @@ spec:
       - name: immich-server
         image: ghcr.io/immich-app/immich-server:v3.2.4
         imagePullPolicy: IfNotPresent
+        resources:
+          limits:
+            nvidia.com/gpu: 1
         livenessProbe:
           httpGet:
             path: /api/server/ping
@@ -107,6 +111,9 @@ spec:
         - name: library
           mountPath: /usr/src/app/upload
         env:
+        # Lets ffmpeg use the GPU's video encoder (NVENC) for transcoding
+        - name: NVIDIA_DRIVER_CAPABILITIES
+          value: "compute,video,utility"
         - name: IMMICH_MEDIA_LOCATION
           value: "/usr/src/app/upload"
         - name: UPLOAD_LOCATION
