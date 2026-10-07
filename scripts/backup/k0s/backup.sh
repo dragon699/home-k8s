@@ -17,7 +17,7 @@ BACKUP_DIR="${BACKUP_DISK}/Backups/home-k8s/k0s"
 BACKUP_REGEX='^k0s_backup_.*\.tar\.gz(\.age)?$'
 
 # age public key to encrypt backups with - the archive holds every k8s Secret and the cluster PKI
-AGE_RECIPIENT="age170llv6tf2j4sgj6s6tvdycutptmqwsyl3ek3w74fjs4jfewqc5qqfqxsvf"
+AGE_PUBLIC_KEY="age170llv6tf2j4sgj6s6tvdycutptmqwsyl3ek3w74fjs4jfewqc5qqfqxsvf"
 
 
 function backup() {
@@ -35,7 +35,7 @@ function backup() {
         BACKUP_NAME="$(basename "${BACKUP_PATH}")"
 
         say "Encrypting ${BACKUP_NAME}.."
-        age -r "${AGE_RECIPIENT}" -o "${BACKUP_DIR}/${BACKUP_NAME}.age" "${BACKUP_PATH}"
+        age -r "${AGE_PUBLIC_KEY}" -o "${BACKUP_DIR}/${BACKUP_NAME}.age" "${BACKUP_PATH}"
         [[ ${?} -ne 0 ]] && rm -f "${BACKUP_DIR}/${BACKUP_NAME}.age" && fail "Encryption failed!"
     done
 

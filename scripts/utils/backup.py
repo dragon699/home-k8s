@@ -17,7 +17,7 @@ ENV = {
     ],
     'encryption': {
         'optional': {
-            'AGE_RECIPIENT': os.getenv('AGE_RECIPIENT') # age public key (age1...) - when set, archives are encrypted before upload
+            'AGE_PUBLIC_KEY': os.getenv('AGE_PUBLIC_KEY') # age public key (age1...) - when set, archives are encrypted before upload
         }
     },
     'local-backup': {
@@ -110,8 +110,8 @@ class Backups:
         for var, default in ENV['encryption']['optional'].items():
             self.params[var] = default
 
-        if self.params['AGE_RECIPIENT'] and not self.params['AGE_RECIPIENT'].startswith('age1'):
-            self.log('AGE_RECIPIENT: Must be an age public key (age1...)', crash=True)
+        if self.params['AGE_PUBLIC_KEY'] and not self.params['AGE_PUBLIC_KEY'].startswith('age1'):
+            self.log('AGE_PUBLIC_KEY: Must be an age public key (age1...)', crash=True)
 
         for var in ENV[self.service]['required']:
             set_param(var)
@@ -296,8 +296,8 @@ class Backups:
 
 
     def encrypt_archives(self):
-        if not self.params['AGE_RECIPIENT']:
-            self.log('age: AGE_RECIPIENT not set, archives will NOT be encrypted', warn=True)
+        if not self.params['AGE_PUBLIC_KEY']:
+            self.log('age: AGE_PUBLIC_KEY not set, archives will NOT be encrypted', warn=True)
             return True
 
         encrypted = []
@@ -310,7 +310,7 @@ class Backups:
                 self.log(f'age: Encrypting "{file_name}"..')
                 self.run_cmd([
                     'age',
-                    '-r', self.params['AGE_RECIPIENT'],
+                    '-r', self.params['AGE_PUBLIC_KEY'],
                     '-o', encrypted_path,
                     file_path
                 ])
