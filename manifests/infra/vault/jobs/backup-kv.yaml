@@ -31,7 +31,7 @@ spec:
               type: Directory
           containers:
           - name: vault-backup-kv
-            image: skullfighter6/python:3.13-utils
+            image: skullfighter6/python:3.13-utils-20261007
             imagePullPolicy: IfNotPresent
             volumeMounts:
             - name: script-vault-backup-kv
