@@ -3,7 +3,7 @@ image:
 
 controller:
   revisionHistoryLimit: 1
-  replicas: 1
+  replicas: 0 # Temporarily disabled, restore to 1
   extraAnnotations:
     secret.reloader.stakater.com/reload: "data-grafana-alloy"
   type: deployment
