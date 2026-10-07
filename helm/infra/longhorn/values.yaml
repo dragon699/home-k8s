@@ -21,3 +21,7 @@ longhornUI:
 service:
   ui:
     type: ClusterIP
+
+defaultBackupStore:
+  backupTarget: nfs://192.168.1.170:/media/martin/Data/Backups/home-k8s/Longhorn
+  pollInterval: 300
