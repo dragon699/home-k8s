@@ -26,11 +26,12 @@ spec:
       restartPolicy: Always
       containers:
       - name: jellyfin-exporter
-        image: rebelcore/jellyfin-exporter:latest
+        image: rebelcore/jellyfin-exporter:v1.5.2
         imagePullPolicy: IfNotPresent
         args:
-          - "--jellyfin.address=$(JELLYFIN_HOST)"
+          - "--jellyfin.address=http://$(JELLYFIN_HOST)"
           - "--jellyfin.token=$(JELLYFIN_API_KEY)"
+          - "--collector.activity"
         ports:
         - containerPort: 9594
         env:
