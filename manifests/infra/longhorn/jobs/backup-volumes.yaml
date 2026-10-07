@@ -1,0 +1,13 @@
+---
+apiVersion: longhorn.io/v1beta1
+kind: RecurringJob
+metadata:
+  name: backup-volumes
+  namespace: longhorn
+spec:
+  task: "backup"
+  cron: "00 02 * * *"
+  concurrency: 2
+  retain: 1
+  groups:
+  - default
