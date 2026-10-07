@@ -7,14 +7,14 @@ metadata:
     env: home
 spec:
   kubernetesConfig:
-    image: quay.io/opstree/redis:latest
+    image: quay.io/opstree/redis:v8.2.2
     imagePullPolicy: IfNotPresent
     redisSecret:
       name: data-redis-shared
       key: password
   redisExporter:
     enabled: false
-    image: quay.io/opstree/redis-exporter:latest
+    image: quay.io/opstree/redis-exporter:v1.89.0
     imagePullPolicy: IfNotPresent
   podSecurityContext:
     fsGroup: 1000

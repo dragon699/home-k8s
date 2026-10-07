@@ -77,7 +77,7 @@ function install_golang {
 function install_k0sctl {
     ! [[ -z $(which k0sctl) ]] && return 0
 
-    URL="github.com/k0sproject/k0sctl@latest"
+    URL="github.com/k0sproject/k0sctl@v0.27.0"
 
     say "Installing ${URL}.."
 

@@ -39,7 +39,7 @@ spec:
           claimName: glance-home
       containers:
       - name: glance
-        image: glanceapp/glance:latest
+        image: glanceapp/glance:v0.8.6
         ports:
         - containerPort: 8080
         volumeMounts:

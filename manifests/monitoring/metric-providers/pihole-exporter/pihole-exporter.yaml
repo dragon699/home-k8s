@@ -26,7 +26,7 @@ spec:
       restartPolicy: Always
       containers:
       - name: pihole-exporter
-        image: ekofr/pihole-exporter:latest
+        image: ekofr/pihole-exporter:v1.2.0
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 9617

@@ -9,7 +9,7 @@ template:
     serviceAccountName: gha-runner-fetch-ui
     containers:
     - name: runner
-      image: ghcr.io/actions/actions-runner:latest
+      image: ghcr.io/actions/actions-runner:2.338.0
       command: ["/home/runner/run.sh"]
       env:
       - name: DOCKER_HOST

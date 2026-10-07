@@ -20,7 +20,7 @@ spec:
           name: data-vault-policy-external-secrets
       containers:
       - name: setup
-        image: hashicorp/vault:latest
+        image: hashicorp/vault:1.20.4
         imagePullPolicy: IfNotPresent
         volumeMounts:
         - name: script-vault-setup
