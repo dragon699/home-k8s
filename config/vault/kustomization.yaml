@@ -5,7 +5,7 @@ namespace: vault
 generatorOptions:
   disableNameSuffixHash: true
 configMapGenerator:
-- name: script-vault-auto-backup
+- name: script-vault-backup-kv
   files: ['backup.py=../../scripts/utils/backup.py']
 - name: script-vault-auto-unseal
   files: ['unseal.sh=../../scripts/utils/vault/unseal.sh']
