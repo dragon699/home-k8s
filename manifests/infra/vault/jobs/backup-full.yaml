@@ -41,6 +41,8 @@ spec:
               value: "/backups"
             - name: HOME
               value: "/tmp"
+            - name: TZ
+              value: Europe/Sofia
             - name: VAULT_ADDRESS
               valueFrom:
                 secretKeyRef:
