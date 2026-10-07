@@ -1,0 +1,55 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: vault-backup-full
+  namespace: vault
+spec:
+  schedule: "0 3 * * *" # Every day at 03:00AM
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      template:
+        spec:
+          restartPolicy: Never
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+          volumes:
+          - name: script-vault-backup-full
+            configMap:
+              name: script-vault-backup-full
+              defaultMode: 0755
+          - name: backups
+            hostPath:
+              path: /media/martin/Data/Backups/home-k8s/Vault
+              type: Directory
+          containers:
+          - name: vault-backup-full
+            image: hashicorp/vault:1.20.4
+            imagePullPolicy: IfNotPresent
+            volumeMounts:
+            - name: script-vault-backup-full
+              mountPath: /scripts
+            - name: backups
+              mountPath: /backups
+            command: ["/bin/sh", "/scripts/backup-full.sh"]
+            env:
+            - name: BACKUP_DIR
+              value: "/backups"
+            - name: HOME
+              value: "/tmp"
+            - name: VAULT_ADDRESS
+              valueFrom:
+                secretKeyRef:
+                  name: data-vault-sensitive
+                  key: VAULT_ADDRESS
+            - name: VAULT_ADDR
+              value: "http://$(VAULT_ADDRESS)"
+            - name: VAULT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: data-vault-sensitive
+                  key: VAULT_ROOT_TOKEN

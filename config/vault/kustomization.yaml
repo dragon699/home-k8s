@@ -7,6 +7,8 @@ generatorOptions:
 configMapGenerator:
 - name: script-vault-backup-kv
   files: ['backup.py=../../scripts/utils/backup.py']
+- name: script-vault-backup-full
+  files: ['backup-full.sh=../../scripts/utils/vault/backup-full.sh']
 - name: script-vault-auto-unseal
   files: ['unseal.sh=../../scripts/utils/vault/unseal.sh']
 - name: script-vault-setup
