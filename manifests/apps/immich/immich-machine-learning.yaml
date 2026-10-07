@@ -28,14 +28,18 @@ spec:
       enableServiceLinks: true
       terminationGracePeriodSeconds: 30
       restartPolicy: Always
+      runtimeClassName: nvidia
       volumes:
       - name: model-cache
         persistentVolumeClaim:
           claimName: immich-machine-learning
       containers:
       - name: immich-machine-learning
-        image: ghcr.io/immich-app/immich-machine-learning:v3.2.4
+        image: ghcr.io/immich-app/immich-machine-learning:v3.2.4-cuda
         imagePullPolicy: IfNotPresent
+        resources:
+          limits:
+            nvidia.com/gpu: 1
         livenessProbe:
           httpGet:
             path: /ping
