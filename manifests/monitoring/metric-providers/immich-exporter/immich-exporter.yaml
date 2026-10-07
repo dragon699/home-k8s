@@ -24,20 +24,46 @@ spec:
         env: home
     spec:
       restartPolicy: Always
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
       containers:
       - name: immich-exporter
-        image: eithan1231/immich-exporter:latest
+        image: ghcr.io/moond4rk/immich-exporter:1.2.0
         imagePullPolicy: IfNotPresent
         ports:
-        - containerPort: 3000
+        - name: metrics
+          containerPort: 8000
         env:
-        - name: IMMICH_HOST
-          valueFrom:
-            secretKeyRef:
-              name: auth-immich
-              key: IMMICH_HOST
-        - name: IMMICH_KEY
+        - name: IMMICH_BASE_URL
+          value: http://immich-server.immich.svc:2283/api
+        - name: IMMICH_API_TOKEN
           valueFrom:
             secretKeyRef:
               name: auth-immich
               key: IMMICH_API_KEY
+        - name: SCRAPE_INTERVAL_SECONDS
+          value: "120"
+        - name: BREAKDOWN_INTERVAL_SECONDS
+          value: "900"
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: metrics
+          periodSeconds: 15
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: metrics
+          periodSeconds: 30
+        resources:
+          requests:
+            cpu: 10m
+            memory: 32Mi
+          limits:
+            memory: 128Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop: ["ALL"]

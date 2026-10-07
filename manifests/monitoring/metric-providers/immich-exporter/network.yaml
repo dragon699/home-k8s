@@ -7,14 +7,14 @@ metadata:
   annotations:
     prometheus.io/scrape: "true"
     prometheus.io/path: "/metrics"
-    prometheus.io/port: "3000"
+    prometheus.io/port: "8000"
   labels:
     env: home
 spec:
   type: ClusterIP
   ports:
   - name: immich-exporter
-    port: 3000
-    targetPort: 3000
+    port: 8000
+    targetPort: metrics
   selector:
     app: immich-exporter
