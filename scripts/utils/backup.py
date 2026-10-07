@@ -287,9 +287,12 @@ class Backups:
         self.log(f'local: Cleaning up old backups..')
 
         for old_name in os.listdir(local_dir):
-            if old_name.startswith(f'{file_prefix}@') and old_name != file_name:
+            old_path = os.path.join(local_dir, old_name)
+
+            # Files only - never touch folders, e.g. a manually extracted backup
+            if old_name.startswith(f'{file_prefix}@') and old_name != file_name and os.path.isfile(old_path):
                 self.log(f'local: Deleting "{old_name}" from {local_dir}..')
-                self.remove_local(os.path.join(local_dir, old_name))
+                self.remove_local(old_path)
 
 
     def encrypt_archives(self):
