@@ -5,6 +5,20 @@ operator:
 driver:
   enabled: false
 
+devicePlugin:
+  config:
+    create: true
+    name: gpu-slices
+    default: any
+    data:
+      any: |-
+        version: v1
+        sharing:
+          timeSlicing:
+            resources:
+            - name: nvidia.com/gpu
+              replicas: 2
+
 toolkit:
   env:
   - name: CONTAINERD_CONFIG
