@@ -1,10 +1,17 @@
 #!/bin/sh
 
 
-# // Required variables
-# VAULT_ADDR => Vault address, e.g. http://vault.vault.svc:8200
+# Runs inside a pod, so all variables commented out;
+# so they don't erase the ones from the pod runtime;
+
+# VAULT_ADDR => Vault address
+# VAULT_ADDR="vault.vault.svc"
+
 # VAULT_TOKEN => Token allowed to read sys/storage/raft/snapshot
+# VAULT_TOKEN=""
+
 # BACKUP_DIR => Directory to store snapshots in
+# BACKUP_DIR=""
 
 
 function get_time() {
