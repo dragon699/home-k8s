@@ -22,6 +22,11 @@ spec:
             configMap:
               name: script-vault-backup-full
               defaultMode: 0755
+              items:
+              - key: backup-full.sh
+                path: vault/backup-full.sh
+              - key: common.sh
+                path: lib/common.sh
           - name: backups
             hostPath:
               path: /media/martin/Data/Backups/home-k8s/Vault
@@ -35,7 +40,7 @@ spec:
               mountPath: /scripts
             - name: backups
               mountPath: /backups
-            command: ["/bin/sh", "/scripts/backup-full.sh"]
+            command: ["/bin/sh", "/scripts/vault/backup-full.sh"]
             env:
             - name: BACKUP_DIR
               value: "/backups"

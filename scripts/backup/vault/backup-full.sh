@@ -5,7 +5,7 @@
 # so they don't erase the ones from the pod runtime;
 
 # VAULT_ADDR => Vault address
-# VAULT_ADDR="vault.vault.svc"
+# VAULT_ADDR="http://vault.vault.svc:8200"
 
 # VAULT_TOKEN => Token allowed to read sys/storage/raft/snapshot
 # VAULT_TOKEN=""
@@ -14,42 +14,38 @@
 # BACKUP_DIR=""
 
 
-function get_time() {
-    date +'%d/%m at %H:%M:%S'
-}
+SCRIPT_DIR="$(cd "$(dirname "${0}")" && pwd)"
+LIB_DIR="${SCRIPT_DIR}/../lib"
 
-function list_backups() {
-    ls "${BACKUP_DIR}" 2>/dev/null | grep -E '^vault-raft_.*\.snap$'
-}
+. "${LIB_DIR}/common.sh"
 
-function delete_backup() {
-    local BACKUP_PATH="${BACKUP_DIR}/${1}"
 
-    [ -f "${BACKUP_PATH}" ] && rm -f "${BACKUP_PATH}"
-}
+# Backup file names
+BACKUP_REGEX='^vault-raft_.*\.snap$'
+
 
 function backup() {
     BACKUP_PATH="${BACKUP_DIR}/vault-raft_$(date +'%Y-%m-%dT%H_%M_%S').snap"
-    echo " [$(get_time)] > Saving raft snapshot to ${BACKUP_PATH}.."
+    say "Saving raft snapshot to ${BACKUP_PATH}.."
 
     vault operator raft snapshot save "${BACKUP_PATH}"
-    [ ${?} -ne 0 ] && echo " [$(get_time)] > Snapshot failed!" && exit 1
+    [ ${?} -ne 0 ] && fail "Snapshot failed!"
 
-    echo " [$(get_time)] > Snapshot completed successfully!"
+    say "Snapshot completed successfully!"
 }
 
 function main() {
-    echo " [$(get_time)] > Checking existing backups.."
-    EXISTING_BACKUPS=$(list_backups)
+    say "Checking existing backups.."
+    EXISTING_BACKUPS=$(list_backups "${BACKUP_DIR}" "${BACKUP_REGEX}")
 
     backup
 
-    echo " [$(get_time)] > Cleaning up previous backups.."
+    say "Cleaning up previous backups.."
     for BACKUP in ${EXISTING_BACKUPS}; do
-        delete_backup "${BACKUP}"
+        delete_backup "${BACKUP_DIR}" "${BACKUP}"
     done
 
-    echo " [$(get_time)] > New backup: $(list_backups | tr '\n' ' ')"
+    say "New backup: $(list_backups "${BACKUP_DIR}" "${BACKUP_REGEX}" | tr '\n' ' ')"
 }
 
 main
