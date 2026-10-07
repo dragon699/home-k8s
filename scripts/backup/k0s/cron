@@ -1,0 +1,2 @@
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+50 01 * * * root bash /home/martin/stuff/home-k8s/scripts/backup/k0s/backup.sh >> /var/log/backup-k0s.log 2>&1
