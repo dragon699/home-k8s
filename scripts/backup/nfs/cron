@@ -1,2 +1,0 @@
-PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-*/5 * * * * root bash /home/martin/stuff/home-k8s/scripts/backup/nfs/ensure-nfs.sh >> /var/log/ensure-nfs.log 2>&1
