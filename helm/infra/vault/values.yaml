@@ -1,23 +1,45 @@
 injector:
   enabled: false
 
-vault:
-  server:
-    auditStorage:
-      enabled: true
-      size: 12Gi
-    ha:
-      enabled: false
-      raft:
-        enabled: false
-    route:
-      enabled: true
-      host: "vault"
-      tls:
-        termination: "edge"
-    logLevel: "info"
-    logFormat: "json"
-  csi:
-    enabled: false
-  ui:
+server:
+  logLevel: info
+  logFormat: json
+
+  dataStorage:
     enabled: true
+    size: 10Gi
+
+  auditStorage:
+    enabled: false
+
+  standalone:
+    enabled: false
+
+  ha:
+    enabled: true
+    replicas: 1
+    raft:
+      enabled: true
+      setNodeId: true
+      config: |
+        ui = true
+
+        listener "tcp" {
+          tls_disable     = 1
+          address         = "[::]:8200"
+          cluster_address = "[::]:8201"
+        }
+
+        storage "raft" {
+          path = "/vault/data"
+        }
+
+        service_registration "kubernetes" {}
+
+        disable_mlock = true
+
+csi:
+  enabled: false
+
+ui:
+  enabled: true
