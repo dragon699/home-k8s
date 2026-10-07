@@ -25,6 +25,10 @@ spec:
               items:
                 - key: key.json
                   path: key.json
+          - name: backups
+            hostPath:
+              path: /media/martin/Data/Backups/Vault
+              type: Directory
           containers:
           - name: vault-backup-kv
             image: skullfighter6/python:3.13-utils
@@ -35,7 +39,9 @@ spec:
             - name: auth-gcloud-storage
               mountPath: /var/run/gcp
               readOnly: true
-            command: ["/bin/sh", "-c", "set -e; python /scripts/backup.py --backup-vault"]
+            - name: backups
+              mountPath: /backups
+            command: ["/bin/sh", "-c", "set -e; python /scripts/backup.py --backup-vault --enable-local-backup"]
             env:
             - name: VAULT_KV_NAMES
               value: "home"
@@ -45,6 +51,8 @@ spec:
               value: "vault-kv-backups"
             - name: PYTHONUNBUFFERED
               value: "1"
+            - name: LOCAL_BACKUP_DIR
+              value: "/backups"
             - name: VAULT_SCHEME
               value: "http"
             - name: VAULT_ADDRESS

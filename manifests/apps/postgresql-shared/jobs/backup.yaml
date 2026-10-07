@@ -25,6 +25,10 @@ spec:
               items:
                 - key: key.json
                   path: key.json
+          - name: backups
+            hostPath:
+              path: /media/martin/Data/Backups/PostgreSQL
+              type: Directory
           containers:
           - name: pg-backup
             image: skullfighter6/python:3.13-utils-new
@@ -35,7 +39,9 @@ spec:
             - name: auth-gcloud-storage
               mountPath: /var/run/gcp
               readOnly: true
-            command: ["/bin/sh", "-c", "set -e; python /scripts/backup.py --backup-pg-databases"]
+            - name: backups
+              mountPath: /backups
+            command: ["/bin/sh", "-c", "set -e; python /scripts/backup.py --backup-pg-databases --enable-local-backup"]
             env:
             - name: DATABASES
               value: "teslamate-teslamate,immich,monitoring-grafana,vikunja,sparkyfitness"
@@ -45,6 +51,8 @@ spec:
               value: "all-dbs-backup"
             - name: PYTHONUNBUFFERED
               value: "1"
+            - name: LOCAL_BACKUP_DIR
+              value: "/backups"
             - name: PGHOST
               valueFrom:
                 secretKeyRef:
