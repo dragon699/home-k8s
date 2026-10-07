@@ -2,7 +2,7 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: vault-auto-backup
+  name: vault-backup-kv
   namespace: vault
 spec:
   schedule: "0 3 * * *" # Every day at 03:00AM
@@ -15,9 +15,9 @@ spec:
         spec:
           restartPolicy: Never
           volumes:
-          - name: script-vault-auto-backup
+          - name: script-vault-backup-kv
             configMap:
-              name: script-vault-auto-backup
+              name: script-vault-backup-kv
               defaultMode: 0755
           - name: auth-gcloud-storage
             secret:
@@ -26,11 +26,11 @@ spec:
                 - key: key.json
                   path: key.json
           containers:
-          - name: vault-backup
+          - name: vault-backup-kv
             image: skullfighter6/python:3.13-utils
             imagePullPolicy: IfNotPresent
             volumeMounts:
-            - name: script-vault-auto-backup
+            - name: script-vault-backup-kv
               mountPath: /scripts
             - name: auth-gcloud-storage
               mountPath: /var/run/gcp
