@@ -11,7 +11,7 @@ configMapGenerator:
   files:
   - backup-full.sh=../../scripts/backup/vault/backup-full.sh
   - common.sh=../../scripts/backup/lib/common.sh
-- name: script-vault-auto-unseal
+- name: script-vault-unseal
   files: ['unseal.sh=../../scripts/utils/vault/unseal.sh']
 - name: script-vault-setup
   files: ['setup.sh=../../scripts/utils/vault/setup.sh']
