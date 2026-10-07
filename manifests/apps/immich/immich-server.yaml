@@ -76,7 +76,11 @@ spec:
         image: ghcr.io/immich-app/immich-server:v3.2.4
         imagePullPolicy: IfNotPresent
         resources:
+          requests:
+            cpu: "1"
+            memory: 2Gi
           limits:
+            memory: 6Gi
             nvidia.com/gpu: 1
         livenessProbe:
           httpGet:
@@ -86,7 +90,7 @@ spec:
           periodSeconds: 10
           successThreshold: 1
           failureThreshold: 3
-          timeoutSeconds: 1
+          timeoutSeconds: 5
         readinessProbe:
           httpGet:
             path: /api/server/ping
@@ -95,7 +99,7 @@ spec:
           periodSeconds: 10
           successThreshold: 1
           failureThreshold: 3
-          timeoutSeconds: 1
+          timeoutSeconds: 5
         startupProbe:
           httpGet:
             path: /api/server/ping
@@ -104,7 +108,7 @@ spec:
           periodSeconds: 10
           successThreshold: 1
           failureThreshold: 60
-          timeoutSeconds: 1
+          timeoutSeconds: 5
         ports:
         - containerPort: 2283
         volumeMounts:
