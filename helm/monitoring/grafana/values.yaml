@@ -46,6 +46,7 @@ admin:
 plugins:
 - volkovlabs-image-panel
 - yesoreyeram-infinity-datasource
+- marcusolsson-dynamictext-panel@6.3.0
 
 grafana.ini:
   server:
