@@ -86,5 +86,27 @@ function ensure_alloy_prequisites() {
 }
 
 
+function ensure_zram_swap() {
+    echo "Verifying zram swap settings.."
+
+    ZRAM_CONF='/etc/systemd/zram-generator.conf'
+    ZRAM_SYSCTL_CONF='/etc/sysctl.d/99-zram.conf'
+
+    if ! dpkg -s systemd-zram-generator > /dev/null 2>&1; then
+        apt install -y systemd-zram-generator
+    fi
+
+    printf "[zram0]\nzram-size = ram\ncompression-algorithm = zstd\nswap-priority = 100\n" > ${ZRAM_CONF}
+
+    # Values used by Fedora/Pop!_OS for zram: prefer swapping to zram over dropping file cache;
+    printf "vm.swappiness = 180\nvm.page-cluster = 0\nvm.watermark_boost_factor = 0\nvm.watermark_scale_factor = 125\n" > ${ZRAM_SYSCTL_CONF}
+
+    systemctl daemon-reload
+    systemctl start systemd-zram-setup@zram0.service dev-zram0.swap
+    sysctl -p --system > /dev/null 2>&1
+}
+
+
 ensure_longhorn_prerequisites
 ensure_alloy_prequisites
+ensure_zram_swap
