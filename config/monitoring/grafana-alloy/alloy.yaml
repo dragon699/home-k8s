@@ -219,80 +219,79 @@ loki.write "home_logs" {
 //////////////////////////////////////////////
 
 // Auto-instrument collection of metrics and traces using Beyla
-// TEMPORARILY DISABLED: Beyla eBPF (uncomment this block and the "Scrape metrics from Beyla" block to re-enable)
-// beyla.ebpf "home_discovery" {
-//   enforce_sys_caps             = true
-// 
-//   attributes {
-//     kubernetes {
-//       enable                   = "true"
-//       cluster_name             = "home-k8s"
-//     }
-// 
-//     select {
-//       attr                     = "*"
-//       include                  = ["*"]
-//       exclude                  = ["url.path"]
-//     }
-// 
-//     // Network flows: keep only the k8s-level attributes Radar's traffic map uses.
-//     // Ephemeral ports, IPs and interfaces made the series count unbounded.
-//     select {
-//       attr                     = "beyla_network_flow_bytes"
-//       exclude                  = ["src.port", "dst.port", "src.address", "dst.address", "src.name", "dst.name", "iface", "iface.direction", "beyla.ip", "client.port", "server.port", "src.zone", "dst.zone", "k8s.src.node.ip", "k8s.dst.node.ip", "k8s.src.node.name", "k8s.dst.node.name"]
-//     }
-//   }
-// 
-//   discovery {
-//     instrument {
-//       kubernetes {
-//         namespace              = "*"
-//       }
-//       exports                  = ["metrics", "traces"]
-//     }
-// 
-//     exclude_instrument         { kubernetes { namespace = "default" } }
-//     exclude_instrument         { kubernetes { namespace = "k0s-autopilot" } }
-//     exclude_instrument         { kubernetes { namespace = "kube-*" } }
-//     exclude_instrument         { kubernetes { namespace = "cert-manager" } }
-//     exclude_instrument         { kubernetes { namespace = "radar" } }
-//     exclude_instrument         { kubernetes { namespace = "longhorn" } }
-//     exclude_instrument         { kubernetes { namespace = "monitoring" } }
-//     exclude_instrument         { kubernetes { namespace = "speedtest" } }
-//     exclude_instrument         { kubernetes { namespace = "fetch-api" } }
-//   }
-// 
-//   ebpf {
-//     context_propagation        = "all"
-//     track_request_headers      = true
-//     high_request_volume        = true
-//     heuristic_sql_detect       = false
-//   }
-// 
-//   traces {
-//     instrumentations           = ["*"]
-//   }
-// 
-//   metrics {
-//     instrumentations           = ["*"]
-//     features = [
-//       "application",
-//       "application_process",
-//       "application_service_graph",
-//       "network",
-//     ]
-// 
-//     network {
-//       cache_active_timeout     = "14s"
-//       exclude_interfaces       = ["lo", "docker0", "/^br-/", "/^veth/", "vxlan.calico"]
-//       exclude_protocols        = ["UDP"]
-//     }
-//   }
-// 
-//   output {
-//     traces                     = [otelcol.processor.batch.home_traces_otlphttp.input]
-//   }
-// }
+beyla.ebpf "home_discovery" {
+  enforce_sys_caps             = true
+
+  attributes {
+    kubernetes {
+      enable                   = "true"
+      cluster_name             = "home-k8s"
+    }
+
+    select {
+      attr                     = "*"
+      include                  = ["*"]
+      exclude                  = ["url.path"]
+    }
+
+    // Network flows: keep only the k8s-level attributes Radar's traffic map uses.
+    // Ephemeral ports, IPs and interfaces made the series count unbounded.
+    select {
+      attr                     = "beyla_network_flow_bytes"
+      exclude                  = ["src.port", "dst.port", "src.address", "dst.address", "src.name", "dst.name", "iface", "iface.direction", "beyla.ip", "client.port", "server.port", "src.zone", "dst.zone", "k8s.src.node.ip", "k8s.dst.node.ip", "k8s.src.node.name", "k8s.dst.node.name"]
+    }
+  }
+
+  discovery {
+    instrument {
+      kubernetes {
+        namespace              = "*"
+      }
+      exports                  = ["metrics", "traces"]
+    }
+
+    exclude_instrument         { kubernetes { namespace = "default" } }
+    exclude_instrument         { kubernetes { namespace = "k0s-autopilot" } }
+    exclude_instrument         { kubernetes { namespace = "kube-*" } }
+    exclude_instrument         { kubernetes { namespace = "cert-manager" } }
+    exclude_instrument         { kubernetes { namespace = "radar" } }
+    exclude_instrument         { kubernetes { namespace = "longhorn" } }
+    exclude_instrument         { kubernetes { namespace = "monitoring" } }
+    exclude_instrument         { kubernetes { namespace = "speedtest" } }
+    exclude_instrument         { kubernetes { namespace = "fetch-api" } }
+  }
+
+  ebpf {
+    context_propagation        = "all"
+    track_request_headers      = true
+    high_request_volume        = true
+    heuristic_sql_detect       = false
+  }
+
+  traces {
+    instrumentations           = ["*"]
+  }
+
+  metrics {
+    instrumentations           = ["*"]
+    features = [
+      "application",
+      "application_process",
+      "application_service_graph",
+      "network",
+    ]
+
+    network {
+      cache_active_timeout     = "14s"
+      exclude_interfaces       = ["lo", "docker0", "/^br-/", "/^veth/", "vxlan.calico"]
+      exclude_protocols        = ["UDP"]
+    }
+  }
+
+  output {
+    traces                     = [otelcol.processor.batch.home_traces_otlphttp.input]
+  }
+}
 
 // Create internal OTLP receiver for traces
 otelcol.receiver.otlp "home_traces_otlpgrpc" {
@@ -390,14 +389,14 @@ otelcol.exporter.otlphttp "home_traces_otlphttp" {
 }
 
 // Scrape metrics from Beyla
-// prometheus.scrape "home_metrics" {
-//   targets                      = beyla.ebpf.home_discovery.targets
-// 
-//   honor_labels                 = true
-//   scrape_interval              = "15s"
-// 
-//   forward_to                   = [prometheus.relabel.home_metrics.receiver]
-// }
+prometheus.scrape "home_metrics" {
+  targets                      = beyla.ebpf.home_discovery.targets
+
+  honor_labels                 = true
+  scrape_interval              = "15s"
+
+  forward_to                   = [prometheus.relabel.home_metrics.receiver]
+}
 
 // Relabel metrics
 prometheus.relabel "home_metrics" {
