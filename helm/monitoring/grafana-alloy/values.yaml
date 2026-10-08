@@ -38,11 +38,10 @@ alloy:
       memory: 6Gi
 
   extraEnv:
-  # Performance optimizations
+  # Soft heap target for Alloy (and its Beyla subprocess, which inherits it).
+  # Keep it well above the steady-state heap, or GC runs nonstop and burns the CPU limit.
   - name: GOMEMLIMIT
-    value: 1536MiB
-  - name: GOGC
-    value: "50"
+    value: 4GiB
 
   clustering:
     enabled: false
