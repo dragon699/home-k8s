@@ -32,9 +32,9 @@ spec:
         - "--server-mode"
         - "http"
         - "--qbittorrent-host"
-        - "http://qbittorrent-web.qbittorrent.svc"
+        - "$(QBIT_WEB_HOST)"
         - "--qbittorrent-port"
-        - "80"
+        - "$(QBIT_WEB_PORT)"
         ports:
         - containerPort: 3000
         securityContext:
@@ -47,6 +47,11 @@ spec:
             drop:
             - ALL
         env:
+        # Not QBITTORRENT_HOST/PORT: the app strips that prefix from env vars, so those are ignored
+        - name: QBIT_WEB_HOST
+          value: "http://qbittorrent-web.qbittorrent.svc"
+        - name: QBIT_WEB_PORT
+          value: "80"
         - name: QBITTORRENT_HTTP_AUTH_TOKEN
           valueFrom:
             secretKeyRef:
