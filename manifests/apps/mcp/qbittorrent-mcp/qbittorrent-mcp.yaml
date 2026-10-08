@@ -40,7 +40,6 @@ spec:
             drop:
             - ALL
         env:
-        # qBittorrent whitelists cluster subnets, so no WebUI credentials are needed
         - name: QBITTORRENT_HOST
           value: "http://qbittorrent-web.qbittorrent.svc"
         - name: QBITTORRENT_PORT
