@@ -262,7 +262,9 @@ beyla.ebpf "home_discovery" {
   }
 
   ebpf {
-    context_propagation        = "all"
+    // "all"/"headers" rewrite every socket's HTTP traffic (sk_msg on the root cgroup)
+    // and stalled ingress-nginx -> backend responses for 20-60s
+    context_propagation        = "disabled"
     track_request_headers      = true
     high_request_volume        = true
     heuristic_sql_detect       = false
