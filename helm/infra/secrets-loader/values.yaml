@@ -60,6 +60,8 @@ secrets:
       provider: vault
     auth-pihole-mcp:
       provider: vault
+    auth-qbittorrent-mcp:
+      provider: vault
     data-postgresql-shared-teslamate-teslamate:
       provider: shared
     postgresql-shared-pg-cluster-ca-cert:

@@ -1,0 +1,72 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: qbittorrent-mcp
+  namespace: mcp
+  labels:
+    app: qbittorrent-mcp
+    env: home
+  annotations:
+    reloader.stakater.com/auto: "true"
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: qbittorrent-mcp
+  template:
+    metadata:
+      labels:
+        app: qbittorrent-mcp
+        env: home
+    spec:
+      restartPolicy: Always
+      containers:
+      - name: qbittorrent-mcp
+        image: ghcr.io/nicholaswilde/qbittorrent-mcp-rs:0.3.7
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 3000
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 65532
+          runAsGroup: 65532
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+        env:
+        # qBittorrent whitelists cluster subnets, so no WebUI credentials are needed
+        - name: QBITTORRENT_HOST
+          value: "http://qbittorrent-web.qbittorrent.svc"
+        - name: QBITTORRENT_PORT
+          value: "80"
+        - name: QBITTORRENT_SERVER_MODE
+          value: "http"
+        - name: QBITTORRENT_HTTP_AUTH_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: auth-qbittorrent-mcp
+              key: HTTP_TOKEN
+        - name: TZ
+          value: Europe/Sofia
+        resources:
+          requests:
+            cpu: 10m
+            memory: 16Mi
+          limits:
+            memory: 128Mi
+        livenessProbe:
+          tcpSocket:
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 30
+        readinessProbe:
+          tcpSocket:
+            port: 3000
+          initialDelaySeconds: 3
+          periodSeconds: 10
