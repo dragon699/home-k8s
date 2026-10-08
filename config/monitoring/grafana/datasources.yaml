@@ -93,3 +93,21 @@ datasources:
     sslmode: disable
   secureJsonData:
     password: ${pg-teslamate-password}
+
+- name: OpenClaw Cluster Q&A
+  type: yesoreyeram-infinity-datasource
+  uid: openclaw-cluster-qa
+  url: http://openclaw-main.openclaw.svc.cluster.local:18789
+  access: proxy
+  isDefault: false
+  editable: false
+  orgId: 1
+  jsonData:
+    auth_method: bearerToken
+    allowedHosts:
+    - http://openclaw-main.openclaw.svc.cluster.local:18789
+    timeoutInSeconds: 120
+    customHealthCheckEnabled: true
+    customHealthCheckUrl: http://openclaw-main.openclaw.svc.cluster.local:18789/v1/models
+  secureJsonData:
+    bearerToken: ${oc-grafana-OPENCLAW_GATEWAY_TOKEN}

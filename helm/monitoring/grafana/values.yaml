@@ -37,6 +37,9 @@ envFromSecrets:
 - name: data-postgresql-shared-teslamate-teslamate
   prefix: pg-teslamate-
   optional: false
+- name: auth-openclaw-grafana
+  prefix: oc-grafana-
+  optional: false
 
 admin:
   existingSecret: auth-grafana
