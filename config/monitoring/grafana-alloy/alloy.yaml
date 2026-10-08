@@ -231,7 +231,7 @@ beyla.ebpf "home_discovery" {
     select {
       attr                     = "*"
       include                  = ["*"]
-      exclude                  = ["nothing"]
+      exclude                  = ["url.path"]
     }
 
     // Network flows: keep only the k8s-level attributes Radar's traffic map uses.
