@@ -28,6 +28,13 @@ spec:
       - name: qbittorrent-mcp
         image: ghcr.io/nicholaswilde/qbittorrent-mcp-rs:0.3.7
         imagePullPolicy: IfNotPresent
+        args:
+        - "--server-mode"
+        - "http"
+        - "--qbittorrent-host"
+        - "http://qbittorrent-web.qbittorrent.svc"
+        - "--qbittorrent-port"
+        - "80"
         ports:
         - containerPort: 3000
         securityContext:
@@ -40,12 +47,6 @@ spec:
             drop:
             - ALL
         env:
-        - name: QBITTORRENT_HOST
-          value: "http://qbittorrent-web.qbittorrent.svc"
-        - name: QBITTORRENT_PORT
-          value: "80"
-        - name: QBITTORRENT_SERVER_MODE
-          value: "http"
         - name: QBITTORRENT_HTTP_AUTH_TOKEN
           valueFrom:
             secretKeyRef:
