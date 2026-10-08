@@ -6,8 +6,9 @@ logging {
   format = "logfmt"
 }
 
+// Turn on to see live data coming in/out
 livedebugging {
-  enabled = true
+  enabled = false
 }
 
 // Data pipelines
@@ -120,6 +121,14 @@ discovery.relabel "home_logs" {
   }
 
   rule {
+    source_labels = ["__meta_kubernetes_namespace", "__meta_kubernetes_pod_name", "__meta_kubernetes_pod_container_name"]
+    action        = "replace"
+    target_label  = "instance"
+    regex         = "(.*);(.*);(.*)"
+    replacement   = "$1/$2:$3"
+  }
+
+  rule {
     source_labels = ["__meta_kubernetes_pod_uid", "__meta_kubernetes_pod_container_name"]
     action        = "replace"
     target_label  = "__path__"
@@ -136,10 +145,16 @@ discovery.relabel "home_logs" {
   }
 }
 
-// Tail logs
-loki.source.kubernetes "home_logs" {
-  targets         = discovery.relabel.home_logs.output
+// Resolve the __path__ globs to the pods' log files on the node
+local.file_match "home_logs" {
+  path_targets    = discovery.relabel.home_logs.output
+}
+
+// Tail pod logs from /var/log/pods
+loki.source.file "home_logs" {
+  targets         = local.file_match.home_logs.targets
   forward_to      = [loki.process.home_logs.receiver]
+  tail_from_end   = true
 }
 
 // Tail k8s events
@@ -151,10 +166,25 @@ loki.source.kubernetes_events "home_k8s_events" {
 // [2] Aggregate logs
 // Relabel logs
 loki.process "home_logs" {
+  stage.cri {}
+
+  stage.label_drop {
+    values        = ["stream", "filename"]
+  }
+
   stage.static_labels {
     values        = {
       "cluster"   = "home-k8s",
       "source"    = "kubernetes-logs",
+    }
+  }
+
+  stage.match {
+    selector      = "{namespace=\"kube-system\", container=\"konnectivity-agent\"}"
+
+    stage.drop {
+      expression          = "^I\\d{4} "
+      drop_counter_reason = "konnectivity_info"
     }
   }
 
@@ -208,7 +238,7 @@ beyla.ebpf "home_discovery" {
     // Ephemeral ports, IPs and interfaces made the series count unbounded.
     select {
       attr                     = "beyla_network_flow_bytes"
-      exclude                  = ["src.port", "src.address", "dst.address", "src.name", "dst.name", "iface", "iface.direction", "beyla.ip", "client.port", "server.port", "src.zone", "dst.zone", "k8s.src.node.ip", "k8s.dst.node.ip", "k8s.src.node.name", "k8s.dst.node.name"]
+      exclude                  = ["src.port", "dst.port", "src.address", "dst.address", "src.name", "dst.name", "iface", "iface.direction", "beyla.ip", "client.port", "server.port", "src.zone", "dst.zone", "k8s.src.node.ip", "k8s.dst.node.ip", "k8s.src.node.name", "k8s.dst.node.name"]
     }
   }
 
@@ -232,7 +262,6 @@ beyla.ebpf "home_discovery" {
   }
 
   ebpf {
-    // Beyla's FIONREAD kernel workaround requires the host tracefs mount.
     context_propagation        = "all"
     track_request_headers      = true
     high_request_volume        = true
@@ -249,9 +278,14 @@ beyla.ebpf "home_discovery" {
       "application",
       "application_process",
       "application_service_graph",
-      "application_span",
       "network",
     ]
+
+    network {
+      cache_active_timeout     = "14s"
+      exclude_interfaces       = ["lo", "docker0", "/^br-/", "/^veth/", "vxlan.calico"]
+      exclude_protocols        = ["UDP"]
+    }
   }
 
   output {
@@ -359,83 +393,54 @@ prometheus.scrape "home_metrics" {
   targets                      = beyla.ebpf.home_discovery.targets
 
   honor_labels                 = true
-  scrape_interval              = "10s"
+  scrape_interval              = "15s"
 
-  forward_to                   = [prometheus.relabel.home_metrics.receiver, prometheus.relabel.radar_beyla.receiver]
+  forward_to                   = [prometheus.relabel.home_metrics.receiver]
 }
 
-// Beyla's own beyla_* metrics go straight to VictoriaMetrics (see radar_beyla)
+// Relabel metrics
 prometheus.relabel "home_metrics" {
+  // Drop unneeded IPs from trace service graph metrics of kind=server
   rule {
-    source_labels              = ["__name__"]
-    regex                      = "beyla_.*"
+    source_labels              = ["source", "server"]
+    regex                      = "beyla;[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}"
     action                     = "drop"
   }
 
-  forward_to                   = [otelcol.receiver.prometheus.home_metrics.receiver]
-}
-
-// Beyla's own metrics (build info, network flows) for Radar
-prometheus.relabel "radar_beyla" {
+  // Stack external IPs in trace service graph metrics of kind=client
   rule {
-    source_labels              = ["__name__"]
-    regex                      = "beyla_.*"
-    action                     = "keep"
+    source_labels              = ["server", "client"]
+    regex                      = "skull-pc;([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3})"
+    target_label               = "client_address"
+    replacement                = "$1"
   }
 
   rule {
+    source_labels              = ["server", "client_address"]
+    regex                      = "skull-pc;[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}"
+    target_label               = "client"
+    replacement                = "external-ip"
+  }
+
+  rule {
+    target_label               = "cluster"
+    replacement                = "home-k8s"
+  }
+
+  rule {
+    source_labels              = ["__name__"]
+    regex                      = "beyla_.*"
     target_label               = "job"
     replacement                = "beyla"
   }
 
-  forward_to                   = [prometheus.remote_write.home_metrics.receiver]
-}
-
-// Convert metrics from Prometheus to OTLP-based format
-otelcol.receiver.prometheus "home_metrics" {
-  output {
-    metrics                    = [otelcol.processor.filter.home_metrics.input]
-  }
-}
-
-// [1] Aggregate metrics
-// Drop unneeded IPs from trace service graph metrics of kind=server
-otelcol.processor.filter "home_metrics" {
-  error_mode                   = "ignore"
-
-  metrics {
-    datapoint = [
-      `attributes["source"] == "beyla" and IsMatch(attributes["server"], "^([0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3})$")`,
-    ]
+  rule {
+    source_labels              = ["__name__"]
+    regex                      = "beyla_.*"
+    target_label               = "cluster"
+    replacement                = ""
   }
 
-  output {
-    metrics                    = [otelcol.processor.transform.home_metrics.input]
-  }
-}
-
-// [2] Aggregate metrics
-// Stack external IPs in trace service graph metrics of kind=client
-// Relabel metrics
-otelcol.processor.transform "home_metrics" {
-  error_mode                   = "ignore"
-
-  metric_statements {
-    context                    = "datapoint"
-    statements                 = [
-      `set(attributes["client_address"], attributes["client"]) where IsMatch(attributes["client"], "^([0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3})$") and attributes["server"] == "skull-pc"`,
-      `set(attributes["client"], "external-ip") where IsMatch(attributes["client_address"], "^([0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3})$") and attributes["server"] == "skull-pc"`,
-      `set(attributes["cluster"], "home-k8s")`,
-    ]
-  }
-
-  output {
-    metrics                    = [otelcol.exporter.prometheus.home_metrics.input]
-  }
-}
-
-// Convert metrics from OTLP to Prometheus-based format
-otelcol.exporter.prometheus "home_metrics" {
   forward_to                   = [prometheus.remote_write.home_metrics.receiver]
 }
 

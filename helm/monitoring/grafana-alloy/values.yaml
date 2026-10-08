@@ -23,6 +23,10 @@ controller:
       hostPath:
         path: /sys/kernel/tracing
         type: Directory
+    - name: storage
+      hostPath:
+        path: /var/lib/alloy
+        type: DirectoryOrCreate
 
 alloy:
   resources:
@@ -31,14 +35,14 @@ alloy:
       memory: 1Gi
     limits:
       cpu: 4
-      # Alloy and its Beyla subprocess share this container limit.
       memory: 6Gi
 
   extraEnv:
-  # Each Go process inherits this advisory heap budget; leave headroom for
-  # both processes, eBPF maps, and non-Go allocations under the shared limit.
+  # Performance optimizations
   - name: GOMEMLIMIT
     value: 1536MiB
+  - name: GOGC
+    value: "50"
 
   clustering:
     enabled: false
@@ -58,12 +62,18 @@ alloy:
 
   stabilityLevel: "experimental"
 
+  storagePath: /var/lib/alloy
+
   mounts:
+    # Pod log files (/var/log/pods), read by loki.source.file
+    varlog: true
     extra:
     - name: cgroup
       mountPath: /sys/fs/cgroup
     - name: tracefs
       mountPath: /sys/kernel/tracing
+    - name: storage
+      mountPath: /var/lib/alloy
 
   configMap:
     create: false
