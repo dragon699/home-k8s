@@ -126,7 +126,7 @@ extraVolumes:
 - name: datasources
   configMap:
     name: config-grafana-datasources
-- name: plugins-provisioning
+- name: plugins
   configMap:
     name: config-grafana-plugins
 
@@ -135,6 +135,6 @@ extraVolumeMounts:
 - name: datasources
   mountPath: /etc/grafana/provisioning/datasources/datasources.yaml
   subPath: datasources.yaml
-- name: plugins-provisioning
+- name: plugins
   mountPath: /etc/grafana/provisioning/plugins/plugins.yaml
   subPath: plugins.yaml
