@@ -24,7 +24,6 @@ spec:
       restartPolicy: Always
       containers:
       - name: llama-server
-        # Floating :server tag pinned by digest (build of 2026-10-09)
         image: ghcr.io/ggml-org/llama.cpp:server@sha256:f8f71e3be397e868cdddfb9c404e3a263d9697f82fd7205f4737ac981feea4b8
         imagePullPolicy: IfNotPresent
         args:
@@ -39,13 +38,12 @@ spec:
         - "8080"
         - "--ctx-size"
         - "2048"
-        # One slot with the full 2048-token context; the physical batch must fit a whole chunk
         - "-np"
         - "1"
         - "--batch-size"
-        - "2048"
+        - "1024"
         - "--ubatch-size"
-        - "2048"
+        - "1024"
         ports:
         - containerPort: 8080
         env:
@@ -67,8 +65,8 @@ spec:
             cpu: 100m
             memory: 512Mi
           limits:
-            cpu: 2000m
-            memory: 1Gi
+            cpu: 4000m
+            memory: 1536Mi
         startupProbe:
           httpGet:
             path: /health
