@@ -94,6 +94,20 @@ secrets:
       provider: vault
     auth-minio:
       provider: vault
+    auth-openclaw-grafana:
+      spec:
+        refreshInterval: 5m0s
+        secretStoreRef:
+          kind: ClusterSecretStore
+          name: home-vault
+        target:
+          name: auth-openclaw-grafana
+          creationPolicy: Owner
+        data:
+        - secretKey: OPENCLAW_GATEWAY_TOKEN
+          remoteRef:
+            key: home/openclaw/data-openclaw
+            property: OPENCLAW_GATEWAY_TOKEN
 
   openclaw:
     data-openclaw:
