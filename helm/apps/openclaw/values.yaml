@@ -163,6 +163,7 @@ app-template:
               }
             },
             "mcp": {
+              "sessionIdleTtlMs": 600000,
               "apps": {
                 "enabled": true,
                 "sandboxOrigin": "https://apps.stitch.iaminyourpc.xyz",
