@@ -185,7 +185,7 @@ app-template:
                 "enabled": true,
                 "endpoint": "http://grafana-alloy.monitoring.svc:4318",
                 "protocol": "http/protobuf",
-                "serviceName": "openclaw-gateway",
+                "serviceName": "openclaw",
                 "traces": true,
                 "metrics": true,
                 "logs": false,
