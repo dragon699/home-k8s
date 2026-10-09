@@ -26,7 +26,7 @@ apps:
   org_id: 1
   disabled: false
   jsonData:
-    maxToolIterations: 10
+    maxToolIterations: 20
     tools:
       loki: {enabled: false, tools: {}}
       prometheus: {enabled: false, tools: {}}
