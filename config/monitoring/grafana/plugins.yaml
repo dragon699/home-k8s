@@ -4,6 +4,41 @@ apps:
 - type: grafana-llm-app
   org_id: 1
   disabled: false
+  jsonData:
+    provider: custom
+    openAI:
+      provider: custom
+      url: http://openclaw-main.openclaw.svc.cluster.local:18789
+      apiPath: /v1
+      organizationId: ""
+      disabled: false
+    models:
+      default: base
+      mapping:
+        base: openclaw/grafana-enthusiast
+        large: openclaw/grafana-enthusiast
+    mcp:
+      disabled: false
+  secureJsonData:
+    openAIKey: ${oc-grafana-OPENCLAW_GATEWAY_TOKEN}
+
 - type: vikshana-graft-app
   org_id: 1
   disabled: false
+  jsonData:
+    maxToolIterations: 10
+    tools:
+      loki: {enabled: false, tools: {}}
+      prometheus: {enabled: false, tools: {}}
+      dashboards: {enabled: false, tools: {}}
+      datasources: {enabled: false, tools: {}}
+      alerting: {enabled: false, tools: {}}
+      annotations: {enabled: false, tools: {}}
+      clickhouse: {enabled: false, tools: {}}
+      cloudwatch: {enabled: false, tools: {}}
+      elasticsearch: {enabled: false, tools: {}}
+      pyroscope: {enabled: false, tools: {}}
+      roles: {enabled: false, tools: {}}
+      teams: {enabled: false, tools: {}}
+      utility: {enabled: false, tools: {}}
+      oncall: {enabled: false, tools: {}}
