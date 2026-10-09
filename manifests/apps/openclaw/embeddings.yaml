@@ -1,0 +1,115 @@
+---
+# Embedding model server for OpenClaw memory search (memory.search.provider: openai-compatible).
+# OpenClaw's own vector index (sqlite-vec) needs an embedding model; neither the Codex subscription
+# nor the Ollama Cloud free tier provides one, so this runs embeddinggemma-300m on CPU (~400Mi).
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: openclaw-embeddings
+  namespace: openclaw
+  labels:
+    app: openclaw-embeddings
+    env: home
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: openclaw-embeddings
+  template:
+    metadata:
+      labels:
+        app: openclaw-embeddings
+        env: home
+    spec:
+      restartPolicy: Always
+      containers:
+      - name: llama-server
+        # Floating :server tag pinned by digest (build of 2026-10-09)
+        image: ghcr.io/ggml-org/llama.cpp:server@sha256:f8f71e3be397e868cdddfb9c404e3a263d9697f82fd7205f4737ac981feea4b8
+        imagePullPolicy: IfNotPresent
+        args:
+        - "--embeddings"
+        - "-hf"
+        - "ggml-org/embeddinggemma-300m-qat-q8_0-GGUF:Q8_0"
+        - "--alias"
+        - "embeddinggemma-300m"
+        - "--host"
+        - "0.0.0.0"
+        - "--port"
+        - "8080"
+        - "--ctx-size"
+        - "2048"
+        - "-np"
+        - "2"
+        ports:
+        - containerPort: 8080
+        env:
+        # The model (~300Mi) is downloaded from Hugging Face into this cache on start
+        - name: LLAMA_CACHE
+          value: /cache
+        - name: HOME
+          value: /tmp
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 65532
+          runAsGroup: 65532
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+        resources:
+          requests:
+            cpu: 100m
+            memory: 512Mi
+          limits:
+            cpu: 2000m
+            memory: 1Gi
+        startupProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          periodSeconds: 10
+          failureThreshold: 60
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          periodSeconds: 30
+        volumeMounts:
+        - name: cache
+          mountPath: /cache
+        - name: tmp
+          mountPath: /tmp
+      volumes:
+      - name: cache
+        emptyDir:
+          sizeLimit: 1Gi
+      - name: tmp
+        emptyDir:
+          sizeLimit: 256Mi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: openclaw-embeddings
+  namespace: openclaw
+  labels:
+    app: openclaw-embeddings
+    env: home
+spec:
+  selector:
+    app: openclaw-embeddings
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
