@@ -14,6 +14,8 @@ app-template:
       revisionHistoryLimit: 1
       annotations:
         reloader.stakater.com/auto: "true"
+        # One-off: a stale pre-SSA field manager still owns the removed chromium container; replace clears it
+        argocd.argoproj.io/sync-options: Replace=true
       initContainers:
         fix-permissions:
           image:
