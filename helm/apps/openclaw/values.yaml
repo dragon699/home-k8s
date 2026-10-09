@@ -1,10 +1,8 @@
 app-template:
   openclawVersion: "2026.9.8"
-  chromiumVersion: "155.0.8059.26"
   configMode: merge
 
   service:
-    # Sandbox listener serving MCP Apps views (gateway port + 1)
     mcp-apps:
       controller: main
       ports:
@@ -83,21 +81,15 @@ app-template:
             log "Skills initialization complete"
       containers:
         chromium:
-          resources:
-            requests:
-              cpu: 100m
-              memory: 512Mi
-            limits:
-              cpu: 6000m
-              memory: 4Gi
+          enabled: false
         main:
           resources:
             requests:
               cpu: 200m
-              memory: 1Gi
+              memory: 6Gi
             limits:
               cpu: 2000m
-              memory: 4Gi
+              memory: 6Gi
           ports:
           - name: mcp-apps
             containerPort: 18790
@@ -173,6 +165,16 @@ app-template:
                 "enabled": true,
                 "sandboxOrigin": "https://apps.stitch.iaminyourpc.xyz",
                 "sandboxPort": 18790
+              }
+            },
+            "browser": {
+              "enabled": false
+            },
+            "plugins": {
+              "entries": {
+                "browser": {
+                  "enabled": false
+                }
               }
             }
           }
