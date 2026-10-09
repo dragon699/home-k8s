@@ -1,0 +1,9 @@
+apiVersion: 1
+
+apps:
+- type: grafana-llm-app
+  org_id: 1
+  disabled: false
+- type: vikshana-graft-app
+  org_id: 1
+  disabled: false

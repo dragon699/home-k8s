@@ -50,6 +50,8 @@ plugins:
 - volkovlabs-image-panel
 - yesoreyeram-infinity-datasource
 - marcusolsson-dynamictext-panel@6.3.0
+- grafana-llm-app
+- vikshana-graft-app@0.6.7@https://github.com/vikshana/vikshana-graft-app/releases/download/graft-v0.6.7/vikshana-graft-app-graft-v0.6.7.zip
 
 grafana.ini:
   server:
@@ -87,6 +89,9 @@ grafana.ini:
     cookie_samesite: strict
     content_security_policy: true
 
+  plugins:
+    allow_loading_unsigned_plugins: vikshana-graft-app
+
   database:
     type: postgres
     host: ${pg-grafana-pgbouncer-host}:${pg-grafana-pgbouncer-port}
@@ -117,9 +122,15 @@ extraVolumes:
 - name: datasources
   configMap:
     name: config-grafana-datasources
+- name: plugins-provisioning
+  configMap:
+    name: config-grafana-plugins
 
 
 extraVolumeMounts:
 - name: datasources
   mountPath: /etc/grafana/provisioning/datasources/datasources.yaml
   subPath: datasources.yaml
+- name: plugins-provisioning
+  mountPath: /etc/grafana/provisioning/plugins/plugins.yaml
+  subPath: plugins.yaml
