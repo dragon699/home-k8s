@@ -14,6 +14,9 @@ app-template:
       revisionHistoryLimit: 1
       annotations:
         reloader.stakater.com/auto: "true"
+      pod:
+        # The gateway can take >30s to release its state lease; a SIGKILL leaves a stale lease that blocks the next pod for minutes
+        terminationGracePeriodSeconds: 120
       initContainers:
         fix-permissions:
           image:
@@ -192,6 +195,16 @@ app-template:
                 "sampleRate": 1.0,
                 "flushIntervalMs": 5000,
                 "captureContent": false
+              }
+            },
+            "memory": {
+              "search": {
+                "provider": "openai-compatible",
+                "model": "embeddinggemma-300m",
+                "remote": {
+                  "baseUrl": "http://openclaw-embeddings.openclaw.svc:8080/v1/",
+                  "apiKey": "local"
+                }
               }
             }
           }
