@@ -47,7 +47,6 @@ spec:
             drop:
             - ALL
         env:
-        # Not QBITTORRENT_HOST/PORT: the app strips that prefix from env vars, so those are ignored
         - name: QBIT_WEB_HOST
           value: "http://qbittorrent-web.qbittorrent.svc"
         - name: QBIT_WEB_PORT
