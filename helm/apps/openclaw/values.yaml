@@ -174,7 +174,24 @@ app-template:
               "entries": {
                 "browser": {
                   "enabled": false
+                },
+                "diagnostics-otel": {
+                  "enabled": true
                 }
+              }
+            },
+            "diagnostics": {
+              "otel": {
+                "enabled": true,
+                "endpoint": "http://grafana-alloy.monitoring.svc:4318",
+                "protocol": "http/protobuf",
+                "serviceName": "openclaw-gateway",
+                "traces": true,
+                "metrics": true,
+                "logs": false,
+                "sampleRate": 1.0,
+                "flushIntervalMs": 5000,
+                "captureContent": false
               }
             }
           }
