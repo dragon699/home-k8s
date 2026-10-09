@@ -16,7 +16,7 @@ apps:
       default: base
       mapping:
         base: openclaw/grafana-enthusiast
-        large: openclaw/grafana-enthusiast
+        large: openclaw/grafana-enthusiast-deep
     mcp:
       disabled: false
   secureJsonData:
