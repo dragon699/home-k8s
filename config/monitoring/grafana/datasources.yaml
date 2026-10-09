@@ -97,7 +97,7 @@ datasources:
 - name: OpenClaw Cluster Q&A
   type: yesoreyeram-infinity-datasource
   uid: openclaw-cluster-qa
-  url: http://openclaw-main.openclaw.svc.cluster.local:18789
+  url: ${oc-grafana-OPENCLAW_URL}:${oc-grafana-OPENCLAW_PORT}
   access: proxy
   isDefault: false
   editable: false
@@ -105,9 +105,9 @@ datasources:
   jsonData:
     auth_method: bearerToken
     allowedHosts:
-    - http://openclaw-main.openclaw.svc.cluster.local:18789
+    - ${oc-grafana-OPENCLAW_URL}:${oc-grafana-OPENCLAW_PORT}
     timeoutInSeconds: 120
     customHealthCheckEnabled: true
-    customHealthCheckUrl: http://openclaw-main.openclaw.svc.cluster.local:18789/v1/models
+    customHealthCheckUrl: ${oc-grafana-OPENCLAW_URL}:${oc-grafana-OPENCLAW_PORT}/v1/models
   secureJsonData:
     bearerToken: ${oc-grafana-OPENCLAW_GATEWAY_TOKEN}
