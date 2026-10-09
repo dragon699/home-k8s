@@ -19,3 +19,8 @@ extraArgs:
 - --collector.vmstat
 - --collector.netdev
 - --collector.processes
+
+# Data is mounted beneath /media/martin (root:root, mode 0750).
+# Keep the exporter unprivileged, but grant group traversal for statfs.
+securityContext:
+  fsGroup: 0
