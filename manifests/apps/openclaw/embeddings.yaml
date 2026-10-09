@@ -1,7 +1,4 @@
 ---
-# Embedding model server for OpenClaw memory search (memory.search.provider: openai-compatible).
-# OpenClaw's own vector index (sqlite-vec) needs an embedding model; neither the Codex subscription
-# nor the Ollama Cloud free tier provides one, so this runs embeddinggemma-300m on CPU (~400Mi).
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -42,12 +39,16 @@ spec:
         - "8080"
         - "--ctx-size"
         - "2048"
+        # One slot with the full 2048-token context; the physical batch must fit a whole chunk
         - "-np"
-        - "2"
+        - "1"
+        - "--batch-size"
+        - "2048"
+        - "--ubatch-size"
+        - "2048"
         ports:
         - containerPort: 8080
         env:
-        # The model (~300Mi) is downloaded from Hugging Face into this cache on start
         - name: LLAMA_CACHE
           value: /cache
         - name: HOME
