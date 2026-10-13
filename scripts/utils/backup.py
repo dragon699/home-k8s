@@ -63,7 +63,8 @@ ENV = {
         'optional': {
             'LONGHORN_NAMESPACE': os.getenv('LONGHORN_NAMESPACE', 'longhorn'), # Namespace of the Longhorn CRs
             'LONGHORN_CONCURRENCY': int(os.getenv('LONGHORN_CONCURRENCY', '2')), # Volumes to back up at the same time
-            'LONGHORN_TIMEOUT': int(os.getenv('LONGHORN_TIMEOUT', '7200')) # Seconds to wait for a single volume backup
+            'LONGHORN_TIMEOUT': int(os.getenv('LONGHORN_TIMEOUT', '7200')), # Seconds to wait for a single volume backup
+            'LONGHORN_ARCHIVE': os.getenv('LONGHORN_ARCHIVE', 'true').lower() == 'true' # Archive the backupstore into a single (encrypted) file
         }
     }
 }
@@ -91,6 +92,7 @@ class Backups:
         self.success = True
         self.params = {}
         self.created = []
+        self.size = None
         self.dir = '/tmp/backups'
 
         os.makedirs(self.dir, exist_ok=True)
@@ -479,11 +481,23 @@ class Backups:
             else:
                 self.log(f'longhorn: Old backups still being removed, archiving anyway', warn=True)
 
+        source = os.path.join(self.params['LONGHORN_TARGET_DIR'], 'backupstore')
+
+        if not self.params['LONGHORN_ARCHIVE']:
+            self.log('longhorn: Archiving disabled, measuring the backupstore instead..')
+
+            try:
+                self.size = int(self.run_cmd(['du', '-sb', source]).split()[0])
+
+            except Exception as err:
+                self.log(f'longhorn: Failed to measure the backupstore, got this -> {err}', warn=True)
+                self.success = False
+
+            return
+
         encrypt = bool(self.params['AGE_PUBLIC_KEY'])
         archive_name = f'longhorn-backupstore@{self.get_time()}.tar'
         file_path = os.path.join(self.dir, f'{archive_name}.age' if encrypt else archive_name)
-
-        source = os.path.join(self.params['LONGHORN_TARGET_DIR'], 'backupstore')
 
         try:
             self.log(f'longhorn: Archiving the backupstore into "{os.path.basename(file_path)}"..')
@@ -583,7 +597,8 @@ class Backups:
 
 
     def measure_archives(self):
-        self.size = sum(os.path.getsize(file_path) for file_path in self.created if os.path.exists(file_path))
+        if self.created:
+            self.size = sum(os.path.getsize(file_path) for file_path in self.created if os.path.exists(file_path))
 
 
     def format_size(self, size: float):
@@ -602,7 +617,7 @@ class Backups:
         if not metrics_file:
             return True
 
-        if not self.success or not self.created:
+        if not self.success or self.size is None:
             self.log('metrics: Run was not fully successful, keeping the previous size metrics', warn=True)
             return False
 

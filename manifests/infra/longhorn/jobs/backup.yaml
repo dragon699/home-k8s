@@ -86,6 +86,8 @@ spec:
               value: "/longhorn"
             - name: LONGHORN_CONCURRENCY
               value: "2"
+            - name: LONGHORN_ARCHIVE
+              value: "false" # Enable together with the GCS upload, a local archive only duplicates the backupstore
             - name: PYTHONUNBUFFERED
               value: "1"
             - name: LOCAL_BACKUP_DIR
