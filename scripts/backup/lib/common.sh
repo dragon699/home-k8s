@@ -17,6 +17,11 @@ function fail() {
     exit 1
 }
 
+function on_exit() {
+    EXIT_HOOKS="${EXIT_HOOKS:+${EXIT_HOOKS}; }${1}"
+    trap 'EXIT_CODE=${?}; eval "${EXIT_HOOKS}"' EXIT
+}
+
 function log_to_file() {
     [ -t 1 ] && return 0
 

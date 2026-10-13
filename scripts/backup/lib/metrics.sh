@@ -77,7 +77,7 @@ function cronjob_metrics_start() {
     JOB_LAST_SCHEDULE="$(date +%s)"
 
     write_cronjob_metrics 1
-    trap 'cronjob_metrics_finish ${?}' EXIT
+    on_exit 'cronjob_metrics_finish "${EXIT_CODE}"'
 }
 
 function cronjob_metrics_finish() {

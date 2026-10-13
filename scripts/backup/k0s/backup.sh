@@ -36,7 +36,7 @@ function backup() {
 
     # Plaintext backup stays on the root disk only, never on Data
     TMP_DIR=$(mktemp -d)
-    trap 'rm -rf "${TMP_DIR}"' EXIT
+    on_exit 'rm -rf "${TMP_DIR}"'
 
     mkdir -p "${BACKUP_DIR}"
     k0s backup --save-path="${TMP_DIR}"
