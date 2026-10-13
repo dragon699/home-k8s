@@ -19,6 +19,9 @@ extraArgs:
 - --collector.vmstat
 - --collector.netdev
 - --collector.processes
+- --collector.textfile
+
+- --collector.textfile.directory=/host/root/var/lib/node-exporter/textfile
 
 securityContext:
   fsGroup: 0
