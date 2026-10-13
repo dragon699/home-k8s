@@ -1,4 +1,4 @@
-import sys, os, subprocess, json, shutil, shlex
+import sys, os, subprocess, json, shutil, shlex, uuid
 import requests
 from datetime import datetime
 from time import monotonic, sleep
@@ -355,7 +355,7 @@ class Backups:
                 'POST',
                 f'/v1/volumes/{volume['name']}',
                 params={'action': 'snapshotBackup'},
-                json={'labels': {'backup-job': 'longhorn-backup'}}
+                json={'name': f'longhorn-backup-{uuid.uuid4().hex[:12]}', 'labels': {'backup-job': 'longhorn-backup'}}
             )
 
             return existing

@@ -59,10 +59,6 @@ spec:
             hostPath:
               path: /media/martin/Data/Backups/home-k8s/Longhorn
               type: Directory
-          - name: backups
-            hostPath:
-              path: /media/martin/Data/Backups/home-k8s/Longhorn-encrypted
-              type: DirectoryOrCreate
           containers:
           - name: longhorn-backup
             image: skullfighter6/python:3.13-utils-20261007
@@ -72,9 +68,6 @@ spec:
               mountPath: /scripts
             - name: backup-target
               mountPath: /longhorn
-              readOnly: true
-            - name: backups
-              mountPath: /backups
             command: ["/bin/sh", "-c", "set -e; python /scripts/backup.py --backup-longhorn --enable-local-backup --disable-cloud-backup"]
             env:
             - name: LONGHORN_API
@@ -86,6 +79,6 @@ spec:
             - name: PYTHONUNBUFFERED
               value: "1"
             - name: LOCAL_BACKUP_DIR
-              value: "/backups"
+              value: "/longhorn"
             - name: AGE_PUBLIC_KEY
               value: "age170llv6tf2j4sgj6s6tvdycutptmqwsyl3ek3w74fjs4jfewqc5qqfqxsvf" # age public key, private key is kept offline
