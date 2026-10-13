@@ -5,6 +5,7 @@ SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)"
 LIB_DIR="${SCRIPT_DIR}/../lib"
 
 source "${LIB_DIR}/common.sh"
+source "${LIB_DIR}/metrics.sh"
 
 
 # Immich disk path
@@ -17,7 +18,17 @@ IMMICH_DIR="${IMMICH_DISK}/Photos/immich"
 BACKUP_DISK="/"
 
 # Backup directory to store backups in
-BACKUP_DIR="/srv/Backups/immich"
+BACKUP_DIR="${BACKUP_DISK%/}/srv/Backups/immich"
+
+# Log output to this file
+LOG_FILE="/var/log/cron/backup-immich.log"
+
+
+# Generate metrics from the job run
+GENERATE_METRICS=true
+
+# Write generated metrics to this file
+METRICS_FILE="/var/lib/node-exporter/textfile/host_cronjob_backup-immich.prom"
 
 
 function backup() {
@@ -37,6 +48,12 @@ function backup() {
 }
 
 function main() {
+    log_to_file "${LOG_FILE}"
+
+    if [[ "${GENERATE_METRICS}" == "true" ]]; then
+        cronjob_metrics_start backup-immich "${SCRIPT_DIR}/cron" "${METRICS_FILE}"
+    fi
+
     echo ""
     ensure_disk_mounted "${IMMICH_DISK}"
     ensure_disk_mounted "${BACKUP_DISK}"

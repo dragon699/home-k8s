@@ -17,6 +17,13 @@ function fail() {
     exit 1
 }
 
+function log_to_file() {
+    [ -t 1 ] && return 0
+
+    mkdir -p "$(dirname "${1}")"
+    exec >> "${1}" 2>&1
+}
+
 function ensure_disk_mounted() {
     say "Checking if disk ${1} is mounted.."
 
@@ -43,9 +50,6 @@ function delete_backup() {
 
 function install_cron() {
     echo "Installing cron job ${2}.."
-
-    sudo install -d -o root -g root -m 755 /var/log/cron
-    [ ${?} -ne 0 ] && echo "Failed to create /var/log/cron!" && exit 1
 
     sudo install -o root -g root -m 644 "${1}" "/etc/cron.d/${2}"
     [ ${?} -ne 0 ] && echo "Failed to install cron job!" && exit 1

@@ -5,6 +5,7 @@ SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)"
 LIB_DIR="${SCRIPT_DIR}/../lib"
 
 source "${LIB_DIR}/common.sh"
+source "${LIB_DIR}/metrics.sh"
 
 
 # Disk path
@@ -18,6 +19,16 @@ BACKUP_REGEX='^k0s_backup_.*\.tar\.gz(\.age)?$'
 
 # age public key to encrypt backups with - the archive holds every k8s Secret and the cluster PKI
 AGE_PUBLIC_KEY="age170llv6tf2j4sgj6s6tvdycutptmqwsyl3ek3w74fjs4jfewqc5qqfqxsvf"
+
+# Log output to this file
+LOG_FILE="/var/log/cron/backup-k0s.log"
+
+
+# Generate metrics from the job run
+GENERATE_METRICS=true
+
+# Write generated metrics to this file
+METRICS_FILE="/var/lib/node-exporter/textfile/host_cronjob_backup-k0s.prom"
 
 
 function backup() {
@@ -43,6 +54,11 @@ function backup() {
 }
 
 function main() {
+    log_to_file "${LOG_FILE}"
+    if [[ "${GENERATE_METRICS}" == "true" ]]; then
+        cronjob_metrics_start backup-k0s "${SCRIPT_DIR}/cron" "${METRICS_FILE}"
+    fi
+
     echo ""
     ensure_disk_mounted "${BACKUP_DISK}"
 
