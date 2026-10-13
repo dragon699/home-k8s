@@ -111,3 +111,21 @@ datasources:
     customHealthCheckUrl: ${immich-grafana-IMMICH_URL}:${immich-grafana-IMMICH_PORT}/api/server/version
   secureJsonData:
     httpHeaderValue1: ${immich-grafana-IMMICH_API_KEY}
+
+- name: Jellyfin
+  type: yesoreyeram-infinity-datasource
+  uid: internal-jellyfin
+  url: ${jellyfin-grafana-JELLYFIN_URL}:${jellyfin-grafana-JELLYFIN_PORT}
+  access: proxy
+  isDefault: false
+  editable: false
+  orgId: 1
+  jsonData:
+    auth_method: none
+    allowedHosts:
+    - ${jellyfin-grafana-JELLYFIN_URL}:${jellyfin-grafana-JELLYFIN_PORT}
+    httpHeaderName1: X-Emby-Token
+    customHealthCheckEnabled: true
+    customHealthCheckUrl: ${jellyfin-grafana-JELLYFIN_URL}:${jellyfin-grafana-JELLYFIN_PORT}/System/Info
+  secureJsonData:
+    httpHeaderValue1: ${jellyfin-grafana-JELLYFIN_API_KEY}

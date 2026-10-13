@@ -46,6 +46,9 @@ envFromSecrets:
 - name: auth-immich-grafana
   prefix: immich-grafana-
   optional: false
+- name: auth-jellyfin-grafana
+  prefix: jellyfin-grafana-
+  optional: false
 
 admin:
   existingSecret: auth-grafana

@@ -98,6 +98,8 @@ secrets:
       provider: vault
     auth-immich-grafana:
       provider: vault
+    auth-jellyfin-grafana:
+      provider: vault
 
   openclaw:
     data-openclaw:
