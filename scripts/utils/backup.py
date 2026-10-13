@@ -350,13 +350,17 @@ class Backups:
         def start_backup(volume: dict):
             existing = {item['metadata']['name'] for item in list_volume_backups(volume['name'])}
 
+            snapshot = {'name': f'longhorn-backup-{uuid.uuid4().hex[:12]}', 'labels': {'backup-job': 'longhorn-backup'}}
+
             self.log(f'longhorn: Backing up "{describe(volume)}"..')
-            self.longhorn_request(
-                'POST',
-                f'/v1/volumes/{volume['name']}',
-                params={'action': 'snapshotBackup'},
-                json={'name': f'longhorn-backup-{uuid.uuid4().hex[:12]}', 'labels': {'backup-job': 'longhorn-backup'}}
-            )
+
+            for action in ('snapshotCreate', 'snapshotBackup'):
+                self.longhorn_request(
+                    'POST',
+                    f'/v1/volumes/{volume['name']}',
+                    params={'action': action},
+                    json=snapshot
+                )
 
             return existing
 
