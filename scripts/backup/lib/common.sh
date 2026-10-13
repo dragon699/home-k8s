@@ -44,6 +44,9 @@ function delete_backup() {
 function install_cron() {
     echo "Installing cron job ${2}.."
 
+    sudo install -d -o root -g root -m 755 /var/log/cron
+    [ ${?} -ne 0 ] && echo "Failed to create /var/log/cron!" && exit 1
+
     sudo install -o root -g root -m 644 "${1}" "/etc/cron.d/${2}"
     [ ${?} -ne 0 ] && echo "Failed to install cron job!" && exit 1
 
