@@ -129,3 +129,20 @@ datasources:
     customHealthCheckUrl: ${jellyfin-grafana-JELLYFIN_URL}:${jellyfin-grafana-JELLYFIN_PORT}/System/Info
   secureJsonData:
     httpHeaderValue1: ${jellyfin-grafana-JELLYFIN_API_KEY}
+
+- name: TMDb
+  type: yesoreyeram-infinity-datasource
+  uid: internal-tmdb
+  url: ${tmdb-grafana-TMDB_URL}
+  access: proxy
+  isDefault: false
+  editable: false
+  orgId: 1
+  jsonData:
+    auth_method: bearerToken
+    allowedHosts:
+    - ${tmdb-grafana-TMDB_URL}
+    customHealthCheckEnabled: true
+    customHealthCheckUrl: ${tmdb-grafana-TMDB_URL}/3/authentication
+  secureJsonData:
+    bearerToken: ${tmdb-grafana-TMDB_TOKEN}
