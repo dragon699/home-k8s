@@ -1,0 +1,91 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: longhorn-backup
+  namespace: longhorn
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: longhorn-backup
+  namespace: longhorn
+rules:
+- apiGroups: ["longhorn.io"]
+  resources: ["backups"]
+  verbs: ["get", "list", "delete"]
+- apiGroups: ["longhorn.io"]
+  resources: ["snapshots"]
+  verbs: ["get", "delete"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: longhorn-backup
+  namespace: longhorn
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: longhorn-backup
+subjects:
+- kind: ServiceAccount
+  name: longhorn-backup
+  namespace: longhorn
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: longhorn-backup
+  namespace: longhorn
+spec:
+  schedule: "0 2 * * *" # Every day at 02:00AM
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      activeDeadlineSeconds: 14400
+      template:
+        spec:
+          restartPolicy: Never
+          serviceAccountName: longhorn-backup
+          volumes:
+          - name: script-longhorn-backup
+            configMap:
+              name: script-longhorn-backup
+              defaultMode: 0755
+          - name: backup-target
+            hostPath:
+              path: /media/martin/Data/Backups/home-k8s/Longhorn
+              type: Directory
+          - name: backups
+            hostPath:
+              path: /media/martin/Data/Backups/home-k8s/Longhorn-encrypted
+              type: DirectoryOrCreate
+          containers:
+          - name: longhorn-backup
+            image: skullfighter6/python:3.13-utils-20261007
+            imagePullPolicy: IfNotPresent
+            volumeMounts:
+            - name: script-longhorn-backup
+              mountPath: /scripts
+            - name: backup-target
+              mountPath: /longhorn
+              readOnly: true
+            - name: backups
+              mountPath: /backups
+            command: ["/bin/sh", "-c", "set -e; python /scripts/backup.py --backup-longhorn --enable-local-backup --disable-cloud-backup"]
+            env:
+            - name: LONGHORN_API
+              value: "http://longhorn-backend.longhorn.svc:9500"
+            - name: LONGHORN_TARGET_DIR
+              value: "/longhorn"
+            - name: LONGHORN_CONCURRENCY
+              value: "2"
+            - name: PYTHONUNBUFFERED
+              value: "1"
+            - name: LOCAL_BACKUP_DIR
+              value: "/backups"
+            - name: AGE_PUBLIC_KEY
+              value: "age170llv6tf2j4sgj6s6tvdycutptmqwsyl3ek3w74fjs4jfewqc5qqfqxsvf" # age public key, private key is kept offline

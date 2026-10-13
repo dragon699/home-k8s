@@ -7,5 +7,6 @@ resources:
 - glance
 - krakend
 - postgresql-shared
+- longhorn
 - fetch-api
 - fetch-ui
