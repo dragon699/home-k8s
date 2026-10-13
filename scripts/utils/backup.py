@@ -1,4 +1,4 @@
-import sys, os, subprocess, json, shutil, shlex, uuid
+import sys, os, subprocess, json, shutil, tarfile, uuid
 import requests
 from datetime import datetime
 from time import monotonic, sleep
@@ -483,12 +483,34 @@ class Backups:
         archive_name = f'longhorn-backupstore@{self.get_time()}.tar'
         file_path = os.path.join(self.dir, f'{archive_name}.age' if encrypt else archive_name)
 
-        tar_cmd = f'tar -C {shlex.quote(self.params['LONGHORN_TARGET_DIR'])} -cf - backupstore'
-        cmd = f'{tar_cmd} | age -r {shlex.quote(self.params['AGE_PUBLIC_KEY'])} -o {shlex.quote(file_path)}' if encrypt else f'{tar_cmd} > {shlex.quote(file_path)}'
+        source = os.path.join(self.params['LONGHORN_TARGET_DIR'], 'backupstore')
 
         try:
             self.log(f'longhorn: Archiving the backupstore into "{os.path.basename(file_path)}"..')
-            self.run_cmd(['bash', '-c', f'set -o pipefail; {cmd}'])
+
+            if encrypt:
+                age = subprocess.Popen(
+                    ['age', '-r', self.params['AGE_PUBLIC_KEY'], '-o', file_path],
+                    stdin=subprocess.PIPE,
+                    stderr=subprocess.PIPE
+                )
+                output = age.stdin
+
+            else:
+                age = None
+                output = open(file_path, 'wb')
+
+            try:
+                with tarfile.open(fileobj=output, mode='w|', copybufsize=4 * 1024 * 1024) as archive:
+                    archive.add(source, arcname='backupstore')
+
+            finally:
+                output.close()
+                return_code = age.wait() if age else 0
+
+            if return_code != 0:
+                raise RuntimeError(f'age returned non-zero code: {age.stderr.read().decode()}')
+
             self.created.append(file_path)
 
         except Exception as err:
