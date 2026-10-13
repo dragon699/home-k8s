@@ -15,6 +15,10 @@ spec:
         spec:
           restartPolicy: Never
           volumes:
+          - name: metrics
+            hostPath:
+              path: /var/lib/node-exporter/textfile
+              type: Directory
           - name: script-vault-backup-kv
             configMap:
               name: script-vault-backup-kv
@@ -34,6 +38,8 @@ spec:
             image: skullfighter6/python:3.13-utils-20261007
             imagePullPolicy: IfNotPresent
             volumeMounts:
+            - name: metrics
+              mountPath: /metrics
             - name: script-vault-backup-kv
               mountPath: /scripts
             - name: auth-gcloud-storage
@@ -43,6 +49,10 @@ spec:
               mountPath: /backups
             command: ["/bin/sh", "-c", "set -e; python /scripts/backup.py --backup-vault --enable-local-backup"]
             env:
+            - name: METRICS_FILE
+              value: "/metrics/cronjob_vault-backup-kv.prom"
+            - name: METRICS_CRONJOB
+              value: "vault-backup-kv"
             - name: GCP_PROJECT
               value: "home-k8s"
             - name: GCP_BUCKET

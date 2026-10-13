@@ -51,7 +51,7 @@ function main() {
     log_to_file "${LOG_FILE}"
 
     if [[ "${GENERATE_METRICS}" == "true" ]]; then
-        cronjob_metrics_start backup-immich "${SCRIPT_DIR}/cron" "${METRICS_FILE}"
+        cron_metrics_start backup-immich "${SCRIPT_DIR}/cron" "${METRICS_FILE}"
     fi
 
     echo ""
@@ -59,9 +59,13 @@ function main() {
     ensure_disk_mounted "${BACKUP_DISK}"
     ensure_dir_not_empty "${IMMICH_DIR}/library"
 
+    OLD_SIZE="$(get_dir_size "${BACKUP_DIR}")"
+
     backup
 
-    say "New backup size: $(du -sh "${BACKUP_DIR}" | cut -f1)"
+    NEW_SIZE="$(get_dir_size "${BACKUP_DIR}")"
+    say "Backup size: $(format_size "${OLD_SIZE}") -> $(format_size "${NEW_SIZE}")"
+    cron_metrics_backup_size "${OLD_SIZE}" "${NEW_SIZE}"
 }
 
 main

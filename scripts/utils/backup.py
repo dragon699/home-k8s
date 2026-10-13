@@ -25,6 +25,12 @@ ENV = {
             'AGE_PUBLIC_KEY': os.getenv('AGE_PUBLIC_KEY') # age public key (age1...) - when set, archives are encrypted before upload
         }
     },
+    'metrics': {
+        'optional': {
+            'METRICS_FILE': os.getenv('METRICS_FILE'), # node-exporter textfile to write the backup size metrics to
+            'METRICS_CRONJOB': os.getenv('METRICS_CRONJOB') # Name of the CronJob running the backup, used as the metrics label
+        }
+    },
     'local-backup': {
         'required': [
             'LOCAL_BACKUP_DIR' # Required with --enable-local-backup - directory in which to save backup archives in addition to GCP
@@ -134,6 +140,12 @@ class Backups:
 
         for var, default in ENV['encryption']['optional'].items():
             self.params[var] = default
+
+        for var, default in ENV['metrics']['optional'].items():
+            self.params[var] = default
+
+        if self.params['METRICS_FILE'] and not self.params['METRICS_CRONJOB']:
+            self.log('METRICS_CRONJOB: Required with METRICS_FILE', crash=True)
 
         if self.params['AGE_PUBLIC_KEY'] and not self.params['AGE_PUBLIC_KEY'].startswith('age1'):
             self.log('AGE_PUBLIC_KEY: Must be an age public key (age1...)', crash=True)
@@ -548,6 +560,62 @@ class Backups:
         self.created = encrypted
 
 
+    def measure_archives(self):
+        self.size = sum(os.path.getsize(file_path) for file_path in self.created if os.path.exists(file_path))
+
+
+    def format_size(self, size: float):
+        for unit in ['B', 'KB', 'MB', 'GB']:
+            if size < 1000:
+                return f'{size:.2f} {unit}'
+
+            size /= 1000
+
+        return f'{size:.2f} TB'
+
+
+    def write_metrics(self):
+        metrics_file = self.params['METRICS_FILE']
+
+        if not metrics_file:
+            return True
+
+        if not self.success or not self.created:
+            self.log('metrics: Run was not fully successful, keeping the previous size metrics', warn=True)
+            return False
+
+        labels = f'cronjob="{self.params['METRICS_CRONJOB']}"'
+        previous = self.size
+
+        try:
+            with open(metrics_file) as file:
+                for line in file:
+                    if line.startswith('cronjob_backup_size_bytes{'):
+                        previous = int(float(line.split()[-1]))
+
+        except FileNotFoundError:
+            pass
+
+        lines = [
+            '# TYPE cronjob_backup_previous_size_bytes gauge',
+            f'cronjob_backup_previous_size_bytes{{{labels}}} {previous}',
+            '# TYPE cronjob_backup_size_bytes gauge',
+            f'cronjob_backup_size_bytes{{{labels}}} {self.size}',
+            '# TYPE cronjob_backup_info gauge',
+            f'cronjob_backup_info{{{labels},size="{self.format_size(self.size)}"}} 1'
+        ]
+
+        try:
+            with open(f'{metrics_file}.tmp', 'w') as file:
+                file.write('\n'.join(lines) + '\n')
+
+            os.replace(f'{metrics_file}.tmp', metrics_file)
+            self.log(f'metrics: Backup size {self.format_size(self.size)} written to "{metrics_file}"')
+
+        except Exception as err:
+            self.log(f'metrics: Failed to write "{metrics_file}", got this -> {err}', warn=True)
+
+
     def upload_archives(self):
         bucket = None
 
@@ -634,7 +702,9 @@ if __name__ == '__main__':
         backups.create_longhorn_backup()
 
     backups.encrypt_archives()
+    backups.measure_archives()
     backups.upload_archives()
+    backups.write_metrics()
 
     if not backups.success:
         backups.log('Finished with errors, see the warnings above', crash=True)

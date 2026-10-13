@@ -69,24 +69,37 @@ function cron_next_run() {
     return 1
 }
 
-function cronjob_metrics_start() {
+function cron_metrics_start() {
     JOB_NAME="${1}"
     JOB_SCHEDULE="$(grep -vE '^[[:space:]]*(#|$)|^[A-Za-z_]+=' "${2}" | awk '{print $1, $2, $3, $4, $5; exit}')"
     JOB_METRICS_FILE="${3}"
-    JOB_LAST_SUCCESS="$(awk '/^host_cronjob_status_last_successful_time/ {print $2}' "${JOB_METRICS_FILE}" 2>/dev/null)"
+    JOB_LAST_SUCCESS="$(read_cron_metric host_cronjob_status_last_successful_time)"
+    JOB_LAST_DURATION="$(read_cron_metric host_cronjob_last_duration_seconds)"
+    JOB_PREVIOUS_SIZE="$(read_cron_metric cronjob_backup_previous_size_bytes)"
+    JOB_SIZE="$(read_cron_metric cronjob_backup_size_bytes)"
     JOB_LAST_SCHEDULE="$(date +%s)"
 
-    write_cronjob_metrics 1
-    on_exit 'cronjob_metrics_finish "${EXIT_CODE}"'
+    write_cron_metrics 1
+    on_exit 'cron_metrics_finish "${EXIT_CODE}"'
 }
 
-function cronjob_metrics_finish() {
+function cron_metrics_backup_size() {
+    JOB_PREVIOUS_SIZE="${1}"
+    JOB_SIZE="${2}"
+}
+
+function cron_metrics_finish() {
     [ "${1}" -eq 0 ] && JOB_LAST_SUCCESS="$(date +%s)"
+    JOB_LAST_DURATION="$(( $(date +%s) - JOB_LAST_SCHEDULE ))"
 
-    write_cronjob_metrics 0
+    write_cron_metrics 0
 }
 
-function write_cronjob_metrics() {
+function read_cron_metric() {
+    awk -v NAME="${1}" '$1 ~ "^" NAME "({|$)" {print $2}' "${JOB_METRICS_FILE}" 2>/dev/null
+}
+
+function write_cron_metrics() {
     local NEXT_SCHEDULE="$(cron_next_run "${JOB_SCHEDULE}")"
     local LABELS="cronjob=\"${JOB_NAME}\""
 
@@ -108,6 +121,23 @@ function write_cronjob_metrics() {
         if [ -n "${NEXT_SCHEDULE}" ]; then
             echo "# TYPE host_cronjob_next_schedule_time gauge"
             echo "host_cronjob_next_schedule_time{${LABELS}} ${NEXT_SCHEDULE}"
+        fi
+
+        if [ -n "${JOB_LAST_DURATION}" ]; then
+            echo "# TYPE host_cronjob_last_duration_seconds gauge"
+            echo "host_cronjob_last_duration_seconds{${LABELS}} ${JOB_LAST_DURATION}"
+        fi
+
+        if [ -n "${JOB_PREVIOUS_SIZE}" ]; then
+            echo "# TYPE cronjob_backup_previous_size_bytes gauge"
+            echo "cronjob_backup_previous_size_bytes{${LABELS}} ${JOB_PREVIOUS_SIZE}"
+        fi
+
+        if [ -n "${JOB_SIZE}" ]; then
+            echo "# TYPE cronjob_backup_size_bytes gauge"
+            echo "cronjob_backup_size_bytes{${LABELS}} ${JOB_SIZE}"
+            echo "# TYPE cronjob_backup_info gauge"
+            echo "cronjob_backup_info{${LABELS},size=\"$(format_size "${JOB_SIZE}")\"} 1"
         fi
     } > "${JOB_METRICS_FILE}.tmp"
 

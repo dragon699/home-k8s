@@ -13,6 +13,9 @@
 # BACKUP_DIR => Directory to store snapshots in
 # BACKUP_DIR=""
 
+# METRICS_FILE => node-exporter textfile to write the backup size metrics to (optional)
+# METRICS_FILE=""
+
 
 SCRIPT_DIR="$(cd "$(dirname "${0}")" && pwd)"
 LIB_DIR="${SCRIPT_DIR}/../lib"
@@ -46,6 +49,10 @@ function main() {
     done
 
     say "New backup: $(list_backups "${BACKUP_DIR}" "${BACKUP_REGEX}" | tr '\n' ' ')"
+
+    if [ -n "${METRICS_FILE}" ]; then
+        write_backup_size_metrics "${METRICS_FILE}" vault-backup-full "$(stat -c %s "${BACKUP_PATH}")"
+    fi
 }
 
 main

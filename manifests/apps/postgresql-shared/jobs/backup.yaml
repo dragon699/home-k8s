@@ -15,6 +15,10 @@ spec:
         spec:
           restartPolicy: Never
           volumes:
+          - name: metrics
+            hostPath:
+              path: /var/lib/node-exporter/textfile
+              type: Directory
           - name: script-pg-backup
             configMap:
               name: script-pg-backup
@@ -34,6 +38,8 @@ spec:
             image: skullfighter6/python:3.13-utils-20261007
             imagePullPolicy: IfNotPresent
             volumeMounts:
+            - name: metrics
+              mountPath: /metrics
             - name: script-pg-backup
               mountPath: /scripts
             - name: auth-gcloud-storage
@@ -43,6 +49,10 @@ spec:
               mountPath: /backups
             command: ["/bin/sh", "-c", "set -e; python /scripts/backup.py --backup-pg-databases --enable-local-backup"]
             env:
+            - name: METRICS_FILE
+              value: "/metrics/cronjob_pg-backup.prom"
+            - name: METRICS_CRONJOB
+              value: "pg-backup"
             - name: DATABASES
               value: "teslamate-teslamate,immich,monitoring-grafana,vikunja,sparkyfitness"
             - name: GCP_PROJECT

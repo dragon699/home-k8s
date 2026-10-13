@@ -18,6 +18,10 @@ spec:
             runAsUser: 1000
             runAsGroup: 1000
           volumes:
+          - name: metrics
+            hostPath:
+              path: /var/lib/node-exporter/textfile
+              type: Directory
           - name: script-vault-backup-full
             configMap:
               name: script-vault-backup-full
@@ -36,12 +40,16 @@ spec:
             image: hashicorp/vault:1.20.4
             imagePullPolicy: IfNotPresent
             volumeMounts:
+            - name: metrics
+              mountPath: /metrics
             - name: script-vault-backup-full
               mountPath: /scripts
             - name: backups
               mountPath: /backups
             command: ["/bin/sh", "/scripts/vault/backup-full.sh"]
             env:
+            - name: METRICS_FILE
+              value: "/metrics/cronjob_vault-backup-full.prom"
             - name: BACKUP_DIR
               value: "/backups"
             - name: HOME

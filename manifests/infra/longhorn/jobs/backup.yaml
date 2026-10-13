@@ -51,6 +51,10 @@ spec:
           restartPolicy: Never
           serviceAccountName: longhorn-backup
           volumes:
+          - name: metrics
+            hostPath:
+              path: /var/lib/node-exporter/textfile
+              type: Directory
           - name: script-longhorn-backup
             configMap:
               name: script-longhorn-backup
@@ -64,12 +68,18 @@ spec:
             image: skullfighter6/python:3.13-utils-20261007
             imagePullPolicy: IfNotPresent
             volumeMounts:
+            - name: metrics
+              mountPath: /metrics
             - name: script-longhorn-backup
               mountPath: /scripts
             - name: backup-target
               mountPath: /longhorn
             command: ["/bin/sh", "-c", "set -e; python /scripts/backup.py --backup-longhorn --enable-local-backup --disable-cloud-backup"]
             env:
+            - name: METRICS_FILE
+              value: "/metrics/cronjob_longhorn-backup.prom"
+            - name: METRICS_CRONJOB
+              value: "longhorn-backup"
             - name: LONGHORN_API
               value: "http://longhorn-backend.longhorn.svc:9500"
             - name: LONGHORN_TARGET_DIR
