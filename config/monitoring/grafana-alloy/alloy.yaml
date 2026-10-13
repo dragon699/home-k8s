@@ -75,6 +75,54 @@ otelcol.exporter.otlphttp "home_otelcol" {
 
 
 //////////////////////////////////////////////
+// Collect logs from backup cron jobs
+//////////////////////////////////////////////
+
+// Find the backup cron jobs' log files on the node
+local.file_match "home_backup_logs" {
+  path_targets    = [{"__path__" = "/var/log/cron/backup-*.log"}]
+}
+
+// Label each log file with its cron job name
+discovery.relabel "home_backup_logs" {
+  targets         = local.file_match.home_backup_logs.targets
+
+  rule {
+    source_labels = ["__path__"]
+    action        = "replace"
+    target_label  = "cronjob"
+    regex         = ".*/(backup-[^/]+)\\.log"
+    replacement   = "$1"
+  }
+}
+
+// Tail backup logs from /var/log/cron
+loki.source.file "home_backup_logs" {
+  targets         = discovery.relabel.home_backup_logs.output
+  forward_to      = [loki.process.home_backup_logs.receiver]
+}
+
+// Relabel backup logs
+loki.process "home_backup_logs" {
+  stage.label_drop {
+    values        = ["filename"]
+  }
+
+  stage.static_labels {
+    values        = {
+      "cluster"   = "home-k8s",
+      "source"    = "cron-logs",
+    }
+  }
+
+  forward_to      = [loki.write.home_logs.receiver]
+}
+
+//////////////////////////////////////////////
+
+
+
+//////////////////////////////////////////////
 // Collect logs from kubernetes pods
 //////////////////////////////////////////////
 
