@@ -94,20 +94,20 @@ datasources:
   secureJsonData:
     password: ${pg-teslamate-password}
 
-- name: OpenClaw Cluster Q&A
+- name: Immich
   type: yesoreyeram-infinity-datasource
-  uid: openclaw-cluster-qa
-  url: ${oc-grafana-OPENCLAW_URL}:${oc-grafana-OPENCLAW_PORT}
+  uid: internal-immich
+  url: ${immich-grafana-IMMICH_URL}:${immich-grafana-IMMICH_PORT}
   access: proxy
   isDefault: false
   editable: false
   orgId: 1
   jsonData:
-    auth_method: bearerToken
+    auth_method: none
     allowedHosts:
-    - ${oc-grafana-OPENCLAW_URL}:${oc-grafana-OPENCLAW_PORT}
-    timeoutInSeconds: 120
+    - ${immich-grafana-IMMICH_URL}:${immich-grafana-IMMICH_PORT}
+    httpHeaderName1: x-api-key
     customHealthCheckEnabled: true
-    customHealthCheckUrl: ${oc-grafana-OPENCLAW_URL}:${oc-grafana-OPENCLAW_PORT}/v1/models
+    customHealthCheckUrl: ${immich-grafana-IMMICH_URL}:${immich-grafana-IMMICH_PORT}/api/server/version
   secureJsonData:
-    bearerToken: ${oc-grafana-OPENCLAW_GATEWAY_TOKEN}
+    httpHeaderValue1: ${immich-grafana-IMMICH_API_KEY}

@@ -43,6 +43,9 @@ envFromSecrets:
 - name: auth-openclaw-grafana
   prefix: oc-grafana-
   optional: false
+- name: auth-immich-grafana
+  prefix: immich-grafana-
+  optional: false
 
 admin:
   existingSecret: auth-grafana

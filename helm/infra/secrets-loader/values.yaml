@@ -96,6 +96,8 @@ secrets:
       provider: vault
     auth-openclaw-grafana:
       provider: vault
+    auth-immich-grafana:
+      provider: vault
 
   openclaw:
     data-openclaw:
