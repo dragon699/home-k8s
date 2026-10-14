@@ -2,8 +2,6 @@ secrets:
   actual:
     auth-actual-http-api:
       provider: vault
-    auth-actual-github:
-      provider: vault
 
   dawarich:
     auth-dawarich:
