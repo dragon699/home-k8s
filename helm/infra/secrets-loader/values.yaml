@@ -100,8 +100,6 @@ secrets:
       provider: shared
     data-postgresql-shared-dawarich:
       provider: shared
-    auth-actual:
-      provider: vault
     auth-grafana-alloy:
       provider: vault
     data-grafana-alloy:
