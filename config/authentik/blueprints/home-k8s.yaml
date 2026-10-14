@@ -30,6 +30,16 @@ entries:
     redirect_uris:
     - matching_mode: strict
       url: https://grafana.k8s.iaminyourpc.xyz/login/generic_oauth
+    - matching_mode: strict
+      url: https://argocd.k8s.iaminyourpc.xyz/auth/callback
+    - matching_mode: strict
+      url: https://photos.k8s.iaminyourpc.xyz/auth/login
+    - matching_mode: strict
+      url: https://photos.k8s.iaminyourpc.xyz/user-settings
+    - matching_mode: strict
+      url: app.immich:///oauth-callback
+    - matching_mode: strict
+      url: https://board.iaminyourpc.xyz/auth/openid/authentik
 
 - model: authentik_core.application
   id: home-k8s-app

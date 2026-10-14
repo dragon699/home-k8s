@@ -27,9 +27,23 @@ vikunja:
           typesense:
             url: "http://vikunja-typesense:8108"
             apiKey: "typesense"
+          auth:
+            openid:
+              enabled: true
+              providers:
+                authentik:
+                  name: Authentik
+                  authurl: "https://auth.k8s.iaminyourpc.xyz/application/o/home-k8s/"
+                  clientid: home-k8s
+                  scope: "openid profile email"
 
   env:
     VIKUNJA_DATABASE_TYPE: postgres
+    VIKUNJA_AUTH_OPENID_PROVIDERS_AUTHENTIK_CLIENTSECRET:
+      valueFrom:
+        secretKeyRef:
+          name: data-authentik-home-k8s
+          key: password
     VIKUNJA_DATABASE_HOST:
       valueFrom:
         secretKeyRef:
