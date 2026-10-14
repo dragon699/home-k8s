@@ -26,6 +26,7 @@ data:
   RAILS_JOB_QUEUE_DB: "5"
   RAILS_WS_DB: "6"
   RACK_ATTACK_REDIS_DB: "7"
+  PHOTON_API_HOST: "photon.komoot.io"
 
 ---
 apiVersion: generators.external-secrets.io/v1alpha1
