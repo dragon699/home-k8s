@@ -2,6 +2,9 @@ const params = new URLSearchParams(location.search);
 const category = params.get('category') || '';
 const day = params.get('day') || '';
 const month = params.get('month') || '';
+const from = params.get('from') || '';
+const to = params.get('to') || '';
+const isDay = (v) => /^\d{4}-\d{2}-\d{2}$/.test(v);
 const filterConditions = [];
 let path = '/accounts';
 if (category === 'uncategorized') {
@@ -9,8 +12,11 @@ if (category === 'uncategorized') {
 } else if (/^[0-9a-f-]{36}$/.test(category)) {
   filterConditions.push({ field: 'category', op: 'is', value: category, type: 'id' });
 }
-if (/^\d{4}-\d{2}-\d{2}$/.test(day)) {
+if (isDay(day)) {
   filterConditions.push({ field: 'date', op: 'is', value: day, type: 'date' });
+} else if (isDay(from) || isDay(to)) {
+  if (isDay(from)) filterConditions.push({ field: 'date', op: 'gte', value: from, type: 'date' });
+  if (isDay(to)) filterConditions.push({ field: 'date', op: 'lte', value: to, type: 'date' });
 } else if (/^\d{4}-\d{2}$/.test(month)) {
   filterConditions.push({ field: 'date', op: 'is', value: month, options: { month: true }, type: 'date' });
 }
