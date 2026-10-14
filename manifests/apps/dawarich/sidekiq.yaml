@@ -69,6 +69,8 @@ spec:
         envFrom:
         - configMapRef:
             name: dawarich
+        - secretRef:
+            name: auth-dawarich
         env:
         - name: SECRET_KEY_BASE
           valueFrom:

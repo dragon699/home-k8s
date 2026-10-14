@@ -1,5 +1,7 @@
 secrets:
   dawarich:
+    auth-dawarich:
+      provider: vault
     data-postgresql-shared-dawarich:
       provider: shared
     data-redis-shared:
