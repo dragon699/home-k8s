@@ -133,6 +133,24 @@ datasources:
   secureJsonData:
     httpHeaderValue1: ${immich-grafana-IMMICH_API_KEY}
 
+- name: Actual
+  type: yesoreyeram-infinity-datasource
+  uid: internal-actual
+  url: http://actual-http-api.actual.svc:5007
+  access: proxy
+  isDefault: false
+  editable: false
+  orgId: 1
+  jsonData:
+    auth_method: none
+    allowedHosts:
+    - http://actual-http-api.actual.svc:5007
+    httpHeaderName1: x-api-key
+    customHealthCheckEnabled: true
+    customHealthCheckUrl: http://actual-http-api.actual.svc:5007/v1/budgets/109c0611-a822-4425-b7d1-cf6c87f1efcc/accounts
+  secureJsonData:
+    httpHeaderValue1: ${actual-grafana-ACTUAL_API_KEY}
+
 - name: Jellyfin
   type: yesoreyeram-infinity-datasource
   uid: internal-jellyfin
