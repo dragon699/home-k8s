@@ -30,7 +30,7 @@ spec:
           claimName: actual-data
       - name: grafana-link
         configMap:
-          name: script-grafana-link
+          name: assets-grafana-link
       containers:
       - name: actual
         image: actualbudget/actual-server:26.10.0
