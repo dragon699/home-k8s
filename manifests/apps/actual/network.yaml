@@ -31,10 +31,10 @@ metadata:
 spec:
   tls:
   - hosts:
-    - budget.k8s.iaminyourpc.xyz
-    secretName: tls-budget-k8s-iaminyourpc-xyz
+    - budget.iaminyourpc.xyz
+    secretName: tls-budget-iaminyourpc-xyz
   rules:
-  - host: budget.k8s.iaminyourpc.xyz
+  - host: budget.iaminyourpc.xyz
     http:
       paths:
       - pathType: Prefix
