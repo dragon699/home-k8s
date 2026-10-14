@@ -41,6 +41,11 @@ global:
         key: password
   - name: AUTHENTIK_POSTGRESQL__SSLMODE
     value: require
+  - name: HOME_K8S_OIDC_CLIENT_SECRET
+    valueFrom:
+      secretKeyRef:
+        name: data-authentik-home-k8s
+        key: password
 
 authentik:
   log_level: info
@@ -48,6 +53,10 @@ authentik:
     enabled: false
   postgresql:
     host: ""
+
+blueprints:
+  configMaps:
+  - config-authentik-blueprints
 
 server:
   ingress:

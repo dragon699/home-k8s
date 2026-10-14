@@ -2,6 +2,8 @@ secrets:
   authentik:
     data-postgresql-shared-authentik:
       provider: shared
+    data-authentik-home-k8s:
+      provider: shared
     data-authentik:
       spec:
         refreshInterval: 0m0s
@@ -126,6 +128,8 @@ secrets:
       provider: vault
 
   monitoring:
+    data-authentik-home-k8s:
+      provider: shared
     data-postgresql-shared-monitoring-grafana:
       provider: shared
     data-postgresql-shared-teslamate-teslamate:
@@ -182,6 +186,18 @@ secrets:
   shared:
     auth-gcloud-storage:
       provider: vault
+    data-authentik-home-k8s:
+      spec:
+        refreshInterval: 0m0s
+        target:
+          name: data-authentik-home-k8s
+          creationPolicy: Owner
+        dataFrom:
+        - sourceRef:
+            generatorRef:
+              apiVersion: generators.external-secrets.io/v1alpha1
+              kind: Password
+              name: data-authentik-home-k8s
     data-redis-shared:
       spec:
         refreshInterval: 0m0s
