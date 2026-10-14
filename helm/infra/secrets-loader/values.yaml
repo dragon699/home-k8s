@@ -1,4 +1,8 @@
 secrets:
+  actual:
+    auth-actual-http-api:
+      provider: vault
+
   dawarich:
     auth-dawarich:
       provider: vault

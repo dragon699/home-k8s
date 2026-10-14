@@ -44,3 +44,20 @@ spec:
             name: actual
             port:
               number: 5006
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: actual-http-api
+  namespace: actual
+  labels:
+    env: home
+spec:
+  type: ClusterIP
+  ports:
+  - name: actual-http-api
+    port: 5007
+    targetPort: 5007
+  selector:
+    app: actual-http-api
