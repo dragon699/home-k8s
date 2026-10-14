@@ -59,6 +59,14 @@ projects:
       namespace: actual
       create_namespace: true
 
+  - name: actual-bedrock
+    sources:
+    - repo: gitops_repo
+      path: manifests/apps/actual-bedrock
+    target:
+      namespace: actual-bedrock
+      create_namespace: true
+
   - name: dawarich
     sources:
     - repo: gitops_repo

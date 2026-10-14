@@ -1,0 +1,80 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: actual
+  namespace: actual-bedrock
+  labels:
+    app: actual
+    env: home
+  annotations:
+    reloader.stakater.com/auto: "true"
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: actual
+  template:
+    metadata:
+      labels:
+        app: actual
+        env: home
+    spec:
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: actual-data
+      - name: grafana-link
+        configMap:
+          name: assets-grafana-link
+      containers:
+      - name: actual
+        image: actualbudget/actual-server:26.10.0
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            cpu: 50m
+            memory: 128Mi
+          limits:
+            memory: 512Mi
+        startupProbe:
+          httpGet:
+            path: /health
+            port: 5006
+          periodSeconds: 5
+          failureThreshold: 60
+          timeoutSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 5006
+          periodSeconds: 30
+          failureThreshold: 3
+          timeoutSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 5006
+          periodSeconds: 10
+          failureThreshold: 3
+          timeoutSeconds: 5
+        ports:
+        - containerPort: 5006
+        volumeMounts:
+        - name: data
+          mountPath: /data
+        - name: grafana-link
+          mountPath: /app/node_modules/@actual-app/web/build/kcab/grafana.html
+          subPath: grafana.html
+          readOnly: true
+        - name: grafana-link
+          mountPath: /app/node_modules/@actual-app/web/build/kcab/grafana.js
+          subPath: grafana.js
+          readOnly: true
+        envFrom:
+        - configMapRef:
+            name: actual
