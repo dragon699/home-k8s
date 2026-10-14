@@ -72,6 +72,8 @@ secrets:
       provider: vault
 
   mcp:
+    auth-actual-mcp:
+      provider: vault
     auth-grafana-mcp:
       provider: vault
     auth-immich-mcp:
