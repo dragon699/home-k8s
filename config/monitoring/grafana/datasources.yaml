@@ -94,6 +94,27 @@ datasources:
   secureJsonData:
     password: ${pg-teslamate-password}
 
+- name: Dawarich
+  type: grafana-postgresql-datasource
+  uid: internal-dawarich
+  url: ${pg-dawarich-pgbouncer-host}:${pg-dawarich-pgbouncer-port}
+  access: proxy
+  isDefault: false
+  editable: false
+  orgId: 1
+  basicAuth: false
+  user: ${pg-dawarich-user}
+  jsonData:
+    database: ${pg-dawarich-dbname}
+    connMaxLifetime: 14400
+    maxIdleConns: 500
+    maxIdleConnsAuto: true
+    maxOpenConns: 500
+    postgresVersion: 1500
+    sslmode: disable
+  secureJsonData:
+    password: ${pg-dawarich-password}
+
 - name: Immich
   type: yesoreyeram-infinity-datasource
   uid: internal-immich

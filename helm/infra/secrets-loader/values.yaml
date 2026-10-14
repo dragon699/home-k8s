@@ -94,6 +94,8 @@ secrets:
       provider: shared
     data-postgresql-shared-teslamate-teslamate:
       provider: shared
+    data-postgresql-shared-dawarich:
+      provider: shared
     auth-grafana-alloy:
       provider: vault
     data-grafana-alloy:

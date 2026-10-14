@@ -40,6 +40,9 @@ envFromSecrets:
 - name: data-postgresql-shared-teslamate-teslamate
   prefix: pg-teslamate-
   optional: false
+- name: data-postgresql-shared-dawarich
+  prefix: pg-dawarich-
+  optional: false
 - name: auth-openclaw-grafana
   prefix: oc-grafana-
   optional: false
