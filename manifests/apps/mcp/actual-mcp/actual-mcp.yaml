@@ -29,7 +29,7 @@ spec:
         emptyDir: {}
       containers:
       - name: actual-mcp
-        image: skullfighter6/actual-mcp:v1.14.0-api26.10.0
+        image: skullfighter6/actual-mcp:v1.14.0-api26.10.0-2
         imagePullPolicy: IfNotPresent
         args: ["--sse", "--enable-write", "--port", "3000"]
         ports:
@@ -48,6 +48,10 @@ spec:
           value: "/data"
         - name: ACTUAL_SYNC_TTL_MS
           value: "60000"
+        - name: ACTUAL_CURRENCY
+          value: "EUR"
+        - name: ACTUAL_LOCALE
+          value: "bg-BG"
         - name: ACTUAL_PASSWORD
           valueFrom:
             secretKeyRef:
