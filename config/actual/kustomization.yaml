@@ -1,0 +1,9 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: actual
+generatorOptions:
+  disableNameSuffixHash: true
+configMapGenerator:
+- name: script-bank-sync
+  files: ['bank_sync.py=../../scripts/actual/bank_sync.py']

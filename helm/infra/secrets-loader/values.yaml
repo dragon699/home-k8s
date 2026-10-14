@@ -1,8 +1,4 @@
 secrets:
-  actual:
-    auth-actual:
-      provider: vault
-
   dawarich:
     auth-dawarich:
       provider: vault

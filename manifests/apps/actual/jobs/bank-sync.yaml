@@ -25,51 +25,28 @@ spec:
         spec:
           restartPolicy: Never
           volumes:
-          - name: data
-            emptyDir: {}
+          - name: script-bank-sync
+            configMap:
+              name: script-bank-sync
           containers:
           - name: bank-sync
-            image: skullfighter6/actual-mcp:v1.14.0-api26.10.0-2
+            image: skullfighter6/python:3.13-utils-20261007
             imagePullPolicy: IfNotPresent
-            command: ["node", "--input-type=module", "-e"]
-            args:
-            - |
-              const mod = await import('@actual-app/api');
-              const api = mod.default ?? mod;
-              const counts = async () => {
-                const out = {};
-                for (const a of await api.getAccounts()) {
-                  const { data } = await api.aqlQuery(api.q('transactions').filter({ account: a.id }).calculate({ $count: '*' }));
-                  out[a.name] = data;
-                }
-                return out;
-              };
-              await api.init({ dataDir: '/data', serverURL: process.env.ACTUAL_SERVER_URL, password: process.env.ACTUAL_PASSWORD });
-              await api.downloadBudget(process.env.ACTUAL_BUDGET_SYNC_ID);
-              const before = await counts();
-              await api.runBankSync();
-              const after = await counts();
-              for (const name of Object.keys(after)) console.log(`bank-sync: ${name} +${after[name] - (before[name] ?? 0)} transactions`);
-              await api.shutdown();
+            command: ["python", "/scripts/bank_sync.py"]
             env:
-            - name: ACTUAL_SERVER_URL
-              value: "http://actual.actual.svc:5006"
-            - name: ACTUAL_BUDGET_SYNC_ID
-              value: "109c0611-a822-4425-b7d1-cf6c87f1efcc"
-            - name: ACTUAL_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: auth-actual
-                  key: ACTUAL_PASSWORD
+            - name: ACTUAL_MCP_URL
+              value: "http://actual-mcp.mcp.svc:3000/mcp"
+            - name: PYTHONUNBUFFERED
+              value: "1"
             volumeMounts:
-            - name: data
-              mountPath: /data
+            - name: script-bank-sync
+              mountPath: /scripts
             resources:
               requests:
-                cpu: 50m
-                memory: 128Mi
+                cpu: 10m
+                memory: 32Mi
               limits:
-                memory: 512Mi
+                memory: 128Mi
             securityContext:
               allowPrivilegeEscalation: false
               capabilities:
