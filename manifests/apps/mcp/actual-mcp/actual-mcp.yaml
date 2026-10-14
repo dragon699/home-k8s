@@ -29,7 +29,7 @@ spec:
         emptyDir: {}
       containers:
       - name: actual-mcp
-        image: sstefanov/actual-mcp:v1.14.0
+        image: skullfighter6/actual-mcp:v1.14.0-api26.10.0
         imagePullPolicy: IfNotPresent
         args: ["--sse", "--enable-write", "--port", "3000"]
         ports:
