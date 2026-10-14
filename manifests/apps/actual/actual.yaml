@@ -78,3 +78,5 @@ spec:
         envFrom:
         - configMapRef:
             name: actual
+        - secretRef:
+            name: auth-actual-github
