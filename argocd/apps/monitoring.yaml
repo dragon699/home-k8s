@@ -74,6 +74,8 @@ projects:
       helm:
         releaseName: kube-state-metrics
     - repo: gitops_repo
+      path: manifests/monitoring/metric-providers/actual-exporter
+    - repo: gitops_repo
       path: manifests/monitoring/metric-providers/immich-exporter
     - repo: gitops_repo
       path: manifests/monitoring/metric-providers/pihole-exporter
