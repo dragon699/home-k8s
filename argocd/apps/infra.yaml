@@ -19,6 +19,22 @@ projects:
         valueFiles:
         - $values/helm/infra/secrets-loader/values.yaml
 
+  - name: authentik
+    sources:
+    - repo: values_repo
+      ref: values
+    - repoURL: https://charts.goauthentik.io
+      targetRevision: 2026.8.3
+      chart: authentik
+      helm:
+        valueFiles:
+        - $values/helm/infra/authentik/values.yaml
+    - repo: gitops_repo
+      path: manifests/infra/authentik
+    target:
+      namespace: authentik
+      create_namespace: true
+
   - name: config-reloader
     sources:
     - repo: values_repo

@@ -69,3 +69,9 @@ users:
   databases:
   - dawarich
   options: "SUPERUSER"
+
+- name: authentik
+  secretName: data-postgresql-shared-authentik
+  databases:
+  - authentik
+  options: "SUPERUSER"

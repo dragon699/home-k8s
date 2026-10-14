@@ -1,4 +1,32 @@
 secrets:
+  authentik:
+    data-postgresql-shared-authentik:
+      provider: shared
+    data-authentik:
+      spec:
+        refreshInterval: 0m0s
+        target:
+          name: data-authentik
+          creationPolicy: Owner
+        dataFrom:
+        - sourceRef:
+            generatorRef:
+              apiVersion: generators.external-secrets.io/v1alpha1
+              kind: Password
+              name: data-authentik
+    data-authentik-bootstrap:
+      spec:
+        refreshInterval: 0m0s
+        target:
+          name: data-authentik-bootstrap
+          creationPolicy: Owner
+        dataFrom:
+        - sourceRef:
+            generatorRef:
+              apiVersion: generators.external-secrets.io/v1alpha1
+              kind: Password
+              name: data-authentik-bootstrap
+
   actual:
     auth-actual-http-api:
       provider: vault

@@ -1,0 +1,25 @@
+---
+apiVersion: generators.external-secrets.io/v1alpha1
+kind: Password
+metadata:
+  name: data-authentik
+  namespace: authentik
+spec:
+  length: 64
+  digits: 16
+  symbols: 0
+  noUpper: false
+  allowRepeat: true
+
+---
+apiVersion: generators.external-secrets.io/v1alpha1
+kind: Password
+metadata:
+  name: data-authentik-bootstrap
+  namespace: authentik
+spec:
+  length: 32
+  digits: 8
+  symbols: 0
+  noUpper: false
+  allowRepeat: true

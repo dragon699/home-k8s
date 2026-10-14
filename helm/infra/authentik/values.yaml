@@ -1,0 +1,73 @@
+global:
+  revisionHistoryLimit: 1
+  deploymentAnnotations:
+    reloader.stakater.com/auto: "true"
+
+  env:
+  - name: AUTHENTIK_SECRET_KEY
+    valueFrom:
+      secretKeyRef:
+        name: data-authentik
+        key: password
+  - name: AUTHENTIK_BOOTSTRAP_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: data-authentik-bootstrap
+        key: password
+  - name: AUTHENTIK_POSTGRESQL__HOST
+    valueFrom:
+      secretKeyRef:
+        name: data-postgresql-shared-authentik
+        key: host
+  - name: AUTHENTIK_POSTGRESQL__PORT
+    valueFrom:
+      secretKeyRef:
+        name: data-postgresql-shared-authentik
+        key: port
+  - name: AUTHENTIK_POSTGRESQL__NAME
+    valueFrom:
+      secretKeyRef:
+        name: data-postgresql-shared-authentik
+        key: dbname
+  - name: AUTHENTIK_POSTGRESQL__USER
+    valueFrom:
+      secretKeyRef:
+        name: data-postgresql-shared-authentik
+        key: user
+  - name: AUTHENTIK_POSTGRESQL__PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: data-postgresql-shared-authentik
+        key: password
+  - name: AUTHENTIK_POSTGRESQL__SSLMODE
+    value: require
+
+authentik:
+  log_level: info
+  error_reporting:
+    enabled: false
+  postgresql:
+    host: ""
+
+server:
+  ingress:
+    enabled: false
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 2000m
+      memory: 1Gi
+
+worker:
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 2000m
+      memory: 1Gi
+
+postgresql:
+  enabled: false
