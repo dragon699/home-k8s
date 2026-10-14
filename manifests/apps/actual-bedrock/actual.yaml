@@ -28,9 +28,6 @@ spec:
       - name: data
         persistentVolumeClaim:
           claimName: actual-data
-      - name: grafana-link
-        configMap:
-          name: assets-grafana-link
       containers:
       - name: actual
         image: actualbudget/actual-server:26.10.0
@@ -67,14 +64,6 @@ spec:
         volumeMounts:
         - name: data
           mountPath: /data
-        - name: grafana-link
-          mountPath: /app/node_modules/@actual-app/web/build/kcab/grafana.html
-          subPath: grafana.html
-          readOnly: true
-        - name: grafana-link
-          mountPath: /app/node_modules/@actual-app/web/build/kcab/grafana.js
-          subPath: grafana.js
-          readOnly: true
         envFrom:
         - configMapRef:
             name: actual
