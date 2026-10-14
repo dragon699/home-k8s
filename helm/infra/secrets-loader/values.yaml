@@ -234,6 +234,8 @@ secrets:
   vault:
     data-vault-sensitive:
       provider: vault
+    data-authentik-home-k8s:
+      provider: shared
     auth-gcloud-storage:
       provider: vault
       path: home/shared/auth-gcloud-storage

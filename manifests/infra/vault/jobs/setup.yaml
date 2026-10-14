@@ -15,9 +15,13 @@ spec:
         configMap:
           name: script-vault-setup
           defaultMode: 0755
-      - name: data-vault-policy-external-secrets
-        configMap:
-          name: data-vault-policy-external-secrets
+      - name: policies
+        projected:
+          sources:
+          - configMap:
+              name: data-vault-policy-external-secrets
+          - configMap:
+              name: data-vault-policy-admin
       containers:
       - name: setup
         image: hashicorp/vault:1.20.4
@@ -25,7 +29,7 @@ spec:
         volumeMounts:
         - name: script-vault-setup
           mountPath: /scripts
-        - name: data-vault-policy-external-secrets
+        - name: policies
           mountPath: /policies
         command: ["/bin/sh", "/scripts/setup.sh"]
         env:
@@ -54,3 +58,18 @@ spec:
           value: "/policies/external-secrets.hcl"
         - name: VAULT_KV_NAME
           value: "home"
+        - name: VAULT_OIDC_DISCOVERY_URL
+          value: "https://auth.k8s.iaminyourpc.xyz/application/o/home-k8s/"
+        - name: VAULT_OIDC_CLIENT_ID
+          value: "home-k8s"
+        - name: VAULT_OIDC_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: data-authentik-home-k8s
+              key: password
+        - name: VAULT_OIDC_REDIRECT_URI
+          value: "https://vault.k8s.iaminyourpc.xyz/ui/vault/auth/oidc/oidc/callback"
+        - name: VAULT_POLICY_OIDC_NAME
+          value: "admin"
+        - name: VAULT_POLICY_OIDC_FILE
+          value: "/policies/admin.hcl"

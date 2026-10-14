@@ -13,6 +13,14 @@
 # VAULT_POLICY_EXTERNAL_SECRETS_FILE => <String> Path to the policy file for External Secrets
 # VAULT_KV_NAME => <String> Name of the KV to create (i.e. 'home')
 
+# // Variables for OIDC login
+# VAULT_OIDC_DISCOVERY_URL => <String> OIDC issuer discovery URL
+# VAULT_OIDC_CLIENT_ID => <String> OIDC client ID
+# VAULT_OIDC_CLIENT_SECRET => <String> OIDC client secret
+# VAULT_OIDC_REDIRECT_URI => <String> Vault UI OIDC callback URL
+# VAULT_POLICY_OIDC_NAME => <String> Name of the policy to create for OIDC logins
+# VAULT_POLICY_OIDC_FILE => <String> Path to the policy file for OIDC logins
+
 
 function vault_connect() {
     echo "${VAULT_ADDRESS}: Attempting to connect.."
@@ -107,16 +115,81 @@ function vault_setup_external_secrets() {
     fi
 }
 
+function vault_setup_oidc() {
+    echo "${VAULT_ADDRESS}: Importing policy ${VAULT_POLICY_OIDC_NAME}.."
+
+    echo "${VAULT_POLICY_OIDC_CONTENT}" | {
+        vault policy write "${VAULT_POLICY_OIDC_NAME}" - > /dev/null 2>&1
+    }
+
+    if [ $? -ne 0 ]; then
+        echo "${VAULT_ADDRESS}: Failed!"
+        exit 1
+
+    fi
+
+    echo "${VAULT_ADDRESS}: Imported!"
+    echo "${VAULT_ADDRESS}: Enabling authentication method oidc.."
+
+    vault auth enable \
+        -path="oidc" \
+        -listing-visibility=unauth \
+        oidc > /dev/null 2>&1
+
+    if [ $? -ne 0 ]; then
+        echo "${VAULT_ADDRESS}: Failed or already enabled!"
+
+    else
+        echo "${VAULT_ADDRESS}: Enabled!"
+
+    fi
+
+    echo "${VAULT_ADDRESS}: Configuring authentication method oidc.."
+
+    vault write auth/oidc/config \
+        oidc_discovery_url="${VAULT_OIDC_DISCOVERY_URL}" \
+        oidc_client_id="${VAULT_OIDC_CLIENT_ID}" \
+        oidc_client_secret="${VAULT_OIDC_CLIENT_SECRET}" \
+        default_role="default" > /dev/null 2>&1
+
+    if [ $? -ne 0 ]; then
+        echo "${VAULT_ADDRESS}: Failed!"
+        exit 1
+
+    fi
+
+    echo "${VAULT_ADDRESS}: Configured!"
+    echo "${VAULT_ADDRESS}: Creating oidc role default.."
+
+    vault write auth/oidc/role/default \
+        role_type="oidc" \
+        user_claim="sub" \
+        groups_claim="groups" \
+        oidc_scopes="openid,email,profile" \
+        token_policies="${VAULT_POLICY_OIDC_NAME}" \
+        allowed_redirect_uris="${VAULT_OIDC_REDIRECT_URI}" > /dev/null 2>&1
+
+    if [ $? -ne 0 ]; then
+        echo "${VAULT_ADDRESS}: Failed!"
+        exit 1
+
+    fi
+
+    echo "${VAULT_ADDRESS}: Created or updated!"
+}
+
 function main() {
     export VAULT_ADDR="${VAULT_SCHEME}://${VAULT_ADDRESS}"
     export VAULT_TOKEN="${VAULT_ROOT_TOKEN}"
 
     export VAULT_POLICY_EXTERNAL_SECRETS_CONTENT="$(cat ${VAULT_POLICY_EXTERNAL_SECRETS_FILE})"
+    export VAULT_POLICY_OIDC_CONTENT="$(cat ${VAULT_POLICY_OIDC_FILE})"
 
     echo "${VAULT_ADDRESS}: Beginning initial setup checks.."
 
     vault_connect
     vault_setup_external_secrets
+    vault_setup_oidc
 
     echo "${VAULT_ADDRESS}: Initial checks setup completed!"
 }

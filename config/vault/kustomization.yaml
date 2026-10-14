@@ -17,3 +17,5 @@ configMapGenerator:
   files: ['setup.sh=../../scripts/utils/vault/setup.sh']
 - name: data-vault-policy-external-secrets
   files: ['external-secrets.hcl=../../scripts/utils/vault/policies/external-secrets.hcl']
+- name: data-vault-policy-admin
+  files: ['admin.hcl=../../scripts/utils/vault/policies/admin.hcl']
