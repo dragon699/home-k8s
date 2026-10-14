@@ -71,6 +71,10 @@ spec:
           mountPath: /app/node_modules/@actual-app/web/build/kcab/grafana.html
           subPath: grafana.html
           readOnly: true
+        - name: grafana-link
+          mountPath: /app/node_modules/@actual-app/web/build/kcab/grafana.js
+          subPath: grafana.js
+          readOnly: true
         envFrom:
         - configMapRef:
             name: actual
