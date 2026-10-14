@@ -40,6 +40,10 @@ entries:
       url: app.immich:///oauth-callback
     - matching_mode: strict
       url: https://board.iaminyourpc.xyz/auth/openid/authentik
+    - matching_mode: strict
+      url: https://timeline.k8s.iaminyourpc.xyz/users/auth/openid_connect/callback
+    - matching_mode: strict
+      url: https://me.iaminyourpc.xyz/api/auth/sso/callback/authentik
 
 - model: authentik_core.application
   id: home-k8s-app

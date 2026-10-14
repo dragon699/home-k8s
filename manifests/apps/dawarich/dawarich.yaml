@@ -90,6 +90,11 @@ spec:
             secretKeyRef:
               name: data-dawarich
               key: password
+        - name: OIDC_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: data-authentik-home-k8s
+              key: password
         - name: REDIS_PASSWORD
           valueFrom:
             secretKeyRef:

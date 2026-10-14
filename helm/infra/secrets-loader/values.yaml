@@ -36,6 +36,8 @@ secrets:
   dawarich:
     auth-dawarich:
       provider: vault
+    data-authentik-home-k8s:
+      provider: shared
     data-postgresql-shared-dawarich:
       provider: shared
     data-redis-shared:
