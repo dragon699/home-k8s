@@ -71,3 +71,46 @@ entries:
     group: !KeyOf home-k8s-admins
   attrs:
     order: 10
+
+- model: authentik_providers_proxy.proxyprovider
+  id: home-k8s-proxy-provider
+  identifiers:
+    name: home-k8s-proxy
+  attrs:
+    mode: forward_domain
+    external_host: https://auth.k8s.iaminyourpc.xyz
+    cookie_domain: k8s.iaminyourpc.xyz
+    authorization_flow: !Find [authentik_flows.flow, [slug, default-provider-authorization-implicit-consent]]
+    invalidation_flow: !Find [authentik_flows.flow, [slug, default-provider-invalidation-flow]]
+    access_token_validity: hours=24
+
+- model: authentik_core.application
+  id: home-k8s-proxy-app
+  identifiers:
+    slug: home-k8s-proxy
+  attrs:
+    name: home-k8s-proxy
+    provider: !KeyOf home-k8s-proxy-provider
+    policy_engine_mode: any
+    meta_launch_url: blank://blank
+
+- model: authentik_policies.policybinding
+  identifiers:
+    target: !KeyOf home-k8s-proxy-app
+    group: !Find [authentik_core.group, [name, authentik Admins]]
+  attrs:
+    order: 0
+
+- model: authentik_policies.policybinding
+  identifiers:
+    target: !KeyOf home-k8s-proxy-app
+    group: !KeyOf home-k8s-admins
+  attrs:
+    order: 10
+
+- model: authentik_outposts.outpost
+  identifiers:
+    managed: goauthentik.io/outposts/embedded
+  attrs:
+    providers:
+    - !KeyOf home-k8s-proxy-provider

@@ -103,9 +103,10 @@ secrets:
     data-redis-shared:
       provider: shared
 
-  longhorn:
-    auth-longhorn:
-      provider: vault
+  # Migrated to OIDC
+  # longhorn:
+  #   auth-longhorn:
+  #     provider: vault
 
   mcp:
     auth-actual-mcp:
