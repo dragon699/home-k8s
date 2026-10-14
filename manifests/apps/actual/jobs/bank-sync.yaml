@@ -1,0 +1,76 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: bank-sync
+  namespace: actual
+  labels:
+    app: actual
+    env: home
+spec:
+  schedule: "0 8,14,20 * * *"
+  timeZone: Europe/Sofia
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 2
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      activeDeadlineSeconds: 600
+      template:
+        metadata:
+          labels:
+            app: actual-bank-sync
+            env: home
+        spec:
+          restartPolicy: Never
+          volumes:
+          - name: data
+            emptyDir: {}
+          containers:
+          - name: bank-sync
+            image: skullfighter6/actual-mcp:v1.14.0-api26.10.0-2
+            imagePullPolicy: IfNotPresent
+            command: ["node", "--input-type=module", "-e"]
+            args:
+            - |
+              const mod = await import('@actual-app/api');
+              const api = mod.default ?? mod;
+              const counts = async () => {
+                const out = {};
+                for (const a of await api.getAccounts()) {
+                  const { data } = await api.aqlQuery(api.q('transactions').filter({ account: a.id }).calculate({ $count: '*' }));
+                  out[a.name] = data;
+                }
+                return out;
+              };
+              await api.init({ dataDir: '/data', serverURL: process.env.ACTUAL_SERVER_URL, password: process.env.ACTUAL_PASSWORD });
+              await api.downloadBudget(process.env.ACTUAL_BUDGET_SYNC_ID);
+              const before = await counts();
+              await api.runBankSync();
+              const after = await counts();
+              for (const name of Object.keys(after)) console.log(`bank-sync: ${name} +${after[name] - (before[name] ?? 0)} transactions`);
+              await api.shutdown();
+            env:
+            - name: ACTUAL_SERVER_URL
+              value: "http://actual.actual.svc:5006"
+            - name: ACTUAL_BUDGET_SYNC_ID
+              value: "109c0611-a822-4425-b7d1-cf6c87f1efcc"
+            - name: ACTUAL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: auth-actual
+                  key: ACTUAL_PASSWORD
+            volumeMounts:
+            - name: data
+              mountPath: /data
+            resources:
+              requests:
+                cpu: 50m
+                memory: 128Mi
+              limits:
+                memory: 512Mi
+            securityContext:
+              allowPrivilegeEscalation: false
+              capabilities:
+                drop: ["ALL"]
