@@ -7,3 +7,5 @@ generatorOptions:
 configMapGenerator:
 - name: script-bank-sync
   files: ['bank_sync.py=../../scripts/actual/bank_sync.py']
+- name: script-grafana-link
+  files: ['grafana.html=../../scripts/actual/grafana-link.html']
