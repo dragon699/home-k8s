@@ -63,3 +63,9 @@ users:
   databases:
   - sparkyfitness
   options: "SUPERUSER"
+
+- name: dawarich
+  secretName: data-postgresql-shared-dawarich
+  databases:
+  - dawarich
+  options: "SUPERUSER"

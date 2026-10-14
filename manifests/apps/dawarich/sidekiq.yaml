@@ -1,0 +1,97 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sidekiq
+  namespace: dawarich
+  labels:
+    app: sidekiq
+    env: home
+  annotations:
+    reloader.stakater.com/auto: "true"
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: sidekiq
+  template:
+    metadata:
+      labels:
+        app: sidekiq
+        env: home
+    spec:
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: public
+        persistentVolumeClaim:
+          claimName: dawarich-public
+      - name: watched
+        persistentVolumeClaim:
+          claimName: dawarich-watched
+      - name: storage
+        persistentVolumeClaim:
+          claimName: dawarich-storage
+      containers:
+      - name: sidekiq
+        image: freikin/dawarich:1.15.3
+        imagePullPolicy: IfNotPresent
+        command: ["/bin/sh", "-c"]
+        args:
+        - |
+          export REDIS_URL="redis://:$(ruby -ruri -e 'print URI.encode_www_form_component(ENV.fetch("REDIS_PASSWORD"))')@${REDIS_HOST}"
+          exec sidekiq-entrypoint.sh sidekiq
+        resources:
+          requests:
+            cpu: 100m
+            memory: 512Mi
+          limits:
+            memory: 2Gi
+        startupProbe:
+          exec:
+            command: ["pgrep", "-f", "sidekiq"]
+          periodSeconds: 10
+          failureThreshold: 90
+        livenessProbe:
+          exec:
+            command: ["pgrep", "-f", "sidekiq"]
+          periodSeconds: 30
+          failureThreshold: 3
+        volumeMounts:
+        - name: public
+          mountPath: /var/app/public
+        - name: watched
+          mountPath: /var/app/tmp/imports/watched
+        - name: storage
+          mountPath: /var/app/storage
+        envFrom:
+        - configMapRef:
+            name: dawarich
+        env:
+        - name: SECRET_KEY_BASE
+          valueFrom:
+            secretKeyRef:
+              name: data-dawarich
+              key: password
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: data-redis-shared
+              key: password
+        - name: DATABASE_NAME
+          valueFrom:
+            secretKeyRef:
+              name: data-postgresql-shared-dawarich
+              key: dbname
+        - name: DATABASE_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: data-postgresql-shared-dawarich
+              key: user
+        - name: DATABASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: data-postgresql-shared-dawarich
+              key: password

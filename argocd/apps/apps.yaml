@@ -51,6 +51,14 @@ projects:
       namespace: open-webui
   ###
 
+  - name: dawarich
+    sources:
+    - repo: gitops_repo
+      path: manifests/apps/dawarich
+    target:
+      namespace: dawarich
+      create_namespace: true
+
   - name: fetch-api
     sources:
     - repo: values_repo

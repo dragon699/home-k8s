@@ -1,4 +1,22 @@
 secrets:
+  dawarich:
+    data-postgresql-shared-dawarich:
+      provider: shared
+    data-redis-shared:
+      provider: shared
+    data-dawarich:
+      spec:
+        refreshInterval: 0m0s
+        target:
+          name: data-dawarich
+          creationPolicy: Owner
+        dataFrom:
+        - sourceRef:
+            generatorRef:
+              apiVersion: generators.external-secrets.io/v1alpha1
+              kind: Password
+              name: data-dawarich
+
   fetch-api:
     data-connector-downloader:
       provider: vault

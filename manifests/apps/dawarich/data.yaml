@@ -1,0 +1,41 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dawarich
+  namespace: dawarich
+  labels:
+    app: dawarich
+    env: home
+data:
+  RAILS_ENV: "production"
+  RAILS_LOG_TO_STDOUT: "true"
+  SELF_HOSTED: "true"
+  STORE_GEODATA: "true"
+  APPLICATION_HOSTS: "timeline.k8s.iaminyourpc.xyz,localhost"
+  APPLICATION_PROTOCOL: "http"
+  TIME_ZONE: "Europe/Sofia"
+  WEB_CONCURRENCY: "1"
+  BACKGROUND_PROCESSING_CONCURRENCY: "3"
+  PROMETHEUS_EXPORTER_ENABLED: "false"
+  DATABASE_HOST: "postgresql-shared-pg-ha.shared.svc"
+  DATABASE_PORT: "5432"
+  PGSSLMODE: "require"
+  REDIS_HOST: "redis-shared.shared.svc:6379"
+  RAILS_CACHE_DB: "4"
+  RAILS_JOB_QUEUE_DB: "5"
+  RAILS_WS_DB: "6"
+  RACK_ATTACK_REDIS_DB: "7"
+
+---
+apiVersion: generators.external-secrets.io/v1alpha1
+kind: Password
+metadata:
+  name: data-dawarich
+  namespace: dawarich
+spec:
+  length: 128
+  digits: 32
+  symbols: 0
+  noUpper: false
+  allowRepeat: true
