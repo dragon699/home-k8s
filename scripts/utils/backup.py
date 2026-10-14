@@ -210,7 +210,6 @@ class Backups:
                 )
 
             except RuntimeError as err:
-                # Empty KV / path
                 if 'No value found' in str(err):
                     return True
 
@@ -552,7 +551,6 @@ class Backups:
         for old_name in os.listdir(local_dir):
             old_path = os.path.join(local_dir, old_name)
 
-            # Files only - never touch folders, e.g. a manually extracted backup
             if old_name.startswith(f'{file_prefix}@') and old_name != file_name and os.path.isfile(old_path):
                 self.log(f'local: Deleting "{old_name}" from {local_dir}..')
                 self.remove_local(old_path)
@@ -585,7 +583,6 @@ class Backups:
                 encrypted.append(encrypted_path)
 
             except Exception as err:
-                # Never fall back to uploading the plaintext archive
                 self.log(f'age: Failed to encrypt "{file_name}", got this -> {err}', warn=True)
                 self.success = False
                 self.remove_local(encrypted_path)

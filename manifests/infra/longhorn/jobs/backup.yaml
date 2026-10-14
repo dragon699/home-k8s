@@ -87,10 +87,10 @@ spec:
             - name: LONGHORN_CONCURRENCY
               value: "2"
             - name: LONGHORN_ARCHIVE
-              value: "false" # Enable together with the GCS upload, a local archive only duplicates the backupstore
+              value: "false"
             - name: PYTHONUNBUFFERED
               value: "1"
             - name: LOCAL_BACKUP_DIR
               value: "/longhorn"
             - name: AGE_PUBLIC_KEY
-              value: "age170llv6tf2j4sgj6s6tvdycutptmqwsyl3ek3w74fjs4jfewqc5qqfqxsvf" # age public key, private key is kept offline
+              value: "age170llv6tf2j4sgj6s6tvdycutptmqwsyl3ek3w74fjs4jfewqc5qqfqxsvf"
