@@ -51,6 +51,14 @@ projects:
       namespace: open-webui
   ###
 
+  - name: actual
+    sources:
+    - repo: gitops_repo
+      path: manifests/apps/actual
+    target:
+      namespace: actual
+      create_namespace: true
+
   - name: dawarich
     sources:
     - repo: gitops_repo
