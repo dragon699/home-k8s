@@ -18,16 +18,15 @@
         icon: https://docs.rconfig.com/images/logos/vault-hashicorp-logo-920x920-sue-v1.png
         timeout: 10s
       - title: radar
+        check-url: http://radar.radar.svc:9280
         url: https://kube.k8s.iaminyourpc.xyz
         icon: https://img.icons8.com/color/200/kubernetes.png
         timeout: 10s
       - title: longhorn
-        url: http://longhorn.k8s.iaminyourpc.xyz
+        check-url: http://longhorn-frontend.longhorn.svc
+        url: https://longhorn.k8s.iaminyourpc.xyz
         icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/longhorn.svg
         timeout: 10s
-        basic-auth:
-          username: ${LONGHORN_USER}
-          password: ${LONGHORN_PASSWORD}
     - type: monitor
       title: c/monitoring
       hide-header: true
@@ -38,12 +37,10 @@
         icon: di:grafana
         timeout: 10s
       - title: alloy
+        check-url: http://grafana-alloy.monitoring.svc:12345/-/ready
         url: https://alloy.k8s.iaminyourpc.xyz
         icon: di:alloy
         timeout: 10s
-        basic-auth:
-          username: ${ALLOY_USER}
-          password: ${ALLOY_PASSWORD}
       - title: loki
         check-url: http://loki-backend.monitoring.svc:3100/ready
         url: https://argocd.k8s.iaminyourpc.xyz/applications/argocd/grafana-loki?view=tree&resource=
@@ -396,12 +393,10 @@
         icon: https://upload.wikimedia.org/wikipedia/commons/0/00/Pi-hole_Logo.png
         timeout: 10s
       - title: teslamate
-        url: http://car.k8s.iaminyourpc.xyz
+        check-url: http://teslamate.teslamate.svc:4000
+        url: https://car.k8s.iaminyourpc.xyz
         icon: https://www.pngplay.com/wp-content/uploads/13/Tesla-Logo-PNG-Photo-Image.png
         timeout: 10s
-        basic-auth:
-          username: ${TESLAMATE_USER}
-          password: ${TESLAMATE_PASSWORD}
   - size: full
     widgets:
     - type: custom-api
