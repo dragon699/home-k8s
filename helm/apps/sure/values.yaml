@@ -8,7 +8,7 @@ rails:
     enabled: false
   settings:
     SELF_HOSTED: "true"
-    ONBOARDING_STATE: "open"
+    ONBOARDING_STATE: "closed"
     AI_DEBUG_MODE: "false"
   extraEnv:
     APP_DOMAIN: money.iaminyourpc.xyz
