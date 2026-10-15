@@ -226,6 +226,45 @@ secrets:
     auth-sparkyfitness:
       provider: vault
 
+  sure:
+    data-postgresql-shared-sure:
+      provider: shared
+    data-redis-shared:
+      spec:
+        refreshInterval: 5m0s
+        secretStoreRef:
+          name: in-cluster-shared
+          kind: ClusterSecretStore
+        target:
+          name: data-redis-shared
+          creationPolicy: Owner
+          template:
+            mergePolicy: Merge
+            data:
+              url: "redis://:{{ .password | urlquery }}@redis-shared.shared.svc:6379/8"
+        dataFrom:
+        - extract:
+            key: data-redis-shared
+            conversionStrategy: Default
+            decodingStrategy: None
+            metadataPolicy: None
+    data-sure:
+      spec:
+        refreshInterval: 0m0s
+        target:
+          name: data-sure
+          creationPolicy: Owner
+        dataFrom:
+        - sourceRef:
+            generatorRef:
+              apiVersion: generators.external-secrets.io/v1alpha1
+              kind: Password
+              name: data-sure
+          rewrite:
+          - regexp:
+              source: "^password$"
+              target: SECRET_KEY_BASE
+
   teslamate:
     data-teslamate:
       provider: vault
