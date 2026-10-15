@@ -273,6 +273,22 @@ projects:
     target:
       namespace: sparkyfitness
 
+  - name: sure
+    sources:
+    - repo: values_repo
+      ref: values
+    - repoURL: https://we-promise.github.io/sure
+      targetRevision: 0.7.5
+      chart: sure
+      helm:
+        valueFiles:
+        - $values/helm/apps/sure/values.yaml
+    - repo: gitops_repo
+      path: manifests/apps/sure
+    target:
+      namespace: sure
+      create_namespace: true
+
   - name: teslamate
     sources:
     - repo: gitops_repo

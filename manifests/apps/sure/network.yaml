@@ -1,0 +1,29 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: sure
+  namespace: sure
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-home
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/whitelist-source-range: "10.8.0.0/24,92.247.208.224/32"
+  labels:
+    app: sure
+    env: home
+spec:
+  tls:
+  - hosts:
+    - money.iaminyourpc.xyz
+    secretName: tls-money-iaminyourpc-xyz
+  rules:
+  - host: money.iaminyourpc.xyz
+    http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: sure
+            port:
+              number: 80

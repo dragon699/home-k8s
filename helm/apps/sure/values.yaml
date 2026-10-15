@@ -1,0 +1,77 @@
+image:
+  repository: ghcr.io/we-promise/sure
+  tag: "0.7.5"
+
+rails:
+  existingSecret: data-sure
+  encryptionEnv:
+    enabled: false
+  settings:
+    SELF_HOSTED: "true"
+    ONBOARDING_STATE: "open"
+    AI_DEBUG_MODE: "false"
+  extraEnv:
+    APP_DOMAIN: money.iaminyourpc.xyz
+    PGSSLMODE: require
+  extraEnvVars:
+  - name: DATABASE_URL
+    valueFrom:
+      secretKeyRef:
+        name: data-postgresql-shared-sure
+        key: uri
+  - name: REDIS_URL
+    valueFrom:
+      secretKeyRef:
+        name: data-redis-shared
+        key: url
+
+cnpg:
+  enabled: false
+  cluster:
+    enabled: false
+
+redisOperator:
+  enabled: false
+  managed:
+    enabled: false
+
+redisSimple:
+  enabled: false
+
+ingress:
+  enabled: false
+
+web:
+  revisionHistoryLimit: 1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 64Mi
+    limits:
+      memory: 1Gi
+  extraVolumeMounts:
+  - name: storage
+    mountPath: /rails/storage
+  extraVolumes:
+  - name: storage
+    persistentVolumeClaim:
+      claimName: sure
+
+worker:
+  revisionHistoryLimit: 1
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      memory: 1Gi
+  extraVolumeMounts:
+  - name: storage
+    mountPath: /rails/storage
+  extraVolumes:
+  - name: storage
+    persistentVolumeClaim:
+      claimName: sure
+
+migrations:
+  strategy: job
