@@ -13,6 +13,7 @@ rails:
   extraEnv:
     APP_DOMAIN: money.iaminyourpc.xyz
     PGSSLMODE: require
+    MCP_USER_EMAIL: skullfighter6@gmail.com
   extraEnvVars:
   - name: DATABASE_URL
     valueFrom:
@@ -24,6 +25,11 @@ rails:
       secretKeyRef:
         name: data-redis-shared
         key: url
+  - name: MCP_API_TOKEN
+    valueFrom:
+      secretKeyRef:
+        name: data-sure-mcp
+        key: password
 
 cnpg:
   enabled: false
