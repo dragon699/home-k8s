@@ -75,3 +75,9 @@ users:
   databases:
   - authentik
   options: "SUPERUSER"
+
+- name: sure
+  secretName: data-postgresql-shared-sure
+  databases:
+  - sure
+  options: "SUPERUSER"

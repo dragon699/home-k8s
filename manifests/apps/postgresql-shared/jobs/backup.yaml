@@ -54,7 +54,7 @@ spec:
             - name: METRICS_CRONJOB
               value: "pg-backup"
             - name: DATABASES
-              value: "teslamate-teslamate,immich,monitoring-grafana,vikunja,sparkyfitness,dawarich,authentik"
+              value: "teslamate-teslamate,immich,monitoring-grafana,vikunja,sparkyfitness,dawarich,authentik,sure"
             - name: GCP_PROJECT
               value: "home-k8s"
             - name: GCP_BUCKET
