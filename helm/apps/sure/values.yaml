@@ -14,6 +14,16 @@ rails:
     APP_DOMAIN: money.iaminyourpc.xyz
     PGSSLMODE: require
     MCP_USER_EMAIL: skullfighter6@gmail.com
+    ASSISTANT_TYPE: external
+    EXTERNAL_ASSISTANT_URL: http://openclaw-main.openclaw.svc:18789/v1/chat/completions
+    EXTERNAL_ASSISTANT_MODEL: openclaw/money-tracker
+    EXTERNAL_ASSISTANT_ALLOWED_EMAILS: skullfighter6@gmail.com
+    LLM_CONTEXT_WINDOW: "180000"
+    LLM_MAX_ITEMS_PER_CALL: "100"
+    LLM_JSON_MODE: none
+    OPENAI_REQUEST_TIMEOUT: "120"
+    OPENAI_URI_BASE: http://openclaw-main.openclaw.svc:18789/v1
+    OPENAI_MODEL: openclaw/sure-worker
   extraEnvVars:
   - name: DATABASE_URL
     valueFrom:
@@ -30,6 +40,16 @@ rails:
       secretKeyRef:
         name: data-sure-mcp
         key: password
+  - name: EXTERNAL_ASSISTANT_TOKEN
+    valueFrom:
+      secretKeyRef:
+        name: auth-openclaw-sure
+        key: OPENCLAW_GATEWAY_TOKEN
+  - name: OPENAI_ACCESS_TOKEN
+    valueFrom:
+      secretKeyRef:
+        name: auth-openclaw-sure
+        key: OPENCLAW_GATEWAY_TOKEN
 
 cnpg:
   enabled: false
