@@ -264,6 +264,18 @@ secrets:
           - regexp:
               source: "^password$"
               target: SECRET_KEY_BASE
+    data-sure-mcp:
+      spec:
+        refreshInterval: 0m0s
+        target:
+          name: data-sure-mcp
+          creationPolicy: Owner
+        dataFrom:
+        - sourceRef:
+            generatorRef:
+              apiVersion: generators.external-secrets.io/v1alpha1
+              kind: Password
+              name: data-sure-mcp
 
   teslamate:
     data-teslamate:
