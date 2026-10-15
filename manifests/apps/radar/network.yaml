@@ -55,6 +55,9 @@ spec:
     - namespaceSelector:
         matchLabels:
           kubernetes.io/metadata.name: openclaw
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: glance
     ports:
     - protocol: TCP
       port: 9280
