@@ -227,6 +227,8 @@ secrets:
       provider: vault
 
   sure:
+    auth-brandfetch-sure:
+      provider: vault
     auth-openclaw-sure:
       provider: vault
     data-postgresql-shared-sure:
