@@ -51,23 +51,6 @@ projects:
       namespace: open-webui
   ###
 
-  # Disabled Actual app in Argo CD; preserve manifests and data for re-enable.
-#   - name: actual
-#     sources:
-#     - repo: gitops_repo
-#       path: manifests/apps/actual
-#     target:
-#       namespace: actual
-#       create_namespace: true
-
-  - name: actual-bedrock
-    sources:
-    - repo: gitops_repo
-      path: manifests/apps/actual-bedrock
-    target:
-      namespace: actual-bedrock
-      create_namespace: true
-
   - name: dawarich
     sources:
     - repo: gitops_repo
@@ -139,8 +122,6 @@ projects:
         releaseName: grafana-mcp
         valueFiles:
         - $values/helm/apps/mcp/grafana-mcp/values.yaml
-    - repo: gitops_repo
-      path: manifests/apps/mcp/actual-mcp
     - repo: gitops_repo
       path: manifests/apps/mcp/immich-mcp
     - repo: gitops_repo

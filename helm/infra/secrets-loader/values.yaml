@@ -29,10 +29,6 @@ secrets:
               kind: Password
               name: data-authentik-bootstrap
 
-  actual:
-    auth-actual-http-api:
-      provider: vault
-
   dawarich:
     auth-dawarich:
       provider: vault
@@ -110,8 +106,6 @@ secrets:
   #     provider: vault
 
   mcp:
-    auth-actual-mcp:
-      provider: vault
     auth-grafana-mcp:
       provider: vault
     auth-immich-mcp:
@@ -140,8 +134,6 @@ secrets:
       provider: shared
     data-postgresql-shared-dawarich:
       provider: shared
-    auth-actual-grafana:
-      provider: vault
     # Migrated to OIDC
     # auth-grafana-alloy:
     #   provider: vault
