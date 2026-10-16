@@ -30,9 +30,9 @@ vmstorage:
       memory: 2Gi
   persistence:
     enabled: true
-    size: 20Gi
+    size: 50Gi
   extraArgs:
-  - '--retentionPeriod=30d'
+  - '--retentionPeriod=14d'
   - '--search.maxUniqueTimeseries=300000'
   - '--storage.cacheSizeIndexDBDataBlocks=64MB'
   - '--storage.cacheSizeIndexDBTagFilters=32MB'
