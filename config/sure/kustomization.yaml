@@ -6,4 +6,4 @@ generatorOptions:
   disableNameSuffixHash: true
 configMapGenerator:
 - name: config-sure-initializers
-  files: ['initializers/zz_logtail_header_filters.rb']
+  files: ['initializers/zz_logtail_header_filters.rb', 'initializers/zz_openai_json_object_hint.rb']

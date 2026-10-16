@@ -87,6 +87,10 @@ web:
     mountPath: /rails/config/initializers/zz_logtail_header_filters.rb
     subPath: zz_logtail_header_filters.rb
     readOnly: true
+  - name: initializers
+    mountPath: /rails/config/initializers/zz_openai_json_object_hint.rb
+    subPath: zz_openai_json_object_hint.rb
+    readOnly: true
   extraVolumes:
   - name: storage
     persistentVolumeClaim:
@@ -106,10 +110,17 @@ worker:
   extraVolumeMounts:
   - name: storage
     mountPath: /rails/storage
+  - name: initializers
+    mountPath: /rails/config/initializers/zz_openai_json_object_hint.rb
+    subPath: zz_openai_json_object_hint.rb
+    readOnly: true
   extraVolumes:
   - name: storage
     persistentVolumeClaim:
       claimName: sure
+  - name: initializers
+    configMap:
+      name: config-sure-initializers
 
 migrations:
   strategy: job
