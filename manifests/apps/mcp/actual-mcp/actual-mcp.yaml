@@ -11,7 +11,7 @@ metadata:
     reloader.stakater.com/auto: "true"
 spec:
   revisionHistoryLimit: 1
-  replicas: 1
+  replicas: 0
   strategy:
     type: Recreate
   selector:
