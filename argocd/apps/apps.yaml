@@ -51,13 +51,14 @@ projects:
       namespace: open-webui
   ###
 
-  - name: actual
-    sources:
-    - repo: gitops_repo
-      path: manifests/apps/actual
-    target:
-      namespace: actual
-      create_namespace: true
+  # Disabled Actual app in Argo CD; preserve manifests and data for re-enable.
+#   - name: actual
+#     sources:
+#     - repo: gitops_repo
+#       path: manifests/apps/actual
+#     target:
+#       namespace: actual
+#       create_namespace: true
 
   - name: actual-bedrock
     sources:
