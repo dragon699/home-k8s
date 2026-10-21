@@ -121,8 +121,9 @@
       "enabled": false
     }
   ],
-  "prBodyTemplate": "Incoming upgrades for {{{replace '^renovate/(.+?)(-major|-digest)?$' '$1' branchName}}}:\n\n{{{table}}}\n\n{{#if hasReleaseNotes}}### Release notes\n\n{{{replace '^\\s*---\\s*### Release Notes\\s*' '' changelogs}}}{{/if}}",
+  "prBodyTemplate": "{{{header}}}\n\n{{{replace '^\\s*This PR contains the following updates:\\s*' '' table}}}\n\n{{#if changelogs}}### Release notes\n\n{{{replace '^\\s*---\\s*### Release Notes\\s*' '' changelogs}}}{{/if}}",
   "prBodyDefinitions": {
     "Type": "{{#if (containsString packageFile 'argocd/')}}chart{{else if (equals datasource 'docker')}}image{{else if (equals manager 'github-actions')}}action{{else}}{{datasource}}{{/if}}"
-  }
+  },
+  "prHeader": "Incoming upgrades for {{{replace '^renovate/(.+?)(-major|-digest)?$' '$1' branchName}}}:"
 }
