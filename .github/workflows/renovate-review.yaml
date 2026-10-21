@@ -1,5 +1,5 @@
 name: renovate-review
-run-name: Review of ${{ github.event.pull_request.title || format('PR #{0}', inputs.pr) }}
+run-name: "Review of ${{ github.event.pull_request.title || format('PR #{0}', inputs.pr) }}"
 
 on:
   pull_request:
