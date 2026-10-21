@@ -69,7 +69,7 @@ projects:
         valueFiles:
         - $values/helm/monitoring/metric-providers/prometheus-node-exporter/values.yaml
     - repoURL: oci://registry-1.docker.io/bitnamicharts/kube-state-metrics
-      targetRevision: '*'
+      targetRevision: 5.1.0
       chart: kube-state-metrics
       helm:
         releaseName: kube-state-metrics
