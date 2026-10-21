@@ -70,7 +70,7 @@ jobs:
         PROMPT="$(printf 'Review this Renovate pull request for dragon699/home-k8s.\n\nTitle: %s\nApp: %s\n\n## Renovate description (update table and release notes)\n%s\n\n## Diff\n```diff\n%s\n```\n\n## Current values files of the app\n```yaml\n%s\n```\n' \
           "$TITLE" "$APP" "$(printf '%s' "$BODY" | head -c 40000)" "$DIFF" "${VALUES:-none}")"
 
-        REQUEST="$(jq -n --arg prompt "$PROMPT" --arg user "renovate-pr-${PR}" \
+        REQUEST="$(jq -n --arg prompt "$PROMPT" --arg user "renovate-pr-${PR}-${GITHUB_RUN_ID}" \
           '{model: "openclaw/renovate-reviewer", stream: false, user: $user, messages: [{role: "user", content: $prompt}]}')"
 
         REVIEW="$(curl -sS --fail-with-body -m 1500 \
