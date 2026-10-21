@@ -18,6 +18,8 @@ env:
   RENOVATE_ONBOARDING: "false"
   RENOVATE_REQUIRE_CONFIG: ignored
   LOG_LEVEL: info
+  RENOVATE_GIT_AUTHOR: Renovate Bot <60757051+dragon699@users.noreply.github.com>
+  NODE_OPTIONS: --max-old-space-size=2560
 
 envList:
 - name: RENOVATE_TOKEN
@@ -42,4 +44,4 @@ resources:
     memory: 256Mi
   limits:
     cpu: 2
-    memory: 2Gi
+    memory: 3Gi
