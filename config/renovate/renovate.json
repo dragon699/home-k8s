@@ -9,7 +9,7 @@
   "prHourlyLimit": 0,
   "branchTopic": "{{#if (containsString packageFile 'argocd/')}}{{depType}}{{else if (containsString packageFile '.github/')}}github{{else}}{{{replace '^[^/]+/[^/]+/([^/]+)/.*$' '$1' packageFile}}}{{/if}}{{#if isMajor}}-major{{/if}}",
   "commitMessagePrefix": "{{#if (containsString packageFile 'argocd/')}}{{depType}}{{else if (containsString packageFile '.github/')}}github{{else}}{{{replace '^[^/]+/[^/]+/([^/]+)/.*$' '$1' packageFile}}}{{/if}}:",
-  "commitMessageAction": "Update",
+  "commitMessageAction": "Upgrade",
   "kubernetes": {
     "managerFilePatterns": [
       "/^manifests/.+\\.ya?ml$/"
@@ -69,20 +69,19 @@
   ],
   "packageRules": [
     {
-      "description": "Titles read '<app>: Update to v<version>' for every datasource",
+      "description": "Titles read '<app>: Upgrade to v<version>'; digests '<app>: Upgrade <image> digest to <digest>'",
       "matchDepNames": [
         "*"
       ],
-      "commitMessageTopic": "",
-      "commitMessageExtra": "to {{#if (equals updateType 'digest')}}{{{newDigestShort}}}{{else}}v{{{replace '^v' '' newVersion}}}{{/if}}"
+      "commitMessageTopic": "{{#if (equals updateType 'digest')}}{{{replace '^.*/' '' depName}}} digest{{else}}to v{{{replace '^v' '' newVersion}}}{{/if}}",
+      "commitMessageExtra": "{{#if (equals updateType 'digest')}}to {{{newDigestShort}}}{{/if}}"
     },
     {
-      "description": "Digest updates join their app's PR",
+      "description": "Digest updates get their own '<app>-digest' PR so they never hide the app's version in its title",
       "matchUpdateTypes": [
         "digest"
       ],
-      "branchTopic": "{{#if (containsString packageFile 'argocd/')}}{{depType}}{{else if (containsString packageFile '.github/')}}github{{else}}{{{replace '^[^/]+/[^/]+/([^/]+)/.*$' '$1' packageFile}}}{{/if}}",
-      "commitMessageTopic": ""
+      "branchTopic": "{{#if (containsString packageFile 'argocd/')}}{{depType}}{{else if (containsString packageFile '.github/')}}github{{else}}{{{replace '^[^/]+/[^/]+/([^/]+)/.*$' '$1' packageFile}}}{{/if}}-digest"
     },
     {
       "description": "Alloy updates restart Beyla",
@@ -122,7 +121,7 @@
       "enabled": false
     }
   ],
-  "prBodyTemplate": "{{{header}}}{{{table}}}{{{warnings}}}{{{notes}}}{{{changelogs}}}\n\n---\n\n📅 **Schedule**: Saturdays at 03:00 (Europe/Sofia)\n\n🚦 **Automerge**: Disabled\n\n{{{controls}}}",
+  "prBodyTemplate": "Incoming upgrades for {{#if (containsString packageFile 'argocd/')}}{{depType}}{{else if (containsString packageFile '.github/')}}github{{else}}{{{replace '^[^/]+/[^/]+/([^/]+)/.*$' '$1' packageFile}}}{{/if}}:\n\n{{{table}}}\n\n{{#if hasReleaseNotes}}### Release notes\n\n{{{replace '^\\s*---\\s*### Release Notes\\s*' '' changelogs}}}{{/if}}",
   "prBodyDefinitions": {
     "Type": "{{#if (containsString packageFile 'argocd/')}}chart{{else if (equals datasource 'docker')}}image{{else if (equals manager 'github-actions')}}action{{else}}{{datasource}}{{/if}}"
   }

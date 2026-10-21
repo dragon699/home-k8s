@@ -1,23 +1,28 @@
 name: renovate-review
-run-name: Review of ${{ github.event.pull_request.title }}
+run-name: Review of ${{ github.event.pull_request.title || format('PR #{0}', inputs.pr) }}
 
 on:
   pull_request:
     types: [opened, reopened, synchronize]
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      pr:
+        description: Pull request number to review
+        required: true
 
 permissions:
   contents: read
   pull-requests: write
 
 concurrency:
-  group: renovate-review-${{ github.event.pull_request.number }}
+  group: renovate-review-${{ github.event.pull_request.number || inputs.pr }}
   cancel-in-progress: true
 
 jobs:
 
   Review:
-    if: startsWith(github.head_ref, 'renovate/') && github.event.pull_request.head.repo.full_name == github.repository
+    if: github.event_name == 'workflow_dispatch' || (startsWith(github.head_ref, 'renovate/') && github.event.pull_request.head.repo.full_name == github.repository)
     runs-on: gha-runner-home-k8s
     timeout-minutes: 30
 
@@ -27,11 +32,11 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: Ask the Renovate Reviewer agent
+    - name: Request review
       env:
         GH_TOKEN: ${{ github.token }}
         REPO: ${{ github.repository }}
-        PR: ${{ github.event.pull_request.number }}
+        PR: ${{ github.event.pull_request.number || inputs.pr }}
         TITLE: ${{ github.event.pull_request.title }}
         BODY: ${{ github.event.pull_request.body }}
         BASE: ${{ github.event.pull_request.base.sha }}
@@ -39,6 +44,20 @@ jobs:
         BRANCH: ${{ github.head_ref }}
       run: |
         set -euo pipefail
+
+        if [[ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" ]]; then
+          PR_JSON="$(curl -sS --fail-with-body -H "Authorization: Bearer ${GH_TOKEN}" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/${REPO}/pulls/${PR}")"
+          if [[ "$(jq -r '.head.repo.full_name' <<< "$PR_JSON")" != "${REPO}" ]] || [[ "$(jq -r '.head.ref' <<< "$PR_JSON")" != renovate/* ]]; then
+            echo "PR #${PR} is not a Renovate PR from this repository"
+            exit 1
+          fi
+          TITLE="$(jq -r '.title' <<< "$PR_JSON")"
+          BODY="$(jq -r '.body // ""' <<< "$PR_JSON")"
+          BASE="$(jq -r '.base.sha' <<< "$PR_JSON")"
+          HEAD="$(jq -r '.head.sha' <<< "$PR_JSON")"
+          BRANCH="$(jq -r '.head.ref' <<< "$PR_JSON")"
+          git fetch -q origin "${HEAD}"
+        fi
 
         APP="${BRANCH#renovate/}"
         APP="${APP%-major}"
@@ -64,7 +83,7 @@ jobs:
         fi
 
         MARKER="<!-- renovate-review -->"
-        COMMENT="$(jq -n --arg body "${MARKER}"$'\n'"## 🔎 Renovate Reviewer"$'\n\n'"${REVIEW}"$'\n\n'"<sub>Reviewed ${HEAD:0:7} on $(TZ=Europe/Sofia date +'%d/%m at %H:%M')</sub>" '{body: $body}')"
+        COMMENT="$(jq -n --arg body "${MARKER}"$'\n'"${REVIEW}"$'\n\n'"<sub>Reviewed ${HEAD:0:7} on $(TZ=Europe/Sofia date +'%d/%m at %H:%M')</sub>" '{body: $body}')"
 
         API="https://api.github.com/repos/${REPO}/issues"
         gh_api() { curl -sS --fail-with-body -H "Authorization: Bearer ${GH_TOKEN}" -H "Accept: application/vnd.github+json" "$@"; }
