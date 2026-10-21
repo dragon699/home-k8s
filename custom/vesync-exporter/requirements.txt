@@ -1,0 +1,2 @@
+pyvesync==3.4.2
+prometheus-client==0.26.0

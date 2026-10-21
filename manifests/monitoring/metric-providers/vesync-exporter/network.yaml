@@ -1,0 +1,20 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vesync-exporter
+  namespace: monitoring
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/path: "/metrics"
+    prometheus.io/port: "8000"
+  labels:
+    env: home
+spec:
+  type: ClusterIP
+  ports:
+  - name: vesync-exporter
+    port: 8000
+    targetPort: metrics
+  selector:
+    app: vesync-exporter

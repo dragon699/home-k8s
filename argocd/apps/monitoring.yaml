@@ -79,6 +79,8 @@ projects:
       path: manifests/monitoring/metric-providers/pihole-exporter
     - repo: gitops_repo
       path: manifests/monitoring/metric-providers/jellyfin-exporter
+    - repo: gitops_repo
+      path: manifests/monitoring/metric-providers/vesync-exporter
     target:
       namespace: monitoring
 

@@ -151,6 +151,8 @@ secrets:
       provider: vault
     auth-pihole:
       provider: vault
+    auth-vesync:
+      provider: vault
     auth-minio:
       provider: vault
     auth-openclaw-grafana:
