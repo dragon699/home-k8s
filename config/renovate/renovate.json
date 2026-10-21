@@ -8,7 +8,7 @@
   ],
   "prHourlyLimit": 0,
   "branchTopic": "{{#if (containsString packageFile 'argocd/')}}{{depType}}{{else if (containsString packageFile '.github/')}}github{{else}}{{{replace '^[^/]+/[^/]+/([^/]+)/.*$' '$1' packageFile}}}{{/if}}{{#if isMajor}}-major{{/if}}",
-  "commitMessagePrefix": "{{#if (containsString packageFile 'argocd/')}}chart{{else if (equals datasource 'docker')}}image{{else if (equals manager 'github-actions')}}action{{else}}{{datasource}}{{/if}}/{{#if (containsString packageFile 'argocd/')}}{{depType}}{{else if (containsString packageFile '.github/')}}github{{else}}{{{replace '^[^/]+/[^/]+/([^/]+)/.*$' '$1' packageFile}}}{{/if}}:",
+  "commitMessagePrefix": "{{#if (containsString packageFile 'argocd/')}}{{depType}}{{else if (containsString packageFile '.github/')}}github{{else}}{{{replace '^[^/]+/[^/]+/([^/]+)/.*$' '$1' packageFile}}}{{/if}}:",
   "commitMessageAction": "Update",
   "kubernetes": {
     "managerFilePatterns": [
@@ -69,12 +69,12 @@
   ],
   "packageRules": [
     {
-      "description": "Commit and PR titles read '<kind>/<app>: Update to <version>' for every datasource",
+      "description": "Titles read '<app>: Update to v<version>' for every datasource",
       "matchDepNames": [
         "*"
       ],
       "commitMessageTopic": "",
-      "commitMessageExtra": "to {{{newVersion}}}"
+      "commitMessageExtra": "to {{#if (equals updateType 'digest')}}{{{newDigestShort}}}{{else}}v{{{replace '^v' '' newVersion}}}{{/if}}"
     },
     {
       "description": "Digest updates join their app's PR",
@@ -121,5 +121,9 @@
       ],
       "enabled": false
     }
-  ]
+  ],
+  "prBodyTemplate": "{{{header}}}{{{table}}}{{{warnings}}}{{{notes}}}{{{changelogs}}}\n\n---\n\n📅 **Schedule**: Saturdays at 03:00 (Europe/Sofia)\n\n🚦 **Automerge**: Disabled\n\n{{{controls}}}",
+  "prBodyDefinitions": {
+    "Type": "{{#if (containsString packageFile 'argocd/')}}chart{{else if (equals datasource 'docker')}}image{{else if (equals manager 'github-actions')}}action{{else}}{{datasource}}{{/if}}"
+  }
 }

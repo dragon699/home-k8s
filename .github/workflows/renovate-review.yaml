@@ -1,0 +1,79 @@
+name: renovate-review
+run-name: Review of ${{ github.event.pull_request.title }}
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches: [main]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: renovate-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+
+  Review:
+    if: startsWith(github.head_ref, 'renovate/') && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: gha-runner-home-k8s
+    timeout-minutes: 30
+
+    steps:
+    - name: Fetch code
+      uses: actions/checkout@v6
+      with:
+        fetch-depth: 0
+
+    - name: Ask the Renovate Reviewer agent
+      env:
+        GH_TOKEN: ${{ github.token }}
+        REPO: ${{ github.repository }}
+        PR: ${{ github.event.pull_request.number }}
+        TITLE: ${{ github.event.pull_request.title }}
+        BODY: ${{ github.event.pull_request.body }}
+        BASE: ${{ github.event.pull_request.base.sha }}
+        HEAD: ${{ github.event.pull_request.head.sha }}
+        BRANCH: ${{ github.head_ref }}
+      run: |
+        set -euo pipefail
+
+        APP="${BRANCH#renovate/}"
+        APP="${APP%-major}"
+        DIFF="$(git diff "$BASE" "$HEAD" | head -c 20000)"
+        VALUES=""
+        for FILE in $(git ls-tree -r --name-only "$HEAD" -- helm | grep -E "^helm/[^/]+/${APP}/[^/]+\.ya?ml$" || true); do
+          VALUES+="--- ${FILE}"$'\n'"$(git show "${HEAD}:${FILE}" | head -c 15000)"$'\n'
+        done
+
+        PROMPT="$(printf 'Review this Renovate pull request for dragon699/home-k8s.\n\nTitle: %s\nApp: %s\n\n## Renovate description (update table and release notes)\n%s\n\n## Diff\n```diff\n%s\n```\n\n## Current values files of the app\n```yaml\n%s\n```\n' \
+          "$TITLE" "$APP" "$(printf '%s' "$BODY" | head -c 40000)" "$DIFF" "${VALUES:-none}")"
+
+        REQUEST="$(jq -n --arg prompt "$PROMPT" --arg user "renovate-pr-${PR}" \
+          '{model: "openclaw/renovate-reviewer", stream: false, user: $user, messages: [{role: "user", content: $prompt}]}')"
+
+        REVIEW="$(curl -sS --fail-with-body -m 1500 \
+          -H "Authorization: Bearer ${OPENCLAW_GATEWAY_TOKEN}" -H "Content-Type: application/json" \
+          "${OPENCLAW_URL}/v1/chat/completions" -d "$REQUEST" | jq -r '.choices[0].message.content // empty')"
+
+        if [[ -z "$REVIEW" ]]; then
+          echo "The agent returned no review"
+          exit 1
+        fi
+
+        MARKER="<!-- renovate-review -->"
+        COMMENT="$(jq -n --arg body "${MARKER}"$'\n'"## 🔎 Renovate Reviewer"$'\n\n'"${REVIEW}"$'\n\n'"<sub>Reviewed ${HEAD:0:7} on $(TZ=Europe/Sofia date +'%d/%m at %H:%M')</sub>" '{body: $body}')"
+
+        API="https://api.github.com/repos/${REPO}/issues"
+        gh_api() { curl -sS --fail-with-body -H "Authorization: Bearer ${GH_TOKEN}" -H "Accept: application/vnd.github+json" "$@"; }
+
+        EXISTING="$(gh_api "${API}/${PR}/comments?per_page=100" | jq -r --arg m "$MARKER" '[.[] | select(.body | startswith($m))][0].id // empty')"
+        if [[ -n "$EXISTING" ]]; then
+          gh_api -X PATCH "${API}/comments/${EXISTING}" -d "$COMMENT" >/dev/null
+          echo "Updated review comment ${EXISTING}"
+        else
+          gh_api -X POST "${API}/${PR}/comments" -d "$COMMENT" >/dev/null
+          echo "Posted review comment"
+        fi

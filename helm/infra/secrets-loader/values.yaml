@@ -87,6 +87,8 @@ secrets:
   github:
     data-github-actions:
       provider: vault
+    auth-openclaw-github:
+      provider: vault
 
   glance:
     data-glance:

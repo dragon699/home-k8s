@@ -14,6 +14,10 @@ template:
       env:
       - name: DOCKER_HOST
         value: tcp://localhost:2375
+      envFrom:
+      - secretRef:
+          name: auth-openclaw-github
+          optional: true
       volumeMounts:
       - name: work
         mountPath: /home/runner/_work
