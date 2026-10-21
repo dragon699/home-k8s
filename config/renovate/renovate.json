@@ -7,8 +7,8 @@
     "group:monorepos"
   ],
   "prHourlyLimit": 0,
-  "branchTopic": "{{#if (containsString packageFile 'argocd/')}}{{depType}}{{else if (containsString packageFile '.github/')}}github{{else}}{{{replace '^[^/]+/[^/]+/([^/]+)/.*$' '$1' packageFile}}}{{/if}}{{#if isMajor}}-major{{/if}}",
-  "commitMessagePrefix": "{{#if (containsString packageFile 'argocd/')}}{{depType}}{{else if (containsString packageFile '.github/')}}github{{else}}{{{replace '^[^/]+/[^/]+/([^/]+)/.*$' '$1' packageFile}}}{{/if}}:",
+  "branchTopic": "{{#if (containsString packageFile 'argocd/')}}{{depType}}{{else if (containsString packageFile '.github/')}}github{{else}}{{{replace '^(?:(?:helm|manifests)/[^/]+|[^/]+)/([^/]+)/.*$' '$1' packageFile}}}{{/if}}{{#if isMajor}}-major{{/if}}",
+  "commitMessagePrefix": "{{#if (containsString packageFile 'argocd/')}}{{depType}}{{else if (containsString packageFile '.github/')}}github{{else}}{{{replace '^(?:(?:helm|manifests)/[^/]+|[^/]+)/([^/]+)/.*$' '$1' packageFile}}}{{/if}}:",
   "commitMessageAction": "Upgrade",
   "kubernetes": {
     "managerFilePatterns": [
@@ -81,7 +81,7 @@
       "matchUpdateTypes": [
         "digest"
       ],
-      "branchTopic": "{{#if (containsString packageFile 'argocd/')}}{{depType}}{{else if (containsString packageFile '.github/')}}github{{else}}{{{replace '^[^/]+/[^/]+/([^/]+)/.*$' '$1' packageFile}}}{{/if}}-digest"
+      "branchTopic": "{{#if (containsString packageFile 'argocd/')}}{{depType}}{{else if (containsString packageFile '.github/')}}github{{else}}{{{replace '^(?:(?:helm|manifests)/[^/]+|[^/]+)/([^/]+)/.*$' '$1' packageFile}}}{{/if}}-digest"
     },
     {
       "description": "Alloy updates restart Beyla",
