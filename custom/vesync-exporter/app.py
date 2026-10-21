@@ -39,7 +39,7 @@ STATE_GAUGES = {
     'humidity': ('vesync_purifier_humidity_percent', 'Relative humidity'),
     'temperature': ('vesync_purifier_temperature', 'Temperature as reported by the device'),
     'filter_life': ('vesync_purifier_filter_life_percent', 'Remaining filter life'),
-    'fan_level': ('vesync_purifier_fan_level', 'Current fan level'),
+    'fan_level': ('vesync_purifier_fan_level', 'Fan level as reported by the cloud, only the live speed in manual mode'),
     'fan_set_level': ('vesync_purifier_fan_set_level', 'Configured manual fan level'),
     'auto_room_size': ('vesync_purifier_auto_room_size_sqft', 'Room size used by auto mode in sq ft'),
     'nightlight_brightness': ('vesync_purifier_nightlight_brightness_percent', 'Night light brightness'),
@@ -57,7 +57,7 @@ STATE_BOOLS = {
 }
 
 RAW_GAUGES = {
-    'device_error_code': ('vesync_purifier_error_code', 'Device error code reported by the cloud, 0 means no error'),
+    'device_error_code': ('vesync_purifier_error_code', 'Device error code reported by the cloud, Core 400S units report 11802000 while working normally'),
     'extension.timer_remain': ('vesync_purifier_timer_remaining_seconds', 'Seconds left on the auto-off timer'),
     'extension.schedule_count': ('vesync_purifier_schedules', 'Number of configured schedules'),
 }
