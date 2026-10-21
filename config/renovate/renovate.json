@@ -121,7 +121,7 @@
       "enabled": false
     }
   ],
-  "prBodyTemplate": "Incoming upgrades for {{#if (containsString packageFile 'argocd/')}}{{depType}}{{else if (containsString packageFile '.github/')}}github{{else}}{{{replace '^[^/]+/[^/]+/([^/]+)/.*$' '$1' packageFile}}}{{/if}}:\n\n{{{table}}}\n\n{{#if hasReleaseNotes}}### Release notes\n\n{{{replace '^\\s*---\\s*### Release Notes\\s*' '' changelogs}}}{{/if}}",
+  "prBodyTemplate": "Incoming upgrades for {{{replace '^renovate/(.+?)(-major|-digest)?$' '$1' branchName}}}:\n\n{{{table}}}\n\n{{#if hasReleaseNotes}}### Release notes\n\n{{{replace '^\\s*---\\s*### Release Notes\\s*' '' changelogs}}}{{/if}}",
   "prBodyDefinitions": {
     "Type": "{{#if (containsString packageFile 'argocd/')}}chart{{else if (equals datasource 'docker')}}image{{else if (equals manager 'github-actions')}}action{{else}}{{datasource}}{{/if}}"
   }
