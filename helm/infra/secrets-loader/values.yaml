@@ -214,6 +214,10 @@ secrets:
               kind: Password
               name: data-redis-shared
 
+  renovate:
+    auth-github-renovate:
+      provider: vault
+
   sparkyfitness:
     data-postgresql-shared-sparkyfitness:
       provider: shared

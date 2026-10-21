@@ -1,0 +1,45 @@
+cronjob:
+  schedule: "0 3 * * 6"
+  timeZone: Europe/Sofia
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  activeDeadlineSeconds: 3600
+  jobBackoffLimit: "0"
+  preCommand: |
+    export RENOVATE_HOST_RULES="[{\"matchHost\":\"ghcr.io\",\"username\":\"dragon699\",\"password\":\"${RENOVATE_TOKEN}\",\"timeout\":60000}]"
+
+renovate:
+  existingConfigFile: /config/config.json
+
+env:
+  RENOVATE_PLATFORM: github
+  RENOVATE_REPOSITORIES: dragon699/home-k8s
+  RENOVATE_ONBOARDING: "false"
+  RENOVATE_REQUIRE_CONFIG: ignored
+  LOG_LEVEL: info
+
+envList:
+- name: RENOVATE_TOKEN
+  valueFrom:
+    secretKeyRef:
+      name: auth-github-renovate
+      key: GITHUB_TOKEN
+
+extraVolumes:
+- name: config
+  configMap:
+    name: config-renovate
+
+extraVolumeMounts:
+- name: config
+  mountPath: /config
+  readOnly: true
+
+resources:
+  requests:
+    cpu: 0.1
+    memory: 256Mi
+  limits:
+    cpu: 2
+    memory: 2Gi

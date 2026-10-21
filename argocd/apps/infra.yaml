@@ -159,6 +159,20 @@ projects:
       jsonPointers:
       - /spec/conversion/webhook/clientConfig/caBundle
 
+  - name: renovate
+    sources:
+    - repo: values_repo
+      ref: values
+    - repoURL: https://docs.renovatebot.com/helm-charts
+      targetRevision: 46.376.0
+      chart: renovate
+      helm:
+        valueFiles:
+        - $values/helm/infra/renovate/values.yaml
+    target:
+      namespace: renovate
+      create_namespace: true
+
   - name: vault
     sources:
     - repo: values_repo

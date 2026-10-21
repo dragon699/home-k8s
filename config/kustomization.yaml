@@ -12,3 +12,4 @@ resources:
 - fetch-api
 - fetch-ui
 - sure
+- renovate
