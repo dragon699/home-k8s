@@ -21,7 +21,7 @@ projects:
     - repo: values_repo
       ref: values
     - repoURL: https://grafana.github.io/helm-charts
-      targetRevision: 1.8.0
+      targetRevision: 1.14.1
       chart: alloy
       helm:
         valueFiles:
