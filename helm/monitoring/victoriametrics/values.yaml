@@ -11,6 +11,7 @@ server:
     envflag.prefix: VM_
     loggerFormat: json
     search.maxUniqueTimeseries: 300000
+    dedup.minScrapeInterval: 1ms
     storage.cacheSizeIndexDBDataBlocks: 64MB
     storage.cacheSizeIndexDBTagFilters: 32MB
     maxLabelsPerTimeseries: 200
