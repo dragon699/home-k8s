@@ -46,6 +46,9 @@ envFromSecrets:
 - name: data-postgresql-shared-dawarich
   prefix: pg-dawarich-
   optional: false
+- name: data-postgresql-shared-sure
+  prefix: pg-sure-
+  optional: false
 - name: auth-openclaw-grafana
   prefix: oc-grafana-
   optional: false

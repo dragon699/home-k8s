@@ -115,6 +115,27 @@ datasources:
   secureJsonData:
     password: ${pg-dawarich-password}
 
+- name: Sure
+  type: grafana-postgresql-datasource
+  uid: internal-sure
+  url: ${pg-sure-pgbouncer-host}:${pg-sure-pgbouncer-port}
+  access: proxy
+  isDefault: false
+  editable: false
+  orgId: 1
+  basicAuth: false
+  user: ${pg-sure-user}
+  jsonData:
+    database: ${pg-sure-dbname}
+    connMaxLifetime: 14400
+    maxIdleConns: 500
+    maxIdleConnsAuto: true
+    maxOpenConns: 500
+    postgresVersion: 1500
+    sslmode: disable
+  secureJsonData:
+    password: ${pg-sure-password}
+
 - name: Immich
   type: yesoreyeram-infinity-datasource
   uid: internal-immich
