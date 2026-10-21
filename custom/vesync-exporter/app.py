@@ -148,7 +148,7 @@ def state_samples(device, raw):
     base = {'device': device.device_name}
     samples = []
 
-    def add(name, doc, value, **extra):
+    def add(name, doc, value, /, **extra):
         samples.append((name, doc, {**base, **extra}, float(value)))
 
     state = device.state
