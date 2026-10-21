@@ -10,8 +10,6 @@
   "branchTopic": "{{#if (containsString packageFile 'argocd/')}}{{depType}}{{else if (containsString packageFile '.github/')}}github{{else}}{{{replace '^[^/]+/[^/]+/([^/]+)/.*$' '$1' packageFile}}}{{/if}}{{#if isMajor}}-major{{/if}}",
   "commitMessagePrefix": "{{#if (containsString packageFile 'argocd/')}}chart{{else if (equals datasource 'docker')}}image{{else if (equals manager 'github-actions')}}action{{else}}{{datasource}}{{/if}}/{{#if (containsString packageFile 'argocd/')}}{{depType}}{{else if (containsString packageFile '.github/')}}github{{else}}{{{replace '^[^/]+/[^/]+/([^/]+)/.*$' '$1' packageFile}}}{{/if}}:",
   "commitMessageAction": "Update",
-  "commitMessageTopic": "",
-  "commitMessageExtra": "to {{{newVersion}}}",
   "kubernetes": {
     "managerFilePatterns": [
       "/^manifests/.+\\.ya?ml$/"
@@ -70,6 +68,14 @@
     }
   ],
   "packageRules": [
+    {
+      "description": "Commit and PR titles read '<kind>/<app>: Update to <version>' for every datasource",
+      "matchDepNames": [
+        "*"
+      ],
+      "commitMessageTopic": "",
+      "commitMessageExtra": "to {{{newVersion}}}"
+    },
     {
       "description": "Digest updates join their app's PR",
       "matchUpdateTypes": [
