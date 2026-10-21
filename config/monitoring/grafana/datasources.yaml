@@ -35,7 +35,7 @@ datasources:
 - name: Victoriametrics
   type: prometheus
   uid: internal-victoriametrics
-  url: http://victoriametrics-vmselect.monitoring.svc:8481/select/0/prometheus
+  url: http://victoriametrics.monitoring.svc:8428
   access: proxy
   isDefault: false
   editable: false
@@ -46,7 +46,7 @@ datasources:
 - name: Tempo
   type: tempo
   uid: internal-tempo
-  url: http://grafana-tempo-query-frontend.monitoring.svc:3200
+  url: http://grafana-tempo.monitoring.svc:3200
   access: proxy
   isDefault: false
   editable: false

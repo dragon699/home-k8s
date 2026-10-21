@@ -48,9 +48,9 @@ projects:
     sources:
     - repo: values_repo
       ref: values
-    - repoURL: https://grafana.github.io/helm-charts
-      targetRevision: 1.61.3
-      chart: tempo-distributed
+    - repoURL: https://grafana-community.github.io/helm-charts
+      targetRevision: 3.2.0
+      chart: tempo
       helm:
         valueFiles:
         - $values/helm/monitoring/grafana-tempo/values.yaml
@@ -103,9 +103,9 @@ projects:
     sources:
     - repo: values_repo
       ref: values
-    - repoURL: oci://registry-1.docker.io/bitnamicharts/victoriametrics
-      targetRevision: 0.x.x
-      chart: victoriametrics
+    - repoURL: https://victoriametrics.github.io/helm-charts
+      targetRevision: 0.49.0
+      chart: victoria-metrics-single
       helm:
         valueFiles:
         - $values/helm/monitoring/victoriametrics/values.yaml

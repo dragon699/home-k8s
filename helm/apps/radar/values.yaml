@@ -35,7 +35,7 @@ argocd:
   existingSecretKey: token
 
 traffic:
-  prometheusUrl: http://victoriametrics-vmselect.monitoring.svc:8481/select/0/prometheus
+  prometheusUrl: http://victoriametrics.monitoring.svc:8428
   # Beyla's own metrics (network flows) use job="beyla"; its app (L7) metrics use job="<ns>/<svc>"
   beylaJobSelector: 'job=~"beyla|.+/.+"'
 

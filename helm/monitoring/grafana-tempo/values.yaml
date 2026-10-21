@@ -1,48 +1,135 @@
-overrides:
-  defaults:
-    ingestion:
-      rate_limit_bytes: 32000000
-      burst_size_bytes: 48000000
-      max_traces_per_user: 50000
-    metrics_generator:
-      processors:
-      - local-blocks
-      - service-graphs
-      - span-metrics
+revisionHistoryLimit: 1
 
-traces:
-  otlp:
-    http:
-      enabled: true
-    grpc:
-      enabled: true
-  zipkin:
-    enabled: false
-  jaeger:
-    thriftHttp:
-      enabled: false
-  opencensus:
-    enabled: false
+tempo:
+  tag: 3.1.1
 
-storage:
-  trace:
-    backend: s3
-    s3:
-      access_key: "${MINIO_SERVER_ROOT_USER}"
-      secret_key: "${MINIO_SERVER_ROOT_PASSWORD}"
-      endpoint: "${MINIO_SERVER_HOST}:${MINIO_SERVICE_PORT}"
-      bucket: tempo
-      insecure: true
+  resources:
+    requests:
+      cpu: 0.1
+      memory: 768Mi
+    limits:
+      cpu: 4
+      memory: 3Gi
 
-metricsGenerator:
-  enabled: true
-  config:
+  extraArgs:
+    config.expand-env: true
+  extraEnv:
+  - name: GOMEMLIMIT
+    value: 2304MiB
+  extraEnvFrom:
+  - secretRef:
+      name: auth-minio
+  extraVolumeMounts:
+  - name: data
+    mountPath: /var/tempo
+
+  retention: 168h
+
+  receivers:
+    jaeger:
+      protocols:
+        grpc: null
+        thrift_binary: null
+        thrift_compact: null
+        thrift_http: null
+    otlp:
+      protocols:
+        grpc:
+          endpoint: 0.0.0.0:4317
+        http:
+          endpoint: 0.0.0.0:4318
+
+  server:
+    http_listen_port: 3200
+    http_server_read_timeout: 30s
+    http_server_write_timeout: 30s
+    grpc_server_max_recv_msg_size: 4194304
+    grpc_server_max_send_msg_size: 4194304
+    log_format: logfmt
+    log_level: info
+
+  storage:
+    trace:
+      backend: s3
+      s3:
+        access_key: "${MINIO_SERVER_ROOT_USER}"
+        secret_key: "${MINIO_SERVER_ROOT_PASSWORD}"
+        endpoint: "${MINIO_SERVER_HOST}:${MINIO_SERVICE_PORT}"
+        bucket: tempo
+        insecure: true
+      wal:
+        path: /var/tempo/wal
+      blocklist_poll: 5m
+      pool:
+        max_workers: 400
+        queue_depth: 20000
+      search:
+        prefetch_trace_count: 1000
+
+  liveStore:
+    max_block_duration: 5m
+    max_block_bytes: 100000000
+
+  backendScheduler:
+    provider:
+      compaction:
+        compaction:
+          compaction_window: 1h
+          compaction_cycle: 30s
+          compacted_block_retention: 1h
+          retention_concurrency: 10
+          max_time_per_tenant: 10m
+          max_compaction_objects: 1000000
+          max_block_bytes: 1073741824
+
+  querier:
+    max_concurrent_queries: 20
+    search:
+      query_timeout: 30s
+    trace_by_id:
+      query_timeout: 10s
+
+  queryFrontend:
+    max_outstanding_per_tenant: 2000
+    max_retries: 2
+    search:
+      concurrent_jobs: 1000
+      max_spans_per_span_set: 100
+      target_bytes_per_job: 104857600
+    metrics:
+      concurrent_jobs: 1000
+      interval: 5m
+      max_duration: 3h
+      target_bytes_per_job: 104857600
+
+  overrides:
+    defaults:
+      ingestion:
+        rate_limit_bytes: 32000000
+        burst_size_bytes: 48000000
+        max_traces_per_user: 50000
+      metrics_generator:
+        processors:
+        - service-graphs
+        - span-metrics
+
+  metricsGenerator:
+    enabled: true
     registry:
+      collection_interval: 15s
+      stale_duration: 15m
       external_labels:
         source: tempo
     processor:
+      service_graphs:
+        dimensions: []
+        max_items: 10000
+        wait: 10s
+        workers: 10
+        histogram_buckets: [0.1, 0.2, 0.4, 0.8, 1.6, 3.2, 6.4, 12.8]
       span_metrics:
         enable_target_info: true
+        histogram_buckets: [0.002, 0.004, 0.008, 0.016, 0.032, 0.064, 0.128, 0.256, 0.512, 1.02, 2.05, 4.1]
         dimensions:
         - resource.service.name
         - resource.service.namespace
@@ -56,107 +143,11 @@ metricsGenerator:
         - http.request.method
         - http.response.status_code
     storage:
+      path: /var/tempo/generator/wal
       remote_write:
-      - url: http://victoriametrics-vminsert.monitoring.svc:8480/insert/0/prometheus/api/v1/write
+      - url: http://victoriametrics.monitoring.svc:8428/api/v1/write
         send_exemplars: false
-  extraArgs:
-  - '-config.expand-env=true'
-  extraEnvFrom:
-  - secretRef:
-      name: auth-minio
 
-minio:
-  enabled: false
-
-distributor:
-  resources:
-    requests:
-      cpu: 0.1
-      memory: 128Mi
-    limits:
-      cpu: 2
-      memory: 2Gi
-  extraArgs:
-  - '-config.expand-env=true'
-  extraEnvFrom:
-  - secretRef:
-      name: auth-minio
-
-ingester:
-  replicas: 1
-  resources:
-    requests:
-      cpu: 0.1
-      memory: 128Mi
-    limits:
-      cpu: 4
-      memory: 4Gi
-  config:
-    replication_factor: 1
-    max_block_duration: 5m
-    max_block_bytes: 100000000
-  extraEnv:
-  - name: GOMEMLIMIT
-    value: 1536MiB
-  extraArgs:
-  - '-config.expand-env=true'
-  extraEnvFrom:
-  - secretRef:
-      name: auth-minio
-
-compactor:
-  extraEnv:
-  - name: GOMEMLIMIT
-    value: 768MiB
-  resources:
-    requests:
-      cpu: 0.1
-      memory: 164Mi
-    limits:
-      cpu: 2
-      memory: 2Gi
-  extraArgs:
-  - '-config.expand-env=true'
-  extraEnvFrom:
-  - secretRef:
-      name: auth-minio
-  config:
-    compaction:
-      block_retention: 168h
-      compacted_block_retention: 1h
-      retention_concurrency: 10
-      max_time_per_tenant: 10m
-      max_compaction_objects: 1000000
-      max_block_bytes: 1073741824
-      v2_prefetch_traces_count: 500
-
-querier:
-  resources:
-    requests:
-      cpu: 0.1
-      memory: 64Mi
-    limits:
-      cpu: 2
-      memory: 2Gi
-  extraArgs:
-  - '-config.expand-env=true'
-  extraEnvFrom:
-  - secretRef:
-      name: auth-minio
-
-queryFrontend:
-  resources:
-    requests:
-      cpu: 0.1
-      memory: 64Mi
-    limits:
-      cpu: 1
-      memory: 256Mi
-  extraArgs:
-  - '-config.expand-env=true'
-  extraEnvFrom:
-  - secretRef:
-      name: auth-minio
-
-tempo:
-  revisionHistoryLimit: 1
+extraVolumes:
+- name: data
+  emptyDir: {}
