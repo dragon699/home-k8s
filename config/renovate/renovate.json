@@ -123,7 +123,15 @@
   ],
   "prBodyTemplate": "{{{header}}}\n\n{{{replace '^\\s*This PR contains the following updates:\\s*' '' table}}}\n\n{{#if changelogs}}### Release notes\n\n{{{replace '^\\s*---\\s*### Release Notes\\s*' '' changelogs}}}{{/if}}",
   "prBodyDefinitions": {
-    "Type": "{{#if (containsString packageFile 'argocd/')}}chart{{else if (equals datasource 'docker')}}image{{else if (equals manager 'github-actions')}}action{{else}}{{datasource}}{{/if}}"
+    "Type": "{{#if (containsString packageFile 'argocd/')}}chart{{else if (equals datasource 'docker')}}image{{else if (equals manager 'github-actions')}}action{{else}}{{datasource}}{{/if}}",
+    "Released": "{{#if releaseTimestamp}}{{{replace '^(\\d{4})-(\\d{2})-(\\d{2}).*$' '$3/$2/$1' releaseTimestamp}}}{{/if}}"
   },
-  "prHeader": "### Upgrades"
+  "prHeader": "### Upgrades",
+  "prBodyColumns": [
+    "Package",
+    "Type",
+    "Update",
+    "Change",
+    "Released"
+  ]
 }
