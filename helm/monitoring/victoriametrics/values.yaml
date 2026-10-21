@@ -2,6 +2,7 @@ server:
   fullnameOverride: victoriametrics
 
   image:
+    repository: victoriametrics/victoria-metrics
     tag: v1.154.1
 
   retentionPeriod: 14d

@@ -1,4 +1,5 @@
 image:
+  repository: grafana/alloy
   tag: v1.20.1
 
 controller:

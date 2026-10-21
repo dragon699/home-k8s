@@ -1,5 +1,6 @@
 vikunja:
   image:
+    repository: vikunja/vikunja
     tag: "2.1.0"
 
   controller:
