@@ -125,5 +125,5 @@
   "prBodyDefinitions": {
     "Type": "{{#if (containsString packageFile 'argocd/')}}chart{{else if (equals datasource 'docker')}}image{{else if (equals manager 'github-actions')}}action{{else}}{{datasource}}{{/if}}"
   },
-  "prHeader": "Incoming upgrades for {{{replace '^renovate/(.+?)(-major|-digest)?$' '$1' branchName}}}:"
+  "prHeader": "### Upgrades"
 }
