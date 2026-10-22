@@ -19,7 +19,7 @@ tempo:
     value: 2304MiB
   extraEnvFrom:
   - secretRef:
-      name: auth-minio
+      name: auth-garage
   extraVolumeMounts:
   - name: data
     mountPath: /var/tempo
@@ -53,10 +53,12 @@ tempo:
     trace:
       backend: s3
       s3:
-        access_key: "${MINIO_SERVER_ROOT_USER}"
-        secret_key: "${MINIO_SERVER_ROOT_PASSWORD}"
-        endpoint: "${MINIO_SERVER_HOST}:${MINIO_SERVICE_PORT}"
+        access_key: "${S3_ACCESS_KEY_ID}"
+        secret_key: "${S3_SECRET_ACCESS_KEY}"
+        endpoint: garage.monitoring.svc:3900
+        region: garage
         bucket: tempo
+        forcepathstyle: true
         insecure: true
       wal:
         path: /var/tempo/wal
