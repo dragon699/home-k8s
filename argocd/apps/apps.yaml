@@ -142,7 +142,7 @@ projects:
     - repo: values_repo
       ref: values
     - repoURL: https://helm.ngc.nvidia.com/nvidia
-      targetRevision: 25.10.1
+      targetRevision: v26.7.2
       chart: gpu-operator
       helm:
         valueFiles:
