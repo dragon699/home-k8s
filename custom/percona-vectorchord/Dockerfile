@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM alpine:3.22 AS extension
+FROM alpine:3.24 AS extension
 RUN apk add --no-cache unzip
 ADD --checksum=sha256:73fb60bf8b0e2c1bb4df700fa5400d3f2819482e0b7dbdc7e2e88212efff1819 https://github.com/supervc-stack/VectorChord/releases/download/0.5.3/postgresql-18-vchord_0.5.3_x86_64-linux-gnu.zip /tmp/vchord.zip
 RUN unzip /tmp/vchord.zip -d /extension
