@@ -94,7 +94,7 @@ projects:
     - repo: values_repo
       ref: values
     - repoURL: https://djjudas21.github.io/charts/
-      targetRevision: 4.1.0
+      targetRevision: 4.1.1
       chart: jellyfin
       helm:
         valueFiles:
