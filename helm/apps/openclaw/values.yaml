@@ -155,6 +155,41 @@ app-template:
                 HOME=/home/node node /app/dist/index.js plugins install "clawhub:$spec" --no-enable --accept-capabilities && log "Installed plugin: $id $want" || log "WARNING: Failed to install plugin: $id"
               fi
             done
+        migrate-state:
+          image:
+            repository: ghcr.io/openclaw/openclaw
+            tag: "{{ .Values.openclawVersion }}"
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            runAsNonRoot: true
+            readOnlyRootFilesystem: false
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+          envFrom:
+            - secretRef:
+                name: data-openclaw
+          command:
+          - sh
+          - -c
+          - |
+            log() { echo "[$(date -Iseconds)] [migrate-state] $*"; }
+            VERSION="$(node -p "require('/app/package.json').version")"
+            for db in /home/node/.openclaw/agents/*/agent/openclaw-agent.sqlite; do
+              [ -f "$db" ] || continue
+              [ -f "$db.bak-before-$VERSION" ] && continue
+              for f in "$db" "$db-wal" "$db-shm"; do
+                [ -f "$f" ] && cp -p "$f" "${f%.sqlite*}.sqlite.bak-before-$VERSION${f##*.sqlite}"
+              done
+              log "Backed up $db"
+            done
+            if HOME=/home/node node /app/dist/index.js doctor --fix --non-interactive; then
+              log "doctor --fix completed for $VERSION"
+            else
+              log "WARNING: doctor --fix exited with an error"
+            fi
       containers:
         chromium:
           enabled: false
@@ -184,10 +219,14 @@ app-template:
         main:
           fix-permissions:
           - path: /home/node/.openclaw
+          migrate-state:
+          - path: /home/node/.openclaw
     tmp:
       advancedMounts:
         main:
           fix-permissions:
+          - path: /tmp
+          migrate-state:
           - path: /tmp
 
   configMaps:
