@@ -49,12 +49,12 @@ vikunja:
       valueFrom:
         secretKeyRef:
           name: data-postgresql-shared-vikunja
-          key: pgbouncer-host
+          key: host
     VIKUNJA_DATABASE_PORT:
       valueFrom:
         secretKeyRef:
           name: data-postgresql-shared-vikunja
-          key: pgbouncer-port
+          key: port
     VIKUNJA_DATABASE_USER:
       valueFrom:
         secretKeyRef:
