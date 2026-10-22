@@ -203,7 +203,7 @@ projects:
     - repo: values_repo
       ref: values
     - repoURL: oci://ghcr.io/sudo-kraken/helm-charts/qbittorrent
-      targetRevision: 5.1.4
+      targetRevision: 5.1.5
       chart: qbittorrent
       helm:
         valueFiles:
