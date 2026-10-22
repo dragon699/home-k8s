@@ -7,6 +7,7 @@
     "group:monorepos"
   ],
   "prHourlyLimit": 0,
+  "prConcurrentLimit": 0,
   "branchTopic": "{{#if (containsString packageFile 'argocd/')}}{{depType}}{{else if (containsString packageFile '.github/')}}github{{else}}{{{replace '^(?:(?:helm|manifests)/[^/]+|[^/]+)/([^/]+)/.*$' '$1' packageFile}}}{{/if}}{{#if isMajor}}-major{{/if}}",
   "commitMessagePrefix": "{{#if (containsString packageFile 'argocd/')}}{{depType}}{{else if (containsString packageFile '.github/')}}github{{else}}{{{replace '^(?:(?:helm|manifests)/[^/]+|[^/]+)/([^/]+)/.*$' '$1' packageFile}}}{{/if}}:",
   "commitMessageAction": "{{#if commitMessageExtra}}Upgrade{{else if (includes (lookupArray upgrades 'depName') (replace '^renovate/(.*?)(?:-major|-digest)?$' '$1' branchName))}}Upgrade{{else if (containsString (toJSON (lookupArray upgrades 'packageFile')) 'manifests/')}}Several upgrades{{else}}Upgrade{{/if}}",
