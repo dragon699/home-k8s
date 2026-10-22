@@ -8,6 +8,45 @@ cronjob:
   jobBackoffLimit: "0"
   preCommand: |
     export RENOVATE_HOST_RULES="[{\"matchHost\":\"ghcr.io\",\"username\":\"dragon699\",\"password\":\"${RENOVATE_TOKEN}\",\"timeout\":60000}]"
+    if node <<'EOF'
+    const fs = require('fs');
+    const YAML = require('/usr/local/renovate/node_modules/yaml');
+    (async () => {
+      const headers = { Authorization: `Bearer ${process.env.RENOVATE_TOKEN}`, Accept: 'application/vnd.github+json' };
+      const get = async (url) => {
+        const res = await fetch(url, { headers });
+        if (!res.ok) throw new Error(`${url}: HTTP ${res.status}`);
+        return res;
+      };
+      const files = await (await get(`https://api.github.com/repos/${process.env.RENOVATE_REPOSITORIES}/contents/argocd/apps`)).json();
+      const disabled = [];
+      for (const file of files.filter((f) => /\.ya?ml$/.test(f.name))) {
+        const doc = YAML.parse(await (await get(file.download_url)).text()) || {};
+        for (const apps of Object.values(doc.projects || {})) {
+          for (const app of apps || []) {
+            if (String(app.deploy) === 'false') disabled.push(app.name);
+          }
+        }
+      }
+      const config = JSON.parse(fs.readFileSync(process.env.RENOVATE_CONFIG_FILE, 'utf8'));
+      if (disabled.length) {
+        config.packageRules = [...(config.packageRules || []), {
+          description: 'Apps with deploy: false in argocd/apps',
+          matchDepTypes: disabled,
+          enabled: false,
+        }, {
+          description: 'Values and manifests of apps with deploy: false',
+          matchFileNames: disabled.flatMap((app) => [`helm/*/${app}/**`, `manifests/*/${app}/**`]),
+          enabled: false,
+        }];
+      }
+      fs.writeFileSync('/tmp/renovate-config.json', JSON.stringify(config));
+      console.log(`Skipping apps with deploy: false: ${disabled.join(', ') || 'none'}`);
+    })().catch((err) => { console.error(`Could not read deploy: false apps: ${err.message}`); process.exit(1); });
+    EOF
+    then
+      export RENOVATE_CONFIG_FILE=/tmp/renovate-config.json
+    fi
 
 renovate:
   existingConfigFile: /config/config.json

@@ -27,7 +27,7 @@
       "matchStringsStrategy": "recursive",
       "matchStrings": [
         "  - name: (?<depType>\\S+)\\n(?:(?:    .*)?\\n)*",
-        "repoURL: (?<registryUrl>https?://\\S+?)/?\\s+targetRevision: ['\"]?(?<currentValue>[^'\"\\s]+)['\"]?\\s+chart: (?<depName>\\S+)"
+        "(?:^|\\n)[ \\t]*-?[ \\t]*repoURL: (?<registryUrl>https?://\\S+?)/?\\n[ \\t]+targetRevision: ['\"]?(?<currentValue>[^'\"\\s]+)['\"]?\\n[ \\t]+chart: (?<depName>\\S+)"
       ],
       "datasourceTemplate": "helm"
     },
@@ -40,7 +40,7 @@
       "matchStringsStrategy": "recursive",
       "matchStrings": [
         "  - name: (?<depType>\\S+)\\n(?:(?:    .*)?\\n)*",
-        "repoURL: oci://(?<packageName>\\S+)\\s+targetRevision: ['\"]?(?<currentValue>[^'\"\\s]+)['\"]?\\s+chart: (?<depName>\\S+)"
+        "(?:^|\\n)[ \\t]*-?[ \\t]*repoURL: oci://(?<packageName>\\S+)\\n[ \\t]+targetRevision: ['\"]?(?<currentValue>[^'\"\\s]+)['\"]?\\n[ \\t]+chart: (?<depName>\\S+)"
       ],
       "datasourceTemplate": "docker"
     },
@@ -51,7 +51,7 @@
         "/^helm/apps/openclaw/values\\.yaml$/"
       ],
       "matchStrings": [
-        "openclawVersion: ['\"]?(?<currentValue>[^'\"\\s]+)"
+        "(?:^|\\n)[ \\t]*openclawVersion: ['\"]?(?<currentValue>[^'\"\\s]+)"
       ],
       "depNameTemplate": "ghcr.io/openclaw/openclaw",
       "datasourceTemplate": "docker"
@@ -63,7 +63,7 @@
         "/^helm/monitoring/grafana-tempo/values\\.yaml$/"
       ],
       "matchStrings": [
-        "tempo:\\s+repository: \\S+\\s+tag: ['\"]?(?<currentValue>[^'\"\\s]+)"
+        "(?:^|\\n)[ \\t]*tempo:[ \\t]*\\n[ \\t]+repository: \\S+[ \\t]*\\n[ \\t]+tag: ['\"]?(?<currentValue>[^'\"\\s]+)"
       ],
       "depNameTemplate": "grafana/tempo",
       "datasourceTemplate": "docker"
