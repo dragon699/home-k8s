@@ -28,7 +28,7 @@ spec:
       containers:
       - name: configure-git-sync-dashboards
         # Needs sh, curl and envsubst (gettext); nginx itself is never started
-        image: nginx:1.29-alpine
+        image: nginx:1.31-alpine
         imagePullPolicy: IfNotPresent
         resources:
           requests:
