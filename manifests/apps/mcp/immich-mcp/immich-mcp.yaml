@@ -26,7 +26,7 @@ spec:
       restartPolicy: Always
       containers:
       - name: immich-mcp
-        image: ghcr.io/barryw/immichmcp:v3.3.3
+        image: ghcr.io/barryw/immichmcp:v3.3.5
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 5000
