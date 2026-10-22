@@ -150,9 +150,9 @@ app-template:
               if [ "$have" = "$want" ]; then
                 log "Plugin already installed: $id $have"
               elif [ -n "$have" ]; then
-                node /app/dist/index.js plugins update "$id@$want" && log "Updated plugin: $id $have -> $want" || log "WARNING: Failed to update plugin: $id"
+                node /app/dist/index.js plugins update "$id@$want" --accept-capabilities && log "Updated plugin: $id $have -> $want" || log "WARNING: Failed to update plugin: $id"
               else
-                node /app/dist/index.js plugins install "clawhub:$spec" --no-enable && log "Installed plugin: $id $want" || log "WARNING: Failed to install plugin: $id"
+                node /app/dist/index.js plugins install "clawhub:$spec" --no-enable --accept-capabilities && log "Installed plugin: $id $want" || log "WARNING: Failed to install plugin: $id"
               fi
             done
       containers:
