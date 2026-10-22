@@ -1,5 +1,5 @@
 app-template:
-  openclawVersion: "2026.9.8"
+  openclawVersion: "2026.10.6"
   configMode: merge
 
   service:
