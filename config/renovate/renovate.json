@@ -9,7 +9,7 @@
   "prHourlyLimit": 0,
   "branchTopic": "{{#if (containsString packageFile 'argocd/')}}{{depType}}{{else if (containsString packageFile '.github/')}}github{{else}}{{{replace '^(?:(?:helm|manifests)/[^/]+|[^/]+)/([^/]+)/.*$' '$1' packageFile}}}{{/if}}{{#if isMajor}}-major{{/if}}",
   "commitMessagePrefix": "{{#if (containsString packageFile 'argocd/')}}{{depType}}{{else if (containsString packageFile '.github/')}}github{{else}}{{{replace '^(?:(?:helm|manifests)/[^/]+|[^/]+)/([^/]+)/.*$' '$1' packageFile}}}{{/if}}:",
-  "commitMessageAction": "{{#if commitMessageExtra}}Upgrade{{else if (containsString (toJSON (lookupArray upgrades 'packageFile')) 'manifests/')}}Several upgrades{{else}}Upgrade{{/if}}",
+  "commitMessageAction": "{{#if commitMessageExtra}}Upgrade{{else if (containsString (toJSON (lookupArray upgrades 'packageFile')) 'argocd/')}}Upgrade{{else}}Several upgrades{{/if}}",
   "kubernetes": {
     "managerFilePatterns": [
       "/^manifests/.+\\.ya?ml$/"
@@ -69,11 +69,11 @@
   ],
   "packageRules": [
     {
-      "description": "Titles: '<app>: Upgrade to v<version>'; '<app>: Several upgrades' when a PR mixes versions across standalone manifests; digests '<app>: Upgrade <image> digest to <digest>'",
+      "description": "Titles: '<app>: Upgrade to v<version>' (chart version when versions differ); '<app>: Several upgrades' for mixed-version groups without a chart; digests '<app>: Upgrade <image> digest to <digest>'",
       "matchDepNames": [
         "*"
       ],
-      "commitMessageTopic": "{{#if (equals updateType 'digest')}}{{{replace '^.*/' '' depName}}} digest{{else if commitMessageExtra}}{{else if (containsString (toJSON (lookupArray upgrades 'packageFile')) 'manifests/')}}{{else}}to v{{{replace '^v' '' newVersion}}}{{/if}}",
+      "commitMessageTopic": "{{#if (equals updateType 'digest')}}{{{replace '^.*/' '' depName}}} digest{{else if commitMessageExtra}}{{else if (containsString (toJSON (lookupArray upgrades 'packageFile')) 'argocd/')}}{{#each upgrades}}{{#if (containsString packageFile 'argocd/')}}to v{{{replace '^v' '' newVersion}}}{{/if}}{{/each}}{{/if}}",
       "commitMessageExtra": "{{#if (equals updateType 'digest')}}to {{{newDigestShort}}}{{else}}to v{{{replace '^v' '' newVersion}}}{{/if}}"
     },
     {
