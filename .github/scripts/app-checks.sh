@@ -142,12 +142,12 @@ container_run() {
   local name="$1" mode="$2" out rc
   shift 2
   if [[ "$mode" == check ]]; then
-    out="$(timeout 300 "${DOCKER_CMD[@]}" run --rm --network none --memory 2g --label "app-checks=$$" "$@" 2>&1)"
+    out="$(timeout 300 "${DOCKER_CMD[@]}" run --rm --quiet --network none --memory 2g --label "app-checks=$$" "$@" 2>&1)"
     rc=$?
     printf '%s\t%s' "$rc" "$(tail -n 6 <<< "$out" | tr '\n\t' '  ' | head -c 600)"
     return
   fi
-  "${DOCKER_CMD[@]}" run -d --name "$name" --network none --memory 2g --label "app-checks=$$" "$@" >/dev/null 2>&1 || { printf 'error\tcould not start the container'; return; }
+  "${DOCKER_CMD[@]}" run -d --quiet --name "$name" --network none --memory 2g --label "app-checks=$$" "$@" >/dev/null 2>&1 || { printf 'error\tcould not start the container'; return; }
   for ((t = 0; t < BOOT_SECONDS; t += 2)); do
     [[ "$("${DOCKER_CMD[@]}" inspect -f '{{.State.Running}}' "$name" 2>/dev/null)" == "true" ]] || break
     sleep 2
