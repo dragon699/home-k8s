@@ -65,7 +65,7 @@ spec:
               type: Directory
           containers:
           - name: longhorn-backup
-            image: skullfighter6/python:3.13-utils-20261007
+            image: skullfighter6/python:3.15-utils-20261022
             imagePullPolicy: IfNotPresent
             volumeMounts:
             - name: metrics
