@@ -1,4 +1,4 @@
-FROM python:3.13-slim
+FROM python:3.15-slim
 
 ARG VAULT_VERSION=1.20.4
 ARG AGE_VERSION=1.3.2
