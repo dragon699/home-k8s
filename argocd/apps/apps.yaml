@@ -223,7 +223,7 @@ projects:
     - repo: values_repo
       ref: values
     - repoURL: https://skyhook-io.github.io/helm-charts
-      targetRevision: 1.15.0
+      targetRevision: 1.18.0
       chart: radar
       helm:
         valueFiles:
