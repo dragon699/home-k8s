@@ -72,14 +72,17 @@ jobs:
 
         APP="${BRANCH#renovate/}"
         APP="${APP%-major}"
+        APP="${APP%-digest}"
         DIFF="$(git diff "$BASE" "$HEAD" | head -c 20000)"
         VALUES=""
         for FILE in $(git ls-tree -r --name-only "$HEAD" -- helm | grep -E "^helm/[^/]+/${APP}/[^/]+\.ya?ml$" || true); do
           VALUES+="--- ${FILE}"$'\n'"$(git show "${HEAD}:${FILE}" | head -c 15000)"$'\n'
         done
 
-        PROMPT="$(printf 'Review this Renovate pull request for dragon699/home-k8s.\n\nToday is %s.\nTitle: %s\nApp: %s\n\n## Renovate description (update table and release notes)\n%s\n\n## Diff\n```diff\n%s\n```\n\n## Current values files of the app\n```yaml\n%s\n```\n' \
-          "$(date -u +%Y-%m-%d)" "$TITLE" "$APP" "$(printf '%s' "$BODY" | head -c 24000)" "$DIFF" "${VALUES:-none}")"
+        RENDER="$(bash .github/scripts/chart-diff.sh "$BASE" "$HEAD" "$APP" 2>/dev/null | head -c 30000 || true)"
+
+        PROMPT="$(printf 'Review this Renovate pull request for dragon699/home-k8s.\n\nToday is %s.\nTitle: %s\nApp: %s\n\n## Renovate description (update table and release notes)\n%s\n\n## Diff\n```diff\n%s\n```\n\n## Rendered chart changes (helm template of the old and new chart with this repo'"'"'s values)\n%s\n\n## Current values files of the app\n```yaml\n%s\n```\n' \
+          "$(date -u +%Y-%m-%d)" "$TITLE" "$APP" "$(printf '%s' "$BODY" | head -c 24000)" "$DIFF" "${RENDER:-No chart in this pull request.}" "${VALUES:-none}")"
 
         review() {
           local request
