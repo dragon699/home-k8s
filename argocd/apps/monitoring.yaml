@@ -91,21 +91,6 @@ projects:
     target:
       namespace: monitoring
 
-  - name: minio
-    sources:
-    - repo: values_repo
-      ref: values
-    - repoURL: https://charts.bitnami.com/bitnami
-      targetRevision: 14.7.0
-      chart: minio
-      helm:
-        valueFiles:
-        - $values/helm/monitoring/minio/values.yaml
-    - repo: gitops_repo
-      path: manifests/monitoring/minio
-    target:
-      namespace: monitoring
-
   - name: victoriametrics
     sources:
     - repo: values_repo

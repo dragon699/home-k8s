@@ -56,10 +56,6 @@
         url: https://argocd.k8s.iaminyourpc.xyz/applications/argocd/victoriametrics?view=tree&resource=
         icon: https://i.imgur.com/176vBRC.png
         timeout: 10s
-      - title: minio
-        url: https://minio.k8s.iadfaewminyourpc.xyz
-        icon: di:minio
-        timeout: 10s
   columns:
   - size: small
     widgets:

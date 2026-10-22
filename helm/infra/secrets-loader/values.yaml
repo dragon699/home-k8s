@@ -157,8 +157,6 @@ secrets:
       provider: vault
     auth-vesync:
       provider: vault
-    auth-minio:
-      provider: vault
     auth-garage:
       spec:
         refreshInterval: 0m0s
