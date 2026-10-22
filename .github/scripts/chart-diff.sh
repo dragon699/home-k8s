@@ -35,6 +35,12 @@ if [[ "$(jq -r '.deploy | tostring' <<< "$NEW_APP")" == "false" ]]; then
 fi
 
 NS="$(jq -r '.target.namespace // "default"' <<< "$NEW_APP")"
+SA_DIR=/var/run/secrets/kubernetes.io/serviceaccount
+if [[ -z "${KUBE_VERSION:-}" && -r "${SA_DIR}/token" ]]; then
+  KUBE_VERSION="$(curl -sS --cacert "${SA_DIR}/ca.crt" -H "Authorization: Bearer $(cat "${SA_DIR}/token")" https://kubernetes.default.svc/version 2>/dev/null | jq -r '.gitVersion // empty' | sed 's/+.*//')"
+fi
+KUBE_ARGS=()
+[[ -n "${KUBE_VERSION:-}" ]] && KUBE_ARGS=(--kube-version "$KUBE_VERSION")
 
 fetch_chart() {
   local src="$1" dest="$2" url chart rev
@@ -56,7 +62,7 @@ render() {
   while read -r f; do
     [[ -n "$f" ]] && args+=(-f "${root}/${f#\$values/}")
   done < <(jq -r '.helm.valueFiles[]? // empty' <<< "$src")
-  helm template "$rel" "$chartdir" --namespace "$NS" --include-crds "${args[@]}" 2>&1
+  helm template "$rel" "$chartdir" --namespace "$NS" --include-crds "${KUBE_ARGS[@]}" "${args[@]}" 2>&1
 }
 
 values_changed() {
@@ -66,6 +72,71 @@ values_changed() {
     git diff --quiet "$BASE" "$HEAD" -- "${f#\$values/}" || return 0
   done < <(jq -r '.helm.valueFiles[]? // empty' <<< "$src")
   return 1
+}
+
+SCRIPTS="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+check_images() {
+  local render="$1" img total=0 missing=() unchecked=()
+  while read -r img; do
+    [[ -z "$img" ]] && continue
+    total=$((total + 1))
+    bash "${SCRIPTS}/image-exists.sh" "$img"
+    case $? in
+      0) ;;
+      1) missing+=("$img") ;;
+      *) unchecked+=("$img") ;;
+    esac
+  done < <(yq -N '.. | select(tag == "!!map" and has("image")) | .image | select(tag == "!!str")' "$render" | sort -u)
+  for img in "${missing[@]}"; do
+    echo "CHECK FAILED: image ${img} does not exist in its registry"
+  done
+  echo "Images the new version pulls: ${total}, missing: ${#missing[@]}${unchecked:+, not checkable (private or rate-limited): ${unchecked[*]}}"
+}
+
+ensure_kubeconform() {
+  command -v kubeconform >/dev/null && return
+  curl -fsSL https://github.com/yannh/kubeconform/releases/download/v0.7.0/kubeconform-linux-amd64.tar.gz | tar -xz -C "$BIN" kubeconform
+}
+
+check_custom_resources() {
+  local render="$1" dir="$2" crds f doc group version kind served n=0 bad=0 out
+  crds="$(yq -o=json -I=0 'select(.kind == "CustomResourceDefinition")' "$render")"
+  [[ -z "$crds" ]] && return
+  ensure_kubeconform
+  mkdir -p "${dir}/schemas" "${dir}/docs"
+  jq -r '.spec.group as $g | .spec.names.kind as $k | .spec.versions[] | select(.served) | [$g, $k, .name] | @tsv' <<< "$crds" > "${dir}/served.tsv"
+  while IFS=$'\t' read -r group kind version; do
+    mkdir -p "${dir}/schemas/${group}"
+    jq -s --arg g "$group" --arg k "$kind" --arg v "$version" '
+      [.[] | .spec | select(.group == $g and .names.kind == $k) | .versions[] | select(.name == $v) | .schema.openAPIV3Schema][0]
+      | walk(if type == "object" and .type == "object" and has("properties") then
+          (if (has("additionalProperties") | not) and ((.["x-kubernetes-preserve-unknown-fields"] // false) | not) then . + {additionalProperties: false} else . end)
+          | (.properties as $p | if has("required") then .required |= map(select(($p[.] // {}) | has("default") | not)) else . end)
+        else . end)
+    ' <<< "$crds" > "${dir}/schemas/${group}/${kind,,}_${version}.json"
+  done < "${dir}/served.tsv"
+
+  while read -r f; do
+    while read -r doc; do
+      [[ -z "$doc" ]] && continue
+      IFS=$'\t' read -r group version kind < <(jq -r '(.apiVersion | split("/")) as $a | [($a | if length > 1 then .[0] else "" end), $a[-1], .kind] | @tsv' <<< "$doc")
+      awk -F'\t' -v g="$group" -v k="$kind" '$1 == g && $2 == k { found = 1 } END { exit !found }' "${dir}/served.tsv" || continue
+      n=$((n + 1))
+      if ! awk -F'\t' -v g="$group" -v k="$kind" -v v="$version" '$1 == g && $2 == k && $3 == v { found = 1 } END { exit !found }' "${dir}/served.tsv"; then
+        served="$(awk -F'\t' -v g="$group" -v k="$kind" '$1 == g && $2 == k { print $3 }' "${dir}/served.tsv" | paste -sd, -)"
+        echo "CHECK FAILED: ${f#"${WORK}/head/"} ${kind} $(jq -r '.metadata.name' <<< "$doc") uses ${group}/${version}, which the new CRDs no longer serve (served: ${served})"
+        bad=$((bad + 1))
+        continue
+      fi
+      printf '%s' "$doc" > "${dir}/docs/doc.json"
+      if ! out="$(kubeconform -ignore-missing-schemas -schema-location "${dir}/schemas/{{ .Group }}/{{ .ResourceKind }}_{{ .ResourceAPIVersion }}.json" "${dir}/docs/doc.json" 2>&1)"; then
+        echo "CHECK FAILED: ${f#"${WORK}/head/"} ${kind} $(jq -r '.metadata.name' <<< "$doc") does not match the new ${group}/${version} schema: $(sed -E "s#^.*(failed with '[^']*' - |is invalid: )##" <<< "$out" | head -c 400 | tr '\n' ' ')"
+        bad=$((bad + 1))
+      fi
+    done < <(yq -o=json -I=0 'select(.kind != null and .kind != "CustomResourceDefinition")' "$f" 2>/dev/null)
+  done < <({ find "${WORK}/head/manifests" -type f \( -name '*.yaml' -o -name '*.yml' \) | sort; echo "$render"; })
+  echo "Custom resources checked against the new CRDs (repo manifests and this chart's render): ${n}, ${bad} failing"
 }
 
 removed_keys() {
@@ -150,6 +221,13 @@ for ((i = 0; i < COUNT; i++)); do
   done
   RESTARTS="$(comm -13 "${D}/old.pods" "${D}/new.pods" | cut -d' ' -f1 | paste -sd, -)"
   echo "Workloads whose pods restart on sync: ${RESTARTS:-none}"
+  check_images "${D}/new.yaml"
+  check_custom_resources "${D}/new.yaml" "${D}/crs"
+  if [[ -n "${RENDER_DIR:-}" ]]; then
+    mkdir -p "${RENDER_DIR}/old" "${RENDER_DIR}/new"
+    cp "${D}/old.yaml" "${RENDER_DIR}/old/src${i}.yaml"
+    cp "${D}/new.yaml" "${RENDER_DIR}/new/src${i}.yaml"
+  fi
 
   echo
   if diff -q "${D}/old.main.yaml" "${D}/new.main.yaml" >/dev/null; then

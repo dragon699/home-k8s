@@ -1,0 +1,71 @@
+name: image-check
+run-name: Check that running images still exist
+
+on:
+  schedule:
+  - cron: '0 4 * * 6'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+
+jobs:
+
+  Check:
+    runs-on: gha-runner-home-k8s
+
+    steps:
+    - name: Fetch code
+      uses: actions/checkout@v6
+
+    - name: Check registries
+      run: |
+        set -euo pipefail
+
+        SA=/var/run/secrets/kubernetes.io/serviceaccount
+        kube() { curl -sS --fail-with-body --cacert "$SA/ca.crt" -H "Authorization: Bearer $(cat "$SA/token")" "$@"; }
+        mkdir -p "${RUNNER_TEMP}/bin"
+        curl -fsSL -o "${RUNNER_TEMP}/bin/yq" https://github.com/mikefarah/yq/releases/download/v4.45.1/yq_linux_amd64
+        chmod +x "${RUNNER_TEMP}/bin/yq"
+        export PATH="${RUNNER_TEMP}/bin:${PATH}"
+
+        IMAGES="$(cat argocd/apps/*.yaml | yq -N '.projects[][] | select(.deploy != false) | .name' | sort -u | while read -r app; do
+          kube "https://kubernetes.default.svc/apis/argoproj.io/v1alpha1/namespaces/argocd/applications/${app}" 2>/dev/null | jq -r --arg app "$app" '.status.summary.images[]? | [$app, .] | @tsv' || true
+        done | sort -u)"
+
+        MISSING=""
+        UNCHECKED=""
+        while IFS=$'\t' read -r app image; do
+          [[ -z "$image" ]] && continue
+          rc=0
+          bash .github/scripts/image-exists.sh "$image" || rc=$?
+          case $rc in
+            0) ;;
+            1) MISSING+="| ${app} | \`${image}\` |"$'\n' ;;
+            *) UNCHECKED+="| ${app} | \`${image}\` |"$'\n' ;;
+          esac
+        done <<< "$IMAGES"
+
+        {
+          echo "Checked $(grep -c . <<< "$IMAGES") running images."
+          if [[ -n "$MISSING" ]]; then
+            echo
+            echo "### Missing from their registry (pods only run from the node's image cache)"
+            echo "| App | Image |"
+            echo "|---|---|"
+            printf '%s' "$MISSING"
+          fi
+          if [[ -n "$UNCHECKED" ]]; then
+            echo
+            echo "### Not checkable anonymously (private registry or rate limit)"
+            echo "| App | Image |"
+            echo "|---|---|"
+            printf '%s' "$UNCHECKED"
+          fi
+        } >> "$GITHUB_STEP_SUMMARY"
+
+        if [[ -n "$MISSING" ]]; then
+          printf '::error::Images missing from their registry:\n%s' "$MISSING"
+          exit 1
+        fi

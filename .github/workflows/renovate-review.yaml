@@ -79,10 +79,19 @@ jobs:
           VALUES+="--- ${FILE}"$'\n'"$(git show "${HEAD}:${FILE}" | head -c 15000)"$'\n'
         done
 
-        RENDER="$(bash .github/scripts/chart-diff.sh "$BASE" "$HEAD" "$APP" 2>/dev/null | head -c 30000 || true)"
+        RENDER_DIR="$(mktemp -d -p "${RUNNER_TEMP}")"
+        RENDER="$(RENDER_DIR="$RENDER_DIR" bash .github/scripts/chart-diff.sh "$BASE" "$HEAD" "$APP" 2>/dev/null | head -c 30000 || true)"
+        CHECKS="$(bash .github/scripts/app-checks.sh "$BASE" "$HEAD" "$APP" "$RENDER_DIR" 2>/dev/null | head -c 8000 || true)"
+        FAILURES="$(printf '%s\n%s\n' "$RENDER" "$CHECKS" | grep '^CHECK FAILED: ' | sed 's/^CHECK FAILED: //' | sort -u || true)"
 
-        PROMPT="$(printf 'Review this Renovate pull request for dragon699/home-k8s.\n\nToday is %s.\nTitle: %s\nApp: %s\n\n## Renovate description (update table and release notes)\n%s\n\n## Diff\n```diff\n%s\n```\n\n## Rendered chart changes (helm template of the old and new chart with this repo'"'"'s values)\n%s\n\n## Current values files of the app\n```yaml\n%s\n```\n' \
-          "$(date -u +%Y-%m-%d)" "$TITLE" "$APP" "$(printf '%s' "$BODY" | head -c 24000)" "$DIFF" "${RENDER:-No chart in this pull request.}" "${VALUES:-none}")"
+        CONFIGS=""
+        for FILE in $(git ls-tree -r --name-only "$HEAD" -- config | grep -E "^config/([^/]+/)?${APP}/" || true); do
+          CONFIGS+="--- ${FILE}"$'\n'"$(git show "${HEAD}:${FILE}" | head -c 8000)"$'\n'
+        done
+        CALLERS="$(git grep -n -I -i -w -C 5 -e "${APP}" "$HEAD" -- config helm manifests ":(exclude)manifests/*/${APP}/*" ":(exclude)helm/*/${APP}/*" ":(exclude)config/${APP}/*" ":(exclude)config/*/${APP}/*" | sed "s#^${HEAD}:##" | head -c 10000 || true)"
+
+        PROMPT="$(printf 'Review this Renovate pull request for dragon699/home-k8s.\n\nToday is %s.\nTitle: %s\nApp: %s\n\n## Automated checks (ground truth: registry lookups, the app'"'"'s own validator run on the new image, CRD schema validation)\n%s\n\nFailed checks:\n%s\n\n## Renovate description (update table and release notes)\n%s\n\n## Diff\n```diff\n%s\n```\n\n## Rendered chart changes (helm template of the old and new chart with this repo'"'"'s values)\n%s\n\n## Current values files of the app\n```yaml\n%s\n```\n\n## App config files in this repo (config/)\n```\n%s\n```\n\n## Other repo files that call this app\n```\n%s\n```\n' \
+          "$(date -u +%Y-%m-%d)" "$TITLE" "$APP" "${CHECKS:-none}" "${FAILURES:-none}" "$(printf '%s' "$BODY" | head -c 24000)" "$DIFF" "${RENDER:-No chart in this pull request.}" "${VALUES:-none}" "${CONFIGS:-none}" "${CALLERS:-none}")"
 
         review() {
           local request
@@ -109,6 +118,13 @@ jobs:
           fi
         fi
 
+        if [[ -n "$FAILURES" ]]; then
+          if [[ "$REVIEW" != ⛔* ]]; then
+            REVIEW="⛔ Hold — automated checks failed"$'\n'"$(tail -n +2 <<< "$REVIEW")"
+          fi
+          REVIEW+=$'\n\n'"### Automated check failures"$'\n'"$(sed 's/^/- /' <<< "$FAILURES")"
+        fi
+
         COMMENT="$(jq -n --arg body "${MARKER}"$'\n'"${REVIEW}"$'\n\n'"<sub>Reviewed ${HEAD:0:7} on $(TZ=Europe/Sofia date +'%d/%m at %H:%M')${FOOTER}</sub>" '{body: $body}')"
         if [[ -n "$EXISTING" ]]; then
           gh_api -X PATCH "${API}/comments/${EXISTING}" -d "$COMMENT" >/dev/null
@@ -116,4 +132,10 @@ jobs:
         else
           gh_api -X POST "${API}/${PR}/comments" -d "$COMMENT" >/dev/null
           echo "Posted review comment"
+        fi
+
+        if [[ -n "$FAILURES" ]]; then
+          echo "::error::Automated checks failed"
+          printf '%s\n' "$FAILURES"
+          exit 1
         fi

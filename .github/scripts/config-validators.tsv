@@ -1,0 +1,7 @@
+# image	config key	validator arguments	entrypoint
+(^|/)krakend:	\.json$	check -t -n -c {file}
+(^|/)alloy:	\.(alloy|yaml)$	fmt {file}
+(^|/)alloy:	\.(alloy|yaml)$	validate --stability.level=experimental {file}
+(^|/)loki:		-verify-config
+(^|/)tempo:		-config.verify=true
+(^|/)renovate:	\.json$	{file}	renovate-config-validator
