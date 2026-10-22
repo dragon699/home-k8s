@@ -4,4 +4,5 @@ kind: Kustomization
 resources:
 - grafana
 - grafana-alloy
+- garage
 - victoriametrics

@@ -1,0 +1,51 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: garage-setup
+  namespace: monitoring
+  annotations:
+    argocd.argoproj.io/hook: PostSync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+spec:
+  backoffLimit: 6
+  template:
+    spec:
+      restartPolicy: OnFailure
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 100
+      volumes:
+      - name: script-garage-setup
+        configMap:
+          name: script-garage-setup
+          defaultMode: 0755
+      containers:
+      - name: setup
+        image: curlimages/curl:8.16.0
+        imagePullPolicy: IfNotPresent
+        command: ["/bin/sh", "/scripts/setup.sh"]
+        env:
+        - name: GARAGE_ADMIN_URL
+          value: http://garage.monitoring.svc:3903
+        - name: GARAGE_BUCKETS
+          value: loki-chunks loki-ruler tempo
+        - name: GARAGE_KEY_NAME
+          value: monitoring
+        envFrom:
+        - secretRef:
+            name: auth-garage
+        volumeMounts:
+        - name: script-garage-setup
+          mountPath: /scripts
+        resources:
+          requests:
+            cpu: 10m
+            memory: 16Mi
+          limits:
+            memory: 64Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop: ["ALL"]

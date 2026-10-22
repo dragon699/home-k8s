@@ -159,6 +159,23 @@ secrets:
       provider: vault
     auth-minio:
       provider: vault
+    auth-garage:
+      spec:
+        refreshInterval: 0m0s
+        target:
+          name: auth-garage
+          creationPolicy: Owner
+        dataFrom:
+        - sourceRef:
+            generatorRef:
+              apiVersion: generators.external-secrets.io/v1alpha1
+              kind: Password
+              name: auth-garage
+        - sourceRef:
+            generatorRef:
+              apiVersion: generators.external-secrets.io/v1alpha1
+              kind: Password
+              name: auth-garage-key-id
     auth-openclaw-grafana:
       provider: vault
     auth-immich-grafana:

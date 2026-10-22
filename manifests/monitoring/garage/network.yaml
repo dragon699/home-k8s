@@ -1,0 +1,23 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: garage
+  namespace: monitoring
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/path: "/metrics"
+    prometheus.io/port: "3903"
+  labels:
+    env: home
+spec:
+  type: ClusterIP
+  ports:
+  - name: s3
+    port: 3900
+    targetPort: s3
+  - name: admin
+    port: 3903
+    targetPort: admin
+  selector:
+    app: garage

@@ -84,6 +84,13 @@ projects:
     target:
       namespace: monitoring
 
+  - name: garage
+    sources:
+    - repo: gitops_repo
+      path: manifests/monitoring/garage
+    target:
+      namespace: monitoring
+
   - name: minio
     sources:
     - repo: values_repo

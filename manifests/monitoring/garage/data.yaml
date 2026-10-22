@@ -1,0 +1,32 @@
+---
+apiVersion: generators.external-secrets.io/v1alpha1
+kind: Password
+metadata:
+  name: auth-garage
+  namespace: monitoring
+spec:
+  length: 32
+  symbols: 0
+  noUpper: false
+  allowRepeat: true
+  encoding: hex
+  secretKeys:
+  - GARAGE_RPC_SECRET
+  - GARAGE_ADMIN_TOKEN
+  - S3_SECRET_ACCESS_KEY
+
+---
+apiVersion: generators.external-secrets.io/v1alpha1
+kind: Password
+metadata:
+  name: auth-garage-key-id
+  namespace: monitoring
+spec:
+  length: 12
+  symbols: 0
+  noUpper: false
+  allowRepeat: true
+  encoding: hex
+  prefix: GK
+  secretKeys:
+  - S3_ACCESS_KEY_ID

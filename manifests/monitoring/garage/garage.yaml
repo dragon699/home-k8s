@@ -1,0 +1,94 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: garage
+  namespace: monitoring
+  labels:
+    app: garage
+    env: home
+  annotations:
+    reloader.stakater.com/auto: "true"
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: garage
+  template:
+    metadata:
+      labels:
+        app: garage
+        env: home
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+      containers:
+      - name: garage
+        image: dxflrs/garage:v2.4.1
+        imagePullPolicy: IfNotPresent
+        command: ["/garage", "server", "--single-node"]
+        ports:
+        - name: s3
+          containerPort: 3900
+        - name: rpc
+          containerPort: 3901
+        - name: admin
+          containerPort: 3903
+        env:
+        - name: GARAGE_RPC_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: auth-garage
+              key: GARAGE_RPC_SECRET
+        - name: GARAGE_ADMIN_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: auth-garage
+              key: GARAGE_ADMIN_TOKEN
+        volumeMounts:
+        - name: config
+          mountPath: /etc/garage.toml
+          subPath: garage.toml
+          readOnly: true
+        - name: meta
+          mountPath: /var/lib/garage/meta
+        - name: data
+          mountPath: /var/lib/garage/data
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: admin
+          periodSeconds: 10
+        livenessProbe:
+          tcpSocket:
+            port: s3
+          initialDelaySeconds: 15
+          periodSeconds: 30
+        resources:
+          requests:
+            cpu: 50m
+            memory: 64Mi
+          limits:
+            memory: 1Gi
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop: ["ALL"]
+      volumes:
+      - name: config
+        configMap:
+          name: config-garage
+      - name: meta
+        persistentVolumeClaim:
+          claimName: garage-meta
+      - name: data
+        persistentVolumeClaim:
+          claimName: garage-data
