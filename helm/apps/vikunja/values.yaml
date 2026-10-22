@@ -1,7 +1,7 @@
 vikunja:
   image:
     repository: vikunja/vikunja
-    tag: "2.1.0"
+    tag: "2.7.1"
 
   controller:
     revisionHistoryLimit: 1

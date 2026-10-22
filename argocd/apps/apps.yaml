@@ -283,7 +283,7 @@ projects:
     - repo: values_repo
       ref: values
     - repoURL: oci://ghcr.io/go-vikunja/helm-chart/vikunja
-      targetRevision: v2.0.2
+      targetRevision: 2.5.0
       chart: vikunja
       helm:
         valueFiles:
