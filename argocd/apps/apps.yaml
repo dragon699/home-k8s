@@ -238,7 +238,7 @@ projects:
     - repo: values_repo
       ref: values
     - repoURL: https://ot-container-kit.github.io/helm-charts
-      targetRevision: 0.22.2
+      targetRevision: 0.27.0
       chart: redis-operator
     - repo: gitops_repo
       path: manifests/apps/redis-shared
