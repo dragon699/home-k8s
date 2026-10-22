@@ -40,7 +40,7 @@ projects:
     - repo: values_repo
       ref: values
     - repoURL: https://helm.openwebui.com
-      targetRevision: 8.14.0
+      targetRevision: 17.0.0
       chart: open-webui
       helm:
         valueFiles:
