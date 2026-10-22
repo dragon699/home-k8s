@@ -37,6 +37,9 @@ app-template:
               add:
               - CHOWN
         init-skills:
+          envFrom:
+            - secretRef:
+                name: data-openclaw
           command:
           - sh
           - -c
@@ -138,6 +141,20 @@ app-template:
             rm -rf /tmp/npm-cache
 
             log "Skills initialization complete"
+
+            PLUGINS="@expediagroup/expedia-openclaw@1.0.4:expedia-openclaw"
+            for entry in $PLUGINS; do
+              spec="${entry%:*}"; id="${entry##*:}"
+              want="${spec##*@}"
+              have="$(node -p "require('/home/node/.openclaw/extensions/$id/package.json').version" 2>/dev/null || true)"
+              if [ "$have" = "$want" ]; then
+                log "Plugin already installed: $id $have"
+              elif [ -n "$have" ]; then
+                node /app/dist/index.js plugins update "$id@$want" && log "Updated plugin: $id $have -> $want" || log "WARNING: Failed to update plugin: $id"
+              else
+                node /app/dist/index.js plugins install "clawhub:$spec" --no-enable && log "Installed plugin: $id $want" || log "WARNING: Failed to install plugin: $id"
+              fi
+            done
       containers:
         chromium:
           enabled: false
@@ -239,8 +256,18 @@ app-template:
                 },
                 "diagnostics-otel": {
                   "enabled": true
+                },
+                "expedia-openclaw": {
+                  "enabled": true,
+                  "config": {
+                    "default_pos_country": "BG",
+                    "default_currency": "EUR"
+                  }
                 }
               }
+            },
+            "tools": {
+              "alsoAllow": ["search_stays", "search_flights", "eg_travel_signup", "eg_travel_verify"]
             },
             "diagnostics": {
               "otel": {
