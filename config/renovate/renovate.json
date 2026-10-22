@@ -9,7 +9,7 @@
   "prHourlyLimit": 0,
   "branchTopic": "{{#if (containsString packageFile 'argocd/')}}{{depType}}{{else if (containsString packageFile '.github/')}}github{{else}}{{{replace '^(?:(?:helm|manifests)/[^/]+|[^/]+)/([^/]+)/.*$' '$1' packageFile}}}{{/if}}{{#if isMajor}}-major{{/if}}",
   "commitMessagePrefix": "{{#if (containsString packageFile 'argocd/')}}{{depType}}{{else if (containsString packageFile '.github/')}}github{{else}}{{{replace '^(?:(?:helm|manifests)/[^/]+|[^/]+)/([^/]+)/.*$' '$1' packageFile}}}{{/if}}:",
-  "commitMessageAction": "Upgrade",
+  "commitMessageAction": "{{#if commitMessageExtra}}Upgrade{{else if (containsString (toJSON (lookupArray upgrades 'packageFile')) 'manifests/')}}Several upgrades{{else}}Upgrade{{/if}}",
   "kubernetes": {
     "managerFilePatterns": [
       "/^manifests/.+\\.ya?ml$/"
@@ -69,12 +69,12 @@
   ],
   "packageRules": [
     {
-      "description": "Titles read '<app>: Upgrade to v<version>'; digests '<app>: Upgrade <image> digest to <digest>'",
+      "description": "Titles: '<app>: Upgrade to v<version>'; '<app>: Several upgrades' when a PR mixes versions across standalone manifests; digests '<app>: Upgrade <image> digest to <digest>'",
       "matchDepNames": [
         "*"
       ],
-      "commitMessageTopic": "{{#if (equals updateType 'digest')}}{{{replace '^.*/' '' depName}}} digest{{else}}to v{{{replace '^v' '' newVersion}}}{{/if}}",
-      "commitMessageExtra": "{{#if (equals updateType 'digest')}}to {{{newDigestShort}}}{{/if}}"
+      "commitMessageTopic": "{{#if (equals updateType 'digest')}}{{{replace '^.*/' '' depName}}} digest{{else if commitMessageExtra}}{{else if (containsString (toJSON (lookupArray upgrades 'packageFile')) 'manifests/')}}{{else}}to v{{{replace '^v' '' newVersion}}}{{/if}}",
+      "commitMessageExtra": "{{#if (equals updateType 'digest')}}to {{{newDigestShort}}}{{else}}to v{{{replace '^v' '' newVersion}}}{{/if}}"
     },
     {
       "description": "Digest updates get their own '<app>-digest' PR so they never hide the app's version in its title",
@@ -93,7 +93,7 @@
         "restarts-beyla"
       ],
       "prBodyNotes": [
-        "Merging this restarts Alloy and its embedded Beyla. If ingresses stall afterwards, detach the root-cgroup `obi_sockmap_tracker` link: `sudo bpftool cgroup show /sys/fs/cgroup`, then `sudo bpftool link detach id <id>`."
+        "> [!WARNING]\n> Merging this restarts Alloy and its embedded Beyla. If ingresses stall afterwards, detach the root-cgroup `obi_sockmap_tracker` link: `sudo bpftool cgroup show /sys/fs/cgroup`, then `sudo bpftool link detach id <id>`."
       ]
     },
     {
@@ -119,9 +119,30 @@
         "helm/apps/openclaw/values.yaml"
       ],
       "enabled": false
+    },
+    {
+      "description": "Chart releases are tagged helm-chart-<version>",
+      "matchDatasources": [
+        "helm"
+      ],
+      "matchDepNames": [
+        "ingress-nginx"
+      ],
+      "extractVersion": "^(?:helm-chart-)?(?<version>.+)$"
+    },
+    {
+      "description": "Loki chart notes live in the Loki repo changelog",
+      "matchDatasources": [
+        "helm"
+      ],
+      "matchDepNames": [
+        "loki"
+      ],
+      "sourceUrl": "https://github.com/grafana/loki",
+      "sourceDirectory": "production/helm/loki"
     }
   ],
-  "prBodyTemplate": "{{{header}}}\n\n{{{replace '^\\s*This PR contains the following updates:\\s*' '' table}}}\n\n{{#if changelogs}}### Release notes\n\n{{{replace '^\\s*---\\s*### Release Notes\\s*' '' changelogs}}}{{/if}}",
+  "prBodyTemplate": "{{{header}}}\n\n{{{replace '^\\s*This PR contains the following updates:\\s*' '' table}}}\n\n{{{notes}}}{{#if changelogs}}### Release notes\n\n{{{replace '^\\s*---\\s*### Release Notes\\s*' '' changelogs}}}{{/if}}",
   "prBodyDefinitions": {
     "Type": "{{#if (containsString packageFile 'argocd/')}}chart{{else if (equals datasource 'docker')}}image{{else if (equals manager 'github-actions')}}action{{else}}{{datasource}}{{/if}}",
     "Released": "{{#if releaseTimestamp}}{{{replace '^(\\d{4})-(\\d{2})-(\\d{2}).*$' '$3/$2/$1' releaseTimestamp}}}{{/if}}"

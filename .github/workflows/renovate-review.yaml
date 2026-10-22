@@ -78,22 +78,35 @@ jobs:
           VALUES+="--- ${FILE}"$'\n'"$(git show "${HEAD}:${FILE}" | head -c 15000)"$'\n'
         done
 
-        PROMPT="$(printf 'Review this Renovate pull request for dragon699/home-k8s.\n\nTitle: %s\nApp: %s\n\n## Renovate description (update table and release notes)\n%s\n\n## Diff\n```diff\n%s\n```\n\n## Current values files of the app\n```yaml\n%s\n```\n' \
-          "$TITLE" "$APP" "$(printf '%s' "$BODY" | head -c 24000)" "$DIFF" "${VALUES:-none}")"
+        PROMPT="$(printf 'Review this Renovate pull request for dragon699/home-k8s.\n\nToday is %s.\nTitle: %s\nApp: %s\n\n## Renovate description (update table and release notes)\n%s\n\n## Diff\n```diff\n%s\n```\n\n## Current values files of the app\n```yaml\n%s\n```\n' \
+          "$(date -u +%Y-%m-%d)" "$TITLE" "$APP" "$(printf '%s' "$BODY" | head -c 24000)" "$DIFF" "${VALUES:-none}")"
 
-        REQUEST="$(jq -n --arg prompt "$PROMPT" --arg user "renovate-pr-${PR}-${GITHUB_RUN_ID}" \
-          '{model: "openclaw/renovate-reviewer", stream: false, user: $user, messages: [{role: "user", content: $prompt}]}')"
+        review() {
+          local request
+          request="$(jq -n --arg model "openclaw/$1" --arg prompt "$2" --arg user "renovate-pr-${PR}-${GITHUB_RUN_ID}-$1" \
+            '{model: $model, stream: false, user: $user, messages: [{role: "user", content: $prompt}]}')"
+          curl -sS --fail-with-body -m 1500 \
+            -H "Authorization: Bearer ${OPENCLAW_GATEWAY_TOKEN}" -H "Content-Type: application/json" \
+            "${OPENCLAW_URL}/v1/chat/completions" -d "$request" | jq -r '.choices[0].message.content // empty'
+        }
 
-        REVIEW="$(curl -sS --fail-with-body -m 1500 \
-          -H "Authorization: Bearer ${OPENCLAW_GATEWAY_TOKEN}" -H "Content-Type: application/json" \
-          "${OPENCLAW_URL}/v1/chat/completions" -d "$REQUEST" | jq -r '.choices[0].message.content // empty')"
-
+        REVIEW="$(review renovate-reviewer "$PROMPT")"
         if [[ -z "$REVIEW" ]]; then
           echo "The agent returned no review"
           exit 1
         fi
 
-        COMMENT="$(jq -n --arg body "${MARKER}"$'\n'"${REVIEW}"$'\n\n'"<sub>Reviewed ${HEAD:0:7} on $(TZ=Europe/Sofia date +'%d/%m at %H:%M')</sub>" '{body: $body}')"
+        FOOTER=""
+        if [[ "$REVIEW" != ✅* ]]; then
+          echo "First pass did not approve, requesting a second opinion"
+          SECOND="$(review renovate-reviewer-deep "${PROMPT}"$'\n\n## First-pass review (verify its claims, do not trust them)\n'"${REVIEW}")"
+          if [[ -n "$SECOND" ]]; then
+            REVIEW="$SECOND"
+            FOOTER=" · second opinion"
+          fi
+        fi
+
+        COMMENT="$(jq -n --arg body "${MARKER}"$'\n'"${REVIEW}"$'\n\n'"<sub>Reviewed ${HEAD:0:7} on $(TZ=Europe/Sofia date +'%d/%m at %H:%M')${FOOTER}</sub>" '{body: $body}')"
         if [[ -n "$EXISTING" ]]; then
           gh_api -X PATCH "${API}/comments/${EXISTING}" -d "$COMMENT" >/dev/null
           echo "Updated review comment ${EXISTING}"
