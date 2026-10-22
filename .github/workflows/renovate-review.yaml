@@ -59,14 +59,14 @@ jobs:
           git fetch -q origin "${HEAD}"
         fi
 
-        TABLE_HASH="$(printf '%s' "$BODY" | grep -E '^\| ' | sha256sum | cut -c1-12)"
-        MARKER="<!-- renovate-review:${TABLE_HASH} -->"
+        REVIEW_HASH="$({ printf '%s' "$BODY" | grep -E '^\| '; git diff "${BASE}...${HEAD}"; } | sha256sum | cut -c1-12)"
+        MARKER="<!-- renovate-review:${REVIEW_HASH} -->"
         API="https://api.github.com/repos/${REPO}/issues"
         gh_api() { curl -sS --fail-with-body -H "Authorization: Bearer ${GH_TOKEN}" -H "Accept: application/vnd.github+json" "$@"; }
         COMMENTS="$(gh_api "${API}/${PR}/comments?per_page=100")"
         EXISTING="$(jq -r '[.[] | select(.body | startswith("<!-- renovate-review"))][0].id // empty' <<< "$COMMENTS")"
         if [[ "${GITHUB_EVENT_NAME}" != "workflow_dispatch" ]] && jq -e --arg m "$MARKER" 'any(.[]; .body | startswith($m))' <<< "$COMMENTS" >/dev/null; then
-          echo "These versions were already reviewed; skipping"
+          echo "These changes were already reviewed; skipping"
           exit 0
         fi
 
