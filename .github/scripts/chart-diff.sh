@@ -29,7 +29,7 @@ OLD_APP="$(app_json "${WORK}/base")"
 NEW_APP="$(app_json "${WORK}/head")"
 [[ -z "$NEW_APP" ]] && exit 0
 
-if [[ "$(jq -r '.deploy // true | tostring' <<< "$NEW_APP")" == "false" ]]; then
+if [[ "$(jq -r '.deploy | tostring' <<< "$NEW_APP")" == "false" ]]; then
   echo "Deployed: no (\`deploy: false\` in argocd/apps), merging has no live effect until the app is enabled."
   echo
 fi
