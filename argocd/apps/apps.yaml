@@ -170,7 +170,7 @@ projects:
     - repo: values_repo
       ref: values
     - repoURL: https://mojo2600.github.io/pihole-kubernetes/
-      targetRevision: 2.34.0
+      targetRevision: 2.38.0
       chart: pihole
       helm:
         valueFiles:
