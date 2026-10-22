@@ -47,7 +47,7 @@ fetch_chart() {
   else
     helm pull "$chart" --repo "$url" --version "$rev" --untar --untardir "$dest" >/dev/null 2>&1
   fi
-  ls -d "$dest"/*/ 2>/dev/null | head -n1
+  find "$dest" -mindepth 2 -maxdepth 2 -name Chart.yaml -printf '%h/\n' | head -n1
 }
 
 render() {

@@ -88,7 +88,7 @@ jobs:
           local request
           request="$(jq -n --arg model "openclaw/$1" --arg prompt "$2" --arg user "renovate-pr-${PR}-${GITHUB_RUN_ID}-$1" \
             '{model: $model, stream: false, user: $user, messages: [{role: "user", content: $prompt}]}')"
-          curl -sS --fail-with-body -m 1500 \
+          curl -sS --fail-with-body -m 1500 --retry 5 --retry-delay 60 \
             -H "Authorization: Bearer ${OPENCLAW_GATEWAY_TOKEN}" -H "Content-Type: application/json" \
             "${OPENCLAW_URL}/v1/chat/completions" -d "$request" | jq -r '.choices[0].message.content // empty'
         }
@@ -102,7 +102,7 @@ jobs:
         FOOTER=""
         if [[ "$REVIEW" != ✅* ]]; then
           echo "First pass did not approve, requesting a second opinion"
-          SECOND="$(review renovate-reviewer-deep "${PROMPT}"$'\n\n## First-pass review (verify its claims, do not trust them)\n'"${REVIEW}")"
+          SECOND="$(review renovate-reviewer-deep "${PROMPT}"$'\n\n## First-pass review (verify its claims, do not trust them)\n'"${REVIEW}" || true)"
           if [[ -n "$SECOND" ]]; then
             REVIEW="$SECOND"
             FOOTER=" · second opinion"
