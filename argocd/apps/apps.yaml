@@ -138,6 +138,11 @@ projects:
       namespace: mcp
 
   - name: nvidia-gpu-operator
+    annotations:
+      argocd.argoproj.io/compare-options: ServerSideDiff=false
+    sync:
+      options:
+      - Validate=false
     sources:
     - repo: values_repo
       ref: values
