@@ -36,7 +36,7 @@ projects:
     - repo: values_repo
       ref: values
     - repoURL: https://grafana.github.io/helm-charts
-      targetRevision: 7.0.0
+      targetRevision: 7.5.0
       chart: loki
       helm:
         valueFiles:
