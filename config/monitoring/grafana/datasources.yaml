@@ -166,11 +166,11 @@ datasources:
     auth_method: none
     allowedHosts:
     - ${jellyfin-grafana-JELLYFIN_URL}:${jellyfin-grafana-JELLYFIN_PORT}
-    httpHeaderName1: X-Emby-Token
+    httpHeaderName1: Authorization
     customHealthCheckEnabled: true
     customHealthCheckUrl: ${jellyfin-grafana-JELLYFIN_URL}:${jellyfin-grafana-JELLYFIN_PORT}/System/Info
   secureJsonData:
-    httpHeaderValue1: ${jellyfin-grafana-JELLYFIN_API_KEY}
+    httpHeaderValue1: 'MediaBrowser Token="${jellyfin-grafana-JELLYFIN_API_KEY}"'
 
 - name: TMDb
   type: yesoreyeram-infinity-datasource
