@@ -83,26 +83,26 @@ projects:
     - repo: values_repo
       ref: values
     - repoURL: oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set-controller
-      targetRevision: 0.13.0
+      targetRevision: 0.15.0
       chart: gha-runner-scale-set-controller
       helm:
         releaseName: gha-runner-scale-set-controller
     - repoURL: oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set
-      targetRevision: 0.13.0
+      targetRevision: 0.15.0
       chart: gha-runner-scale-set
       helm:
         releaseName: gha-runner-home-k8s
         valueFiles:
         - $values/helm/infra/github-actions/values-home-k8s.yaml
     - repoURL: oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set
-      targetRevision: 0.13.0
+      targetRevision: 0.15.0
       chart: gha-runner-scale-set
       helm:
         releaseName: gha-runner-fetch-ui
         valueFiles:
         - $values/helm/infra/github-actions/values-fetch-ui.yaml
     - repoURL: oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set
-      targetRevision: 0.13.0
+      targetRevision: 0.15.0
       chart: gha-runner-scale-set
       helm:
         releaseName: gha-runner-fetch-api
