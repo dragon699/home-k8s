@@ -1,5 +1,5 @@
 cronjob:
-  schedule: "0 3 * * 6"
+  schedule: "0 8 * * 6"
   timeZone: Europe/Sofia
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 1
