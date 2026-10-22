@@ -118,7 +118,7 @@ projects:
     - repo: values_repo
       ref: values
     - repoURL: https://kubernetes.github.io/ingress-nginx
-      targetRevision: 4.11.3
+      targetRevision: 4.15.1
       chart: ingress-nginx
       helm:
         valueFiles:
