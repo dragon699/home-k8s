@@ -1,0 +1,67 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: garage-webui
+  namespace: monitoring
+  labels:
+    app: garage-webui
+    env: home
+  annotations:
+    reloader.stakater.com/auto: "true"
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  selector:
+    matchLabels:
+      app: garage-webui
+  template:
+    metadata:
+      labels:
+        app: garage-webui
+        env: home
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+      containers:
+      - name: garage-webui
+        image: khairul169/garage-webui:1.1.0
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: http
+          containerPort: 3909
+        env:
+        - name: API_BASE_URL
+          value: http://garage.monitoring.svc:3903
+        - name: S3_ENDPOINT_URL
+          value: http://garage.monitoring.svc:3900
+        - name: S3_REGION
+          value: garage
+        - name: API_ADMIN_KEY
+          valueFrom:
+            secretKeyRef:
+              name: auth-garage
+              key: GARAGE_ADMIN_TOKEN
+        readinessProbe:
+          httpGet:
+            path: /
+            port: http
+          periodSeconds: 10
+        livenessProbe:
+          tcpSocket:
+            port: http
+          initialDelaySeconds: 10
+          periodSeconds: 30
+        resources:
+          requests:
+            cpu: 10m
+            memory: 32Mi
+          limits:
+            memory: 256Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop: ["ALL"]

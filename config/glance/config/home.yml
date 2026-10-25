@@ -56,6 +56,11 @@
         url: https://argocd.k8s.iaminyourpc.xyz/applications/argocd/victoriametrics?view=tree&resource=
         icon: https://i.imgur.com/176vBRC.png
         timeout: 10s
+      - title: garage
+        check-url: http://garage.monitoring.svc:3903/health
+        url: https://garage.k8s.iaminyourpc.xyz
+        icon: di:garage
+        timeout: 10s
   columns:
   - size: small
     widgets:
