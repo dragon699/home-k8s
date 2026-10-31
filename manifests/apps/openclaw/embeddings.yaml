@@ -24,7 +24,7 @@ spec:
       restartPolicy: Always
       containers:
       - name: llama-server
-        image: ghcr.io/ggml-org/llama.cpp:server@sha256:8c74db29f1a2bef3f0a331b52c4d6214601dfceed4bee0b94cc48b3b23ff257d
+        image: ghcr.io/ggml-org/llama.cpp:server@sha256:b32890309c1a33a534a01b0b461e953dc2c5a6bac20213abcf48e22847a19c85
         imagePullPolicy: IfNotPresent
         args:
         - "--embeddings"
