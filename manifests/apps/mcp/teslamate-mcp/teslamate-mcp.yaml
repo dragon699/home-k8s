@@ -30,7 +30,7 @@ spec:
           secretName: postgresql-shared-pg-cluster-ca-cert
       containers:
       - name: teslamate-mcp
-        image: ghcr.io/cobanov/teslamate-mcp:0.13.5
+        image: ghcr.io/cobanov/teslamate-mcp:0.17.0
         imagePullPolicy: IfNotPresent
         # Chart views send `clientInfo` in ui/initialize, but the MCP Apps spec
         # requires `appInfo`, so hosts reject the handshake and charts time out.
