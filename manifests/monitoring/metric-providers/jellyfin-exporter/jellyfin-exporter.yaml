@@ -26,7 +26,7 @@ spec:
       restartPolicy: Always
       containers:
       - name: jellyfin-exporter
-        image: rebelcore/jellyfin-exporter:v1.5.3
+        image: rebelcore/jellyfin-exporter:v1.6.0
         imagePullPolicy: IfNotPresent
         args:
           - "--jellyfin.address=http://$(JELLYFIN_HOST)"
