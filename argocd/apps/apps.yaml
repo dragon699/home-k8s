@@ -8,7 +8,7 @@ projects:
     - repo: values_repo
       ref: values
     - repoURL: http://pajikos.github.io/home-assistant-helm-chart
-      targetRevision: 0.3.31
+      targetRevision: 0.3.89
       chart: home-assistant
       helm:
         valueFiles:
