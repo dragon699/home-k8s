@@ -96,7 +96,7 @@ projects:
     - repo: values_repo
       ref: values
     - repoURL: https://victoriametrics.github.io/helm-charts
-      targetRevision: 0.49.0
+      targetRevision: 0.50.0
       chart: victoria-metrics-single
       helm:
         valueFiles:
