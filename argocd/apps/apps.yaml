@@ -250,7 +250,7 @@ projects:
     - repo: values_repo
       ref: values
     - repoURL: oci://ghcr.io/codewithcj/charts/sparkyfitness
-      targetRevision: 1.9.0
+      targetRevision: 1.11.0
       chart: sparkyfitness
       helm:
         valueFiles:
