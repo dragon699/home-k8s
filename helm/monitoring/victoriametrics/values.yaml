@@ -3,7 +3,7 @@ server:
 
   image:
     repository: victoriametrics/victoria-metrics
-    tag: v1.154.1
+    tag: v1.155.0
 
   retentionPeriod: 14d
 
