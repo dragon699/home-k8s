@@ -36,7 +36,7 @@ spec:
           claimName: dawarich-storage
       containers:
       - name: dawarich
-        image: freikin/dawarich:1.16.0
+        image: freikin/dawarich:1.19.0
         imagePullPolicy: IfNotPresent
         command: ["/bin/sh", "-c"]
         args:
