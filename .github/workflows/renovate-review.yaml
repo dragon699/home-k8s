@@ -73,10 +73,10 @@ jobs:
         APP="${BRANCH#renovate/}"
         APP="${APP%-major}"
         APP="${APP%-digest}"
-        DIFF="$(git diff "$BASE" "$HEAD" | head -c 20000)"
+        DIFF="$(git diff "${BASE}...${HEAD}" | head -c 20000 || true)"
         VALUES=""
         for FILE in $(git ls-tree -r --name-only "$HEAD" -- helm | grep -E "^helm/[^/]+/${APP}/[^/]+\.ya?ml$" || true); do
-          VALUES+="--- ${FILE}"$'\n'"$(git show "${HEAD}:${FILE}" | head -c 15000)"$'\n'
+          VALUES+="--- ${FILE}"$'\n'"$(git show "${HEAD}:${FILE}" | head -c 15000 || true)"$'\n'
         done
 
         RENDER_DIR="$(mktemp -d -p "${RUNNER_TEMP}")"
@@ -86,7 +86,7 @@ jobs:
 
         CONFIGS=""
         for FILE in $(git ls-tree -r --name-only "$HEAD" -- config | grep -E "^config/([^/]+/)?${APP}/" || true); do
-          CONFIGS+="--- ${FILE}"$'\n'"$(git show "${HEAD}:${FILE}" | head -c 8000)"$'\n'
+          CONFIGS+="--- ${FILE}"$'\n'"$(git show "${HEAD}:${FILE}" | head -c 8000 || true)"$'\n'
         done
         CALLERS="$(git grep -n -I -i -w -C 5 -e "${APP}" "$HEAD" -- config helm manifests ":(exclude)manifests/*/${APP}/*" ":(exclude)helm/*/${APP}/*" ":(exclude)config/${APP}/*" ":(exclude)config/*/${APP}/*" | sed "s#^${HEAD}:##" | head -c 10000 || true)"
 
