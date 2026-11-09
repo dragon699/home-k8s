@@ -13,7 +13,7 @@ spec:
       backoffLimit: 2
       template:
         spec:
-          restartPolicy: Never
+          restartPolicy: OnFailure
           volumes:
           - name: metrics
             hostPath:
