@@ -24,12 +24,19 @@ spec:
         env: home
     spec:
       restartPolicy: Always
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: speed-relay-data
       containers:
         - name: speed-relay
           image: ghcr.io/dragon699/speed/relay:0.1.1
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
+          volumeMounts:
+            - name: data
+              mountPath: /data
           env:
             - name: DEVICE_KEY
               valueFrom:
