@@ -8,6 +8,7 @@ on:
     - main
     paths:
     - '.github/workflows/argocd.yaml'
+    - '.github/scripts/argocd-sync.sh'
     - 'argocd/**'
     - 'config/**'
     - 'helm/**'
@@ -22,7 +23,8 @@ jobs:
   Inspect:
     runs-on: gha-runner-home-k8s
     outputs:
-      items: ${{ steps.items_to_sync.outputs.items }}
+      prerequisites: ${{ steps.items_to_sync.outputs.prerequisites }}
+      apps: ${{ steps.items_to_sync.outputs.apps }}
     
     steps:
     - name: Fetch code
@@ -43,6 +45,7 @@ jobs:
         }
 
         BASE_SHA="${{ github.event.before }}"
+        PREREQUISITES=()
         ITEMS_TO_SYNC=()
 
         if [[ -z "$BASE_SHA" || "$BASE_SHA" =~ ^0+$ ]]; then
@@ -56,12 +59,24 @@ jobs:
         CHANGED_FILES="$(git diff --name-only "$BASE_SHA" "${{ github.sha }}")"
 
         if grep -qE "^argocd/apps/" <<< "$CHANGED_FILES"; then
-          ITEMS_TO_SYNC+=("argocd-apps")
+          PREREQUISITES+=("argocd-apps")
         fi
 
         if grep -qE "^config/" <<< "$CHANGED_FILES"; then
-          ITEMS_TO_SYNC+=("config-generator")
+          PREREQUISITES+=("config-generator")
         fi
+
+        app_entries() {
+          git show "$1:$2" 2>/dev/null | awk '/^  - name: /{name=$3; next} /^  [^ -]/{name=""} name!=""{print name "\t" $0}'
+        }
+
+        for FILE in $(grep -E "^argocd/apps/.+\.ya?ml$" <<< "$CHANGED_FILES" || true); do
+          CHANGED_APPS="$(diff <(app_entries "$BASE_SHA" "$FILE") <(app_entries "${{ github.sha }}" "$FILE") | sed -nE 's/^[<>] ([^\t]+)\t.*/\1/p' | sort -u || true)"
+          CURRENT_APPS="$(app_entries "${{ github.sha }}" "$FILE" | cut -f1 | sort -u)"
+          while read -r APP; do
+            [[ -n "$APP" ]] && ITEMS_TO_SYNC+=("$APP")
+          done < <(comm -12 <(printf '%s\n' "$CHANGED_APPS") <(printf '%s\n' "$CURRENT_APPS"))
+        done
 
         for DIR in helm manifests; do
           for PROJECT in apps infra monitoring; do
@@ -75,65 +90,43 @@ jobs:
           done
         done
 
-        mapfile -t ITEMS_TO_SYNC < <(printf '%s\n' "${ITEMS_TO_SYNC[@]}" | sed '/^$/d' | sort -u)
+        to_matrix() {
+          printf '%s\n' "$@" | sed '/^$/d' | sort -u | jq -R '{name: .}' | jq -sc '{include: .}'
+        }
 
-        ITEMS_JSON=""
-        for NAME in "${ITEMS_TO_SYNC[@]}"; do
-          [[ -n "$ITEMS_JSON" ]] && ITEMS_JSON+=","
-          ITEMS_JSON+="{\"name\":\"${NAME}\"}"
-        done
+        printf 'prerequisites=%s\n' "$(to_matrix "${PREREQUISITES[@]}")" >> "$GITHUB_OUTPUT"
+        printf 'apps=%s\n' "$(to_matrix "${ITEMS_TO_SYNC[@]}")" >> "$GITHUB_OUTPUT"
 
-        printf 'items={"include":[%s]}\n' "$ITEMS_JSON" >> "$GITHUB_OUTPUT"
-
-  Sync:
+  Prerequisites:
     name: Sync ${{ matrix.name || ' ' }}
     needs: Inspect
     runs-on: gha-runner-home-k8s
-    if: ${{ needs.Inspect.outputs.items != '{"include":[]}' }}
+    if: ${{ needs.Inspect.outputs.prerequisites != '{"include":[]}' }}
     strategy:
-      matrix: ${{ fromJson(needs.Inspect.outputs.items) }}
+      matrix: ${{ fromJson(needs.Inspect.outputs.prerequisites) }}
       fail-fast: false
     timeout-minutes: 10
 
     steps:
+    - name: Fetch code
+      uses: actions/checkout@v7
+
     - name: Sync in ArgoCD
-      env:
-        APP: ${{ matrix.name }}
-      run: |
-        set -euo pipefail
+      run: bash .github/scripts/argocd-sync.sh "${{ matrix.name }}"
 
-        SA=/var/run/secrets/kubernetes.io/serviceaccount
-        URL="https://kubernetes.default.svc/apis/argoproj.io/v1alpha1/namespaces/argocd/applications/${APP}"
-        kube() { curl -sS --fail-with-body --cacert "$SA/ca.crt" -H "Authorization: Bearer $(cat "$SA/token")" "$@"; }
+  Sync:
+    name: Sync ${{ matrix.name || ' ' }}
+    needs: [Inspect, Prerequisites]
+    runs-on: gha-runner-home-k8s
+    if: ${{ always() && needs.Inspect.result == 'success' && needs.Prerequisites.result != 'failure' && needs.Inspect.outputs.apps != '{"include":[]}' }}
+    strategy:
+      matrix: ${{ fromJson(needs.Inspect.outputs.apps) }}
+      fail-fast: false
+    timeout-minutes: 10
 
-        # Wait for a running operation (e.g. an auto-sync) to finish first
-        for i in $(seq 1 60); do
-          [ "$(kube "$URL" | jq -r '.operation != null')" = "false" ] && break
-          echo "Waiting for the current operation on ${APP} to finish..."
-          sleep 5
-        done
+    steps:
+    - name: Fetch code
+      uses: actions/checkout@v7
 
-        # A sync requested this way doesn't inherit the app's syncOptions (e.g. ServerSideApply)
-        PATCH=$(kube "$URL" | jq -c '{operation: {
-          initiatedBy: {username: "github-actions"},
-          sync: {prune: false, syncOptions: (.spec.syncPolicy.syncOptions // [])},
-          retry: {limit: 15, backoff: {duration: "10s", factor: 1, maxDuration: "10s"}}
-        }}')
-
-        STARTED=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-        kube -X PATCH -H "Content-Type: application/merge-patch+json" "$URL" -d "$PATCH" >/dev/null
-        echo "Sync of ${APP} requested on $(TZ=Europe/Sofia date +'%d/%m at %H:%M:%S')"
-
-        for i in $(seq 1 100); do
-          read -r STARTED_AT PHASE < <(kube "$URL" | jq -r '[.status.operationState.startedAt // "", .status.operationState.phase // ""] | @tsv')
-          if [[ ! "$STARTED_AT" < "$STARTED" ]] && [[ "$PHASE" =~ ^(Succeeded|Failed|Error)$ ]]; then
-            FINISHED=$(kube "$URL" | jq -r '.status.operationState.finishedAt')
-            kube "$URL" | jq -r '"\(.status.operationState.phase): \(.status.operationState.message)",
-              "sync: \(.status.sync.status), health: \(.status.health.status)"'
-            echo "Finished on $(TZ=Europe/Sofia date -d "$FINISHED" +'%d/%m at %H:%M:%S')"
-            [ "$PHASE" = "Succeeded" ] && exit 0 || exit 1
-          fi
-          sleep 5
-        done
-        echo "Timed out waiting for the sync of ${APP}"
-        exit 1
+    - name: Sync in ArgoCD
+      run: bash .github/scripts/argocd-sync.sh "${{ matrix.name }}"
