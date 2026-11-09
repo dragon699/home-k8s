@@ -146,7 +146,7 @@ projects:
     - repo: values_repo
       ref: values
     - repoURL: https://metallb.github.io/metallb
-      targetRevision: 0.16.1
+      targetRevision: 0.16.2
       chart: metallb
       helm:
         valueFiles:
