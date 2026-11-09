@@ -24,7 +24,7 @@ spec:
       restartPolicy: Always
       containers:
         - name: speed-web
-          image: ghcr.io/dragon699/speed/web:0.1.1
+          image: ghcr.io/dragon699/speed/web:0.2.0
           imagePullPolicy: Always
           ports:
             - containerPort: 80
