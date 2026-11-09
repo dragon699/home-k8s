@@ -73,7 +73,7 @@ spec:
               key: password
       containers:
       - name: immich-server
-        image: ghcr.io/immich-app/immich-server:v3.3.5
+        image: ghcr.io/immich-app/immich-server:v3.3.6
         imagePullPolicy: IfNotPresent
         resources:
           requests:
