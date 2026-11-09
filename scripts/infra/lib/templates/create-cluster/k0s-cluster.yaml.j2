@@ -24,6 +24,7 @@ spec:
     {% if cluster_nodes | length == 1 %}
     installFlags:
       - --no-taints
+      - --disable-components=konnectivity-server
       - --profile=custom-eviction
       - --kubelet-extra-args=--max-pods=240
     {% endif %}

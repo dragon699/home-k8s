@@ -143,9 +143,14 @@ projects:
 
   - name: metallb
     sources:
+    - repo: values_repo
+      ref: values
     - repoURL: https://metallb.github.io/metallb
       targetRevision: 0.16.1
       chart: metallb
+      helm:
+        valueFiles:
+        - $values/helm/infra/metallb/values.yaml
     - repo: gitops_repo
       path: manifests/infra/metallb
     target:
