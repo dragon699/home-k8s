@@ -243,6 +243,20 @@ secrets:
     auth-sparkyfitness:
       provider: vault
 
+  speed:
+    data-speed:
+      spec:
+        refreshInterval: 0m0s
+        target:
+          name: data-speed
+          creationPolicy: Owner
+        dataFrom:
+        - sourceRef:
+            generatorRef:
+              apiVersion: generators.external-secrets.io/v1alpha1
+              kind: Password
+              name: data-speed
+
   sure:
     auth-brandfetch-sure:
       provider: vault

@@ -260,6 +260,14 @@ projects:
     target:
       namespace: sparkyfitness
 
+  - name: speed
+    sources:
+    - repo: gitops_repo
+      path: manifests/apps/speed
+    target:
+      namespace: speed
+      create_namespace: true
+
   - name: sure
     sources:
     - repo: values_repo

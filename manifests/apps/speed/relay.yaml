@@ -1,0 +1,63 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: speed-relay
+  namespace: speed
+  labels:
+    app: speed-relay
+    env: home
+  annotations:
+    reloader.stakater.com/auto: "true"
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: speed-relay
+  template:
+    metadata:
+      labels:
+        app: speed-relay
+        env: home
+    spec:
+      restartPolicy: Always
+      containers:
+        - name: speed-relay
+          image: ghcr.io/dragon699/speed/relay:0.1.0
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DEVICE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: data-speed
+                  key: password
+          envFrom:
+            - configMapRef:
+                name: config-speed-relay
+          resources:
+            requests:
+              cpu: 20m
+              memory: 64Mi
+            limits:
+              memory: 256Mi
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /api/ready
+              port: 8080
+            initialDelaySeconds: 3
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3

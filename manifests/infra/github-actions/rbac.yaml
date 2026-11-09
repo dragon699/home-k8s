@@ -116,3 +116,43 @@ subjects:
 - kind: ServiceAccount
   name: gha-runner-fetch-ui
   namespace: github
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: gha-runner-speed
+  namespace: github
+  labels:
+    env: home
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: gha-runner-speed-sync
+  namespace: argocd
+  labels:
+    env: home
+rules:
+- apiGroups: ["argoproj.io"]
+  resources: ["applications"]
+  resourceNames: ["speed"]
+  verbs: ["get", "patch"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: gha-runner-speed-sync
+  namespace: argocd
+  labels:
+    env: home
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: gha-runner-speed-sync
+subjects:
+- kind: ServiceAccount
+  name: gha-runner-speed
+  namespace: github
