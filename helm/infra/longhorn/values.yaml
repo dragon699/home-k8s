@@ -14,9 +14,13 @@ defaultSettings:
   logLevel: Warn
   dataEngineLogLevel: Warning
   storageReservedPercentageForDefaultDisk: 10
+  concurrentAutomaticEngineUpgradePerNodeLimit: 3
 
 longhornUI:
   replicas: 1
+
+networkPolicies:
+  restrictInternalTraffic: false
 
 service:
   ui:
