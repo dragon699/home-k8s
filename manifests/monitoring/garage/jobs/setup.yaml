@@ -22,7 +22,7 @@ spec:
           defaultMode: 0755
       containers:
       - name: setup
-        image: curlimages/curl:8.16.0
+        image: curlimages/curl:8.23.0
         imagePullPolicy: IfNotPresent
         command: ["/bin/sh", "/scripts/setup.sh"]
         env:
