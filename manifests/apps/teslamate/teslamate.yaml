@@ -33,7 +33,7 @@ spec:
           claimName: teslamate
       containers:
       - name: teslamate
-        image: teslamate/teslamate:4.3.0
+        image: teslamate/teslamate:4.4.0
         ports:
         - containerPort: 4000
         volumeMounts:
