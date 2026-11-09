@@ -24,7 +24,7 @@ spec:
               defaultMode: 0755
           containers:
           - name: unseal
-            image: hashicorp/vault:2.2.0
+            image: hashicorp/vault:2.2.1
             imagePullPolicy: IfNotPresent
             volumeMounts:
             - name: script-vault-unseal
