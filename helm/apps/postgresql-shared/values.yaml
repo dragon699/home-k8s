@@ -14,9 +14,13 @@ patroni:
 backups:
   enabled: false
 
+logcollector:
+  enabled: false
+
 proxy:
   pgBouncer:
     replicas: 1
+    exposeSuperusers: true
     config:
       global:
         client_tls_sslmode: allow
