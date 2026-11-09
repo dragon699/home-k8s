@@ -1,6 +1,8 @@
 auth:
   mode: none
 
+allowedHosts: ["kube.k8s.iaminyourpc.xyz"]
+
 mcp:
   enabled: true
 
