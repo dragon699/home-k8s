@@ -64,8 +64,8 @@ jobs:
         API="https://api.github.com/repos/${REPO}/issues"
         gh_api() { curl -sS --fail-with-body -H "Authorization: Bearer ${GH_TOKEN}" -H "Accept: application/vnd.github+json" "$@"; }
         COMMENTS="$(gh_api "${API}/${PR}/comments?per_page=100")"
-        EXISTING="$(jq -r '[.[] | select(.body | startswith("<!-- renovate-review"))][0].id // empty' <<< "$COMMENTS")"
-        if [[ "${GITHUB_EVENT_NAME}" != "workflow_dispatch" ]] && jq -e --arg m "$MARKER" 'any(.[]; .body | startswith($m))' <<< "$COMMENTS" >/dev/null; then
+        PREVIOUS="$(jq -r '.[] | select(.body | startswith("<!-- renovate-review")) | .node_id' <<< "$COMMENTS")"
+        if [[ "${GITHUB_EVENT_NAME}" != "workflow_dispatch" ]] && jq -e --arg m "$MARKER" '[.[] | select(.body | startswith("<!-- renovate-review"))] | last | .body // "" | startswith($m)' <<< "$COMMENTS" >/dev/null; then
           echo "These changes were already reviewed; skipping"
           exit 0
         fi
@@ -126,13 +126,12 @@ jobs:
         fi
 
         COMMENT="$(jq -n --arg body "${MARKER}"$'\n'"${REVIEW}"$'\n\n'"<sub>Reviewed ${HEAD:0:7} on $(TZ=Europe/Sofia date +'%d/%m at %H:%M')${FOOTER}</sub>" '{body: $body}')"
-        if [[ -n "$EXISTING" ]]; then
-          gh_api -X PATCH "${API}/comments/${EXISTING}" -d "$COMMENT" >/dev/null
-          echo "Updated review comment ${EXISTING}"
-        else
-          gh_api -X POST "${API}/${PR}/comments" -d "$COMMENT" >/dev/null
-          echo "Posted review comment"
-        fi
+        gh_api -X POST "${API}/${PR}/comments" -d "$COMMENT" >/dev/null
+        echo "Posted review comment"
+        for NODE in $PREVIOUS; do
+          RESULT="$(gh_api -X POST https://api.github.com/graphql -d "$(jq -n --arg id "$NODE" '{query: "mutation($id: ID!) { minimizeComment(input: {subjectId: $id, classifier: OUTDATED}) { minimizedComment { isMinimized } } }", variables: {id: $id}}')" || true)"
+          jq -e '.data.minimizeComment.minimizedComment.isMinimized' <<< "$RESULT" >/dev/null || echo "::warning::Could not collapse previous review ${NODE}: ${RESULT}"
+        done
 
         if [[ -n "$FAILURES" ]]; then
           echo "::error::Automated checks failed"
