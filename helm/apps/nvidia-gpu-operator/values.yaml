@@ -28,7 +28,7 @@ toolkit:
   - name: CONTAINERD_RUNTIME_CLASS
     value: nvidia
   - name: RUNTIME_CONFIG_SOURCE
-    value: file=/run/k0s/containerd-cri.toml
+    value: file=/etc/k0s/containerd.toml
 
 node-feature-discovery:
   master:
