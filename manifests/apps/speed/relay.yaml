@@ -30,7 +30,7 @@ spec:
             claimName: speed-relay-data
       containers:
         - name: speed-relay
-          image: ghcr.io/dragon699/speed/relay:0.4.0
+          image: ghcr.io/dragon699/speed/relay:0.4.1
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
