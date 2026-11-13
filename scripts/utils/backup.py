@@ -360,6 +360,23 @@ class Backups:
 
             return f'{status.get('namespace')}/{pvc}' if pvc else volume['name']
 
+        def wait_snapshot(name: str):
+            deadline = monotonic() + 120
+
+            while monotonic() < deadline:
+                try:
+                    item = self.k8s_request('GET', f'{crd_path}/snapshots/{name}')
+
+                    if item.get('status', {}).get('readyToUse'):
+                        return
+
+                except Exception:
+                    pass
+
+                sleep(2)
+
+            raise TimeoutError(f'snapshot "{name}" was not ready within 120s')
+
         def start_backup(volume: dict):
             existing = {item['metadata']['name'] for item in list_volume_backups(volume['name'])}
 
@@ -368,6 +385,9 @@ class Backups:
             self.log(f'longhorn: Backing up "{describe(volume)}"..')
 
             for action in ('snapshotCreate', 'snapshotBackup'):
+                if action == 'snapshotBackup':
+                    wait_snapshot(snapshot['name'])
+
                 self.longhorn_request(
                     'POST',
                     f'/v1/volumes/{volume['name']}',
