@@ -3,6 +3,7 @@ revisionHistoryLimit: 1
 controller:
   replicaCount: 1
   hostNetwork: true
+  dnsPolicy: ClusterFirstWithHostNet
 
   updateStrategy:
     type: RollingUpdate
@@ -18,3 +19,15 @@ controller:
   config:
     use-forwarded-headers: "true"
     enable-real-ip: "true"
+    enable-opentelemetry: "true"
+    otlp-collector-host: grafana-alloy.monitoring.svc.cluster.local
+    otlp-collector-port: "4317"
+    otel-service-name: ingress-nginx
+    otel-sampler: AlwaysOn
+
+  metrics:
+    enabled: true
+    service:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "10254"
