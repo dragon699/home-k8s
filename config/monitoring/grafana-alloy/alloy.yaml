@@ -26,7 +26,7 @@ otelcol.receiver.otlp "home_otelcol" {
 
   output {
     metrics                    = [otelcol.processor.deltatocumulative.home_otelcol.input]
-    traces                     = [otelcol.processor.batch.home_otelcol.input]
+    traces                     = [otelcol.processor.k8sattributes.home_traces.input]
   }
 }
 
@@ -37,14 +37,13 @@ otelcol.processor.deltatocumulative "home_otelcol" {
   }
 }
 
-// Batch traces and metrics
+// Batch metrics
 otelcol.processor.batch "home_otelcol" {
   timeout                      = "10s"
   send_batch_size              = 512
 
   output {
     metrics                    = [otelcol.exporter.prometheus.home_otelcol.input]
-    traces                     = [otelcol.exporter.otlphttp.home_otelcol.input]
   }
 }
 
@@ -57,18 +56,6 @@ otelcol.exporter.prometheus "home_otelcol" {
 prometheus.remote_write "home_otelcol" {
   endpoint {
     url                        = sys.env("ENDPOINT_VICTORIAMETRICS")
-  }
-}
-
-// Write traces to Tempo
-otelcol.exporter.otlphttp "home_otelcol" {
-  client {
-    endpoint                   = sys.env("ENDPOINT_TEMPO_OTLPHTTP")
-
-    tls {
-      insecure                 = true
-      insecure_skip_verify     = true
-    }
   }
 }
 
@@ -347,6 +334,49 @@ loki.write "home_logs" {
 otelcol.receiver.otlp "home_traces_otlpgrpc" {
   grpc {
     endpoint                   = "0.0.0.0:4317"
+  }
+
+  output {
+    traces                     = [otelcol.processor.k8sattributes.home_traces.input]
+  }
+}
+
+// Add the sending pod's Kubernetes metadata to every span
+otelcol.processor.k8sattributes "home_traces" {
+  extract {
+    metadata                   = [
+      "k8s.namespace.name",
+      "k8s.pod.name",
+      "k8s.deployment.name",
+      "k8s.statefulset.name",
+      "k8s.daemonset.name",
+      "k8s.node.name",
+    ]
+  }
+
+  pod_association {
+    source {
+      from                     = "connection"
+    }
+  }
+
+  output {
+    traces                     = [otelcol.processor.transform.home_traces_status.input]
+  }
+}
+
+// Derive the span status from the HTTP status code when the sender left it unset
+otelcol.processor.transform "home_traces_status" {
+  error_mode                   = "ignore"
+
+  trace_statements {
+    context                    = "span"
+    statements                 = [
+      `set(span.status.code, 2) where span.status.code == 0 and span.attributes["http.status_code"] != nil and Int(span.attributes["http.status_code"]) >= 400`,
+      `set(span.status.code, 1) where span.status.code == 0 and span.attributes["http.status_code"] != nil and Int(span.attributes["http.status_code"]) >= 200 and Int(span.attributes["http.status_code"]) < 300`,
+      `set(span.status.code, 2) where span.status.code == 0 and span.attributes["http.response.status_code"] != nil and Int(span.attributes["http.response.status_code"]) >= 400`,
+      `set(span.status.code, 1) where span.status.code == 0 and span.attributes["http.response.status_code"] != nil and Int(span.attributes["http.response.status_code"]) >= 200 and Int(span.attributes["http.response.status_code"]) < 300`,
+    ]
   }
 
   output {
