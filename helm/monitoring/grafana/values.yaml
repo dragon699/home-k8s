@@ -31,9 +31,6 @@ imageRenderer:
   annotations:
     reloader.stakater.com/auto: "true"
 
-env:
-  OTEL_EXPORTER_OTLP_ENDPOINT: grafana-alloy.monitoring.svc:4317
-
 envFromSecrets:
 - name: data-authentik-home-k8s
   prefix: authentik-home-k8s-
