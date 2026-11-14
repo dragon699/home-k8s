@@ -27,7 +27,7 @@ spec:
           name: config-krakend
       containers:
       - name: krakend
-        image: krakend:3.0.3
+        image: krakend:3.0.4
         imagePullPolicy: IfNotPresent
         volumeMounts:
         - name: config-krakend
