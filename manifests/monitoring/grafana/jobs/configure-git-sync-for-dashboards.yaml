@@ -122,4 +122,4 @@ spec:
               name: auth-grafana-sync-dashboards
               key: pat
         - name: DEFAULT_HOME_DASHBOARD_UID
-          value: kOuP_Fggz
+          value: openclaw-cluster-qa
