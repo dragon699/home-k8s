@@ -9,6 +9,11 @@ grafana:
     name: auth-grafana-mcp
     key: GRAFANA_SA_TOKEN
 
+env:
+  OTEL_EXPORTER_OTLP_ENDPOINT: http://grafana-alloy.monitoring.svc:4317
+  OTEL_EXPORTER_OTLP_INSECURE: "true"
+  OTEL_LOGS_EXPORTER: none
+
 extraArgs:
 - -transport
 - streamable-http

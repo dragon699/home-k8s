@@ -54,6 +54,8 @@ spec:
             drop:
             - ALL
         env:
+        - name: OTEL_EXPORTER_OTLP_ENDPOINT
+          value: "http://grafana-alloy.monitoring.svc:4318"
         - name: DATABASE_URL
           valueFrom:
             secretKeyRef:
