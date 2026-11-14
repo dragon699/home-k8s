@@ -18,3 +18,4 @@ s3_region = "garage"
 [admin]
 api_bind_addr = "[::]:3903"
 metrics_require_token = false
+trace_sink = "http://grafana-alloy.monitoring.svc:4317"
