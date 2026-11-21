@@ -1,0 +1,64 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tdashcam-studio
+  namespace: tdashcam-studio
+  labels:
+    app: tdashcam-studio
+    env: home
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tdashcam-studio
+  template:
+    metadata:
+      labels:
+        app: tdashcam-studio
+        env: home
+    spec:
+      restartPolicy: Always
+      automountServiceAccountToken: false
+      imagePullSecrets:
+      - name: registry-tdashcam-studio
+      volumes:
+      - name: clips
+        hostPath:
+          path: /srv/Backups/TESLA/TeslaCam
+          type: Directory
+      containers:
+      - name: tdashcam-studio
+        image: ghcr.io/dragon699/tdashcam-studio:1.1.23-1
+        ports:
+        - containerPort: 80
+        env:
+        - name: MEDIA_ROOT
+          value: /data
+        volumeMounts:
+        - name: clips
+          mountPath: /data
+          readOnly: true
+        resources:
+          requests:
+            cpu: 10m
+            memory: 32Mi
+          limits:
+            memory: 128Mi
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 3
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3

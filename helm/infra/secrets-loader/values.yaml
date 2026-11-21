@@ -80,9 +80,6 @@ secrets:
     registry-fetch-ui:
       provider: vault
       type: dockerconfigjson
-    # Migrated to OIDC
-    # auth-fetch-ui:
-    #   provider: vault
 
   github:
     data-github-actions:
@@ -101,11 +98,6 @@ secrets:
       provider: shared
     data-redis-shared:
       provider: shared
-
-  # Migrated to OIDC
-  # longhorn:
-  #   auth-longhorn:
-  #     provider: vault
 
   mcp:
     auth-grafana-mcp:
@@ -138,9 +130,6 @@ secrets:
       provider: shared
     data-postgresql-shared-sure:
       provider: shared
-    # Migrated to OIDC
-    # auth-grafana-alloy:
-    #   provider: vault
     data-grafana-alloy:
       provider: vault
     auth-grafana:
@@ -191,15 +180,7 @@ secrets:
     auth-pihole:
       provider: vault
 
-  # Migrated to OIDC
-  # qbittorrent:
-  #   auth-qbittorrent:
-  #     provider: vault
-
   radar:
-    # Migrated to OIDC
-    # auth-radar:
-    #   provider: vault
     auth-radar-argocd:
       provider: vault
 
@@ -315,9 +296,6 @@ secrets:
   teslamate:
     data-teslamate:
       provider: vault
-    # Migrated to OIDC
-    # auth-teslamate:
-    #   provider: vault
     data-postgresql-shared-teslamate-teslamate:
       provider: shared
     postgresql-shared-pg-cluster-ca-cert:
@@ -337,3 +315,8 @@ secrets:
       provider: shared
     data-authentik-home-k8s:
       provider: shared
+
+  tdashcam-studio:
+    registry-tdashcam-studio:
+      provider: vault
+      type: dockerconfigjson

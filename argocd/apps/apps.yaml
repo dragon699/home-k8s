@@ -284,6 +284,14 @@ projects:
       namespace: sure
       create_namespace: true
 
+  - name: tdashcam-studio
+    sources:
+    - repo: gitops_repo
+      path: manifests/apps/tdashcam-studio
+    target:
+      namespace: tdashcam-studio
+      create_namespace: true
+
   - name: teslamate
     sources:
     - repo: gitops_repo
