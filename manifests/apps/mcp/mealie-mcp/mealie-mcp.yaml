@@ -1,0 +1,119 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mealie-mcp
+  namespace: mcp
+  labels:
+    app: mealie-mcp
+    env: home
+  annotations:
+    reloader.stakater.com/auto: "true"
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: mealie-mcp
+  template:
+    metadata:
+      labels:
+        app: mealie-mcp
+        env: home
+    spec:
+      restartPolicy: Always
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+      initContainers:
+      - name: install
+        image: ghcr.io/astral-sh/uv:0.13.10-python3.12-trixie-slim
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+        env:
+        - name: MEALIE_MCP_COMMIT
+          value: "86ebf379536cf2b3a07c2007798db02894c51f21"
+        - name: HOME
+          value: "/tmp"
+        - name: UV_CACHE_DIR
+          value: "/tmp/uv-cache"
+        - name: UV_PYTHON_DOWNLOADS
+          value: "never"
+        command: ["sh", "-ec"]
+        args:
+        - |
+          python -c "import io,sys,tarfile,urllib.request; tarfile.open(fileobj=io.BytesIO(urllib.request.urlopen(sys.argv[1]).read())).extractall('/tmp/src', filter='data')" "https://github.com/rldiao/mealie-mcp-server/archive/${MEALIE_MCP_COMMIT}.tar.gz"
+          cp -r "/tmp/src/mealie-mcp-server-${MEALIE_MCP_COMMIT}/." /app/
+          cd /app
+          uv sync --frozen --no-dev
+        resources:
+          requests:
+            cpu: 50m
+            memory: 128Mi
+          limits:
+            memory: 512Mi
+        volumeMounts:
+        - name: app
+          mountPath: /app
+        - name: tmp
+          mountPath: /tmp
+      containers:
+      - name: mealie-mcp
+        image: ghcr.io/astral-sh/uv:0.13.10-python3.12-trixie-slim
+        imagePullPolicy: IfNotPresent
+        workingDir: /app
+        command: ["/app/.venv/bin/python", "/app/src/server.py"]
+        ports:
+        - containerPort: 8765
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+        env:
+        - name: MEALIE_BASE_URL
+          value: "http://mealie.mealie.svc"
+        - name: MEALIE_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: auth-mealie-mcp
+              key: MEALIE_API_KEY
+        - name: MCP_TRANSPORT
+          value: "streamable-http"
+        - name: MCP_HOST
+          value: "0.0.0.0"
+        - name: MCP_PORT
+          value: "8765"
+        - name: PYTHONDONTWRITEBYTECODE
+          value: "1"
+        resources:
+          requests:
+            cpu: 50m
+            memory: 128Mi
+          limits:
+            memory: 512Mi
+        livenessProbe:
+          tcpSocket:
+            port: 8765
+          initialDelaySeconds: 10
+          periodSeconds: 30
+        readinessProbe:
+          tcpSocket:
+            port: 8765
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        volumeMounts:
+        - name: app
+          mountPath: /app
+      volumes:
+      - name: app
+        emptyDir: {}
+      - name: tmp
+        emptyDir: {}

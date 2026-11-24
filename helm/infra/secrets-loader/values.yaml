@@ -106,6 +106,8 @@ secrets:
       provider: vault
     auth-jellyfin-mcp:
       provider: vault
+    auth-mealie-mcp:
+      provider: vault
     auth-pihole-mcp:
       provider: vault
     auth-qbittorrent-mcp:
