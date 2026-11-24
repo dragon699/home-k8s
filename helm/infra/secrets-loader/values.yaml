@@ -320,3 +320,7 @@ secrets:
     registry-tdashcam-studio:
       provider: vault
       type: dockerconfigjson
+
+  mealie:
+    data-postgresql-shared-mealie:
+      provider: shared

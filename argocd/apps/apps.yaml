@@ -313,3 +313,11 @@ projects:
       path: manifests/apps/vikunja
     target:
       namespace: vikunja
+
+  - name: mealie
+    sources:
+    - repo: gitops_repo
+      path: manifests/apps/mealie
+    target:
+      namespace: mealie
+      create_namespace: true

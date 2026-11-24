@@ -85,3 +85,9 @@ users:
   databases:
   - sure
   options: "SUPERUSER"
+
+- name: mealie
+  secretName: data-postgresql-shared-mealie
+  databases:
+  - mealie
+  options: "SUPERUSER"

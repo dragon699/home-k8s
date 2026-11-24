@@ -1,0 +1,28 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: mealie
+  namespace: mealie
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-home
+    kubernetes.io/ingress.class: nginx
+  labels:
+    app: mealie
+    env: home
+spec:
+  tls:
+  - hosts:
+    - mealie.iaminyourpc.xyz
+    secretName: tls-mealie-iaminyourpc-xyz
+  rules:
+  - host: mealie.iaminyourpc.xyz
+    http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: mealie
+            port:
+              number: 80

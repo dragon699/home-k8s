@@ -1,0 +1,92 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mealie
+  namespace: mealie
+  labels:
+    app: mealie
+    env: home
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mealie
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: mealie
+        env: home
+    spec:
+      restartPolicy: Always
+      containers:
+      - name: mealie
+        image: ghcr.io/mealie-recipes/mealie:v3.31.0
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 9000
+        env:
+        - name: ALLOW_SIGNUP
+          value: "false"
+        - name: PUID
+          value: "1000"
+        - name: PGID
+          value: "1000"
+        - name: TZ
+          value: "Europe/Sofia"
+        - name: BASE_URL
+          value: "https://mealie.iaminyourpc.xyz"
+        - name: DB_ENGINE
+          value: "postgres"
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: data-postgresql-shared-mealie
+              key: user
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: data-postgresql-shared-mealie
+              key: password
+        - name: POSTGRES_SERVER
+          valueFrom:
+            secretKeyRef:
+              name: data-postgresql-shared-mealie
+              key: host
+        - name: POSTGRES_PORT
+          valueFrom:
+            secretKeyRef:
+              name: data-postgresql-shared-mealie
+              key: port
+        - name: POSTGRES_DB
+          valueFrom:
+            secretKeyRef:
+              name: data-postgresql-shared-mealie
+              key: dbname
+        volumeMounts:
+        - name: mealie
+          mountPath: /app/data
+      volumes:
+      - name: mealie
+        persistentVolumeClaim:
+          claimName: mealie
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mealie
+  namespace: mealie
+  labels:
+    app: mealie
+    env: home
+spec:
+  selector:
+    app: mealie
+  ports:
+  - name: http
+    port: 80
+    targetPort: 9000
