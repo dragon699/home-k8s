@@ -36,7 +36,7 @@ spec:
     {% endif %}
   {% endfor %}
   k0s:
-    version: {{ cluster_version | default('1.30.2') }}+k0s.0
+    version: {{ cluster_version }}
     dynamicConfig: true
     config:
       apiVersion: k0s.k0sproject.io/v1beta1

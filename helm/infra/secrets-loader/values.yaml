@@ -324,3 +324,5 @@ secrets:
   mealie:
     data-postgresql-shared-mealie:
       provider: shared
+    data-authentik-home-k8s:
+      provider: shared

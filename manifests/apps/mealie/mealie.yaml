@@ -39,6 +39,25 @@ spec:
           value: "Europe/Sofia"
         - name: BASE_URL
           value: "https://mealie.iaminyourpc.xyz"
+        - name: OIDC_AUTH_ENABLED
+          value: "true"
+        - name: OIDC_PROVIDER_NAME
+          value: "Authentik"
+        - name: OIDC_CONFIGURATION_URL
+          value: "https://auth.k8s.iaminyourpc.xyz/application/o/home-k8s/.well-known/openid-configuration"
+        - name: OIDC_CLIENT_ID
+          value: "home-k8s"
+        - name: OIDC_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: data-authentik-home-k8s
+              key: password
+        - name: OIDC_SIGNUP_ENABLED
+          value: "false"
+        - name: OIDC_REQUIRES_EMAIL_VERIFICATION
+          value: "false"
+        - name: OIDC_REMEMBER_ME
+          value: "true"
         - name: DB_ENGINE
           value: "postgres"
         - name: POSTGRES_USER

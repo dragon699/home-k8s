@@ -48,6 +48,8 @@ entries:
       url: https://vault.k8s.iaminyourpc.xyz/ui/vault/auth/oidc/oidc/callback
     - matching_mode: strict
       url: https://watch.k8s.iaminyourpc.xyz/sso/OID/redirect/authentik
+    - matching_mode: strict
+      url: https://mealie.iaminyourpc.xyz/login
 
 - model: authentik_core.application
   id: home-k8s-app
