@@ -9,6 +9,9 @@
       names:
       - longhorn
   relabel_configs:
+  - source_labels: [__meta_kubernetes_pod_container_port_number]
+    action: keep
+    regex: "9500"
   - source_labels: [__meta_kubernetes_pod_label_app]
     action: keep
     regex: longhorn-manager
@@ -83,6 +86,13 @@
   - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_scrape_slow]
     action: drop
     regex: true
+  - source_labels: [__meta_kubernetes_pod_container_port_number]
+    target_label: __tmp_scrape_port
+  - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_port]
+    regex: (\d+)
+    target_label: __tmp_scrape_port
+  - source_labels: [__tmp_scrape_port, __meta_kubernetes_pod_container_port_number]
+    action: keep_if_equal
   - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_scheme]
     action: replace
     target_label: __scheme__
