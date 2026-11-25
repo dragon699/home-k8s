@@ -30,6 +30,12 @@ probes:
   readinessProbe:
     timeoutSeconds: 5
 
+podSecurityContext:
+  runAsUser: 1000
+
+containerSecurityContext:
+  runAsUser: 1000
+
 jellyfin:
   mediaVolumes:
     - name: data
