@@ -4,6 +4,6 @@ kind: Kustomization
 namespace: monitoring
 generatorOptions:
   disableNameSuffixHash: true
-configMapGenerator:
+secretGenerator:
 - name: config-victoriametrics-jobs
   files: ['scrape.yml=scrape-jobs.yaml']
