@@ -95,11 +95,19 @@ projects:
     sources:
     - repo: values_repo
       ref: values
-    - repoURL: https://victoriametrics.github.io/helm-charts
-      targetRevision: 0.51.0
-      chart: victoria-metrics-single
+    - repoURL: oci://ghcr.io/prometheus-community/charts/prometheus-operator-crds
+      targetRevision: 33.0.2
+      chart: prometheus-operator-crds
       helm:
+        releaseName: prometheus-operator-crds
         valueFiles:
-        - $values/helm/monitoring/victoriametrics/values.yaml
+        - $values/helm/monitoring/victoriametrics/values-prometheus-operator-crds.yaml
+    - repoURL: https://victoriametrics.github.io/helm-charts
+      targetRevision: 0.68.2
+      chart: victoria-metrics-operator
+      helm:
+        releaseName: victoriametrics-operator
+        valueFiles:
+        - $values/helm/monitoring/victoriametrics/values-victoriametrics-operator.yaml
     target:
       namespace: monitoring

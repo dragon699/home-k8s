@@ -1,0 +1,78 @@
+crds:
+  enabled: true
+
+replicaCount: 1
+
+nameOverride: victoriametrics
+fullnameOverride: victoriametrics
+
+operator:
+  disable_prometheus_converter: false
+  prometheus_converter_add_argocd_ignore_annotations: true
+  enable_converter_ownership: true
+
+# server:
+#   fullnameOverride: victoriametrics
+
+#   image:
+#     repository: victoriametrics/victoria-metrics
+#     tag: v1.156.0
+
+#   retentionPeriod: 14d
+
+#   extraArgs:
+#     envflag.enable: true
+#     envflag.prefix: VM_
+#     loggerFormat: json
+#     search.maxUniqueTimeseries: 300000
+#     dedup.minScrapeInterval: 1ms
+#     storage.cacheSizeIndexDBDataBlocks: 64MB
+#     storage.cacheSizeIndexDBTagFilters: 32MB
+#     maxLabelsPerTimeseries: 200
+#     insert.maxQueueDuration: 3s
+#     maxConcurrentInserts: 12
+#     memory.allowedPercent: 60
+#     promscrape.dropOriginalLabels: true
+#     promscrape.seriesLimitPerTarget: 50000
+#     promscrape.configCheckInterval: 1m
+
+#   scrape:
+#     enabled: true
+#     configMap: config-victoriametrics-jobs
+
+#   persistentVolume:
+#     enabled: true
+#     size: 50Gi
+
+#   service:
+#     clusterIP: ""
+
+#   resources:
+#     requests:
+#       cpu: 0.2
+#       memory: 1Gi
+#     limits:
+#       cpu: 4
+#       memory: 3Gi
+
+# extraObjects:
+# - apiVersion: rbac.authorization.k8s.io/v1
+#   kind: ClusterRole
+#   metadata:
+#     name: victoriametrics-nodes-proxy
+#   rules:
+#   - apiGroups: [""]
+#     resources: [nodes/proxy]
+#     verbs: [get, list, watch]
+# - apiVersion: rbac.authorization.k8s.io/v1
+#   kind: ClusterRoleBinding
+#   metadata:
+#     name: victoriametrics-nodes-proxy
+#   roleRef:
+#     apiGroup: rbac.authorization.k8s.io
+#     kind: ClusterRole
+#     name: victoriametrics-nodes-proxy
+#   subjects:
+#   - kind: ServiceAccount
+#     name: victoriametrics
+#     namespace: monitoring
