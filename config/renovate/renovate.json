@@ -67,6 +67,13 @@
       ],
       "depNameTemplate": "grafana/tempo",
       "datasourceTemplate": "docker"
+    },
+    {
+      "customType": "regex",
+      "description": "VictoriaMetrics operator CR images",
+      "managerFilePatterns": ["/^manifests/monitoring/victoriametrics/.+\\.ya?ml$/"],
+      "matchStrings": ["image:\\s+repository: (?<depName>\\S+)\\s+tag: ['\"]?(?<currentValue>[^'\"\\s]+)"],
+      "datasourceTemplate": "docker"
     }
   ],
   "packageRules": [
