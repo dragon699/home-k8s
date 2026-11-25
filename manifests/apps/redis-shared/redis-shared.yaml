@@ -13,7 +13,7 @@ spec:
       name: data-redis-shared
       key: password
   redisExporter:
-    enabled: false
+    enabled: true
     image: quay.io/opstree/redis-exporter:v1.89.0
     imagePullPolicy: IfNotPresent
   podSecurityContext:
