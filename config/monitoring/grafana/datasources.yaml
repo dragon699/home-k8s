@@ -40,7 +40,7 @@ datasources:
 - name: Victoriametrics
   type: prometheus
   uid: internal-victoriametrics
-  url: http://victoriametrics.monitoring.svc:8428
+  url: http://vmsingle-victoriametrics.monitoring.svc:8428
   access: proxy
   isDefault: false
   editable: false

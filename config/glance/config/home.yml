@@ -52,7 +52,7 @@
         icon: https://grafana.com/static/assets/img/blog/tempo.png
         timeout: 10s
       - title: victoriametrics
-        check-url: http://victoriametrics.monitoring.svc:8428/health
+        check-url: http://vmsingle-victoriametrics.monitoring.svc:8428/health
         url: https://argocd.k8s.iaminyourpc.xyz/applications/argocd/victoriametrics?view=tree&resource=
         icon: https://i.imgur.com/176vBRC.png
         timeout: 10s
