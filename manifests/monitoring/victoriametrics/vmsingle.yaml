@@ -30,3 +30,4 @@ spec:
     insert.maxQueueDuration: 3s
     maxConcurrentInserts: "12"
     memory.allowedPercent: "60"
+    vmalert.proxyURL: http://vmalert-victoriametrics.monitoring.svc:8080
