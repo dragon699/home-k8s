@@ -1,0 +1,35 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: pod-not-healthy
+spec:
+  groups:
+  - name: pod-not-healthy
+    rules:
+    - alert: PodNotHealthy
+      expr: |
+        sum by (namespace, pod) (
+            kube_pod_status_ready{condition="false"} == 1
+          and on (namespace, pod)
+            kube_pod_status_phase{phase="Running"} == 1
+        ) > 0
+        unless on (namespace, pod) (
+          max_over_time(kube_pod_container_status_waiting_reason{reason="CrashLoopBackOff"}[5m]) > 0
+        )
+      for: 15m
+      labels:
+        severity: major
+        group: workload
+        service: "{{ $labels.namespace }}"
+        instance: "{{ $labels.namespace }}/{{ $labels.pod }}"
+        container: >-
+          {{- with printf `kube_pod_container_status_ready{namespace="%s",pod="%s"} == 0` $labels.namespace $labels.pod | query | sortByLabel "container" -}}
+          {{ range $i, $e := . }}{{ if $i }}, {{ end }}{{ $e | label "container" }}{{ end }}
+          {{- end }}
+      annotations:
+        summary: Pod not getting ready
+        description: |-
+          Pod {{ $labels.pod }} is running, but does not reach Ready state for more than 15 minutes.
+          Traffic won't go through kubernetes services until Ready.
+        value: "{{ $labels.pod }}"

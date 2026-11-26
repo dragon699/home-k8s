@@ -1,0 +1,35 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: image-registry-auth-not-valid
+spec:
+  groups:
+  - name: image-registry-auth-not-valid
+    rules:
+    - alert: ImageRegistryAuthNotValid
+      expr: |
+        count by (namespace, registry) (
+          label_replace(
+              k8s_image_availability_exporter_authentication_failure == 1
+            or
+              k8s_image_availability_exporter_authorization_failure == 1,
+            "registry", "$1", "image", "([^/]+)/.*"
+          )
+        ) > 0
+      for: 15m
+      labels:
+        severity: major
+        group: resource
+        service: "{{ $labels.namespace }}"
+        instance: "{{ $labels.namespace }}/{{ $labels.registry }}"
+      annotations:
+        summary: Registry rejects the pull credentials
+        description: |-
+          Registry {{ $labels.registry }} rejects the pull credentials used in namespace {{ $labels.namespace }} for more than 15 minutes.
+          New pods there will fail to pull their images from it.
+        value: '{{ $value | printf "%.0f" }} image(s) affected'
+        affectedImages: >-
+          {{- with printf `k8s_image_availability_exporter_authentication_failure{namespace="%s",image=~"%s/.*"} == 1 or k8s_image_availability_exporter_authorization_failure{namespace="%s",image=~"%s/.*"} == 1` $labels.namespace $labels.registry $labels.namespace $labels.registry | query | sortByLabel "image" -}}
+          {{ range $i, $e := . }}{{ if $i }}, {{ end }}{{ $e | label "image" }}{{ end }}
+          {{- end }}

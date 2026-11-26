@@ -1,0 +1,40 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: container-high-memory-usage
+spec:
+  groups:
+  - name: container-high-memory-usage
+    rules:
+    - alert: ContainerHighMemoryUsage
+      expr: |
+        max by (namespace, pod, container) (
+          container_memory_working_set_bytes{container!=""}
+        )
+        / on (namespace, pod, container)
+        max by (namespace, pod, container) (
+          kube_pod_container_resource_limits{resource="memory"}
+        ) * 100 > 90
+      for: 15m
+      labels:
+        severity: warning
+        group: workload
+        service: "{{ $labels.namespace }}"
+        instance: "{{ $labels.namespace }}/{{ $labels.pod }}/{{ $labels.container }}"
+        memory_limit: >-
+          {{- with printf `max(kube_pod_container_resource_limits{namespace="%s",pod="%s",container="%s",resource="memory"})` $labels.namespace $labels.pod $labels.container | query -}}
+          {{ . | first | value | humanize1024 }}
+          {{- end }}
+      annotations:
+        summary: Container memory usage is high
+        description: |-
+          Container {{ $labels.container }} uses {{ $value | printf "%.0f" }}% of its memory limit for more than 15 minutes.
+          It will be killed (OOMKilled) if it reaches the limit.
+        value: >-
+          {{ $value | printf "%.0f" }}%
+          {{- with printf `max(container_memory_working_set_bytes{namespace="%s",pod="%s",container="%s"})` $labels.namespace $labels.pod $labels.container | query }} ({{ . | first | value | humanize1024 }}){{ end }}
+        memoryUsed: >-
+          {{- with printf `max(container_memory_working_set_bytes{namespace="%s",pod="%s",container="%s"})` $labels.namespace $labels.pod $labels.container | query -}}
+          {{ . | first | value | humanize1024 }}
+          {{- end }}

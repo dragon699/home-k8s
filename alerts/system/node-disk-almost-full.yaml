@@ -1,0 +1,83 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: node-disk-almost-full
+spec:
+  groups:
+  - name: node-disk-almost-full
+    rules:
+
+    # More than 80% full
+    - alert: NodeDiskAlmostFull
+      expr: |
+        max by (node) (
+          (
+              (1 - node_filesystem_avail_bytes{fstype=~"ext[234]|xfs|btrfs"} / node_filesystem_size_bytes{fstype=~"ext[234]|xfs|btrfs"}) * 100
+            unless on (instance, device, mountpoint)
+              node_filesystem_readonly == 1
+          )
+          * on (instance) group_left (node)
+          label_replace(node_uname_info, "node", "$1", "nodename", "(.+)")
+        ) >= 80 < 95
+      for: 15m
+      labels:
+        severity: warning
+        group: node
+        service: node
+        instance: "{{ $labels.node }}"
+      annotations:
+        summary: Disk is almost full
+        description: Disk usage on node {{ $labels.node }} is above 80% for more than 15 minutes.
+        value: >-
+          {{- with printf `sort_desc(((1 - node_filesystem_avail_bytes{fstype=~"ext[234]|xfs|btrfs"} / node_filesystem_size_bytes{fstype=~"ext[234]|xfs|btrfs"}) unless on (instance, device, mountpoint) node_filesystem_readonly == 1) * on (instance) group_left () node_uname_info{nodename="%s"})` $labels.node | query -}}
+          {{ $value | printf "%.0f" }}% on {{ . | first | label "mountpoint" }}
+          {{- end }}
+        freeSpace: >-
+          {{- with printf `sort_desc(((1 - node_filesystem_avail_bytes{fstype=~"ext[234]|xfs|btrfs"} / node_filesystem_size_bytes{fstype=~"ext[234]|xfs|btrfs"}) unless on (instance, device, mountpoint) node_filesystem_readonly == 1) * on (instance) group_left () node_uname_info{nodename="%s"})` $labels.node | query -}}
+          {{- $mountpoint := . | first | label "mountpoint" -}}
+          {{- with printf `max(node_filesystem_avail_bytes{mountpoint="%s"} * on (instance) group_left () node_uname_info{nodename="%s"})` $mountpoint $labels.node | query -}}
+          {{ . | first | value | humanize1024 }}
+          {{- end -}}
+          {{- end }}
+        disks: >-
+          {{- with printf `sort_desc((((1 - node_filesystem_avail_bytes{fstype=~"ext[234]|xfs|btrfs"} / node_filesystem_size_bytes{fstype=~"ext[234]|xfs|btrfs"}) * 100) unless on (instance, device, mountpoint) node_filesystem_readonly == 1) * on (instance) group_left () node_uname_info{nodename="%s"} >= 80)` $labels.node | query -}}
+          {{ range $i, $e := . }}{{ if $i }}, {{ end }}{{ $e | label "device" }} on {{ $e | label "mountpoint" }} ({{ $e | value | printf "%.0f" }}%){{ end }}
+          {{- end }}
+
+    # More than 95% full
+    - alert: NodeDiskAlmostFull
+      expr: |
+        max by (node) (
+          (
+              (1 - node_filesystem_avail_bytes{fstype=~"ext[234]|xfs|btrfs"} / node_filesystem_size_bytes{fstype=~"ext[234]|xfs|btrfs"}) * 100
+            unless on (instance, device, mountpoint)
+              node_filesystem_readonly == 1
+          )
+          * on (instance) group_left (node)
+          label_replace(node_uname_info, "node", "$1", "nodename", "(.+)")
+        ) >= 95
+      for: 15m
+      labels:
+        severity: critical
+        group: node
+        service: node
+        instance: "{{ $labels.node }}"
+      annotations:
+        summary: Disk is almost full
+        description: Disk usage on node {{ $labels.node }} is above 95% for more than 15 minutes.
+        value: >-
+          {{- with printf `sort_desc(((1 - node_filesystem_avail_bytes{fstype=~"ext[234]|xfs|btrfs"} / node_filesystem_size_bytes{fstype=~"ext[234]|xfs|btrfs"}) unless on (instance, device, mountpoint) node_filesystem_readonly == 1) * on (instance) group_left () node_uname_info{nodename="%s"})` $labels.node | query -}}
+          {{ $value | printf "%.0f" }}% on {{ . | first | label "mountpoint" }}
+          {{- end }}
+        freeSpace: >-
+          {{- with printf `sort_desc(((1 - node_filesystem_avail_bytes{fstype=~"ext[234]|xfs|btrfs"} / node_filesystem_size_bytes{fstype=~"ext[234]|xfs|btrfs"}) unless on (instance, device, mountpoint) node_filesystem_readonly == 1) * on (instance) group_left () node_uname_info{nodename="%s"})` $labels.node | query -}}
+          {{- $mountpoint := . | first | label "mountpoint" -}}
+          {{- with printf `max(node_filesystem_avail_bytes{mountpoint="%s"} * on (instance) group_left () node_uname_info{nodename="%s"})` $mountpoint $labels.node | query -}}
+          {{ . | first | value | humanize1024 }}
+          {{- end -}}
+          {{- end }}
+        disks: >-
+          {{- with printf `sort_desc((((1 - node_filesystem_avail_bytes{fstype=~"ext[234]|xfs|btrfs"} / node_filesystem_size_bytes{fstype=~"ext[234]|xfs|btrfs"}) * 100) unless on (instance, device, mountpoint) node_filesystem_readonly == 1) * on (instance) group_left () node_uname_info{nodename="%s"} >= 80)` $labels.node | query -}}
+          {{ range $i, $e := . }}{{ if $i }}, {{ end }}{{ $e | label "device" }} on {{ $e | label "mountpoint" }} ({{ $e | value | printf "%.0f" }}%){{ end }}
+          {{- end }}

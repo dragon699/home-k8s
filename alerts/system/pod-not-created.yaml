@@ -1,0 +1,54 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: pod-not-created
+spec:
+  groups:
+  - name: pod-not-created
+    rules:
+
+    # ReplicaSets
+    - alert: PodNotCreated
+      expr: |
+        sum by (namespace, replicaset) (
+          kube_replicaset_spec_replicas - kube_replicaset_status_replicas
+        ) > 0
+      for: 15m
+      labels:
+        severity: major
+        group: workload
+        service: "{{ $labels.namespace }}"
+        instance: "{{ $labels.namespace }}/{{ $labels.replicaset }}"
+        deployment: >-
+          {{- with printf `kube_replicaset_owner{namespace="%s",replicaset="%s",owner_kind="Deployment"}` $labels.namespace $labels.replicaset | query -}}
+          {{ . | first | label "owner_name" }}
+          {{- end }}
+      annotations:
+        summary: Pods cannot be created
+        description: |-
+          ReplicaSet {{ $labels.replicaset }} is missing {{ $value | printf "%.0f" }} pod(s) for more than 15 minutes, because they cannot be created.
+          Usual causes: a rejected admission (policy), an exceeded quota or a missing ServiceAccount.
+        value: '{{ $value | printf "%.0f" }} pod(s) not created'
+
+    # StatefulSets
+    - alert: PodNotCreated
+      expr: |
+        sum by (namespace, statefulset) (
+          kube_statefulset_replicas - kube_statefulset_status_replicas
+        ) > 0
+        and on (namespace, statefulset) (
+          kube_statefulset_status_replicas_ready == kube_statefulset_status_replicas
+        )
+      for: 15m
+      labels:
+        severity: major
+        group: workload
+        service: "{{ $labels.namespace }}"
+        instance: "{{ $labels.namespace }}/{{ $labels.statefulset }}"
+      annotations:
+        summary: Pods cannot be created
+        description: |-
+          StatefulSet {{ $labels.statefulset }} is missing {{ $value | printf "%.0f" }} pod(s) for more than 15 minutes, because they cannot be created.
+          Usual causes: a rejected admission (policy), an exceeded quota or a missing ServiceAccount.
+        value: '{{ $value | printf "%.0f" }} pod(s) not created'

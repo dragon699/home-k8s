@@ -1,0 +1,36 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: container-high-cpu-usage
+spec:
+  groups:
+  - name: container-high-cpu-usage
+    rules:
+    - alert: ContainerHighCPUUsage
+      expr: |
+        sum by (namespace, pod, container) (
+          irate(container_cpu_usage_seconds_total{container!=""}[5m])
+        )
+        / on (namespace, pod, container)
+        sum by (namespace, pod, container) (
+          kube_pod_container_resource_limits{resource="cpu"}
+        ) * 100 > 90
+      for: 15m
+      labels:
+        severity: warning
+        group: workload
+        service: "{{ $labels.namespace }}"
+        instance: "{{ $labels.namespace }}/{{ $labels.pod }}/{{ $labels.container }}"
+        cpu_limit: >-
+          {{- with printf `max(kube_pod_container_resource_limits{namespace="%s",pod="%s",container="%s",resource="cpu"})` $labels.namespace $labels.pod $labels.container | query -}}
+          {{ . | first | value | humanize }}
+          {{- end }}
+      annotations:
+        summary: Container CPU usage is high
+        description: Container {{ $labels.container }} uses {{ $value | printf "%.0f" }}% of its CPU limit for more than 15 minutes.
+        value: '{{ $value | printf "%.0f" }}%'
+        cpuUsed: >-
+          {{- with printf `sum(rate(container_cpu_usage_seconds_total{namespace="%s",pod="%s",container="%s"}[5m]))` $labels.namespace $labels.pod $labels.container | query -}}
+          {{ . | first | value | humanize }}
+          {{- end }}

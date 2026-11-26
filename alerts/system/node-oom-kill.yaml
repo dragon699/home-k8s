@@ -1,0 +1,31 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: node-oom-kill
+spec:
+  groups:
+  - name: node-oom-kill
+    rules:
+    - alert: NodeOOMKill
+      expr: |
+        max by (node) (
+          (
+              increase(node_vmstat_oom_kill[10m]) > 0
+            and on (instance)
+              max_over_time(((1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) * 100)[10m:1m]) > 90
+          )
+          * on (instance) group_left (node)
+          label_replace(node_uname_info, "node", "$1", "nodename", "(.+)")
+        ) > 0
+      labels:
+        severity: major
+        group: node
+        service: node
+        instance: "{{ $labels.node }}"
+      annotations:
+        summary: Out of memory
+        description: |-
+          Memory ran out on node {{ $labels.node }} and the kernel had to kill processes.
+          Pods on this node can be killed regardless of their own memory limits.
+        value: '{{ $value | printf "%.0f" }} kill(s) in 10m'

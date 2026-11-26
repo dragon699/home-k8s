@@ -1,0 +1,43 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: pvc-full
+spec:
+  groups:
+  - name: pvc-full
+    rules:
+    - alert: PVCFull
+      expr: |
+        max by (namespace, persistentvolumeclaim) (
+          kubelet_volume_stats_used_bytes / kubelet_volume_stats_capacity_bytes
+        ) * 100 >= 95
+      labels:
+        severity: critical
+        group: workload
+        service: "{{ $labels.namespace }}"
+        instance: "{{ $labels.namespace }}/{{ $labels.persistentvolumeclaim }}"
+        pod: >-
+          {{- with printf `kube_pod_spec_volumes_persistentvolumeclaims_info{namespace="%s",persistentvolumeclaim="%s"} and on (namespace, pod) kube_pod_status_phase{phase="Running"} == 1` $labels.namespace $labels.persistentvolumeclaim | query | sortByLabel "pod" -}}
+          {{ range $i, $e := . }}{{ if $i }}, {{ end }}{{ $e | label "pod" }}{{ end }}
+          {{- end }}
+      annotations:
+        summary: Volume is full
+        description: |-
+          Volume {{ $labels.persistentvolumeclaim }} is {{ $value | printf "%.0f" }}% full.
+          The workload using it can stop working when no space is left.
+        value: >-
+          {{ $value | printf "%.0f" }}%
+          {{- with printf `max(kubelet_volume_stats_available_bytes{namespace="%s",persistentvolumeclaim="%s"})` $labels.namespace $labels.persistentvolumeclaim | query }} ({{ . | first | value | humanize1024 }} free){{ end }}
+        usedSpace: >-
+          {{- with printf `max(kubelet_volume_stats_used_bytes{namespace="%s",persistentvolumeclaim="%s"})` $labels.namespace $labels.persistentvolumeclaim | query -}}
+          {{ . | first | value | humanize1024 }}
+          {{- end }}
+        freeSpace: >-
+          {{- with printf `max(kubelet_volume_stats_available_bytes{namespace="%s",persistentvolumeclaim="%s"})` $labels.namespace $labels.persistentvolumeclaim | query -}}
+          {{ . | first | value | humanize1024 }}
+          {{- end }}
+        totalSpace: >-
+          {{- with printf `max(kubelet_volume_stats_capacity_bytes{namespace="%s",persistentvolumeclaim="%s"})` $labels.namespace $labels.persistentvolumeclaim | query -}}
+          {{ . | first | value | humanize1024 }}
+          {{- end }}

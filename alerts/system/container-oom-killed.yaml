@@ -1,0 +1,34 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: container-oom-killed
+spec:
+  groups:
+  - name: container-oom-killed
+    rules:
+    - alert: ContainerOOMKilled
+      expr: |
+        sum by (namespace, pod, container) (
+          increase(kube_pod_container_status_restarts_total[24h])
+        ) >= 2
+        and on (namespace, pod, container)
+          max by (namespace, pod, container) (
+            kube_pod_container_status_last_terminated_reason{reason="OOMKilled"}
+          ) == 1
+      for: 10m
+      labels:
+        severity: major
+        group: workload
+        service: "{{ $labels.namespace }}"
+        instance: "{{ $labels.namespace }}/{{ $labels.pod }}/{{ $labels.container }}"
+        memory_limit: >-
+          {{- with printf `max(kube_pod_container_resource_limits{namespace="%s",pod="%s",container="%s",resource="memory"})` $labels.namespace $labels.pod $labels.container | query -}}
+          {{ . | first | value | humanize1024 }}
+          {{- end }}
+      annotations:
+        summary: Container is killed for running out of memory
+        description: |-
+          Container {{ $labels.container }} was killed for running out of memory (OOMKilled).
+          It restarted {{ $value | printf "%.0f" }} times in the last 24 hours.
+        value: '{{ $value | printf "%.0f" }} restarts in 24h'

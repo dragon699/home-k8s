@@ -1,0 +1,63 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: job-failed
+spec:
+  groups:
+  - name: job-failed
+    rules:
+
+    # CronJobs
+    - alert: JobFailed
+      expr: |
+        max by (namespace, cronjob, job_name) (
+          label_replace(
+              kube_job_status_start_time
+            * on (namespace, job_name) group_left (owner_name)
+              kube_job_owner{owner_kind="CronJob"},
+            "cronjob", "$1", "owner_name", "(.+)"
+          )
+        )
+        == on (namespace, cronjob) group_left ()
+        max by (namespace, cronjob) (
+          label_replace(
+              kube_job_status_start_time
+            * on (namespace, job_name) group_left (owner_name)
+              kube_job_owner{owner_kind="CronJob"},
+            "cronjob", "$1", "owner_name", "(.+)"
+          )
+        )
+        and on (namespace, job_name)
+          kube_job_failed{condition="true"} == 1
+      labels:
+        severity: major
+        group: workload
+        service: "{{ $labels.namespace }}"
+        instance: "{{ $labels.namespace }}/{{ $labels.cronjob }}"
+      annotations:
+        summary: Last run of a CronJob failed
+        description: The last run of CronJob {{ $labels.cronjob }} failed.
+        value: >-
+          {{- with printf `kube_job_status_failed{namespace="%s",job_name="%s",reason!=""} > 0` $labels.namespace $labels.job_name | query -}}
+          {{ . | first | label "reason" }}
+          {{- end }}
+
+    # Jobs
+    - alert: JobFailed
+      expr: |
+        max by (namespace, job_name) (kube_job_failed{condition="true"}) == 1
+        unless on (namespace, job_name)
+          kube_job_owner{owner_kind="CronJob"}
+      labels:
+        severity: major
+        group: workload
+        service: "{{ $labels.namespace }}"
+        instance: "{{ $labels.namespace }}/{{ $labels.job_name }}"
+      annotations:
+        summary: Job failed
+        description: Job {{ $labels.job_name }} failed.
+        value: >-
+          {{- with printf `kube_job_status_failed{namespace="%s",job_name="%s",reason!=""} > 0` $labels.namespace $labels.job_name | query -}}
+          {{ . | first | label "reason" }}
+          {{- end }}

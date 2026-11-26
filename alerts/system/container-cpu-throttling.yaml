@@ -1,0 +1,38 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: container-cpu-throttling
+spec:
+  groups:
+  - name: container-cpu-throttling
+    rules:
+    - alert: ContainerCPUThrottling
+      expr: |
+        sum by (namespace, pod, container) (
+          increase(container_cpu_cfs_throttled_periods_total{container!=""}[5m])
+        )
+        /
+        sum by (namespace, pod, container) (
+          increase(container_cpu_cfs_periods_total{container!=""}[5m])
+        ) * 100 > 25
+      for: 30m
+      labels:
+        severity: warning
+        group: workload
+        service: "{{ $labels.namespace }}"
+        instance: "{{ $labels.namespace }}/{{ $labels.pod }}/{{ $labels.container }}"
+        cpu_limit: >-
+          {{- with printf `max(kube_pod_container_resource_limits{namespace="%s",pod="%s",container="%s",resource="cpu"})` $labels.namespace $labels.pod $labels.container | query -}}
+          {{ . | first | value | humanize }}
+          {{- end }}
+      annotations:
+        summary: Container is CPU throttled
+        description: |-
+          Container {{ $labels.container }} is slowed down by its CPU limit {{ $value | printf "%.0f" }}% of the time for more than 30 minutes.
+          The CPU limit is too low for what the container does.
+        value: '{{ $value | printf "%.0f" }}%'
+        cpuUsed: >-
+          {{- with printf `sum(rate(container_cpu_usage_seconds_total{namespace="%s",pod="%s",container="%s"}[5m]))` $labels.namespace $labels.pod $labels.container | query -}}
+          {{ . | first | value | humanize }}
+          {{- end }}

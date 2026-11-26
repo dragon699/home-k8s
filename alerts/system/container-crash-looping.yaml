@@ -1,0 +1,33 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: container-crash-looping
+spec:
+  groups:
+  - name: container-crash-looping
+    rules:
+    - alert: ContainerCrashLooping
+      expr: |
+        max by (namespace, pod, container) (
+            max_over_time(kube_pod_container_status_waiting_reason{reason="CrashLoopBackOff"}[5m])
+          or
+            max_over_time(kube_pod_init_container_status_waiting_reason{reason="CrashLoopBackOff"}[5m])
+        ) > 0
+      for: 15m
+      labels:
+        severity: major
+        group: workload
+        service: "{{ $labels.namespace }}"
+        instance: "{{ $labels.namespace }}/{{ $labels.pod }}/{{ $labels.container }}"
+      annotations:
+        summary: Container is crash looping
+        description: |-
+          Container {{ $labels.container }} has been stuck in CrashLoopBackOff for more than 15 minutes.
+          {{- with printf `sum(kube_pod_container_status_restarts_total{namespace="%s",pod="%s",container="%s"})` $labels.namespace $labels.pod $labels.container | query }}
+          Restarted {{ . | first | value | printf "%.0f" }} times so far.
+          {{- end }}
+        value: >-
+          {{- with printf `sum(kube_pod_container_status_restarts_total{namespace="%s",pod="%s",container="%s"})` $labels.namespace $labels.pod $labels.container | query -}}
+          {{ . | first | value | printf "%.0f" }} restarts
+          {{- end }}

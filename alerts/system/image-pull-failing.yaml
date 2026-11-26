@@ -1,0 +1,33 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: image-pull-failing
+spec:
+  groups:
+  - name: image-pull-failing
+    rules:
+    - alert: ImagePullFailing
+      expr: |
+        sum by (namespace, pod, container) (
+            kube_pod_container_status_waiting_reason{reason=~"ImagePullBackOff|ErrImagePull|InvalidImageName|ErrImageNeverPull|ImageInspectError"}
+          or
+            kube_pod_init_container_status_waiting_reason{reason=~"ImagePullBackOff|ErrImagePull|InvalidImageName|ErrImageNeverPull|ImageInspectError"}
+        ) > 0
+      for: 5m
+      labels:
+        severity: major
+        group: resource
+        service: "{{ $labels.namespace }}"
+        instance: "{{ $labels.namespace }}/{{ $labels.pod }}/{{ $labels.container }}"
+        image: >-
+          {{- with printf `kube_pod_container_info{namespace="%s",pod="%s",container="%s"}` $labels.namespace $labels.pod $labels.container | query -}}
+          {{ . | first | label "image" }}
+          {{- end }}
+      annotations:
+        summary: Container image cannot be pulled
+        description: Container {{ $labels.container }} can't pull its image for more than 5 minutes.
+        value: |-
+          {{- with printf `kube_pod_container_info{namespace="%s",pod="%s",container="%s"}` $labels.namespace $labels.pod $labels.container | query -}}
+          {{ . | first | label "image" }}
+          {{- end }}

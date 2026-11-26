@@ -1,0 +1,49 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: cert-expiring-soon
+spec:
+  groups:
+  - name: cert-expiring-soon
+    rules:
+
+    # Less than 15 days left
+    - alert: CertExpiringSoon
+      expr: |
+        (
+          max by (namespace, name) (certmanager_certificate_expiration_timestamp_seconds) - time()
+        ) / 86400 < 15 >= 3
+      labels:
+        severity: warning
+        group: resource
+        service: cert-manager
+        instance: "{{ $labels.namespace }}/{{ $labels.name }}"
+      annotations:
+        summary: Certificate expires soon
+        description: Certificate {{ $labels.name }} in {{ $labels.namespace }} expires in {{ $value | printf "%.0f" }} day(s).
+        value: '{{ $value | printf "%.0f" }} day(s) left'
+        expiresAt: >-
+          {{- with printf `max(certmanager_certificate_expiration_timestamp_seconds{namespace="%s", name="%s"})` $labels.namespace $labels.name | query -}}
+          {{ . | first | value | humanizeTimestamp }}
+          {{- end }}
+
+    # Less than 3 days left, or already expired
+    - alert: CertExpiringSoon
+      expr: |
+        (
+          max by (namespace, name) (certmanager_certificate_expiration_timestamp_seconds) - time()
+        ) / 86400 < 3
+      labels:
+        severity: critical
+        group: resource
+        service: cert-manager
+        instance: "{{ $labels.namespace }}/{{ $labels.name }}"
+      annotations:
+        summary: Certificate expires soon
+        description: Certificate {{ $labels.name }} in {{ $labels.namespace }} {{ if lt $value 0.0 }}has expired{{ else }}expires in {{ $value | printf "%.0f" }} day(s){{ end }}.
+        value: '{{ $value | printf "%.0f" }} day(s) left'
+        expiresAt: >-
+          {{- with printf `max(certmanager_certificate_expiration_timestamp_seconds{namespace="%s", name="%s"})` $labels.namespace $labels.name | query -}}
+          {{ . | first | value | humanizeTimestamp }}
+          {{- end }}

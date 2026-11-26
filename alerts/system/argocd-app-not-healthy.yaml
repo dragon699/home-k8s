@@ -1,0 +1,27 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: argocd-app-not-healthy
+spec:
+  groups:
+  - name: argocd-app-not-healthy
+    rules:
+    - alert: ArgoCDAppNotHealthy
+      expr: |
+        max by (name, project) (argocd_app_info{health_status!="Healthy"})
+          or
+        max by (name, project) (argocd_app_info{autosync_enabled="true", sync_status!="Synced"})
+      for: 10m
+      labels:
+        severity: warning
+        group: gitops
+        service: argocd
+        instance: "{{ $labels.name }}"
+      annotations:
+        summary: Argo CD application is not healthy or not in sync
+        description: Application {{ $labels.name }} is unhealthy or not fully synced in the last 10 minutes.
+        value: >-
+          {{- with printf `argocd_app_info{name="%s",project="%s"}` $labels.name $labels.project | query -}}
+          {{ . | first | label "health_status" }} / {{ . | first | label "sync_status" }}
+          {{- end }}

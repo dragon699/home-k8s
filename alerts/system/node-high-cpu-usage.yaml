@@ -1,0 +1,40 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: node-high-cpu-usage
+spec:
+  groups:
+  - name: node-high-cpu-usage
+    rules:
+    - alert: NodeHighCPUUsage
+      expr: |
+        max by (node) (
+          (1 - avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[5m]))) * 100
+          * on (instance) group_left (node)
+          label_replace(node_uname_info, "node", "$1", "nodename", "(.+)")
+        ) > 90
+      for: 15m
+      labels:
+        severity: warning
+        group: node
+        service: node
+        instance: "{{ $labels.node }}"
+      annotations:
+        summary: CPU usage is high
+        description: CPU usage on node {{ $labels.node }} is above 90% for more than 15 minutes.
+        value: >-
+          {{ $value | printf "%.0f" }}%
+          {{- with printf `sum(rate(node_cpu_seconds_total{mode!="idle"}[5m]) * on (instance) group_left () node_uname_info{nodename="%s"})` $labels.node | query }} ({{ . | first | value | printf "%.1f" }} cores){{ end }}
+        cpuUsed: >-
+          {{- with printf `sum(rate(node_cpu_seconds_total{mode!="idle"}[5m]) * on (instance) group_left () node_uname_info{nodename="%s"})` $labels.node | query -}}
+          {{ . | first | value | printf "%.1f" }} cores
+          {{- end }}
+        cpuFree: >-
+          {{- with printf `sum(rate(node_cpu_seconds_total{mode="idle"}[5m]) * on (instance) group_left () node_uname_info{nodename="%s"})` $labels.node | query -}}
+          {{ . | first | value | printf "%.1f" }} cores
+          {{- end }}
+        cpuTotal: >-
+          {{- with printf `count(node_cpu_seconds_total{mode="idle"} * on (instance) group_left () node_uname_info{nodename="%s"})` $labels.node | query -}}
+          {{ . | first | value | printf "%.0f" }} cores
+          {{- end }}

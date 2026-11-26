@@ -1,0 +1,40 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: node-high-memory-usage
+spec:
+  groups:
+  - name: node-high-memory-usage
+    rules:
+    - alert: NodeHighMemoryUsage
+      expr: |
+        max by (node) (
+          (1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) * 100
+          * on (instance) group_left (node)
+          label_replace(node_uname_info, "node", "$1", "nodename", "(.+)")
+        ) > 90
+      for: 15m
+      labels:
+        severity: warning
+        group: node
+        service: node
+        instance: "{{ $labels.node }}"
+      annotations:
+        summary: Memory usage is high
+        description: Memory usage on node {{ $labels.node }} is above 90% for more than 15 minutes.
+        value: >-
+          {{ $value | printf "%.0f" }}%
+          {{- with printf `max((node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) * on (instance) group_left () node_uname_info{nodename="%s"})` $labels.node | query }} ({{ . | first | value | humanize1024 }}){{ end }}
+        memoryUsed: >-
+          {{- with printf `max((node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) * on (instance) group_left () node_uname_info{nodename="%s"})` $labels.node | query -}}
+          {{ . | first | value | humanize1024 }}
+          {{- end }}
+        memoryFree: >-
+          {{- with printf `max(node_memory_MemAvailable_bytes * on (instance) group_left () node_uname_info{nodename="%s"})` $labels.node | query -}}
+          {{ . | first | value | humanize1024 }}
+          {{- end }}
+        memoryTotal: >-
+          {{- with printf `max(node_memory_MemTotal_bytes * on (instance) group_left () node_uname_info{nodename="%s"})` $labels.node | query -}}
+          {{ . | first | value | humanize1024 }}
+          {{- end }}

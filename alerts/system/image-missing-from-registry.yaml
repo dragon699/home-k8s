@@ -1,0 +1,30 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: image-missing-from-registry
+spec:
+  groups:
+  - name: image-missing-from-registry
+    rules:
+    - alert: ImageMissingFromRegistry
+      expr: |
+        max by (namespace, kind, name, container, image) (
+          k8s_image_availability_exporter_absent
+        ) == 1
+      for: 3m
+      labels:
+        severity: major
+        group: resource
+        service: "{{ $labels.namespace }}"
+        instance: "{{ $labels.namespace }}/{{ $labels.name }}/{{ $labels.container }}"
+        pod: >-
+          {{- with printf `kube_pod_container_info{namespace="%s",container="%s",image_spec="%s"}` $labels.namespace $labels.container $labels.image | query | sortByLabel "pod" -}}
+          {{ range $i, $e := . }}{{ if $i }}, {{ end }}{{ $e | label "pod" }}{{ end }}
+          {{- end }}
+      annotations:
+        summary: Container image is missing from the registry
+        description: |-
+          The image of container {{ $labels.container }} is no longer in the registry.
+          Running pods keep working, but new pods will fail to pull it.
+        value: "{{ $labels.image }}"

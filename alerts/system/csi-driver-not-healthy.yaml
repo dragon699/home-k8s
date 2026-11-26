@@ -1,0 +1,51 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: csi-driver-not-healthy
+spec:
+  groups:
+  - name: csi-driver-not-healthy
+    rules:
+
+    # Volumes cannot be created
+    - alert: CSIDriverNotHealthy
+      expr: |
+        sum by (namespace) (
+          increase(trident_operation_duration_milliseconds_count{operation="volume_add", success="false"}[10m])
+        ) > 0
+      for: 15m
+      labels:
+        severity: major
+        group: workload
+        service: "{{ $labels.namespace }}"
+        instance: "{{ $labels.namespace }}/trident"
+      annotations:
+        summary: Storage driver cannot create volumes
+        description: |-
+          The CSI (Container Storage Interface) driver cannot create volumes for more than 15 minutes.
+          New volumes will fail to create.
+        value: '{{ $value | printf "%.0f" }} failed attempt(s) in 10m'
+        pendingVolumes: >-
+          {{- with `kube_persistentvolumeclaim_status_phase{phase="Pending"} == 1` | query | sortByLabel "persistentvolumeclaim" -}}
+          {{ range $i, $e := . }}{{ if $i }}, {{ end }}{{ $e | label "namespace" }}/{{ $e | label "persistentvolumeclaim" }}{{ end }}
+          {{- end }}
+
+    # Storage backend is not available
+    - alert: CSIDriverNotHealthy
+      expr: |
+        sum by (namespace, backend_state, backend_type) (
+          trident_backend_count{backend_state!="online"}
+        ) > 0
+      for: 15m
+      labels:
+        severity: major
+        group: workload
+        service: "{{ $labels.namespace }}"
+        instance: "{{ $labels.namespace }}/trident-backend"
+      annotations:
+        summary: Storage backend is not available
+        description: |-
+          The CSI (Container Storage Interface) driver reports that a storage backend is not available for more than 15 minutes.
+          Volumes using that backend may fail for operations like attach, resize, etc.
+        value: "{{ $labels.backend_state }}"

@@ -1,0 +1,28 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: container-restarts-often
+spec:
+  groups:
+  - name: container-restarts-often
+    rules:
+    - alert: ContainerRestartsOften
+      expr: |
+        sum by (namespace, pod, container) (
+            increase(kube_pod_container_status_restarts_total[1h])
+          or
+            increase(kube_pod_init_container_status_restarts_total[1h])
+        ) > 3
+        unless on (namespace, pod, container)
+          ALERTS{alertname="ContainerCrashLooping", alertstate="firing"}
+      for: 20m
+      labels:
+        severity: warning
+        group: workload
+        service: "{{ $labels.namespace }}"
+        instance: "{{ $labels.namespace }}/{{ $labels.pod }}/{{ $labels.container }}"
+      annotations:
+        summary: Container restarts often
+        description: Container {{ $labels.container }} restarted {{ $value | printf "%.0f" }} times in the last hour.
+        value: '{{ $value | printf "%.0f" }} restarts in 1h'

@@ -1,0 +1,44 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: node-high-io-pressure
+spec:
+  groups:
+  - name: node-high-io-pressure
+    rules:
+    - alert: NodeHighIOPressure
+      expr: |
+        max by (node) (
+          rate(node_pressure_io_waiting_seconds_total[5m]) * 100
+          * on (instance) group_left (node)
+          label_replace(node_uname_info, "node", "$1", "nodename", "(.+)")
+        ) > 20
+      for: 15m
+      labels:
+        severity: warning
+        group: node
+        service: node
+        instance: "{{ $labels.node }}"
+      annotations:
+        summary: Disk I/O pressure is high
+        description: |-
+          Disk throughput (I/O) pressure on node {{ $labels.node }} is above 20% for more than 15 minutes.
+          Workloads on it are waiting for the disk instead of running.
+        value: '{{ $value | printf "%.0f" }}% of time waiting on I/O'
+        slowestDisk: >-
+          {{- with printf `sort_desc(max by (device) ((((rate(node_disk_read_time_seconds_total{device!~"dm-.*|loop.*|sr.*"}[5m]) + rate(node_disk_write_time_seconds_total{device!~"dm-.*|loop.*|sr.*"}[5m])) / (rate(node_disk_reads_completed_total{device!~"dm-.*|loop.*|sr.*"}[5m]) + rate(node_disk_writes_completed_total{device!~"dm-.*|loop.*|sr.*"}[5m]))) * 1000 > 0) * on (instance) group_left () node_uname_info{nodename="%s"}))` $labels.node | query -}}
+          {{ . | first | label "device" }} ({{ . | first | value | printf "%.0f" }} ms per operation)
+          {{- end }}
+        busiestDisk: >-
+          {{- with printf `sort_desc(max by (device) (rate(node_disk_io_time_seconds_total{device!~"dm-.*|loop.*|sr.*"}[5m]) * on (instance) group_left () node_uname_info{nodename="%s"}) * 100)` $labels.node | query -}}
+          {{ . | first | label "device" }} ({{ . | first | value | printf "%.0f" }}% busy)
+          {{- end }}
+        diskRead: >-
+          {{- with printf `sum(rate(node_disk_read_bytes_total{device!~"dm-.*|loop.*|sr.*"}[5m]) * on (instance) group_left () node_uname_info{nodename="%s"})` $labels.node | query -}}
+          {{ . | first | value | humanize1024 }}/s
+          {{- end }}
+        diskWrite: >-
+          {{- with printf `sum(rate(node_disk_written_bytes_total{device!~"dm-.*|loop.*|sr.*"}[5m]) * on (instance) group_left () node_uname_info{nodename="%s"})` $labels.node | query -}}
+          {{ . | first | value | humanize1024 }}/s
+          {{- end }}

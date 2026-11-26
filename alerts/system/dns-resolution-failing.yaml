@@ -1,0 +1,26 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: dns-resolution-failing
+spec:
+  groups:
+  - name: dns-resolution-failing
+    rules:
+    - alert: DNSResolutionFailing
+      expr: |
+        avg by (target) (
+          avg_over_time(probe_success{probe_type="dns"}[10m])
+        ) * 100 < 90
+      for: 5m
+      labels:
+        severity: major
+        group: workload
+        service: dns
+        instance: "{{ $labels.target }}"
+      annotations:
+        summary: DNS lookups are failing
+        description: |-
+          DNS lookups through {{ $labels.target }} keep failing for more than 5 minutes.
+          Pods cannot reliably resolve Kubernetes services.
+        value: '{{ $value | printf "%.0f" }}% of lookups succeeded'

@@ -1,0 +1,25 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: eso-is-broken
+spec:
+  groups:
+  - name: eso-is-broken
+    rules:
+    - alert: ESOIsBroken
+      expr: |
+        max by (name) (
+          clustersecretstore_status_condition{condition="Ready", status="False"}
+        ) == 1
+      labels:
+        severity: major
+        group: resource
+        service: external-secrets
+        instance: "{{ $labels.name }}"
+      annotations:
+        summary: External Secrets cannot reach its secret store
+        description: |-
+          ClusterSecretStore {{ $labels.name }} is not ready, so External Secrets cannot read from its backend.
+          Secrets from that provider are not being synced.
+        value: Not ready

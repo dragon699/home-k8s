@@ -1,0 +1,188 @@
+nameOverride: prometheus-blackbox-exporter
+fullnameOverride: prometheus-blackbox-exporter
+
+image:
+  registry: quay.io
+  repository: prometheus/blackbox-exporter
+  tag: v0.29.1
+
+resources:
+  requests:
+    cpu: 10m
+    memory: 32Mi
+  limits:
+    memory: 64Mi
+
+config:
+  modules:
+    http_2xx:
+      prober: http
+      timeout: 10s
+      http:
+        valid_http_versions: ["HTTP/1.1", "HTTP/2.0"]
+        follow_redirects: true
+        preferred_ip_protocol: "ip4"
+    dns_internal:
+      prober: dns
+      timeout: 5s
+      dns:
+        query_name: kubernetes.default.svc.cluster.local
+        query_type: A
+        preferred_ip_protocol: "ip4"
+    dns_external:
+      prober: dns
+      timeout: 5s
+      dns:
+        query_name: iaminyourpc.xyz
+        query_type: A
+        preferred_ip_protocol: "ip4"
+
+serviceMonitor:
+  enabled: true
+  defaults:
+    interval: 60s
+    scrapeTimeout: 30s
+  targets:
+
+  - name: argocd
+    url: https://argocd.k8s.iaminyourpc.xyz/healthz
+    additionalMetricsRelabels:
+      target: ArgoCD
+
+  - name: authentik
+    url: https://auth.k8s.iaminyourpc.xyz/-/health/live/
+    additionalMetricsRelabels:
+      target: Authentik
+
+  - name: grafana
+    url: https://grafana.k8s.iaminyourpc.xyz/api/health
+    additionalMetricsRelabels:
+      target: Grafana
+
+  - name: vault
+    url: https://vault.k8s.iaminyourpc.xyz/v1/sys/health
+    additionalMetricsRelabels:
+      target: Vault
+
+  - name: pihole
+    url: https://pihole.k8s.iaminyourpc.xyz/admin/login
+    additionalMetricsRelabels:
+      target: Pi-hole
+
+  - name: krakend
+    url: https://api.k8s.iaminyourpc.xyz/__health
+    additionalMetricsRelabels:
+      target: KrakenD
+
+  - name: longhorn
+    url: http://longhorn-frontend.longhorn.svc/
+    additionalMetricsRelabels:
+      target: Longhorn
+
+  - name: garage
+    url: http://garage-webui.monitoring.svc:3909/
+    additionalMetricsRelabels:
+      target: Garage
+
+  - name: alloy
+    url: http://grafana-alloy.monitoring.svc:12345/-/ready
+    additionalMetricsRelabels:
+      target: Grafana Alloy
+
+  - name: glance
+    url: https://dash.iaminyourpc.xyz/api/healthz
+    additionalMetricsRelabels:
+      target: Glance
+
+  - name: immich
+    url: https://photos.k8s.iaminyourpc.xyz/api/server/ping
+    additionalMetricsRelabels:
+      target: Immich
+
+  - name: jellyfin
+    url: https://watch.k8s.iaminyourpc.xyz/health
+    additionalMetricsRelabels:
+      target: Jellyfin
+
+  - name: mealie
+    url: https://mealie.iaminyourpc.xyz/api/app/about
+    additionalMetricsRelabels:
+      target: Mealie
+
+  - name: dawarich
+    url: https://timeline.k8s.iaminyourpc.xyz/api/v1/health
+    additionalMetricsRelabels:
+      target: Dawarich
+
+  - name: sure
+    url: https://money.iaminyourpc.xyz/up
+    additionalMetricsRelabels:
+      target: Sure
+
+  - name: sparkyfitness
+    url: https://me.iaminyourpc.xyz/api/health
+    additionalMetricsRelabels:
+      target: SparkyFitness
+
+  - name: vikunja
+    url: https://board.iaminyourpc.xyz/api/v1/info
+    additionalMetricsRelabels:
+      target: Vikunja
+
+  - name: openclaw
+    url: https://stitch.iaminyourpc.xyz/health
+    additionalMetricsRelabels:
+      target: OpenClaw
+
+  - name: speedtest
+    url: https://speedtest.k8s.iaminyourpc.xyz/
+    additionalMetricsRelabels:
+      target: OpenSpeedTest
+
+  - name: qbittorrent
+    url: http://qbittorrent-web.qbittorrent.svc/
+    additionalMetricsRelabels:
+      target: qBittorrent
+
+  - name: fetch-ui
+    url: http://fetch-ui.fetch-ui.svc/
+    additionalMetricsRelabels:
+      target: Fetch UI
+
+  - name: fetch-api-fleet
+    url: https://fleet.car.k8s.iaminyourpc.xyz/.well-known/appspecific/com.tesla.3p.public-key.pem
+    additionalMetricsRelabels:
+      target: Tesla Fleet public key
+
+  - name: teslamate
+    url: http://teslamate.teslamate.svc:4000/health_check
+    additionalMetricsRelabels:
+      target: TeslaMate
+
+  - name: speed
+    url: https://speed.iaminyourpc.xyz/
+    additionalMetricsRelabels:
+      target: Speed
+
+  - name: tdashcam-studio
+    url: http://tdashcam-studio.tdashcam-studio.svc/
+    additionalMetricsRelabels:
+      target: Dashcam Studio
+
+  - name: dns-internal
+    url: 10.96.0.10
+    module: dns_internal
+    interval: 15s
+    scrapeTimeout: 10s
+    additionalMetricsRelabels:
+      target: Cluster DNS (internal names)
+      probe_type: dns
+
+  - name: dns-external
+    url: 10.96.0.10
+    module: dns_external
+    interval: 15s
+    scrapeTimeout: 10s
+    additionalMetricsRelabels:
+      target: Cluster DNS (external names)
+      probe_type: dns

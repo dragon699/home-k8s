@@ -1,0 +1,24 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: address-not-reachable
+spec:
+  groups:
+  - name: address-not-reachable
+    rules:
+    - alert: AddressNotReachable
+      expr: |
+        max by (target, instance) (probe_success{probe_type!="dns"}) == 0
+      for: 10m
+      labels:
+        severity: major
+        group: workload
+        service: "{{ $labels.target }}"
+      annotations:
+        summary: Address not reachable
+        description: The public address of {{ $labels.target }} does not answer for more than 10 minutes.
+        value: >-
+          {{- with printf `max(probe_http_status_code{target="%s"})` $labels.target | query -}}
+          {{- if eq (. | first | value) 0.0 }}No response{{ else }}HTTP {{ . | first | value | printf "%.0f" }}{{ end -}}
+          {{- end }}
