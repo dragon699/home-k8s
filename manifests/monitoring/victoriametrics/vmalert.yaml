@@ -1,0 +1,29 @@
+---
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMAlert
+metadata:
+  name: victoriametrics
+  namespace: monitoring
+spec:
+  image:
+    repository: victoriametrics/vmalert
+    tag: v1.157.0
+  selectAllByDefault: true
+  evaluationInterval: 30s
+  datasource:
+    url: http://vmsingle-victoriametrics.monitoring.svc:8428
+  remoteWrite:
+    url: http://vmsingle-victoriametrics.monitoring.svc:8428
+  remoteRead:
+    url: http://vmsingle-victoriametrics.monitoring.svc:8428
+  notifier:
+    url: http://vmalertmanager-victoriametrics.monitoring.svc:9093
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 500m
+      memory: 256Mi
+  extraArgs:
+    loggerFormat: json

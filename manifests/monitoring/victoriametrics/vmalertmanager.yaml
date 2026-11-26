@@ -1,0 +1,29 @@
+---
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMAlertmanager
+metadata:
+  name: victoriametrics
+  namespace: monitoring
+spec:
+  image:
+    repository: prom/alertmanager
+    tag: v0.35.1
+  replicaCount: 1
+  selectAllByDefault: true
+  disableNamespaceMatcher: true
+  retention: 120h
+  storage:
+    volumeClaimTemplate:
+      spec:
+        resources:
+          requests:
+            storage: 1Gi
+  resources:
+    requests:
+      cpu: 20m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
+  extraArgs:
+    log.format: json

@@ -173,6 +173,8 @@ secrets:
       provider: vault
     auth-tmdb-grafana:
       provider: vault
+    auth-vm-alerts-discord:
+      provider: vault
 
   openclaw:
     data-openclaw:
