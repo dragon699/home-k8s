@@ -20,7 +20,6 @@ spec:
         ) > 0
       labels:
         severity: major
-        group: node
         service: node
         instance: "{{ $labels.node }}"
       annotations:

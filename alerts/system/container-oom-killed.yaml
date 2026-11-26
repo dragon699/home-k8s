@@ -19,7 +19,6 @@ spec:
       for: 10m
       labels:
         severity: major
-        group: workload
         service: "{{ $labels.namespace }}"
         instance: "{{ $labels.namespace }}/{{ $labels.pod }}/{{ $labels.container }}"
         memory_limit: >-

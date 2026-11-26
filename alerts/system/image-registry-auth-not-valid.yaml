@@ -20,7 +20,6 @@ spec:
       for: 15m
       labels:
         severity: major
-        group: resource
         service: "{{ $labels.namespace }}"
         instance: "{{ $labels.namespace }}/{{ $labels.registry }}"
       annotations:

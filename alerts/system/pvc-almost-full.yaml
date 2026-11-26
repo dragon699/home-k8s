@@ -14,7 +14,6 @@ spec:
         ) * 100 >= 80 < 95
       labels:
         severity: warning
-        group: workload
         service: "{{ $labels.namespace }}"
         instance: "{{ $labels.namespace }}/{{ $labels.persistentvolumeclaim }}"
         pod: >-

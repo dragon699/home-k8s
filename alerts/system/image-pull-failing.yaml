@@ -17,7 +17,6 @@ spec:
       for: 5m
       labels:
         severity: major
-        group: resource
         service: "{{ $labels.namespace }}"
         instance: "{{ $labels.namespace }}/{{ $labels.pod }}/{{ $labels.container }}"
         image: >-

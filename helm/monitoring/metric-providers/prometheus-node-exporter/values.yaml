@@ -20,6 +20,8 @@ extraArgs:
 - --collector.netdev
 - --collector.processes
 - --collector.textfile
+- --collector.uname
+- --collector.pressure
 
 - --collector.textfile.directory=/host/root/var/lib/node-exporter/textfile
 

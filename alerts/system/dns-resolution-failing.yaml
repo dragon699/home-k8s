@@ -15,12 +15,11 @@ spec:
       for: 5m
       labels:
         severity: major
-        group: workload
         service: dns
         instance: "{{ $labels.target }}"
       annotations:
         summary: DNS lookups are failing
         description: |-
           DNS lookups through {{ $labels.target }} keep failing for more than 5 minutes.
-          Pods cannot reliably resolve Kubernetes services.
+          Pods cannot reliably resolve {{ if eq $labels.target "Cluster DNS (internal names)" }}Kubernetes services{{ else }}external names such as iaminyourpc.xyz{{ end }}.
         value: '{{ $value | printf "%.0f" }}% of lookups succeeded'

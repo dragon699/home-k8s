@@ -11,41 +11,59 @@ spec:
     # Volumes cannot be created
     - alert: CSIDriverNotHealthy
       expr: |
-        sum by (namespace) (
-          increase(trident_operation_duration_milliseconds_count{operation="volume_add", success="false"}[10m])
+        count by (namespace, persistentvolumeclaim) (
+            kube_persistentvolumeclaim_status_phase{phase="Pending"} == 1
+          and on (namespace, persistentvolumeclaim)
+            kube_persistentvolumeclaim_info{storageclass=~"longhorn.*"}
         ) > 0
       for: 15m
       labels:
         severity: major
-        group: workload
-        service: "{{ $labels.namespace }}"
-        instance: "{{ $labels.namespace }}/trident"
+        service: longhorn
+        instance: "{{ $labels.namespace }}/{{ $labels.persistentvolumeclaim }}"
       annotations:
         summary: Storage driver cannot create volumes
         description: |-
-          The CSI (Container Storage Interface) driver cannot create volumes for more than 15 minutes.
-          New volumes will fail to create.
-        value: '{{ $value | printf "%.0f" }} failed attempt(s) in 10m'
+          Longhorn has not provisioned volume {{ $labels.persistentvolumeclaim }} for more than 15 minutes.
+          Pods using it cannot start.
+        value: Pending
         pendingVolumes: >-
           {{- with `kube_persistentvolumeclaim_status_phase{phase="Pending"} == 1` | query | sortByLabel "persistentvolumeclaim" -}}
           {{ range $i, $e := . }}{{ if $i }}, {{ end }}{{ $e | label "namespace" }}/{{ $e | label "persistentvolumeclaim" }}{{ end }}
           {{- end }}
 
-    # Storage backend is not available
+    # Volume lost redundancy or is unusable
     - alert: CSIDriverNotHealthy
       expr: |
-        sum by (namespace, backend_state, backend_type) (
-          trident_backend_count{backend_state!="online"}
-        ) > 0
+        max by (pvc_namespace, pvc, volume, state) (
+          longhorn_volume_robustness{state=~"degraded|faulted"}
+        ) == 1
+      for: 10m
+      labels:
+        severity: "{{ if eq $labels.state \"faulted\" }}critical{{ else }}major{{ end }}"
+        service: longhorn
+        instance: "{{ $labels.pvc_namespace }}/{{ $labels.pvc }}"
+      annotations:
+        summary: Storage volume is not healthy
+        description: |-
+          Longhorn volume {{ $labels.volume }} ({{ $labels.pvc_namespace }}/{{ $labels.pvc }}) is {{ $labels.state }} for more than 10 minutes.
+          {{ if eq $labels.state "faulted" }}All replicas failed, so the volume cannot be used.{{ else }}A replica failed, so the volume runs without its full redundancy.{{ end }}
+        value: "{{ $labels.state }}"
+
+    # Storage node or disk is not available
+    - alert: CSIDriverNotHealthy
+      expr: |
+        max by (node, condition) (longhorn_node_status{condition="ready"}) == 0
+          or
+        max by (node, disk, condition) (longhorn_disk_status{condition="ready"}) == 0
       for: 15m
       labels:
         severity: major
-        group: workload
-        service: "{{ $labels.namespace }}"
-        instance: "{{ $labels.namespace }}/trident-backend"
+        service: longhorn
+        instance: "{{ $labels.node }}{{ with $labels.disk }}/{{ . }}{{ end }}"
       annotations:
         summary: Storage backend is not available
         description: |-
-          The CSI (Container Storage Interface) driver reports that a storage backend is not available for more than 15 minutes.
-          Volumes using that backend may fail for operations like attach, resize, etc.
-        value: "{{ $labels.backend_state }}"
+          Longhorn reports that {{ with $labels.disk }}disk {{ . }} on {{ end }}node {{ $labels.node }} is not ready for more than 15 minutes.
+          Volumes on it may fail to attach, resize or get new replicas.
+        value: Not ready

@@ -75,6 +75,13 @@ projects:
         releaseName: prometheus-blackbox-exporter
         valueFiles:
         - $values/helm/monitoring/metric-providers/prometheus-blackbox-exporter/values.yaml
+    - repoURL: https://deckhouse.github.io/k8s-image-availability-exporter
+      targetRevision: 0.19.0
+      chart: k8s-image-availability-exporter
+      helm:
+        releaseName: k8s-image-availability-exporter
+        valueFiles:
+        - $values/helm/monitoring/metric-providers/k8s-image-availability-exporter/values.yaml
     - repoURL: oci://registry-1.docker.io/bitnamicharts/kube-state-metrics
       targetRevision: 5.1.0
       chart: kube-state-metrics

@@ -13,11 +13,10 @@ spec:
       for: 10m
       labels:
         severity: major
-        group: workload
         service: "{{ $labels.target }}"
       annotations:
         summary: Address not reachable
-        description: The public address of {{ $labels.target }} does not answer for more than 10 minutes.
+        description: "{{ $labels.target }} ({{ $labels.instance }}) does not answer with a successful response for more than 10 minutes."
         value: >-
           {{- with printf `max(probe_http_status_code{target="%s"})` $labels.target | query -}}
           {{- if eq (. | first | value) 0.0 }}No response{{ else }}HTTP {{ . | first | value | printf "%.0f" }}{{ end -}}

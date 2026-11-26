@@ -19,7 +19,6 @@ spec:
       for: 20m
       labels:
         severity: warning
-        group: workload
         service: "{{ $labels.namespace }}"
         instance: "{{ $labels.namespace }}/{{ $labels.pod }}/{{ $labels.container }}"
       annotations:

@@ -15,7 +15,6 @@ spec:
       for: 3m
       labels:
         severity: major
-        group: resource
         service: "{{ $labels.namespace }}"
         instance: "{{ $labels.namespace }}/{{ $labels.name }}/{{ $labels.container }}"
         pod: >-

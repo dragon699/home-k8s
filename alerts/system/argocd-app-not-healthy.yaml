@@ -15,7 +15,6 @@ spec:
       for: 10m
       labels:
         severity: warning
-        group: gitops
         service: argocd
         instance: "{{ $labels.name }}"
       annotations:

@@ -32,7 +32,6 @@ spec:
           kube_job_failed{condition="true"} == 1
       labels:
         severity: major
-        group: workload
         service: "{{ $labels.namespace }}"
         instance: "{{ $labels.namespace }}/{{ $labels.cronjob }}"
       annotations:
@@ -51,7 +50,6 @@ spec:
           kube_job_owner{owner_kind="CronJob"}
       labels:
         severity: major
-        group: workload
         service: "{{ $labels.namespace }}"
         instance: "{{ $labels.namespace }}/{{ $labels.job_name }}"
       annotations:

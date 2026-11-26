@@ -16,7 +16,6 @@ spec:
         ) / 86400 < 15 >= 3
       labels:
         severity: warning
-        group: resource
         service: cert-manager
         instance: "{{ $labels.namespace }}/{{ $labels.name }}"
       annotations:
@@ -36,7 +35,6 @@ spec:
         ) / 86400 < 3
       labels:
         severity: critical
-        group: resource
         service: cert-manager
         instance: "{{ $labels.namespace }}/{{ $labels.name }}"
       annotations:

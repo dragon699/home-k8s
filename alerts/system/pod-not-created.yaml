@@ -17,7 +17,6 @@ spec:
       for: 15m
       labels:
         severity: major
-        group: workload
         service: "{{ $labels.namespace }}"
         instance: "{{ $labels.namespace }}/{{ $labels.replicaset }}"
         deployment: >-
@@ -43,7 +42,6 @@ spec:
       for: 15m
       labels:
         severity: major
-        group: workload
         service: "{{ $labels.namespace }}"
         instance: "{{ $labels.namespace }}/{{ $labels.statefulset }}"
       annotations:

@@ -2,23 +2,22 @@
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
-  name: openbao-is-sealed
+  name: vault-is-sealed
 spec:
   groups:
-  - name: openbao-is-sealed
+  - name: vault-is-sealed
     rules:
-    - alert: OpenbaoIsSealed
+    - alert: VaultIsSealed
       expr: |
         max by (namespace, pod) (vault_core_unsealed) == 0
-      for: 3m
+      for: 5m
       labels:
         severity: critical
-        group: resource
         service: "{{ $labels.namespace }}"
         instance: "{{ $labels.namespace }}/{{ $labels.pod }}"
       annotations:
-        summary: OpenBao is sealed
+        summary: Vault is sealed
         description: |-
-          OpenBao pod {{ $labels.pod }} has been sealed for more than 3 minutes.
-          Openbao cannot be used and secrets are not accessible until unsealed.
+          Vault pod {{ $labels.pod }} has been sealed for more than 5 minutes.
+          Vault cannot be used and secrets are not accessible until unsealed.
         value: Sealed

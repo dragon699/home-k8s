@@ -14,7 +14,6 @@ spec:
         ) * 100 >= 95
       labels:
         severity: critical
-        group: workload
         service: "{{ $labels.namespace }}"
         instance: "{{ $labels.namespace }}/{{ $labels.persistentvolumeclaim }}"
         pod: >-

@@ -1,0 +1,32 @@
+k8sImageAvailabilityExporter:
+  image:
+    repository: registry.deckhouse.io/k8s-image-availability-exporter/k8s-image-availability-exporter
+    tag: v0.14.0
+  args:
+  - --bind-address=:8080
+  - --check-interval=10m
+  useSecretsForPrivateRepositories: true
+
+revisionHistoryLimit: 1
+
+podSecurityContext:
+  seccompProfile:
+    type: RuntimeDefault
+
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+    - ALL
+
+resources:
+  requests:
+    cpu: 10m
+    memory: 64Mi
+  limits:
+    memory: 256Mi
+
+serviceMonitor:
+  enabled: true
+  interval: 60s
+  honorLabels: true
